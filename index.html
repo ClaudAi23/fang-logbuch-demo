@@ -38,7 +38,7 @@
   .ic{width:22px; height:22px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; display:block;}
   .ic-sm{width:18px; height:18px;}
   #app{
-    width:100%; max-width:420px; min-height:100vh; background:var(--sand);
+    width:100%; max-width:420px; min-height:100vh; min-height:100dvh; background:var(--sand);
     position:relative; overflow:hidden; box-shadow:var(--shadow);
     display:flex; flex-direction:column;
   }
@@ -77,7 +77,7 @@
   label{display:block; font-size:12px; font-weight:600; color:var(--muted); margin:0 0 6px;
     text-transform:uppercase; letter-spacing:.05em;}
   .req{color:var(--teal); font-weight:600;}
-  .fab{position:absolute; right:18px; bottom:18px; z-index:20;
+  .fab{position:absolute; right:18px; bottom:calc(18px + env(safe-area-inset-bottom)); z-index:20;
     width:60px; height:60px; border-radius:50%; border:none; background:var(--teal); color:#fff;
     box-shadow:0 8px 20px rgba(22,38,63,.32); cursor:pointer;
     display:flex; align-items:center; justify-content:center;}
@@ -213,7 +213,7 @@
       <div style="height:20px"></div>
       <div id="club-logo" class="logo-badge">🎣</div>
       <h1 style="text-align:center; font-size:24px; margin:0 0 4px;">Fang-Logbuch</h1>
-      <p style="text-align:center; color:var(--muted); margin:0 0 26px;">Wähle deinen Verein</p>
+      <p style="text-align:center; color:var(--muted); margin:0 0 22px;">Wähle deinen Bereich</p>
       <div id="club-list"></div>
       <p class="hint" style="text-align:center; margin-top:18px;">Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.</p>
     </div>
@@ -422,6 +422,20 @@
           <p class="hint">Nur der Vereinsadmin sollte das Logo ändern. (In dieser Demo für alle freigeschaltet.)</p>
         </div>
       </div>
+      <div id="solo-avatar" style="display:none;">
+        <div class="sectionlabel">Mein Bild</div>
+        <div class="card-box">
+          <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
+            <div id="solo-av-prev" class="hdr-logo" style="width:54px; height:54px; border-radius:12px;"></div>
+            <div>
+              <div id="solo-av-name" style="font-weight:600;">—</div>
+              <div class="hint" style="margin:0;">Standard: deine Initialen</div>
+            </div>
+          </div>
+          <button class="btn secondary sm" onclick="document.getElementById('solo-avatar-file').click()">Bild hochladen</button>
+          <input id="solo-avatar-file" type="file" accept="image/*" style="display:none" onchange="onSoloAvatar(event)" />
+        </div>
+      </div>
     </div>
   </section>
 
@@ -435,13 +449,14 @@
     <div class="scroll pad">
       <div class="sectionlabel">Zeitraum</div>
       <div class="row">
-        <div class="field"><label>Jahr</label><select id="flt-year"></select></div>
-        <div class="field"><label>Monat</label><select id="flt-month"></select></div>
+        <div class="field"><label>Jahr</label><select id="flt-year" onchange="onPeriodPreset()"></select></div>
+        <div class="field"><label>Monat</label><select id="flt-month" onchange="onPeriodPreset()"></select></div>
       </div>
       <div class="row">
-        <div class="field"><label>Von</label><input id="flt-from" type="date" /></div>
-        <div class="field"><label>Bis</label><input id="flt-to" type="date" /></div>
+        <div class="field"><label>Von</label><input id="flt-from" type="date" onchange="onPeriodRange()" /></div>
+        <div class="field"><label>Bis</label><input id="flt-to" type="date" onchange="onPeriodRange()" /></div>
       </div>
+      <p class="hint" style="margin:0 4px 6px;">Entweder Jahr/Monat <em>oder</em> Von–Bis — sie schließen sich gegenseitig aus.</p>
 
       <div class="sectionlabel" style="margin-top:6px;">Eigenschaften</div>
       <div class="field"><label>Fischart</label><select id="flt-species"></select></div>
@@ -501,22 +516,22 @@ function seed(){
   const now = new Date();
   const d = (h)=> new Date(now.getTime()-h*3600e3).toISOString();
   return [
-    {id:1, species:"Karpfen", weight:5.5, length:38, location:"Vereinsteich, Platz 4", angler:"J. Claudi", date:d(4),    notes:"Mais am Rand, bewölkt.", photo:null},
-    {id:2, species:"Hecht",   weight:3.6, length:62, location:"Altarm, Boot",          angler:"M. Wagner", date:d(30),   notes:"Auf Gummifisch.",       photo:null},
-    {id:3, species:"Zander",  weight:2.1, length:55, location:"Altarm, Steg",          angler:"M. Wagner", date:d(400),  notes:"Dämmerung.",             photo:null},
-    {id:4, species:"Rotauge", weight:0.5, length:24, location:"Vereinsteich, Steg",    angler:"J. Claudi", date:d(78),   notes:"",                        photo:null},
+    {id:1, species:"Karpfen", weight:5.5, length:38, location:"Vereinsteich, Platz 4", angler:"J. Claudi", date:d(4),    notes:"Mais am Rand, bewölkt.", photo:null, userId:"demo-user"},
+    {id:2, species:"Hecht",   weight:3.6, length:62, location:"Altarm, Boot",          angler:"M. Wagner", date:d(30),   notes:"Auf Gummifisch.",       photo:null, userId:"demo-other"},
+    {id:3, species:"Zander",  weight:2.1, length:55, location:"Altarm, Steg",          angler:"M. Wagner", date:d(400),  notes:"Dämmerung.",             photo:null, userId:"demo-other"},
+    {id:4, species:"Rotauge", weight:0.5, length:24, location:"Vereinsteich, Steg",    angler:"J. Claudi", date:d(78),   notes:"",                        photo:null, userId:"demo-user"},
   ];
 }
 
 let state = { club:null, mode:"club", soloName:null, user:null, userId:null, me:null,
   catches:[], editPhoto:null, current:null, filterTarget:"list",
-  measure:"length", theme:"system", logos:{}, filter:emptyFilter() };
+  measure:"length", theme:"system", logos:{}, soloAvatar:null, filter:emptyFilter() };
 
 function emptyFilter(){ return {year:"",month:"",from:"",to:"",species:"",angler:"",ort:"",lmin:"",lmax:"",wmin:"",wmax:""}; }
 
 // ---------- persistence ----------
 function savePrefs(){ try{ localStorage.setItem("fanglog_prefs", JSON.stringify(
-  {measure:state.measure, theme:state.theme, logos:state.logos, me:state.me})); }catch(e){} }
+  {measure:state.measure, theme:state.theme, logos:state.logos, me:state.me, soloAvatar:state.soloAvatar})); }catch(e){} }
 function loadPrefs(){
   try{
     const r=JSON.parse(localStorage.getItem("fanglog_prefs"));
@@ -525,6 +540,7 @@ function loadPrefs(){
       if(r.theme) state.theme=r.theme;
       if(r.logos) state.logos=r.logos;
       if(r.me) state.me=r.me;
+      if(r.soloAvatar) state.soloAvatar=r.soloAvatar;
     }
   }catch(e){}
 }
@@ -558,6 +574,9 @@ function clubLogoHTML(cl){
   if(cl.mono) return `<span style="font-weight:700; color:var(--teal-dark); font-size:15px; letter-spacing:.02em;">${cl.mono}</span>`;
   return `<span>${cl.emoji||"🎣"}</span>`;
 }
+function initials(name){ const p=(name||'?').trim().split(/\s+/).filter(Boolean); return ((p[0]?p[0][0]:'?')+(p[1]?p[1][0]:'')).toUpperCase(); }
+function initialsAvatar(name){ return `<span style="font-weight:700; color:var(--teal-dark); font-size:15px; letter-spacing:.02em;">${initials(name)}</span>`; }
+function soloAvatarHTML(){ return state.soloAvatar ? `<img src="${state.soloAvatar}" alt="">` : initialsAvatar(state.soloName); }
 
 function go(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -568,18 +587,21 @@ function go(name){
 // ---------- club ----------
 function renderClubs(){
   const c=document.getElementById('club-list'); c.innerHTML='';
-  const st=document.createElement('button'); st.className='club'; st.style.borderStyle='dashed';
+  const lbl=t=>{ const d=document.createElement('div'); d.className='sectionlabel'; d.style.margin='6px 4px 10px'; d.textContent=t; return d; };
+  c.appendChild(lbl('Persönlich'));
+  const st=document.createElement('button'); st.className='club';
   st.innerHTML=`<span class="av">${STATS_IC}</span>
     <span style="min-width:0;"><span class="nm">Meine Statistik</span><br><span class="loc">Alle Fänge, vereinsübergreifend</span></span>
     ${CHEV_IC}`;
   st.onclick=openStats;
   c.appendChild(st);
-  const s=document.createElement('button'); s.className='club'; s.style.borderStyle='dashed';
+  const s=document.createElement('button'); s.className='club';
   s.innerHTML=`<span class="av">${SOLO_IC}</span>
     <span style="min-width:0;"><span class="nm">Solo — ohne Verein</span><br><span class="loc">Eigenes Logbuch, privat</span></span>
     ${CHEV_IC}`;
   s.onclick=startSolo;
   c.appendChild(s);
+  c.appendChild(lbl('Vereine'));
   CLUBS.forEach(cl=>{
     const b=document.createElement('button'); b.className='club';
     b.innerHTML=`<span class="av">${clubLogoHTML(cl)}</span>
@@ -623,7 +645,7 @@ function submitSolo(){
   state.userId = state.me ? state.me.id : ('solo:'+name);
   state.catches=loadCatchesFor('solo'); state.filter=emptyFilter();
   document.getElementById('list-sub').textContent=`Solo · ${name}`;
-  document.getElementById('list-hdr').innerHTML=SOLO_IC;
+  document.getElementById('list-hdr').innerHTML=soloAvatarHTML();
   renderList();
   go('list');
 }
@@ -711,7 +733,7 @@ function renderList(){
 function myCatches(){
   const out=[]; const myId = state.me ? state.me.id : null;
   CLUBS.forEach(cl=>{
-    loadCatchesFor('club', cl.id).forEach(c=>{ if(myId && c.userId===myId) out.push(Object.assign({}, c, {_ctx:cl.name})); });
+    loadCatchesFor('club', cl.id).forEach(c=>{ if(c.userId==='demo-user' || (myId && c.userId===myId)) out.push(Object.assign({}, c, {_ctx:cl.name})); });
   });
   loadCatchesFor('solo').forEach(c=>{ out.push(Object.assign({}, c, {_ctx:'Solo'})); });
   return out;
@@ -747,6 +769,7 @@ function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezo
 function openForm(){
   ['f-species','f-weight','f-length','f-location','f-notes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-date').value=nowLocal();
+  document.getElementById('f-date').max=nowLocal();
   buildAnglerOptions();
   document.getElementById('form-err').style.display='none';
   clearPhoto(); closeSpecies(); go('form');
@@ -775,7 +798,9 @@ function saveCatch(){
   const species=document.getElementById('f-species').value.trim();
   const date=document.getElementById('f-date').value;
   const angler=selectedAngler();
-  if(!species||!date||!angler){ document.getElementById('form-err').style.display='block'; return; }
+  const err=document.getElementById('form-err');
+  if(!species||!date||!angler){ err.textContent='Bitte Fischart, Datum und Angler ausfüllen.'; err.style.display='block'; return; }
+  if(new Date(date) > new Date()){ err.textContent='Das Datum darf nicht in der Zukunft liegen.'; err.style.display='block'; return; }
   const w=document.getElementById('f-weight').value, l=document.getElementById('f-length').value;
   state.catches.push({
     id:Date.now(), species,
@@ -874,9 +899,14 @@ function openSettings(){
   const solo = state.mode==='solo';
   document.getElementById('set-sub').textContent = solo ? ('Solo · '+state.soloName) : (state.club?state.club.name:'');
   document.getElementById('logo-admin').style.display = solo ? 'none' : '';
+  document.getElementById('solo-avatar').style.display = solo ? '' : 'none';
   if(!solo && state.club){
     document.getElementById('set-clubname').textContent=state.club.name;
     document.getElementById('set-logo').innerHTML=clubLogoHTML(state.club);
+  }
+  if(solo){
+    document.getElementById('solo-av-prev').innerHTML=soloAvatarHTML();
+    document.getElementById('solo-av-name').textContent=state.soloName;
   }
   syncMeasureSeg();
   syncThemeSeg();
@@ -898,6 +928,15 @@ function onLogo(e){
   };
   r.readAsDataURL(f);
 }
+function onSoloAvatar(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{ state.soloAvatar=ev.target.result; savePrefs();
+    document.getElementById('solo-av-prev').innerHTML=soloAvatarHTML();
+    document.getElementById('list-hdr').innerHTML=soloAvatarHTML();
+  };
+  r.readAsDataURL(f);
+}
 
 // ---------- filter screen ----------
 function openFilter(target){
@@ -911,6 +950,9 @@ function openFilter(target){
   const ang=[...new Set(data.map(c=>c.angler))].sort();
   fillSelect('flt-angler', [['','Alle']].concat(ang.map(a=>[a,a])), state.filter.angler);
   document.getElementById('flt-angler-field').style.display = state.filterTarget==='stats' ? 'none' : '';
+  const td=new Date(); td.setMinutes(td.getMinutes()-td.getTimezoneOffset()); const todayStr=td.toISOString().slice(0,10);
+  document.getElementById('flt-from').max=todayStr;
+  document.getElementById('flt-to').max=todayStr;
   document.getElementById('flt-from').value=state.filter.from;
   document.getElementById('flt-to').value=state.filter.to;
   document.getElementById('flt-ort').value=state.filter.ort;
@@ -925,6 +967,8 @@ function fillSelect(id, pairs, val){
   pairs.forEach(([v,t])=>{ const o=document.createElement('option'); o.value=v; o.textContent=t; s.appendChild(o); });
   s.value=val;
 }
+function onPeriodPreset(){ document.getElementById('flt-from').value=''; document.getElementById('flt-to').value=''; }
+function onPeriodRange(){ document.getElementById('flt-year').value=''; document.getElementById('flt-month').value=''; }
 function applyFilter(){
   state.filter={
     year:document.getElementById('flt-year').value,
