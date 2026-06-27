@@ -332,7 +332,7 @@
     <div class="topbar">
       <button class="iconbtn" onclick="go('list')" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div style="flex:1; min-width:0;"><h1>Fang-Details</h1><p class="sub">Eintrag</p></div>
-      <button class="iconbtn" onclick="shareCatch()" title="Teilen" aria-label="Teilen"><svg class="ic" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+      <button id="share-btn" class="iconbtn" onclick="shareCatch()" title="Teilen" aria-label="Teilen" style="display:none;"><svg class="ic" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
     </div>
     <div class="scroll">
       <div id="d-hero" class="hero" style="display:none;"></div>
@@ -677,32 +677,21 @@ function catchText(c){
     APP_URL
   ].filter(Boolean).join('\n');
 }
-function openWhatsApp(text){
-  const url='https://wa.me/?text='+encodeURIComponent(text);
-  const w=window.open(url, '_blank');
-  if(!w) location.href=url;
-}
+// Mobile only: native share sheet (with photo). On desktop the button is hidden.
 async function shareCatch(){
-  const c=state.current; if(!c) return;
+  const c=state.current; if(!c || !navigator.share) return;
   const text=catchText(c);
-  const touch=(navigator.maxTouchPoints||0)>0;
-  // Mobile: native share sheet (with photo) → user picks WhatsApp
-  if(touch && navigator.share){
-    try{
-      let data={text};
-      if(c.photo && navigator.canShare){
-        try{
-          const blob=await (await fetch(c.photo)).blob();
-          const file=new File([blob], 'fang.jpg', {type:blob.type||'image/jpeg'});
-          if(navigator.canShare({files:[file]})) data={text, files:[file]};
-        }catch(err){}
-      }
-      await navigator.share(data);
-      return;
-    }catch(err){ if(err && err.name==='AbortError') return; }
-  }
-  // Desktop / fallback: open WhatsApp Web directly
-  openWhatsApp(text);
+  try{
+    let data={text};
+    if(c.photo && navigator.canShare){
+      try{
+        const blob=await (await fetch(c.photo)).blob();
+        const file=new File([blob], 'fang.jpg', {type:blob.type||'image/jpeg'});
+        if(navigator.canShare({files:[file]})) data={text, files:[file]};
+      }catch(err){}
+    }
+    await navigator.share(data);
+  }catch(err){}
 }
 
 // ---------- settings ----------
@@ -775,6 +764,7 @@ function resetFilter(){ state.filter=emptyFilter(); renderList(); go('list'); }
 // ---------- init ----------
 state.catches=load();
 renderClubs();
+if((navigator.maxTouchPoints||0)>0 && navigator.share){ document.getElementById('share-btn').style.display=''; }
 document.getElementById('club-logo').innerHTML=`<svg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'><rect width='120' height='120' rx='26' fill='#16263F'/><g fill='#F2EEE6'><path d='M46 60 C58 45 78 45 90 60 C78 75 58 75 46 60 Z'/><path d='M48 60 L30 49 L35 60 L30 71 Z'/></g><circle cx='80' cy='56' r='3.2' fill='#16263F'/></svg>`;
 </script>
 </body>
