@@ -222,13 +222,15 @@
 
   <!-- ============ LOGIN ============ -->
   <section id="s-login" class="screen">
-    <div class="topbar">
-      <button class="iconbtn" onclick="go('club')" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
-      <div id="login-hdr" class="hdr-logo"></div>
-      <div><h1 id="login-club">Anmelden</h1><p class="sub" data-i18n="signIn">Anmelden</p></div>
-    </div>
     <div class="scroll pad">
-      <div style="height:12px"></div>
+      <div style="height:24px"></div>
+      <div class="logo-badge" id="login-logo">🎣</div>
+      <h1 style="text-align:center; font-size:24px; margin:0 0 4px;" data-i18n="appName">Fang-Logbuch</h1>
+      <p style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="loginIntro">Melde dich einmal an.</p>
+      <div class="field">
+        <label data-i18n="name">Name</label>
+        <input id="login-name" type="text" placeholder="z. B. Johannes" data-i18n-ph="namePh" autocomplete="name" />
+      </div>
       <div class="field">
         <label data-i18n="email">E-Mail</label>
         <input id="login-email" type="email" inputmode="email" placeholder="name@beispiel.de" data-i18n-ph="emailPh" autocomplete="username" />
@@ -238,25 +240,7 @@
         <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
       </div>
       <button class="btn" onclick="doLogin()" data-i18n="signIn">Anmelden</button>
-      <p class="hint" style="text-align:center; margin-top:16px;" data-i18n="loginHint">Demo: beliebige E-Mail und beliebiges Passwort funktionieren. Konten werden vom Vereinsadmin angelegt.</p>
-    </div>
-  </section>
-
-  <!-- ============ SOLO NAME ============ -->
-  <section id="s-soloname" class="screen">
-    <div class="topbar">
-      <button class="iconbtn" onclick="go('club')" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
-      <div><h1 data-i18n="solo">Solo</h1><p class="sub" data-i18n="withoutClub">Ohne Verein</p></div>
-    </div>
-    <div class="scroll pad">
-      <div style="height:12px"></div>
-      <div class="field">
-        <label><span data-i18n="yourName">Dein Name</span> <span class="req">*</span></label>
-        <input id="solo-name-input" type="text" placeholder="z. B. Johannes" data-i18n-ph="namePh" autocomplete="name" />
-      </div>
-      <button class="btn" onclick="submitSolo()" data-i18n="next">Weiter</button>
-      <p id="solo-err" class="hint" style="color:var(--danger); text-align:center; display:none;" data-i18n="errName">Bitte gib deinen Namen ein.</p>
-      <p class="hint" style="text-align:center; margin-top:16px;" data-i18n="soloHint">Im Solo-Modus dokumentierst du deine Fänge privat — ohne Verein, ohne Login.</p>
+      <p id="login-err" class="hint" style="color:var(--danger); text-align:center; display:none;" data-i18n="errName">Bitte gib deinen Namen ein.</p>
     </div>
   </section>
 
@@ -275,8 +259,8 @@
       <button class="iconbtn" data-i18n-title="ttSettings" title="Einstellungen" aria-label="Einstellungen" onclick="openSettings()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M4 7h9"/><path d="M17 7h3"/><path d="M4 17h3"/><path d="M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="7" cy="17" r="2.2"/></svg>
       </button>
-      <button class="iconbtn" data-i18n-title="ttLogout" title="Abmelden" aria-label="Abmelden" onclick="logout()">
-        <svg class="ic" viewBox="0 0 24 24"><path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/><path d="M15 12H9"/><path d="M13 9l3 3-3 3"/></svg>
+      <button class="iconbtn" data-i18n-title="switchArea" title="Bereich wechseln" aria-label="Bereich wechseln" onclick="leaveArea()">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/><path d="M14 12H9"/><path d="M12 9l3 3-3 3"/></svg>
       </button>
     </div>
     <div class="scroll pad">
@@ -437,19 +421,18 @@
           <p class="hint" data-i18n="logoHint">Nur der Vereinsadmin sollte das Logo ändern. (In dieser Demo für alle freigeschaltet.)</p>
         </div>
       </div>
-      <div id="solo-avatar" style="display:none;">
-        <div class="sectionlabel" data-i18n="myImage">Mein Bild</div>
-        <div class="card-box">
-          <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
-            <div id="solo-av-prev" class="hdr-logo" style="width:54px; height:54px; border-radius:12px;"></div>
-            <div>
-              <div id="solo-av-name" style="font-weight:600;">—</div>
-              <div class="hint" style="margin:0;" data-i18n="initialsDefault">Standard: deine Initialen</div>
-            </div>
+      <div class="sectionlabel" data-i18n="profile">Profil</div>
+      <div class="card-box">
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
+          <div id="prof-av" class="hdr-logo" style="width:54px; height:54px; border-radius:12px;"></div>
+          <div>
+            <div id="prof-name" style="font-weight:600;">—</div>
+            <div class="hint" style="margin:0;" data-i18n="initialsDefault">Standard: deine Initialen</div>
           </div>
-          <button class="btn secondary sm" onclick="document.getElementById('solo-avatar-file').click()" data-i18n="uploadImage">Bild hochladen</button>
-          <input id="solo-avatar-file" type="file" accept="image/*" style="display:none" onchange="onSoloAvatar(event)" />
         </div>
+        <button class="btn secondary sm" onclick="document.getElementById('prof-av-file').click()" data-i18n="uploadImage">Bild hochladen</button>
+        <input id="prof-av-file" type="file" accept="image/*" style="display:none" onchange="onUserAvatar(event)" />
+        <button class="btn secondary sm" style="margin-top:10px; color:var(--danger); border-color:var(--border-2);" onclick="signOut()" data-i18n="signOut">Abmelden</button>
       </div>
     </div>
   </section>
@@ -573,9 +556,9 @@ const I18N = {
     clock:" uur", petri:"🎣 Petri heil!", shareWater:"Water:", loggedWith:"— vastgelegd met Vangstlogboek", shareNoMeasure:"zonder maten"
   }
 };
-Object.assign(I18N.de, {editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart"});
-Object.assign(I18N.en, {editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species"});
-Object.assign(I18N.nl, {editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort"});
+Object.assign(I18N.de, {editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart", switchArea:"Bereich wechseln", profile:"Profil", signOut:"Abmelden", loginIntro:"Melde dich einmal an. Danach wählst du frei zwischen Solo, Gruppen und Vereinen.", name:"Name"});
+Object.assign(I18N.en, {editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species", switchArea:"Switch area", profile:"Profile", signOut:"Sign out", loginIntro:"Sign in once. Then freely pick Solo, groups and clubs.", name:"Name"});
+Object.assign(I18N.nl, {editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort", switchArea:"Gebied wisselen", profile:"Profiel", signOut:"Uitloggen", loginIntro:"Log één keer in. Daarna kies je vrij tussen Solo, groepen en verenigingen.", name:"Naam"});
 function curLang(){
   if(state && state.lang && state.lang!=='system') return state.lang;
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
@@ -725,50 +708,36 @@ function renderClubs(){
     c.appendChild(b);
   });
 }
-function chooseClub(cl, kind){
-  state.club=cl; state.mode=kind||'club';
-  document.getElementById('login-club').textContent=cl.name;
-  document.getElementById('login-hdr').innerHTML=clubLogoHTML(cl);
-  go('login');
-}
 
 // ---------- login ----------
 function doLogin(){
+  const name=document.getElementById('login-name').value.trim();
   const email=document.getElementById('login-email').value.trim();
-  let name="Mitglied";
-  if(email){ name = email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,m=>m.toUpperCase()); }
-  const uid = (email ? email.toLowerCase() : 'name:'+name);
-  state.user=name; state.soloName=null;
-  state.userId=uid; state.me={id:uid, name}; savePrefs();
-  state.catches=loadCatchesFor(state.mode, state.club.id); state.filter=emptyFilter();
-  document.getElementById('list-sub').textContent=`${state.club.name} · ${name}`;
-  document.getElementById('list-hdr').innerHTML=clubLogoHTML(state.club);
-  renderList();
-  go('list');
-}
-
-function startSolo(){
-  document.getElementById('solo-name-input').value = state.soloName || '';
-  document.getElementById('solo-err').style.display='none';
-  go('soloname');
-}
-function submitSolo(){
-  const name=document.getElementById('solo-name-input').value.trim();
-  if(!name){ document.getElementById('solo-err').style.display='block'; return; }
-  state.mode='solo'; state.club=null; state.soloName=name; state.user=name;
-  state.userId = state.me ? state.me.id : ('solo:'+name);
-  state.catches=loadCatchesFor('solo'); state.filter=emptyFilter();
-  document.getElementById('list-sub').textContent=`Solo · ${name}`;
-  document.getElementById('list-hdr').innerHTML=soloAvatarHTML();
-  renderList();
-  go('list');
-}
-function logout(){
-  document.getElementById('login-email').value='';
-  document.getElementById('login-pass').value='';
-  state.user=null; state.club=null; state.soloName=null; state.mode='club';
+  if(!name){ document.getElementById('login-err').style.display='block'; return; }
+  const uid = (email ? email.toLowerCase() : 'name:'+name.toLowerCase());
+  const avatar = state.me ? state.me.avatar : null;
+  state.me={id:uid, name, avatar:avatar||null}; savePrefs();
   go('club');
 }
+function userAvatarHTML(){ return (state.me && state.me.avatar) ? `<img src="${state.me.avatar}" alt="">` : initialsAvatar(state.me ? state.me.name : '?'); }
+function chooseClub(cl, kind){
+  state.club=cl; state.mode=kind||'club';
+  state.user=state.me.name; state.userId=state.me.id; state.soloName=null;
+  state.catches=loadCatchesFor(state.mode, state.club.id); state.filter=emptyFilter();
+  document.getElementById('list-sub').textContent=`${state.club.name} · ${state.me.name}`;
+  document.getElementById('list-hdr').innerHTML=clubLogoHTML(state.club);
+  renderList(); go('list');
+}
+function startSolo(){
+  state.mode='solo'; state.club=null; state.soloName=state.me.name;
+  state.user=state.me.name; state.userId=state.me.id;
+  state.catches=loadCatchesFor('solo'); state.filter=emptyFilter();
+  document.getElementById('list-sub').textContent=`${t('solo')} · ${state.me.name}`;
+  document.getElementById('list-hdr').innerHTML=userAvatarHTML();
+  renderList(); go('list');
+}
+function leaveArea(){ state.club=null; state.mode='club'; state.soloName=null; go('club'); }
+function signOut(){ state.me=null; savePrefs(); document.getElementById('login-name').value=''; document.getElementById('login-email').value=''; document.getElementById('login-pass').value=''; go('login'); }
 
 // ---------- formatting ----------
 function fmtWeight(w){ if(w==null) return '—'; const sep=curLang()==='en'?'.':','; return String(w).replace('.',sep)+' kg'; }
@@ -1082,21 +1051,27 @@ async function shareCatch(){
 // ---------- settings ----------
 function openSettings(){
   const solo = state.mode==='solo';
-  document.getElementById('set-sub').textContent = solo ? ('Solo · '+state.soloName) : (state.club?state.club.name:'');
+  document.getElementById('set-sub').textContent = solo ? (t('solo')+' · '+state.me.name) : (state.club?state.club.name:'');
   document.getElementById('logo-admin').style.display = state.mode==='club' ? '' : 'none';
-  document.getElementById('solo-avatar').style.display = solo ? '' : 'none';
   if(state.mode==='club' && state.club){
     document.getElementById('set-clubname').textContent=state.club.name;
     document.getElementById('set-logo').innerHTML=clubLogoHTML(state.club);
   }
-  if(solo){
-    document.getElementById('solo-av-prev').innerHTML=soloAvatarHTML();
-    document.getElementById('solo-av-name').textContent=state.soloName;
-  }
+  document.getElementById('prof-av').innerHTML=userAvatarHTML();
+  document.getElementById('prof-name').textContent=state.me ? state.me.name : '';
   syncMeasureSeg();
   syncThemeSeg();
   syncLangSel();
   go('settings');
+}
+function onUserAvatar(e){
+  const f=e.target.files[0]; if(!f||!state.me) return;
+  const r=new FileReader();
+  r.onload=ev=>{ state.me.avatar=ev.target.result; savePrefs();
+    document.getElementById('prof-av').innerHTML=userAvatarHTML();
+    if(state.mode==='solo') document.getElementById('list-hdr').innerHTML=userAvatarHTML();
+  };
+  r.readAsDataURL(f);
 }
 function syncMeasureSeg(){
   document.querySelectorAll('#measure-seg button').forEach(b=>b.classList.toggle('on', b.dataset.m===state.measure));
@@ -1109,7 +1084,6 @@ function onLogo(e){
     state.logos[state.club.id]=ev.target.result; savePrefs();
     document.getElementById('set-logo').innerHTML=clubLogoHTML(state.club);
     document.getElementById('list-hdr').innerHTML=clubLogoHTML(state.club);
-    document.getElementById('login-hdr').innerHTML=clubLogoHTML(state.club);
     renderClubs();
   };
   r.readAsDataURL(f);
@@ -1191,6 +1165,8 @@ applyTheme();
 applyLang();
 if((navigator.maxTouchPoints||0)>0 && navigator.share){ document.getElementById('share-btn').style.display=''; }
 document.getElementById('club-logo').innerHTML=`<svg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'><rect width='120' height='120' rx='26' fill='#16263F'/><g fill='#F2EEE6'><path d='M46 60 C58 45 78 45 90 60 C78 75 58 75 46 60 Z'/><path d='M48 60 L30 49 L35 60 L30 71 Z'/></g><circle cx='80' cy='56' r='3.2' fill='#16263F'/></svg>`;
+document.getElementById('login-logo').innerHTML=document.getElementById('club-logo').innerHTML;
+if(state.me){ go('club'); } else { go('login'); }
 </script>
 </body>
 </html>
