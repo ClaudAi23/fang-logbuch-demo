@@ -281,7 +281,10 @@
     </div>
     <div class="scroll pad">
       <div id="stats" style="display:flex; gap:10px; margin-bottom:18px;"></div>
-      <div class="sectionlabel" id="list-label">Neueste Fänge</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin:4px 4px 10px; gap:10px;">
+        <span class="sectionlabel" id="list-label" style="margin:0;">Neueste Fänge</span>
+        <select id="sort-list" onchange="setSort(this.value)" style="width:auto; padding:6px 10px; font-size:13px; border-radius:8px;"></select>
+      </div>
       <div id="catch-list"></div>
       <div style="height:84px"></div>
     </div>
@@ -294,7 +297,7 @@
   <section id="s-form" class="screen">
     <div class="topbar">
       <button class="iconbtn" onclick="go('list')" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
-      <div><h1 data-i18n="logCatch">Fang eintragen</h1><p class="sub" data-i18n="newCatch">Neuer Fang</p></div>
+      <div><h1 id="f-title" data-i18n="logCatch">Fang eintragen</h1><p class="sub" id="f-sub" data-i18n="newCatch">Neuer Fang</p></div>
     </div>
     <div class="scroll pad">
       <div class="field">
@@ -363,6 +366,7 @@
     <div class="topbar">
       <button class="iconbtn" onclick="detailBack()" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div style="flex:1; min-width:0;"><h1 data-i18n="details">Fang-Details</h1><p class="sub" data-i18n="entry">Eintrag</p></div>
+      <button id="edit-btn" class="iconbtn" onclick="openEdit(state.current)" data-i18n-title="ttEdit" title="Bearbeiten" aria-label="Bearbeiten" style="display:none;"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
       <button id="share-btn" class="iconbtn" onclick="shareCatch()" data-i18n-title="ttShare" title="Teilen" aria-label="Teilen" style="display:none;"><svg class="ic" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
     </div>
     <div class="scroll">
@@ -377,6 +381,7 @@
           <div class="sectionlabel" data-i18n="notes">Notizen</div>
           <p id="d-notes" style="margin:0; color:var(--text);">—</p>
         </div>
+        <button id="del-btn" class="btn secondary" style="display:none; color:var(--danger); border-color:var(--border-2); margin-top:20px;" onclick="deleteCatch(state.current.id)" data-i18n="del">Löschen</button>
         <div style="height:24px"></div>
       </div>
     </div>
@@ -500,6 +505,9 @@
     </div>
     <div class="scroll pad">
       <div id="stats-cards" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px;"></div>
+      <div style="display:flex; justify-content:flex-end; margin:0 4px 10px;">
+        <select id="sort-stats" onchange="setSort(this.value)" style="width:auto; padding:6px 10px; font-size:13px; border-radius:8px;"></select>
+      </div>
       <div id="stats-list"></div>
       <div style="height:24px"></div>
     </div>
@@ -565,6 +573,9 @@ const I18N = {
     clock:" uur", petri:"🎣 Petri heil!", shareWater:"Water:", loggedWith:"— vastgelegd met Vangstlogboek", shareNoMeasure:"zonder maten"
   }
 };
+Object.assign(I18N.de, {editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart"});
+Object.assign(I18N.en, {editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species"});
+Object.assign(I18N.nl, {editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort"});
 function curLang(){
   if(state && state.lang && state.lang!=='system') return state.lang;
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
@@ -606,14 +617,14 @@ function seed(){
 }
 
 let state = { club:null, mode:"club", soloName:null, user:null, userId:null, me:null,
-  catches:[], editPhoto:null, current:null, speciesKey:null, filterTarget:"list",
-  measure:"length", theme:"system", lang:"system", logos:{}, soloAvatar:null, filter:emptyFilter() };
+  catches:[], editPhoto:null, current:null, speciesKey:null, editId:null, filterTarget:"list",
+  measure:"length", theme:"system", lang:"system", sort:"newest", logos:{}, soloAvatar:null, filter:emptyFilter() };
 
 function emptyFilter(){ return {year:"",month:"",from:"",to:"",species:"",angler:"",ort:"",lmin:"",lmax:"",wmin:"",wmax:"",ctx:""}; }
 
 // ---------- persistence ----------
 function savePrefs(){ try{ localStorage.setItem("fanglog_prefs", JSON.stringify(
-  {measure:state.measure, theme:state.theme, lang:state.lang, logos:state.logos, me:state.me, soloAvatar:state.soloAvatar})); }catch(e){} }
+  {measure:state.measure, theme:state.theme, lang:state.lang, sort:state.sort, logos:state.logos, me:state.me, soloAvatar:state.soloAvatar})); }catch(e){} }
 function loadPrefs(){
   try{
     const r=JSON.parse(localStorage.getItem("fanglog_prefs"));
@@ -621,6 +632,7 @@ function loadPrefs(){
       if(r.measure) state.measure=r.measure;
       if(r.theme) state.theme=r.theme;
       if(r.lang) state.lang=r.lang;
+      if(r.sort) state.sort=r.sort;
       if(r.logos) state.logos=r.logos;
       if(r.me) state.me=r.me;
       if(r.soloAvatar) state.soloAvatar=r.soloAvatar;
@@ -789,6 +801,20 @@ function matchesFilter(c){
 function activeFilterCount(){ return Object.values(state.filter).filter(v=>v!=='' && v!=null).length; }
 
 // ---------- list ----------
+function sortCatches(arr){
+  const a=[...arr]; const s=state.sort;
+  if(s==='oldest') a.sort((x,y)=>new Date(x.date)-new Date(y.date));
+  else if(s==='longest') a.sort((x,y)=>(y.length||0)-(x.length||0));
+  else if(s==='heaviest') a.sort((x,y)=>(y.weight||0)-(x.weight||0));
+  else if(s==='species') a.sort((x,y)=>trSpecies(x.species).localeCompare(trSpecies(y.species)));
+  else a.sort((x,y)=>new Date(y.date)-new Date(x.date));
+  return a;
+}
+function sortOptionsHtml(){
+  return [['newest','sortNewest'],['oldest','sortOldest'],['longest','sortLongest'],['heaviest','sortHeaviest'],['species','sortSpecies']]
+    .map(([v,k])=>`<option value="${v}"${state.sort===v?' selected':''}>${t(k)}</option>`).join('');
+}
+function setSort(v){ state.sort=v; savePrefs(); try{renderList();}catch(e){} try{renderStats();}catch(e){} }
 function renderList(){
   const cnt=activeFilterCount();
   const fc=document.getElementById('filter-count');
@@ -812,8 +838,9 @@ function renderList(){
       <div style="font-family:'Barlow Condensed',sans-serif; font-size:30px; font-weight:700; line-height:1.1; color:var(--rust);">${big? (isLen?fmtLen(big.length):fmtWeight(big.weight)):'—'}</div>
     </div>`;
 
+  document.getElementById('sort-list').innerHTML=sortOptionsHtml();
   const list=document.getElementById('catch-list'); list.innerHTML='';
-  const sorted=[...items].sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const sorted=sortCatches(items);
   if(sorted.length===0){
     list.innerHTML=`<div class="empty"><svg viewBox="0 0 120 120" style="width:52px; height:52px; fill:var(--border-2); margin:0 auto 6px; display:block;"><path d="M46 60 C58 45 78 45 90 60 C78 75 58 75 46 60 Z"/><path d="M48 60 L30 49 L35 60 L30 71 Z"/></svg><p>${cnt>0?t('emptyFilter'):t('emptyNone')}</p></div>`;
     return;
@@ -864,8 +891,9 @@ function renderStats(){
     kpi(isLen?t('longest'):t('heaviest'), big? (isLen?fmtLen(big.length):fmtWeight(big.weight)):'—', true) +
     kpi(t('speciesCount'), speciesCount) +
     kpi(t('thisYear'), thisYearCount);
+  document.getElementById('sort-stats').innerHTML=sortOptionsHtml();
   const list=document.getElementById('stats-list'); list.innerHTML='';
-  const sorted=[...items].sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const sorted=sortCatches(items);
   if(sorted.length===0){
     list.innerHTML=`<div class="empty"><svg viewBox="0 0 120 120" style="width:52px; height:52px; fill:var(--border-2); margin:0 auto 6px; display:block;"><path d="M46 60 C58 45 78 45 90 60 C78 75 58 75 46 60 Z"/><path d="M48 60 L30 49 L35 60 L30 71 Z"/></svg><p>${cnt>0?t('emptyFilter'):t('emptyNone')}</p></div>`;
     return;
@@ -888,12 +916,37 @@ function renderStats(){
 function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
 function openForm(){
   ['f-species','f-weight','f-length','f-location','f-notes'].forEach(id=>document.getElementById(id).value='');
-  state.speciesKey=null;
+  state.speciesKey=null; state.editId=null;
+  document.getElementById('f-title').textContent=t('logCatch');
+  document.getElementById('f-sub').textContent=t('newCatch');
   document.getElementById('f-date').value=nowLocal();
   document.getElementById('f-date').max=nowLocal();
   buildAnglerOptions();
   document.getElementById('form-err').style.display='none';
   clearPhoto(); closeSpecies(); go('form');
+}
+function isoToLocalInput(iso){ const d=new Date(iso); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
+function openEdit(c){
+  if(!c) return;
+  openForm();
+  state.editId=c.id;
+  document.getElementById('f-title').textContent=t('editCatch');
+  document.getElementById('f-sub').textContent=t('editSub');
+  document.getElementById('f-species').value=trSpecies(c.species); state.speciesKey=c.species;
+  document.getElementById('f-length').value = c.length!=null? c.length : '';
+  document.getElementById('f-weight').value = c.weight!=null? c.weight : '';
+  document.getElementById('f-location').value = c.location||'';
+  document.getElementById('f-notes').value = c.notes||'';
+  document.getElementById('f-date').value = isoToLocalInput(c.date);
+  const sel=document.getElementById('f-angler'); sel.value=c.angler;
+  if(sel.value!==c.angler){ sel.value='__other__'; const o=document.getElementById('f-angler-other'); o.style.display='block'; o.value=c.angler; }
+  if(c.photo){ state.editPhoto=c.photo; document.getElementById('photo-img').src=c.photo;
+    document.getElementById('photo-prev').style.display='block'; document.getElementById('photo-drop').style.display='none'; }
+}
+function deleteCatch(id){
+  if(!window.confirm(t('delConfirm'))) return;
+  state.catches=state.catches.filter(x=>x.id!==id);
+  saveCatches(); renderList(); go('list');
 }
 function buildAnglerOptions(){
   const sel=document.getElementById('f-angler');
@@ -923,16 +976,22 @@ function saveCatch(){
   if(!species||!date||!angler){ err.textContent=t('errFields'); err.style.display='block'; return; }
   if(new Date(date) > new Date()){ err.textContent=t('errFuture'); err.style.display='block'; return; }
   const w=document.getElementById('f-weight').value, l=document.getElementById('f-length').value;
-  state.catches.push({
-    id:Date.now(), species,
+  const obj={
+    id: state.editId || Date.now(), species,
     weight: w!==''? parseFloat(w.replace(',','.')) : null,
     length: l!==''? parseInt(l,10) : null,
     location:document.getElementById('f-location').value.trim(),
     angler, date:new Date(date).toISOString(),
     notes:document.getElementById('f-notes').value.trim(),
     photo: state.editPhoto, userId: state.userId || null
-  });
-  saveCatches(); renderList(); go('list');
+  };
+  if(state.editId){
+    const idx=state.catches.findIndex(x=>x.id===state.editId);
+    if(idx>=0){ obj.userId=state.catches[idx].userId; state.catches[idx]=obj; }
+    state.editId=null; saveCatches(); renderList(); openDetailObj(obj,'list');
+  } else {
+    state.catches.push(obj); saveCatches(); renderList(); go('list');
+  }
 }
 function onPhoto(e){
   const f=e.target.files[0]; if(!f) return;
@@ -984,6 +1043,9 @@ function openDetailObj(c, from){
   document.getElementById('d-rows').innerHTML=rows.map(r=>`<div class="drow"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('');
   const nw=document.getElementById('d-notes-wrap');
   if(c.notes){ nw.style.display='block'; document.getElementById('d-notes').textContent=c.notes; } else nw.style.display='none';
+  const editable = state.detailFrom==='list';
+  document.getElementById('edit-btn').style.display = editable ? '' : 'none';
+  document.getElementById('del-btn').style.display = editable ? '' : 'none';
   go('detail');
 }
 
