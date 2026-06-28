@@ -622,7 +622,7 @@ function seedGroup(id){
   const now=new Date(); const d=h=>new Date(now.getTime()-h*3600e3).toISOString();
   return [
     {id:101, species:"Barsch", weight:0.8, length:28, location:"IJmeer, Steg", angler:"JC", date:d(50), notes:"", photo:null, userId:"demo-user", lat:52.3540, lon:5.0050},
-    {id:102, species:"Hecht", weight:4.2, length:78, location:"IJburg, Brücke", angler:"Tom", date:d(120), notes:"", photo:null, userId:"demo-other", lat:52.3500, lon:4.9950}
+    {id:102, species:"Hecht", weight:4.2, length:78, location:"IJburg, Brücke", angler:"Jane Doe", date:d(120), notes:"", photo:null, userId:"demo-other", lat:52.3500, lon:4.9950}
   ];
 }
 const FISH_IC=`<svg class="fishic" viewBox="0 0 120 120"><path d="M46 60 C58 45 78 45 90 60 C78 75 58 75 46 60 Z"/><path d="M48 60 L30 49 L35 60 L30 71 Z"/></svg>`;
@@ -640,8 +640,8 @@ function seed(){
   const d = (h)=> new Date(now.getTime()-h*3600e3).toISOString();
   return [
     {id:1, species:"Karpfen", weight:5.5, length:38, location:"Vereinsteich, Platz 4", angler:"J. Claudi", date:d(4),    notes:"Mais am Rand, bewölkt.", photo:null, userId:"demo-user", lat:52.4200, lon:13.2000},
-    {id:2, species:"Hecht",   weight:3.6, length:62, location:"Altarm, Boot",          angler:"M. Wagner", date:d(30),   notes:"Auf Gummifisch.",       photo:null, userId:"demo-other", lat:52.4255, lon:13.2110},
-    {id:3, species:"Zander",  weight:2.1, length:55, location:"Altarm, Steg",          angler:"M. Wagner", date:d(400),  notes:"Dämmerung.",             photo:null, userId:"demo-other", lat:52.4260, lon:13.2120},
+    {id:2, species:"Hecht",   weight:3.6, length:62, location:"Altarm, Boot",          angler:"John Doe",  date:d(30),   notes:"Auf Gummifisch.",       photo:null, userId:"demo-other", lat:52.4255, lon:13.2110},
+    {id:3, species:"Zander",  weight:2.1, length:55, location:"Altarm, Steg",          angler:"John Doe",  date:d(400),  notes:"Dämmerung.",             photo:null, userId:"demo-other", lat:52.4260, lon:13.2120},
     {id:4, species:"Rotauge", weight:0.5, length:24, location:"Vereinsteich, Steg",    angler:"J. Claudi", date:d(78),   notes:"",                        photo:null, userId:"demo-user", lat:52.4190, lon:13.2015},
   ];
 }
