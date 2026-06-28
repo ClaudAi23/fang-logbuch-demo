@@ -291,7 +291,10 @@
       <button class="iconbtn" data-i18n-title="ttSettings" title="Einstellungen" aria-label="Einstellungen" onclick="openSettings()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M4 7h9"/><path d="M17 7h3"/><path d="M4 17h3"/><path d="M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="7" cy="17" r="2.2"/></svg>
       </button>
-      <button class="iconbtn" data-i18n-title="switchArea" title="Bereich wechseln" aria-label="Bereich wechseln" onclick="leaveArea()">
+      <button class="iconbtn" data-i18n-title="toStart" title="Zum Start" aria-label="Zum Start" onclick="leaveArea()">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/></svg>
+      </button>
+      <button class="iconbtn" data-i18n-title="ttLogout" title="Abmelden" aria-label="Abmelden" onclick="signOut()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/><path d="M14 12H9"/><path d="M12 9l3 3-3 3"/></svg>
       </button>
     </div>
@@ -479,9 +482,11 @@
             <div class="hint" style="margin:0;" data-i18n="initialsDefault">Standard: deine Initialen</div>
           </div>
         </div>
+        <label data-i18n="name">Name</label>
+        <input id="prof-name-input" type="text" autocomplete="off" oninput="onProfileName(this.value)" />
+        <p class="hint" data-i18n="nameHint">Wird bei deinen Fängen und als Initialen genutzt.</p>
         <button class="btn secondary sm" onclick="document.getElementById('prof-av-file').click()" data-i18n="uploadImage">Bild hochladen</button>
         <input id="prof-av-file" type="file" accept="image/*" style="display:none" onchange="onUserAvatar(event)" />
-        <button class="btn secondary sm" style="margin-top:10px; color:var(--danger); border-color:var(--border-2);" onclick="signOut()" data-i18n="signOut">Abmelden</button>
       </div>
     </div>
   </section>
@@ -606,9 +611,9 @@ const I18N = {
     clock:" uur", petri:"🎣 Petri heil!", shareWater:"Water:", loggedWith:"— vastgelegd met Vangstlogboek", shareNoMeasure:"zonder maten"
   }
 };
-Object.assign(I18N.de, {editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart", switchArea:"Bereich wechseln", profile:"Profil", signOut:"Abmelden", loginIntro:"Melde dich einmal an. Danach wählst du frei zwischen Solo, Gruppen und Vereinen.", name:"Name"});
-Object.assign(I18N.en, {editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species", switchArea:"Switch area", profile:"Profile", signOut:"Sign out", loginIntro:"Sign in once. Then freely pick Solo, groups and clubs.", name:"Name"});
-Object.assign(I18N.nl, {editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort", switchArea:"Gebied wisselen", profile:"Profiel", signOut:"Uitloggen", loginIntro:"Log één keer in. Daarna kies je vrij tussen Solo, groepen en verenigingen.", name:"Naam"});
+Object.assign(I18N.de, {editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart", switchArea:"Bereich wechseln", toStart:"Zum Start", profile:"Profil", signOut:"Abmelden", loginIntro:"Melde dich einmal an. Danach wählst du frei zwischen Solo, Gruppen und Vereinen.", name:"Name", nameHint:"Wird bei deinen Fängen und als Initialen genutzt."});
+Object.assign(I18N.en, {editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species", switchArea:"Switch area", toStart:"To start", profile:"Profile", signOut:"Sign out", loginIntro:"Sign in once. Then freely pick Solo, groups and clubs.", name:"Name", nameHint:"Used on your catches and for your initials."});
+Object.assign(I18N.nl, {editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort", switchArea:"Gebied wisselen", toStart:"Naar start", profile:"Profiel", signOut:"Uitloggen", loginIntro:"Log één keer in. Daarna kies je vrij tussen Solo, groepen en verenigingen.", name:"Naam", nameHint:"Wordt gebruikt bij je vangsten en als initialen."});
 Object.assign(I18N.de, {mapPin:"Standort auf Karte", myLocation:"Mein Standort", tapMap:"Tippe auf die Karte, um den Fangort zu setzen.", openInMaps:"In Karten öffnen", weather:"Wetter", moon:"Mondphase", wTemp:"Temperatur", wWind:"Wind", wPressure:"Luftdruck", wCond:"Bedingungen", trend3:"3-Tage-Trend", trend7:"7-Tage-Trend", wLoading:"Wetter wird geladen …", noCoords:"Kein Kartenstandort gesetzt.",
   m_new:"Neumond", m_wc:"zunehmende Sichel", m_fq:"erstes Viertel", m_wg:"zunehmender Mond", m_full:"Vollmond", m_ng:"abnehmender Mond", m_lq:"letztes Viertel", m_nc:"abnehmende Sichel",
   wc_clear:"klar", wc_partly:"leicht bewölkt", wc_cloudy:"bewölkt", wc_fog:"Nebel", wc_drizzle:"Niesel", wc_rain:"Regen", wc_snow:"Schnee", wc_thunder:"Gewitter"});
@@ -1324,12 +1329,14 @@ function openDetailObj(c, from){
 const APP_URL='https://fang-logbuch-demo.vercel.app';
 function catchText(c){
   const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ') || t('shareNoMeasure');
-  const club=state.club? state.club.name : t('appName');
+  // Area name: prefer the catch's own context (when shared from Meine Fänge), else the current area. Solo has no area.
+  const ctxName = (c._ctx && c._ctx!=='Solo') ? c._ctx : ((state.mode!=='solo' && state.club) ? state.club.name : null);
+  const area = ctxName ? ` (${ctxName})` : '';
   return [
     `${t('petri')} ${trSpecies(c.species)} — ${size}`,
     c.location? `${t('shareWater')} ${c.location}` : null,
     `${fmtDateLong(c.date)} · ${c.angler}`,
-    `${t('loggedWith')} (${club})`,
+    `${t('loggedWith')}${area}`,
     APP_URL
   ].filter(Boolean).join('\n');
 }
@@ -1365,10 +1372,20 @@ function openSettings(){
   }
   document.getElementById('prof-av').innerHTML=userAvatarHTML();
   document.getElementById('prof-name').textContent=state.me ? state.me.name : '';
+  document.getElementById('prof-name-input').value=state.me ? state.me.name : '';
   syncMeasureSeg();
   syncThemeSeg();
   syncLangSel();
   go('settings');
+}
+function onProfileName(v){
+  if(!state.me) return;
+  const name=(v||'').trim(); if(!name) return;
+  state.me.name=name; savePrefs();
+  document.getElementById('prof-name').textContent=name;
+  document.getElementById('prof-av').innerHTML=userAvatarHTML();
+  if(state.mode==='solo'){ document.getElementById('list-hdr').innerHTML=userAvatarHTML();
+    document.getElementById('set-sub').textContent=t('solo')+' · '+name; }
 }
 function onUserAvatar(e){
   const f=e.target.files[0]; if(!f||!state.me) return;
