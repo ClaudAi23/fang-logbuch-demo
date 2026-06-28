@@ -345,13 +345,18 @@
       <div class="row">
         <div class="field">
           <label><span data-i18n="datetime">Datum &amp; Zeit</span> <span class="req">*</span></label>
-          <input id="f-date" type="datetime-local" />
+          <input id="f-date" type="datetime-local" onchange="previewWeather()" />
         </div>
         <div class="field">
           <label><span data-i18n="angler">Angler</span> <span class="req">*</span></label>
           <select id="f-angler" onchange="onAnglerChange()"></select>
           <input id="f-angler-other" type="text" placeholder="Name eingeben" data-i18n-ph="anglerOtherPh" style="display:none; margin-top:8px;" />
         </div>
+      </div>
+
+      <div id="f-weather-wrap" style="display:none; margin-bottom:16px;">
+        <div class="sectionlabel" data-i18n="weather">Wetter</div>
+        <div id="f-weather"></div>
       </div>
 
       <div class="field">
@@ -638,7 +643,7 @@ function seed(){
 }
 
 let state = { club:null, mode:"club", soloName:null, user:null, userId:null, me:null,
-  catches:[], editPhoto:null, current:null, speciesKey:null, editId:null, formLat:null, formLon:null, filterTarget:"list",
+  catches:[], editPhoto:null, current:null, speciesKey:null, editId:null, formLat:null, formLon:null, formWeather:null, filterTarget:"list",
   measure:"length", theme:"system", lang:"system", sort:"newest", logos:{}, soloAvatar:null, filter:emptyFilter() };
 
 function emptyFilter(){ return {year:"",month:"",from:"",to:"",species:"",angler:"",ort:"",lmin:"",lmax:"",wmin:"",wmax:"",ctx:""}; }
@@ -943,6 +948,7 @@ function setFormPin(lat, lon){
   if(!fMarker){ fMarker=L.circleMarker([lat,lon],{radius:8,color:'#fff',weight:2,fillColor:'#C2502A',fillOpacity:1}).addTo(fMap); }
   else fMarker.setLatLng([lat,lon]);
   document.getElementById('f-coord').textContent = lat.toFixed(5)+', '+lon.toFixed(5);
+  previewWeather();
 }
 function useMyLocation(){
   if(!navigator.geolocation) return;
@@ -1008,17 +1014,17 @@ function weatherCodeKey(code){
   if(code>=95) return 'wc_thunder';
   return 'wc_cloudy';
 }
-async function enrichWeather(c){
-  if(!c || c.lat==null || c.weather) return;
-  const dt=new Date(c.date);
+async function fetchWeather(lat, lon, date){
+  if(lat==null) return null;
+  const dt=new Date(date);
   const end=isoDateOnly(dt);
   const start=isoDateOnly(new Date(dt.getTime()-7*86400000));
   const recent=(Date.now()-dt.getTime())<6*86400000;
   const base=recent?'https://api.open-meteo.com/v1/forecast':'https://archive-api.open-meteo.com/v1/archive';
   const common='&hourly=temperature_2m,pressure_msl,weather_code,wind_speed_10m&daily=temperature_2m_mean,pressure_msl_mean&timezone=auto';
   const url = recent
-    ? `${base}?latitude=${c.lat}&longitude=${c.lon}&past_days=8&forecast_days=1${common}`
-    : `${base}?latitude=${c.lat}&longitude=${c.lon}&start_date=${start}&end_date=${end}${common}`;
+    ? `${base}?latitude=${lat}&longitude=${lon}&past_days=8&forecast_days=1${common}`
+    : `${base}?latitude=${lat}&longitude=${lon}&start_date=${start}&end_date=${end}${common}`;
   try{
     const j=await (await fetch(url)).json();
     let cur=null;
@@ -1029,23 +1035,45 @@ async function enrichWeather(c){
     }
     let daily=[];
     if(j.daily && j.daily.time){
-      daily=j.daily.time.map((d,i)=>({date:d, tmean:j.daily.temperature_2m_mean[i]}))
-            .filter(d=>d.date<=end).slice(-7);
+      daily=j.daily.time.map((d,i)=>({date:d, tmean:j.daily.temperature_2m_mean[i]})).filter(d=>d.date<=end).slice(-7);
     }
-    c.weather={cur, daily};
-    saveCatches();
-    if(state.current && state.current===c) renderWeather(c);
-  }catch(e){}
+    return {cur, daily};
+  }catch(e){ return null; }
 }
-function renderWeather(c){
-  const wrap=document.getElementById('d-weather-wrap'); const box=document.getElementById('d-weather');
-  if(!c.weather || !c.weather.cur){ wrap.style.display='none'; return; }
+async function enrichWeather(c){
+  if(!c || c.lat==null || c.weather) return;
+  const w=await fetchWeather(c.lat, c.lon, c.date);
+  if(!w) return;
+  c.weather=w; saveCatches();
+  if(state.current && state.current===c) renderWeather(c);
+}
+let previewTimer=null, previewSeq=0;
+function previewWeather(){
+  const lat=state.formLat, lon=state.formLon;
+  const wrap=document.getElementById('f-weather-wrap');
+  if(lat==null){ wrap.style.display='none'; state.formWeather=null; return; }
   wrap.style.display='block';
-  const cur=c.weather.cur, daily=c.weather.daily||[];
+  document.getElementById('f-weather').innerHTML=`<div class="hint" style="margin:0;">${t('wLoading')}</div>`;
+  const date=document.getElementById('f-date').value;
+  clearTimeout(previewTimer);
+  const seq=++previewSeq;
+  previewTimer=setTimeout(async ()=>{
+    const w=await fetchWeather(lat, lon, date);
+    if(seq!==previewSeq) return;
+    state.formWeather=w;
+    renderWeatherInto(w, date, 'f-weather','f-weather-wrap');
+  }, 350);
+}
+function renderWeather(c){ renderWeatherInto(c.weather, c.date, 'd-weather','d-weather-wrap'); }
+function renderWeatherInto(weather, date, boxId, wrapId){
+  const wrap=document.getElementById(wrapId), box=document.getElementById(boxId);
+  if(!weather || !weather.cur){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  const cur=weather.cur, daily=weather.daily||[];
   const sep=curLang()==='en'?'.':',';
   const num=(n,d)=> n==null?'—':String(Number(n).toFixed(d)).replace('.',sep);
   const condKey=weatherCodeKey(cur.code);
-  const moonKey=c.moon||moonPhaseKey(new Date(c.date));
+  const moonKey=moonPhaseKey(new Date(date));
   let html=`
     <div class="wrow"><span class="k">${t('wCond')}</span><span class="v">${condKey?t(condKey):'—'}</span></div>
     <div class="wrow"><span class="k">${t('wTemp')}</span><span class="v">${num(cur.temp,1)} °C</span></div>
@@ -1064,6 +1092,15 @@ function renderWeather(c){
   }
   box.innerHTML=html;
 }
+function autoLocate(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(p=>{
+    if(state.editId) return;
+    if(state.formLat!=null) return;
+    if(fMap) fMap.setView([p.coords.latitude,p.coords.longitude],14);
+    setFormPin(p.coords.latitude, p.coords.longitude);
+  }, ()=>{}, {enableHighAccuracy:true, timeout:8000});
+}
 function sparklineSvg(vals){
   const w=280,h=46,p=4, min=Math.min(...vals), max=Math.max(...vals), rng=(max-min)||1;
   const step=(w-2*p)/((vals.length-1)||1);
@@ -1073,7 +1110,7 @@ function sparklineSvg(vals){
 
 // ---------- form ----------
 function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
-function openForm(){
+function openForm(skipAuto){
   ['f-species','f-weight','f-length','f-location','f-notes'].forEach(id=>document.getElementById(id).value='');
   state.speciesKey=null; state.editId=null;
   document.getElementById('f-title').textContent=t('logCatch');
@@ -1082,14 +1119,16 @@ function openForm(){
   document.getElementById('f-date').max=nowLocal();
   buildAnglerOptions();
   document.getElementById('form-err').style.display='none';
-  state.formLat=null; state.formLon=null;
+  state.formLat=null; state.formLon=null; state.formWeather=null;
+  document.getElementById('f-weather-wrap').style.display='none';
   clearPhoto(); closeSpecies(); go('form');
   ensureFormMap(null,null);
+  if(!skipAuto) autoLocate();
 }
 function isoToLocalInput(iso){ const d=new Date(iso); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
 function openEdit(c){
   if(!c) return;
-  openForm();
+  openForm(true);
   state.editId=c.id;
   document.getElementById('f-title').textContent=t('editCatch');
   document.getElementById('f-sub').textContent=t('editSub');
@@ -1148,7 +1187,7 @@ function saveCatch(){
     notes:document.getElementById('f-notes').value.trim(),
     photo: state.editPhoto, userId: state.userId || null,
     lat: state.formLat!=null?state.formLat:null, lon: state.formLon!=null?state.formLon:null,
-    moon: moonPhaseKey(new Date(date))
+    moon: moonPhaseKey(new Date(date)), weather: state.formWeather || null
   };
   if(state.editId){
     const idx=state.catches.findIndex(x=>x.id===state.editId);
