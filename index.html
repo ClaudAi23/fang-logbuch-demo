@@ -158,6 +158,9 @@
   .wrow .k{color:var(--muted); font-size:14px;}
   .wrow .v{font-weight:500; font-size:14px; text-align:right;}
   .spark{display:block; width:100%; height:46px;}
+  .wsrc{margin-top:8px; text-align:right;}
+  .wsrc a{color:var(--muted); font-size:12px; text-decoration:none;}
+  .wsrc a:hover{text-decoration:underline;}
 
   .sectionlabel{font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:4px 4px 10px;}
   .empty{text-align:center; color:var(--muted); padding:42px 24px;}
@@ -614,13 +617,13 @@ const I18N = {
 Object.assign(I18N.de, {editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart", switchArea:"Bereich wechseln", toStart:"Zum Start", profile:"Profil", signOut:"Abmelden", loginIntro:"Melde dich einmal an. Danach wählst du frei zwischen Solo, Gruppen und Vereinen.", name:"Name", nameHint:"Wird bei deinen Fängen und als Initialen genutzt."});
 Object.assign(I18N.en, {editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species", switchArea:"Switch area", toStart:"To start", profile:"Profile", signOut:"Sign out", loginIntro:"Sign in once. Then freely pick Solo, groups and clubs.", name:"Name", nameHint:"Used on your catches and for your initials."});
 Object.assign(I18N.nl, {editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort", switchArea:"Gebied wisselen", toStart:"Naar start", profile:"Profiel", signOut:"Uitloggen", loginIntro:"Log één keer in. Daarna kies je vrij tussen Solo, groepen en verenigingen.", name:"Naam", nameHint:"Wordt gebruikt bij je vangsten en als initialen."});
-Object.assign(I18N.de, {mapPin:"Standort auf Karte", myLocation:"Mein Standort", tapMap:"Tippe auf die Karte, um den Fangort zu setzen.", openInMaps:"In Karten öffnen", weather:"Wetter", moon:"Mondphase", wTemp:"Temperatur", wWind:"Wind", wPressure:"Luftdruck", wCond:"Bedingungen", trend3:"3-Tage-Trend", trend7:"7-Tage-Trend", wLoading:"Wetter wird geladen …", noCoords:"Kein Kartenstandort gesetzt.",
+Object.assign(I18N.de, {mapPin:"Standort auf Karte", myLocation:"Mein Standort", tapMap:"Tippe auf die Karte, um den Fangort zu setzen.", openInMaps:"In Karten öffnen", weather:"Wetter", moon:"Mondphase", wTemp:"Temperatur", wWind:"Wind", wPressure:"Luftdruck", wCond:"Bedingungen", trend3:"3-Tage-Trend", trend7:"7-Tage-Trend", wLoading:"Wetter wird geladen …", noCoords:"Kein Kartenstandort gesetzt.", moonWax:"zunehmend", moonWane:"abnehmend", wSource:"Quelle",
   m_new:"Neumond", m_wc:"zunehmende Sichel", m_fq:"erstes Viertel", m_wg:"zunehmender Mond", m_full:"Vollmond", m_ng:"abnehmender Mond", m_lq:"letztes Viertel", m_nc:"abnehmende Sichel",
   wc_clear:"klar", wc_partly:"leicht bewölkt", wc_cloudy:"bewölkt", wc_fog:"Nebel", wc_drizzle:"Niesel", wc_rain:"Regen", wc_snow:"Schnee", wc_thunder:"Gewitter"});
-Object.assign(I18N.en, {mapPin:"Location on map", myLocation:"My location", tapMap:"Tap the map to set the spot.", openInMaps:"Open in Maps", weather:"Weather", moon:"Moon phase", wTemp:"Temperature", wWind:"Wind", wPressure:"Pressure", wCond:"Conditions", trend3:"3-day trend", trend7:"7-day trend", wLoading:"Loading weather …", noCoords:"No map location set.",
+Object.assign(I18N.en, {mapPin:"Location on map", myLocation:"My location", tapMap:"Tap the map to set the spot.", openInMaps:"Open in Maps", weather:"Weather", moon:"Moon phase", wTemp:"Temperature", wWind:"Wind", wPressure:"Pressure", wCond:"Conditions", trend3:"3-day trend", trend7:"7-day trend", wLoading:"Loading weather …", noCoords:"No map location set.", moonWax:"waxing", moonWane:"waning", wSource:"Source",
   m_new:"New moon", m_wc:"Waxing crescent", m_fq:"First quarter", m_wg:"Waxing gibbous", m_full:"Full moon", m_ng:"Waning gibbous", m_lq:"Last quarter", m_nc:"Waning crescent",
   wc_clear:"Clear", wc_partly:"Partly cloudy", wc_cloudy:"Cloudy", wc_fog:"Fog", wc_drizzle:"Drizzle", wc_rain:"Rain", wc_snow:"Snow", wc_thunder:"Thunderstorm"});
-Object.assign(I18N.nl, {mapPin:"Locatie op kaart", myLocation:"Mijn locatie", tapMap:"Tik op de kaart om de plek te zetten.", openInMaps:"Openen in Kaarten", weather:"Weer", moon:"Maanfase", wTemp:"Temperatuur", wWind:"Wind", wPressure:"Luchtdruk", wCond:"Omstandigheden", trend3:"3-daagse trend", trend7:"7-daagse trend", wLoading:"Weer laden …", noCoords:"Geen kaartlocatie ingesteld.",
+Object.assign(I18N.nl, {mapPin:"Locatie op kaart", myLocation:"Mijn locatie", tapMap:"Tik op de kaart om de plek te zetten.", openInMaps:"Openen in Kaarten", weather:"Weer", moon:"Maanfase", wTemp:"Temperatuur", wWind:"Wind", wPressure:"Luchtdruk", wCond:"Omstandigheden", trend3:"3-daagse trend", trend7:"7-daagse trend", wLoading:"Weer laden …", noCoords:"Geen kaartlocatie ingesteld.", moonWax:"wassend", moonWane:"afnemend", wSource:"Bron",
   m_new:"Nieuwe maan", m_wc:"Wassende sikkel", m_fq:"Eerste kwartier", m_wg:"Wassende maan", m_full:"Volle maan", m_ng:"Afnemende maan", m_lq:"Laatste kwartier", m_nc:"Afnemende sikkel",
   wc_clear:"Helder", wc_partly:"Licht bewolkt", wc_cloudy:"Bewolkt", wc_fog:"Mist", wc_drizzle:"Motregen", wc_rain:"Regen", wc_snow:"Sneeuw", wc_thunder:"Onweer"});
 Object.assign(I18N.de, {demoHint:"Demo: Felder sind schon ausgefüllt — einfach auf „Anmelden\" tippen.", photos:"Fotos", cover:"Titelbild", photoHint:"Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen."});
@@ -1048,7 +1051,7 @@ async function fetchWeather(lat, lon, date){
   const start=isoDateOnly(new Date(dt.getTime()-7*86400000));
   const recent=(Date.now()-dt.getTime())<6*86400000;
   const base=recent?'https://api.open-meteo.com/v1/forecast':'https://archive-api.open-meteo.com/v1/archive';
-  const common='&hourly=temperature_2m,pressure_msl,weather_code,wind_speed_10m&daily=temperature_2m_mean,pressure_msl_mean&timezone=auto';
+  const common='&hourly=temperature_2m,pressure_msl,weather_code,wind_speed_10m&daily=temperature_2m_mean,pressure_msl_mean,wind_speed_10m_max&timezone=auto';
   const url = recent
     ? `${base}?latitude=${lat}&longitude=${lon}&past_days=8&forecast_days=1${common}`
     : `${base}?latitude=${lat}&longitude=${lon}&start_date=${start}&end_date=${end}${common}`;
@@ -1062,7 +1065,7 @@ async function fetchWeather(lat, lon, date){
     }
     let daily=[];
     if(j.daily && j.daily.time){
-      daily=j.daily.time.map((d,i)=>({date:d, tmean:j.daily.temperature_2m_mean[i]})).filter(d=>d.date<=end).slice(-7);
+      daily=j.daily.time.map((d,i)=>({date:d, tmean:j.daily.temperature_2m_mean[i], pmean:j.daily.pressure_msl_mean?j.daily.pressure_msl_mean[i]:null, wmax:j.daily.wind_speed_10m_max?j.daily.wind_speed_10m_max[i]:null})).filter(d=>d.date<=end).slice(-7);
     }
     return {cur, daily};
   }catch(e){ return null; }
@@ -1101,22 +1104,33 @@ function renderWeatherInto(weather, date, boxId, wrapId){
   const num=(n,d)=> n==null?'—':String(Number(n).toFixed(d)).replace('.',sep);
   const condKey=weatherCodeKey(cur.code);
   const moonKey=moonPhaseKey(new Date(date));
+  const moonDir={m_wc:'moonWax',m_fq:'moonWax',m_wg:'moonWax',m_ng:'moonWane',m_lq:'moonWane',m_nc:'moonWane'}[moonKey];
   let html=`
     <div class="wrow"><span class="k">${t('wCond')}</span><span class="v">${condKey?t(condKey):'—'}</span></div>
     <div class="wrow"><span class="k">${t('wTemp')}</span><span class="v">${num(cur.temp,1)} °C</span></div>
     <div class="wrow"><span class="k">${t('wWind')}</span><span class="v">${num(cur.wind,0)} km/h</span></div>
     <div class="wrow"><span class="k">${t('wPressure')}</span><span class="v">${num(cur.pressure,0)} hPa</span></div>
-    <div class="wrow"><span class="k">${t('moon')}</span><span class="v">${moonEmoji(moonKey)} ${t(moonKey)}</span></div>`;
+    <div class="wrow"><span class="k">${t('moon')}</span><span class="v">${moonEmoji(moonKey)} ${t(moonKey)}${moonDir?' · '+t(moonDir):''}</span></div>`;
   if(daily.length){
     const temps=daily.map(d=>d.tmean);
-    const last=temps[temps.length-1];
-    const d3=temps.length>=4?(last-temps[temps.length-4]):null;
-    const d7=temps.length>=2?(last-temps[0]):null;
-    const arrow=v=> v==null?'':(v>0.3?'↑':(v<-0.3?'↓':'→'));
-    html+=`<div class="wrow"><span class="k">${t('trend3')}</span><span class="v">${d3==null?'—':arrow(d3)+' '+num(Math.abs(d3),1)+' °C'}</span></div>`;
-    html+=`<div class="wrow" style="border-bottom:none;"><span class="k">${t('trend7')}</span><span class="v">${d7==null?'—':arrow(d7)+' '+num(Math.abs(d7),1)+' °C'}</span></div>`;
+    const pres=daily.map(d=>d.pmean);
+    const winds=daily.map(d=>d.wmax);
+    const arrow=(v,thr)=> v==null?'':(v>thr?'↑':(v<-thr?'↓':'→'));
+    // combined per-metric trend over N days: returns "↑1.2 °C · ↓4 hPa · →2 km/h"
+    const segs=(n)=>{
+      const idx=arr=>{ const a=arr.filter(x=>x!=null); return a.length>=n?(a[a.length-1]-a[a.length-n]):null; };
+      const dt=idx(temps), dp=idx(pres), dw=idx(winds);
+      const parts=[];
+      if(dt!=null) parts.push(`${arrow(dt,0.3)} ${num(Math.abs(dt),1)} °C`);
+      if(dp!=null) parts.push(`${arrow(dp,1)} ${num(Math.abs(dp),0)} hPa`);
+      if(dw!=null) parts.push(`${arrow(dw,2)} ${num(Math.abs(dw),0)} km/h`);
+      return parts.length?parts.join(' · '):'—';
+    };
+    html+=`<div class="wrow"><span class="k">${t('trend3')}</span><span class="v" style="font-size:13px;">${segs(4)}</span></div>`;
+    html+=`<div class="wrow" style="border-bottom:none;"><span class="k">${t('trend7')}</span><span class="v" style="font-size:13px;">${segs(7)}</span></div>`;
     html+=sparklineSvg(temps);
   }
+  html+=`<div class="wsrc"><a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer">${t('wSource')}: Open-Meteo</a></div>`;
   box.innerHTML=html;
 }
 function autoLocate(){
