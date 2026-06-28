@@ -240,18 +240,19 @@
       <p style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="loginIntro">Melde dich einmal an.</p>
       <div class="field">
         <label data-i18n="name">Name</label>
-        <input id="login-name" type="text" placeholder="z. B. Johannes" data-i18n-ph="namePh" autocomplete="name" />
+        <input id="login-name" type="text" value="Demo Angler" placeholder="z. B. Johannes" data-i18n-ph="namePh" autocomplete="name" />
       </div>
       <div class="field">
         <label data-i18n="email">E-Mail</label>
-        <input id="login-email" type="email" inputmode="email" placeholder="name@beispiel.de" data-i18n-ph="emailPh" autocomplete="username" />
+        <input id="login-email" type="email" value="demo@demo.com" inputmode="email" placeholder="name@beispiel.de" data-i18n-ph="emailPh" autocomplete="username" />
       </div>
       <div class="field">
         <label data-i18n="password">Passwort</label>
-        <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <input id="login-pass" type="password" value="demo" placeholder="••••••••" autocomplete="current-password" />
       </div>
       <button class="btn" onclick="doLogin()" data-i18n="signIn">Anmelden</button>
       <p id="login-err" class="hint" style="color:var(--danger); text-align:center; display:none;" data-i18n="errName">Bitte gib deinen Namen ein.</p>
+      <p class="hint" style="text-align:center; margin-top:14px;" data-i18n="demoHint">Demo: Felder sind schon ausgefüllt — einfach auf „Anmelden" tippen.</p>
     </div>
   </section>
 
@@ -602,6 +603,9 @@ Object.assign(I18N.en, {mapPin:"Location on map", myLocation:"My location", tapM
 Object.assign(I18N.nl, {mapPin:"Locatie op kaart", myLocation:"Mijn locatie", tapMap:"Tik op de kaart om de plek te zetten.", openInMaps:"Openen in Kaarten", weather:"Weer", moon:"Maanfase", wTemp:"Temperatuur", wWind:"Wind", wPressure:"Luchtdruk", wCond:"Omstandigheden", trend3:"3-daagse trend", trend7:"7-daagse trend", wLoading:"Weer laden …", noCoords:"Geen kaartlocatie ingesteld.",
   m_new:"Nieuwe maan", m_wc:"Wassende sikkel", m_fq:"Eerste kwartier", m_wg:"Wassende maan", m_full:"Volle maan", m_ng:"Afnemende maan", m_lq:"Laatste kwartier", m_nc:"Afnemende sikkel",
   wc_clear:"Helder", wc_partly:"Licht bewolkt", wc_cloudy:"Bewolkt", wc_fog:"Mist", wc_drizzle:"Motregen", wc_rain:"Regen", wc_snow:"Sneeuw", wc_thunder:"Onweer"});
+Object.assign(I18N.de, {demoHint:"Demo: Felder sind schon ausgefüllt — einfach auf „Anmelden\" tippen."});
+Object.assign(I18N.en, {demoHint:"Demo: fields are pre-filled — just tap Sign in."});
+Object.assign(I18N.nl, {demoHint:"Demo: velden zijn al ingevuld — tik gewoon op Inloggen."});
 function curLang(){
   if(state && state.lang && state.lang!=='system') return state.lang;
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
@@ -780,7 +784,7 @@ function startSolo(){
   renderList(); go('list');
 }
 function leaveArea(){ state.club=null; state.mode='club'; state.soloName=null; go('club'); }
-function signOut(){ state.me=null; savePrefs(); document.getElementById('login-name').value=''; document.getElementById('login-email').value=''; document.getElementById('login-pass').value=''; go('login'); }
+function signOut(){ state.me=null; savePrefs(); document.getElementById('login-name').value='Demo Angler'; document.getElementById('login-email').value='demo@demo.com'; document.getElementById('login-pass').value='demo'; go('login'); }
 
 // ---------- formatting ----------
 function fmtWeight(w){ if(w==null) return '—'; const sep=curLang()==='en'?'.':','; return String(w).replace('.',sep)+' kg'; }
