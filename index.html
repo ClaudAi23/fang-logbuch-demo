@@ -186,6 +186,26 @@
     border:none; width:34px; height:34px; border-radius:50%; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
   }
+  .photo-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .photo-cell{position:relative; aspect-ratio:1/1; border-radius:10px; overflow:hidden;
+    background:var(--surface-2); cursor:pointer;}
+  .photo-cell img{width:100%; height:100%; object-fit:cover; display:block;}
+  .photo-cell .rm{position:absolute; top:4px; right:4px; background:rgba(0,0,0,.6); color:#fff;
+    border:none; width:24px; height:24px; border-radius:50%; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0;}
+  .photo-cell .rm .ic{width:13px; height:13px;}
+  .photo-cell .cover-tag{position:absolute; left:4px; bottom:4px; background:var(--teal); color:#fff;
+    font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px; letter-spacing:.3px;}
+  .photo-cell.is-cover{outline:2.5px solid var(--teal); outline-offset:-2.5px;}
+  .photo-add{display:flex; flex-direction:column; align-items:center; justify-content:center;
+    aspect-ratio:1/1; border:1.5px dashed var(--border-2); border-radius:10px;
+    background:var(--surface-2); color:var(--muted); cursor:pointer; gap:4px; font-size:12px;}
+  .photo-add .ic{width:24px; height:24px;}
+  .photo-hint{font-size:12px; color:var(--muted); margin-top:6px;}
+  .detail-strip{display:flex; gap:8px; overflow-x:auto; padding:10px 18px 0; -webkit-overflow-scrolling:touch;}
+  .detail-strip img{width:64px; height:64px; object-fit:cover; border-radius:8px; flex:0 0 auto;
+    cursor:pointer; opacity:.65; transition:opacity .15s;}
+  .detail-strip img.active{opacity:1; outline:2px solid var(--teal); outline-offset:-2px;}
 
   .hero{height:240px; background:var(--teal); color:#fff;
     display:flex; align-items:center; justify-content:center; font-size:56px;}
@@ -297,16 +317,10 @@
     </div>
     <div class="scroll pad">
       <div class="field">
-        <label data-i18n="photo">Foto</label>
-        <div id="photo-drop" class="photo-drop" onclick="document.getElementById('f-photo').click()">
-          <svg class="ic" viewBox="0 0 24 24" style="width:30px; height:30px; margin:0 auto;"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.3"/></svg>
-          <div style="margin-top:8px; font-size:14px;" data-i18n="addPhoto">Foto hinzufügen</div>
-        </div>
-        <div id="photo-prev" class="photo-prev" style="display:none;">
-          <img id="photo-img" alt="Vorschau" />
-          <button type="button" class="rm" onclick="clearPhoto()" aria-label="Foto entfernen"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
-        </div>
-        <input id="f-photo" type="file" accept="image/*" style="display:none" onchange="onPhoto(event)" />
+        <label data-i18n="photos">Fotos</label>
+        <div id="photo-grid" class="photo-grid"></div>
+        <div class="photo-hint" id="photo-hint" data-i18n="photoHint">Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen.</div>
+        <input id="f-photo" type="file" accept="image/*" multiple style="display:none" onchange="onPhoto(event)" />
       </div>
 
       <div class="field">
@@ -381,6 +395,7 @@
     </div>
     <div class="scroll">
       <div id="d-hero" class="hero" style="display:none;"></div>
+      <div id="d-strip" class="detail-strip" style="display:none;"></div>
       <div class="detail-band">
         <h2 id="d-species" class="dt">—</h2>
         <p id="d-sub" class="ds">—</p>
@@ -603,9 +618,9 @@ Object.assign(I18N.en, {mapPin:"Location on map", myLocation:"My location", tapM
 Object.assign(I18N.nl, {mapPin:"Locatie op kaart", myLocation:"Mijn locatie", tapMap:"Tik op de kaart om de plek te zetten.", openInMaps:"Openen in Kaarten", weather:"Weer", moon:"Maanfase", wTemp:"Temperatuur", wWind:"Wind", wPressure:"Luchtdruk", wCond:"Omstandigheden", trend3:"3-daagse trend", trend7:"7-daagse trend", wLoading:"Weer laden …", noCoords:"Geen kaartlocatie ingesteld.",
   m_new:"Nieuwe maan", m_wc:"Wassende sikkel", m_fq:"Eerste kwartier", m_wg:"Wassende maan", m_full:"Volle maan", m_ng:"Afnemende maan", m_lq:"Laatste kwartier", m_nc:"Afnemende sikkel",
   wc_clear:"Helder", wc_partly:"Licht bewolkt", wc_cloudy:"Bewolkt", wc_fog:"Mist", wc_drizzle:"Motregen", wc_rain:"Regen", wc_snow:"Sneeuw", wc_thunder:"Onweer"});
-Object.assign(I18N.de, {demoHint:"Demo: Felder sind schon ausgefüllt — einfach auf „Anmelden\" tippen."});
-Object.assign(I18N.en, {demoHint:"Demo: fields are pre-filled — just tap Sign in."});
-Object.assign(I18N.nl, {demoHint:"Demo: velden zijn al ingevuld — tik gewoon op Inloggen."});
+Object.assign(I18N.de, {demoHint:"Demo: Felder sind schon ausgefüllt — einfach auf „Anmelden\" tippen.", photos:"Fotos", cover:"Titelbild", photoHint:"Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen."});
+Object.assign(I18N.en, {demoHint:"Demo: fields are pre-filled — just tap Sign in.", photos:"Photos", cover:"Cover", photoHint:"Up to 10 photos. Tap a photo to set it as the cover."});
+Object.assign(I18N.nl, {demoHint:"Demo: velden zijn al ingevuld — tik gewoon op Inloggen.", photos:"Foto's", cover:"Omslag", photoHint:"Tot 10 foto's. Tik op een foto om die als omslag te kiezen."});
 function curLang(){
   if(state && state.lang && state.lang!=='system') return state.lang;
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
@@ -615,15 +630,18 @@ function t(k){ const L=curLang(); return (I18N[L] && I18N[L][k]!=null) ? I18N[L]
 function trSpecies(name){ const m=SPECIES_TR[name]; return m ? m[curLang()] : name; }
 const GROUPS = [
   {id:"ijburg", name:"Ijburg Fishing Crew", loc:"Amsterdam · IJmeer", mono:"IF"},
-  {id:"feierabend", name:"Feierabendrunde", loc:"Stadtkanal", mono:"FA"}
+  {id:"jcfriends", name:"JC & Friends", loc:"Amsterdam · IJburg", mono:"JF"}
 ];
 function seedGroup(id){
-  if(id!=='ijburg') return [];
   const now=new Date(); const d=h=>new Date(now.getTime()-h*3600e3).toISOString();
-  return [
-    {id:101, species:"Barsch", weight:0.8, length:28, location:"IJmeer, Steg", angler:"JC", date:d(50), notes:"", photo:null, userId:"demo-user", lat:52.3540, lon:5.0050},
+  if(id==='jcfriends') return [
+    {id:103, species:"Hecht", weight:null, length:97, location:"Ijburg", angler:"Johannes Claudi", date:"2026-06-28T18:10:00", notes:"Trolling with Free Willy, SvartZonker McHybrid 20cm, 100g - Real Hot Pike", photos:[], photo:null, userId:"demo-user", lat:52.35658, lon:4.99158}
+  ];
+  if(id==='ijburg') return [
+    {id:101, species:"Barsch", weight:0.8, length:28, location:"IJmeer, Steg", angler:"Johannes Claudi", date:d(50), notes:"", photo:null, userId:"demo-user", lat:52.3540, lon:5.0050},
     {id:102, species:"Hecht", weight:4.2, length:78, location:"IJburg, Brücke", angler:"Jane Doe", date:d(120), notes:"", photo:null, userId:"demo-other", lat:52.3500, lon:4.9950}
   ];
+  return [];
 }
 const FISH_IC=`<svg class="fishic" viewBox="0 0 120 120"><path d="M46 60 C58 45 78 45 90 60 C78 75 58 75 46 60 Z"/><path d="M48 60 L30 49 L35 60 L30 71 Z"/></svg>`;
 const CHEV_IC=`<svg class="ic ic-sm chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>`;
@@ -639,15 +657,15 @@ function seed(){
   const now = new Date();
   const d = (h)=> new Date(now.getTime()-h*3600e3).toISOString();
   return [
-    {id:1, species:"Karpfen", weight:5.5, length:38, location:"Vereinsteich, Platz 4", angler:"J. Claudi", date:d(4),    notes:"Mais am Rand, bewölkt.", photo:null, userId:"demo-user", lat:52.4200, lon:13.2000},
+    {id:1, species:"Karpfen", weight:5.5, length:38, location:"Vereinsteich, Platz 4", angler:"Johannes Claudi", date:d(4),    notes:"Mais am Rand, bewölkt.", photo:null, userId:"demo-user", lat:52.4200, lon:13.2000},
     {id:2, species:"Hecht",   weight:3.6, length:62, location:"Altarm, Boot",          angler:"John Doe",  date:d(30),   notes:"Auf Gummifisch.",       photo:null, userId:"demo-other", lat:52.4255, lon:13.2110},
     {id:3, species:"Zander",  weight:2.1, length:55, location:"Altarm, Steg",          angler:"John Doe",  date:d(400),  notes:"Dämmerung.",             photo:null, userId:"demo-other", lat:52.4260, lon:13.2120},
-    {id:4, species:"Rotauge", weight:0.5, length:24, location:"Vereinsteich, Steg",    angler:"J. Claudi", date:d(78),   notes:"",                        photo:null, userId:"demo-user", lat:52.4190, lon:13.2015},
+    {id:4, species:"Rotauge", weight:0.5, length:24, location:"Vereinsteich, Steg",    angler:"Johannes Claudi", date:d(78),   notes:"",                        photo:null, userId:"demo-user", lat:52.4190, lon:13.2015},
   ];
 }
 
 let state = { club:null, mode:"club", soloName:null, user:null, userId:null, me:null,
-  catches:[], editPhoto:null, current:null, speciesKey:null, editId:null, formLat:null, formLon:null, formWeather:null, filterTarget:"list",
+  catches:[], editPhotos:[], current:null, speciesKey:null, editId:null, formLat:null, formLon:null, formWeather:null, filterTarget:"list",
   measure:"length", theme:"system", lang:"system", sort:"newest", logos:{}, soloAvatar:null, filter:emptyFilter() };
 
 function emptyFilter(){ return {year:"",month:"",from:"",to:"",species:"",angler:"",ort:"",lmin:"",lmax:"",wmin:"",wmax:"",ctx:""}; }
@@ -863,7 +881,7 @@ function renderList(){
   }
   sorted.forEach(c=>{
     const b=document.createElement('button'); b.className='catch';
-    const thumb = c.photo ? `<img class="thumb" src="${c.photo}" alt="">` : `<span class="thumb">${FISH_IC}</span>`;
+    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="">` : `<span class="thumb">${FISH_IC}</span>`;
     b.innerHTML=`${thumb}
       <span style="flex:1; min-width:0;">
         <span class="top"><span class="sp">${trSpecies(c.species)}</span><span class="val">${primaryStr(c)}</span></span>
@@ -917,7 +935,7 @@ function renderStats(){
   }
   sorted.forEach(c=>{
     const b=document.createElement('button'); b.className='catch';
-    const thumb = c.photo ? `<img class="thumb" src="${c.photo}" alt="">` : `<span class="thumb">${FISH_IC}</span>`;
+    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="">` : `<span class="thumb">${FISH_IC}</span>`;
     b.innerHTML=`${thumb}
       <span style="flex:1; min-width:0;">
         <span class="top"><span class="sp">${trSpecies(c.species)}</span><span class="val">${primaryStr(c)}</span></span>
@@ -1144,8 +1162,7 @@ function openEdit(c){
   document.getElementById('f-date').value = isoToLocalInput(c.date);
   const sel=document.getElementById('f-angler'); sel.value=c.angler;
   if(sel.value!==c.angler){ sel.value='__other__'; const o=document.getElementById('f-angler-other'); o.style.display='block'; o.value=c.angler; }
-  if(c.photo){ state.editPhoto=c.photo; document.getElementById('photo-img').src=c.photo;
-    document.getElementById('photo-prev').style.display='block'; document.getElementById('photo-drop').style.display='none'; }
+  state.editPhotos = photosOf(c).slice(); renderFormPhotos();
   state.formLat = c.lat!=null?c.lat:null; state.formLon = c.lon!=null?c.lon:null;
   ensureFormMap(state.formLat, state.formLon);
 }
@@ -1189,7 +1206,7 @@ function saveCatch(){
     location:document.getElementById('f-location').value.trim(),
     angler, date:new Date(date).toISOString(),
     notes:document.getElementById('f-notes').value.trim(),
-    photo: state.editPhoto, userId: state.userId || null,
+    photos: state.editPhotos.slice(), photo: state.editPhotos[0] || null, userId: state.userId || null,
     lat: state.formLat!=null?state.formLat:null, lon: state.formLon!=null?state.formLon:null,
     moon: moonPhaseKey(new Date(date)), weather: state.formWeather || null
   };
@@ -1202,18 +1219,51 @@ function saveCatch(){
     if(obj.lat!=null) enrichWeather(obj);
   }
 }
-function onPhoto(e){
-  const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader();
-  r.onload=ev=>{ state.editPhoto=ev.target.result;
-    document.getElementById('photo-img').src=state.editPhoto;
-    document.getElementById('photo-prev').style.display='block';
-    document.getElementById('photo-drop').style.display='none'; };
-  r.readAsDataURL(f);
+// ---- multi-photo (max 10, first = cover) ----
+const MAX_PHOTOS=10;
+function photosOf(c){ if(!c) return []; if(c.photos && c.photos.length) return c.photos; return c.photo ? [c.photo] : []; }
+function coverOf(c){ const p=photosOf(c); return p.length ? p[0] : null; }
+function setHeroPhoto(el, i){
+  const strip=document.getElementById('d-strip'); const ps=strip._photos||[];
+  const img=document.getElementById('d-hero-img'); if(img && ps[i]!=null) img.src=ps[i];
+  Array.from(strip.children).forEach(c=>c.classList.remove('active')); el.classList.add('active');
 }
-function clearPhoto(){ state.editPhoto=null; document.getElementById('f-photo').value='';
-  document.getElementById('photo-prev').style.display='none';
-  document.getElementById('photo-drop').style.display='block'; }
+function onPhoto(e){
+  const files=Array.from(e.target.files||[]); if(!files.length) return;
+  let left=MAX_PHOTOS - state.editPhotos.length;
+  const pick=files.slice(0, Math.max(0,left));
+  let pending=pick.length;
+  if(pending===0){ document.getElementById('f-photo').value=''; return; }
+  pick.forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{ state.editPhotos.push(ev.target.result); if(--pending===0){ renderFormPhotos(); } };
+    r.readAsDataURL(f);
+  });
+  document.getElementById('f-photo').value='';
+}
+function removeFormPhoto(i){ state.editPhotos.splice(i,1); renderFormPhotos(); }
+function setFormCover(i){ if(i<=0||i>=state.editPhotos.length) return;
+  const [p]=state.editPhotos.splice(i,1); state.editPhotos.unshift(p); renderFormPhotos(); }
+function renderFormPhotos(){
+  const grid=document.getElementById('photo-grid'); if(!grid) return;
+  const ps=state.editPhotos; const multi=ps.length>1; let h='';
+  ps.forEach((src,i)=>{
+    h+=`<div class="photo-cell${i===0?' is-cover':''}" ${multi&&i>0?`onclick="setFormCover(${i})"`:''} title="${multi?t('cover'):''}">
+      <img src="${src}" alt="">
+      ${i===0&&multi?`<span class="cover-tag">${t('cover')}</span>`:''}
+      <button type="button" class="rm" onclick="event.stopPropagation();removeFormPhoto(${i})" aria-label="x"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+    </div>`;
+  });
+  if(ps.length<MAX_PHOTOS){
+    h+=`<div class="photo-add" onclick="document.getElementById('f-photo').click()">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.3"/></svg>
+      <span>${t('addPhoto')}</span>
+    </div>`;
+  }
+  grid.innerHTML=h;
+  const hint=document.getElementById('photo-hint'); if(hint) hint.style.display=ps.length?'block':'none';
+}
+function clearPhoto(){ state.editPhotos=[]; const fp=document.getElementById('f-photo'); if(fp) fp.value=''; renderFormPhotos(); }
 
 // combobox
 function renderSpecies(filter){
@@ -1243,8 +1293,15 @@ function detailBack(){ go(state.detailFrom||'list'); }
 function openDetailObj(c, from){
   state.current=c; state.detailFrom=from||'list';
   const hero=document.getElementById('d-hero');
-  if(c.photo){ hero.style.display='flex'; hero.innerHTML=`<img src="${c.photo}" alt="">`; }
+  const strip=document.getElementById('d-strip');
+  const ps=photosOf(c);
+  if(ps.length){ hero.style.display='flex'; hero.innerHTML=`<img id="d-hero-img" src="${ps[0]}" alt="">`; }
   else { hero.style.display='none'; hero.innerHTML=''; }
+  if(ps.length>1){
+    strip.style.display='flex';
+    strip.innerHTML=ps.map((src,i)=>`<img src="${src}" class="${i===0?'active':''}" onclick="setHeroPhoto(this,'${i}')" data-src="${i}" alt="">`).join('');
+    strip._photos=ps;
+  } else { strip.style.display='none'; strip.innerHTML=''; }
   document.getElementById('d-species').textContent=trSpecies(c.species);
   const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
   document.getElementById('d-sub').textContent=size||t('noMeasures');
@@ -1282,11 +1339,15 @@ async function shareCatch(){
   const text=catchText(c);
   try{
     let data={text};
-    if(c.photo && navigator.canShare){
+    const ps=photosOf(c);
+    if(ps.length && navigator.canShare){
       try{
-        const blob=await (await fetch(c.photo)).blob();
-        const file=new File([blob], 'fang.jpg', {type:blob.type||'image/jpeg'});
-        if(navigator.canShare({files:[file]})) data={text, files:[file]};
+        const files=[];
+        for(let i=0;i<ps.length;i++){
+          const blob=await (await fetch(ps[i])).blob();
+          files.push(new File([blob], `fang${i+1}.jpg`, {type:blob.type||'image/jpeg'}));
+        }
+        if(files.length && navigator.canShare({files})) data={text, files};
       }catch(err){}
     }
     await navigator.share(data);
