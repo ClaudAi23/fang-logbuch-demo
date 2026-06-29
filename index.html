@@ -250,6 +250,11 @@
     padding:3px 9px; border-radius:3px; letter-spacing:.12em; opacity:.92;
     pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,.25);}
   .card-box{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:16px;}
+  .field.req-on > label::after{content:" *"; color:var(--danger);}
+  .ffrow{padding:11px 0; border-bottom:1px solid var(--border);}
+  .ffrow:last-child{border-bottom:none;}
+  .ffname{display:block; font-size:14px; font-weight:500; margin-bottom:8px;}
+  .ffseg button{font-size:12px; padding:7px 4px;}
 </style>
 </head>
 <body>
@@ -336,7 +341,7 @@
       <div><h1 id="f-title" data-i18n="logCatch">Fang eintragen</h1><p class="sub" id="f-sub" data-i18n="newCatch">Neuer Fang</p></div>
     </div>
     <div class="scroll pad">
-      <div class="field">
+      <div class="field" id="ff-photos">
         <label data-i18n="photos">Fotos</label>
         <div id="photo-grid" class="photo-grid"></div>
         <div class="photo-hint" id="photo-hint" data-i18n="photoHint">Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen.</div>
@@ -353,22 +358,42 @@
       </div>
 
       <div class="row">
-        <div class="field">
+        <div class="field" id="ff-length">
           <label data-i18n="lengthCm">Länge (cm)</label>
           <input id="f-length" type="number" inputmode="numeric" step="1" min="0" placeholder="z. B. 38" data-i18n-ph="lengthPh" />
         </div>
-        <div class="field">
+        <div class="field" id="ff-weight">
           <label data-i18n="weightKg">Gewicht (kg)</label>
           <input id="f-weight" type="number" inputmode="decimal" step="0.1" min="0" placeholder="z. B. 5,5" data-i18n-ph="weightPh" />
         </div>
       </div>
 
-      <div class="field">
+      <div class="field" id="ff-location">
         <label data-i18n="water">Gewässer / Platz</label>
         <input id="f-location" type="text" placeholder="z. B. Vereinsteich, Platz 4" data-i18n-ph="waterPh" />
       </div>
 
-      <div class="field">
+      <div class="field" id="ff-method">
+        <label data-i18n="method">Angelmethode</label>
+        <input id="f-method" type="text" autocomplete="off" list="methods-dl" placeholder="z. B. Spinnfischen" data-i18n-ph="methodPh" />
+        <datalist id="methods-dl"></datalist>
+      </div>
+      <div class="field" id="ff-bait">
+        <label data-i18n="bait">Köder</label>
+        <input id="f-bait" type="text" autocomplete="off" placeholder="z. B. Gummifisch 12 cm" data-i18n-ph="baitPh" />
+      </div>
+      <div class="row">
+        <div class="field" id="ff-rod">
+          <label data-i18n="rod">Rute</label>
+          <input id="f-rod" type="text" autocomplete="off" placeholder="z. B. 2,70 m / 40 g" data-i18n-ph="rodPh" />
+        </div>
+        <div class="field" id="ff-boat">
+          <label data-i18n="boat">Boot</label>
+          <input id="f-boat" type="text" autocomplete="off" placeholder="z. B. Schlauchboot" data-i18n-ph="boatPh" />
+        </div>
+      </div>
+
+      <div class="field" id="ff-mapPin">
         <label data-i18n="mapPin">Standort auf Karte</label>
         <div id="f-map" class="map"></div>
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px;">
@@ -394,10 +419,12 @@
         <div id="f-weather"></div>
       </div>
 
-      <div class="field">
+      <div class="field" id="ff-notes">
         <label data-i18n="notes">Notizen</label>
         <textarea id="f-notes" placeholder="Köder, Wetter, Bemerkungen …" data-i18n-ph="notesPh"></textarea>
       </div>
+
+      <button type="button" id="more-fields-btn" class="btn secondary sm" style="display:none; margin-bottom:14px;" onclick="showMoreFields()" data-i18n="moreFields">Weitere Felder</button>
 
       <button class="btn" onclick="saveCatch()" data-i18n="saveCatch">Fang speichern</button>
       <p id="form-err" class="hint" style="color:var(--danger); text-align:center; display:none;">Bitte Fischart, Datum und Angler ausfüllen.</p>
@@ -504,6 +531,12 @@
         <p class="hint" data-i18n="nameHint">Wird bei deinen Fängen und als Initialen genutzt.</p>
         <button class="btn secondary sm" onclick="document.getElementById('prof-av-file').click()" data-i18n="uploadImage">Bild hochladen</button>
         <input id="prof-av-file" type="file" accept="image/*" style="display:none" onchange="onUserAvatar(event)" />
+      </div>
+
+      <div class="sectionlabel" data-i18n="fieldsTitle">Fang-Felder</div>
+      <div class="card-box">
+        <div id="fields-cfg-list"></div>
+        <p class="hint" data-i18n="fieldsHint">Lege fest, welche Felder beim Eintragen erscheinen und welche Pflicht sind.</p>
       </div>
     </div>
   </section>
@@ -641,8 +674,11 @@ Object.assign(I18N.nl, {mapPin:"Locatie op kaart", myLocation:"Mijn locatie", ta
   m_new:"Nieuwe maan", m_wc:"Wassende sikkel", m_fq:"Eerste kwartier", m_wg:"Wassende maan", m_full:"Volle maan", m_ng:"Afnemende maan", m_lq:"Laatste kwartier", m_nc:"Afnemende sikkel",
   wc_clear:"Helder", wc_partly:"Licht bewolkt", wc_cloudy:"Bewolkt", wc_fog:"Mist", wc_drizzle:"Motregen", wc_rain:"Regen", wc_snow:"Sneeuw", wc_thunder:"Onweer"});
 Object.assign(I18N.de, {demoHint:"Demo: Felder sind schon ausgefüllt — einfach auf „Anmelden\" tippen.", photos:"Fotos", cover:"Titelbild", setCover:"Als Titelbild", photoHint:"Bis zu 10 Fotos. Tippe bei mehreren auf den Stern ☆, um das Titelbild festzulegen."});
+Object.assign(I18N.de, {method:"Angelmethode", bait:"Köder", rod:"Rute", boat:"Boot", methodPh:"z. B. Spinnfischen", baitPh:"z. B. Gummifisch 12 cm", rodPh:"z. B. 2,70 m / 40 g", boatPh:"z. B. Schlauchboot", fieldsTitle:"Fang-Felder", fieldsHint:"Lege fest, welche Felder beim Eintragen erscheinen und welche Pflicht sind. Gilt für diesen Bereich. (In dieser Demo für alle freigeschaltet; im echten Verein nur für den Admin.)", stRequired:"Pflicht", stOptional:"Optional", stOff:"Aus", moreFields:"Weitere Felder", errRequired:"Bitte Pflichtfelder ausfüllen:"});
 Object.assign(I18N.en, {demoHint:"Demo: fields are pre-filled — just tap Sign in.", photos:"Photos", cover:"Cover", setCover:"Set as cover", photoHint:"Up to 10 photos. With several, tap the star ☆ to choose the cover."});
+Object.assign(I18N.en, {method:"Method", bait:"Bait / lure", rod:"Rod", boat:"Boat", methodPh:"e.g. Spin fishing", baitPh:"e.g. 12 cm soft lure", rodPh:"e.g. 2.70 m / 40 g", boatPh:"e.g. dinghy", fieldsTitle:"Catch fields", fieldsHint:"Choose which fields appear when logging and which are required. Applies to this area. (Open to all in this demo; admin-only in a real club.)", stRequired:"Required", stOptional:"Optional", stOff:"Off", moreFields:"More fields", errRequired:"Please fill the required fields:"});
 Object.assign(I18N.nl, {demoHint:"Demo: velden zijn al ingevuld — tik gewoon op Inloggen.", photos:"Foto's", cover:"Omslag", setCover:"Als omslag", photoHint:"Tot 10 foto's. Tik bij meerdere op de ster ☆ om de omslag te kiezen."});
+Object.assign(I18N.nl, {method:"Methode", bait:"Aas", rod:"Hengel", boat:"Boot", methodPh:"bijv. Kunstaasvissen", baitPh:"bijv. shad 12 cm", rodPh:"bijv. 2,70 m / 40 g", boatPh:"bijv. rubberboot", fieldsTitle:"Vangstvelden", fieldsHint:"Bepaal welke velden verschijnen bij het loggen en welke verplicht zijn. Geldt voor dit gebied. (In deze demo voor iedereen; in een echte vereniging alleen de beheerder.)", stRequired:"Verplicht", stOptional:"Optioneel", stOff:"Uit", moreFields:"Meer velden", errRequired:"Vul de verplichte velden in:"});
 function curLang(){
   if(state && state.lang && state.lang!=='system') return state.lang;
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
@@ -761,6 +797,7 @@ function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{ el.innerHTML = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
   document.querySelectorAll('[data-i18n-title]').forEach(el=>{ const v=t(el.getAttribute('data-i18n-title')); el.title=v; el.setAttribute('aria-label', v); });
+  fillMethodsDatalist(); renderFieldCfgPanel();
   renderClubs();
 }
 function setLang(v){ state.lang=v; savePrefs(); applyLang(); if(state.mode && state.catches){ try{ renderList(); }catch(e){} } }
@@ -1208,11 +1245,81 @@ function sparklineSvg(vals){
   return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="var(--rust)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 }
 
+// ---------- catch fields config (per context) ----------
+const METHODS={
+  de:['Spinnfischen','Grundangeln','Posenangeln','Feederangeln','Fliegenfischen','Trolling/Schleppangeln','Vertikalangeln','Eisangeln'],
+  en:['Spin fishing','Bottom fishing','Float fishing','Feeder fishing','Fly fishing','Trolling','Vertical jigging','Ice fishing'],
+  nl:['Kunstaasvissen','Bodemvissen','Dobbervissen','Feedervissen','Vliegvissen','Trollen','Verticaal vissen','IJsvissen']
+};
+function fillMethodsDatalist(){
+  const dl=document.getElementById('methods-dl'); if(!dl) return;
+  const arr=METHODS[curLang()]||METHODS.en;
+  dl.innerHTML=arr.map(m=>`<option value="${m}"></option>`).join('');
+}
+const CFG_FIELDS=[
+  {key:'length',  i18n:'dLength'},
+  {key:'weight',  i18n:'dWeight'},
+  {key:'location',i18n:'water'},
+  {key:'method',  i18n:'method'},
+  {key:'bait',    i18n:'bait'},
+  {key:'rod',     i18n:'rod'},
+  {key:'boat',    i18n:'boat'},
+  {key:'mapPin',  i18n:'mapPin'},
+  {key:'photos',  i18n:'photos'},
+  {key:'notes',   i18n:'notes'},
+];
+const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',location:'optional',method:'optional',bait:'optional',rod:'off',boat:'off',mapPin:'optional',photos:'optional',notes:'optional'};
+function fieldCfgKey(){ return 'fanglog_fields_'+ctxKey(state.mode, state.club&&state.club.id); }
+function getFieldCfg(){ let c=null; try{ c=JSON.parse(localStorage.getItem(fieldCfgKey())); }catch(e){} return Object.assign({}, DEFAULT_FIELD_CFG, c||{}); }
+function setFieldCfg(c){ try{ localStorage.setItem(fieldCfgKey(), JSON.stringify(c)); }catch(e){} }
+function setFieldState(key,st){ const c=getFieldCfg(); c[key]=st; setFieldCfg(c); renderFieldCfgPanel(); }
+function renderFieldCfgPanel(){
+  const box=document.getElementById('fields-cfg-list'); if(!box) return;
+  const c=getFieldCfg();
+  const states=[['required','stRequired'],['optional','stOptional'],['off','stOff']];
+  box.innerHTML=CFG_FIELDS.map(f=>`<div class="ffrow"><span class="ffname">${t(f.i18n)}</span>
+    <div class="seg ffseg">${states.map(([s,lab])=>`<button type="button" onclick="setFieldState('${f.key}','${s}')" class="${c[f.key]===s?'on':''}">${t(lab)}</button>`).join('')}</div></div>`).join('');
+}
+function fieldHasValue(key){
+  switch(key){
+    case 'length': return document.getElementById('f-length').value.trim()!=='';
+    case 'weight': return document.getElementById('f-weight').value.trim()!=='';
+    case 'location': return document.getElementById('f-location').value.trim()!=='';
+    case 'method': return document.getElementById('f-method').value.trim()!=='';
+    case 'bait': return document.getElementById('f-bait').value.trim()!=='';
+    case 'rod': return document.getElementById('f-rod').value.trim()!=='';
+    case 'boat': return document.getElementById('f-boat').value.trim()!=='';
+    case 'mapPin': return state.formLat!=null;
+    case 'photos': return state.editPhotos.length>0;
+    case 'notes': return document.getElementById('f-notes').value.trim()!=='';
+  }
+  return true;
+}
+function applyFieldConfig(){
+  const c=getFieldCfg(); let hasOff=false;
+  CFG_FIELDS.forEach(f=>{
+    const el=document.getElementById('ff-'+f.key); if(!el) return;
+    const st=c[f.key]||'optional';
+    if(st==='off'){ hasOff=true; el.style.display=state.showMore?'':'none'; }
+    else el.style.display='';
+    el.classList.toggle('req-on', st==='required');
+  });
+  // collapse a .row whose fields are all hidden (e.g. Rute + Boot both off)
+  document.querySelectorAll('#s-form .row').forEach(row=>{
+    const fields=[...row.querySelectorAll('.field')];
+    if(fields.length){ row.style.display = fields.every(f=>f.style.display==='none') ? 'none' : ''; }
+  });
+  const btn=document.getElementById('more-fields-btn');
+  if(btn) btn.style.display=(hasOff && !state.showMore)?'':'none';
+}
+function showMoreFields(){ state.showMore=true; applyFieldConfig(); }
+
 // ---------- form ----------
 function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
 function openForm(skipAuto){
-  ['f-species','f-weight','f-length','f-location','f-notes'].forEach(id=>document.getElementById(id).value='');
-  state.speciesKey=null; state.editId=null;
+  ['f-species','f-weight','f-length','f-location','f-notes','f-method','f-bait','f-rod','f-boat'].forEach(id=>document.getElementById(id).value='');
+  state.speciesKey=null; state.editId=null; state.showMore=false;
+  fillMethodsDatalist(); applyFieldConfig();
   document.getElementById('f-title').textContent=t('logCatch');
   document.getElementById('f-sub').textContent=t('newCatch');
   document.getElementById('f-date').value=nowLocal();
@@ -1240,9 +1347,17 @@ function openEdit(c){
   document.getElementById('f-date').value = isoToLocalInput(c.date);
   const sel=document.getElementById('f-angler'); sel.value=c.angler;
   if(sel.value!==c.angler){ sel.value='__other__'; const o=document.getElementById('f-angler-other'); o.style.display='block'; o.value=c.angler; }
+  document.getElementById('f-method').value = c.method||'';
+  document.getElementById('f-bait').value = c.bait||'';
+  document.getElementById('f-rod').value = c.rod||'';
+  document.getElementById('f-boat').value = c.boat||'';
   state.editPhotos = photosOf(c).slice(); renderFormPhotos();
   state.formLat = c.lat!=null?c.lat:null; state.formLon = c.lon!=null?c.lon:null;
   ensureFormMap(state.formLat, state.formLon);
+  // if an "off" field already has a value on this catch, reveal the extra fields
+  const cfg=getFieldCfg();
+  if(CFG_FIELDS.some(f=>cfg[f.key]==='off' && fieldHasValue(f.key))) state.showMore=true;
+  applyFieldConfig();
 }
 function deleteCatch(id){
   if(!window.confirm(t('delConfirm'))) return;
@@ -1276,12 +1391,20 @@ function saveCatch(){
   const err=document.getElementById('form-err');
   if(!species||!date||!angler){ err.textContent=t('errFields'); err.style.display='block'; return; }
   if(new Date(date) > new Date()){ err.textContent=t('errFuture'); err.style.display='block'; return; }
+  // enforce configured required fields (the minimum can't be skipped)
+  const cfg=getFieldCfg();
+  const missing=CFG_FIELDS.filter(f=>cfg[f.key]==='required' && !fieldHasValue(f.key));
+  if(missing.length){ err.textContent=t('errRequired')+' '+missing.map(f=>t(f.i18n)).join(', '); err.style.display='block'; return; }
   const w=document.getElementById('f-weight').value, l=document.getElementById('f-length').value;
   const obj={
     id: state.editId || Date.now(), species,
     weight: w!==''? parseFloat(w.replace(',','.')) : null,
     length: l!==''? parseInt(l,10) : null,
     location:document.getElementById('f-location').value.trim(),
+    method:document.getElementById('f-method').value.trim(),
+    bait:document.getElementById('f-bait').value.trim(),
+    rod:document.getElementById('f-rod').value.trim(),
+    boat:document.getElementById('f-boat').value.trim(),
     angler, date:new Date(date).toISOString(),
     notes:document.getElementById('f-notes').value.trim(),
     photos: state.editPhotos.slice(), photo: state.editPhotos[0] || null, userId: state.userId || null,
@@ -1390,7 +1513,12 @@ function openDetailObj(c, from){
   document.getElementById('d-species').textContent=trSpecies(c.species);
   const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
   document.getElementById('d-sub').textContent=size||t('noMeasures');
-  const rows=[[t('dAngler'),c.angler],[t('dWater'),c.location||'—'],[t('dLength'),fmtLen(c.length)],[t('dWeight'),fmtWeight(c.weight)],[t('dDate'),fmtDateLong(c.date)]];
+  const rows=[[t('dAngler'),c.angler],[t('dWater'),c.location||'—'],[t('dLength'),fmtLen(c.length)],[t('dWeight'),fmtWeight(c.weight)]];
+  if(c.method) rows.push([t('method'), c.method]);
+  if(c.bait) rows.push([t('bait'), c.bait]);
+  if(c.rod) rows.push([t('rod'), c.rod]);
+  if(c.boat) rows.push([t('boat'), c.boat]);
+  rows.push([t('dDate'),fmtDateLong(c.date)]);
   document.getElementById('d-rows').innerHTML=rows.map(r=>`<div class="drow"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('');
   const nw=document.getElementById('d-notes-wrap');
   if(c.notes){ nw.style.display='block'; document.getElementById('d-notes').textContent=c.notes; } else nw.style.display='none';
@@ -1453,6 +1581,7 @@ function openSettings(){
   document.getElementById('prof-av').innerHTML=userAvatarHTML();
   document.getElementById('prof-name').textContent=state.me ? state.me.name : '';
   document.getElementById('prof-name-input').value=state.me ? state.me.name : '';
+  renderFieldCfgPanel();
   syncMeasureSeg();
   syncThemeSeg();
   syncLangSel();
