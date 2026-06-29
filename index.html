@@ -255,6 +255,11 @@
   .ffrow:last-child{border-bottom:none;}
   .ffname{display:block; font-size:14px; font-weight:500; margin-bottom:8px;}
   .ffseg button{font-size:12px; padding:7px 4px;}
+  .chkrow{display:flex; align-items:center; gap:10px; padding:8px 0; font-size:14px; cursor:pointer;}
+  .chkrow input{width:18px; height:18px; accent-color:var(--teal); flex:0 0 auto;}
+  #share-template{width:100%; font-family:inherit; font-size:14px; resize:vertical;}
+  .share-prev{white-space:pre-wrap; word-break:break-word; background:var(--surface-2); border:1px solid var(--border);
+    border-radius:8px; padding:12px; font-size:13px; color:var(--text); font-family:inherit; margin:0;}
 </style>
 </head>
 <body>
@@ -538,6 +543,22 @@
         <div id="fields-cfg-list"></div>
         <p class="hint" data-i18n="fieldsHint">Lege fest, welche Felder beim Eintragen erscheinen und welche Pflicht sind.</p>
       </div>
+
+      <div class="sectionlabel" data-i18n="shareTitle">Teilen-Vorlage</div>
+      <div class="card-box">
+        <div class="seg" id="share-mode-seg">
+          <button type="button" data-sm="fields" onclick="setShareMode('fields')" data-i18n="shareModeFields">Felder</button>
+          <button type="button" data-sm="template" onclick="setShareMode('template')" data-i18n="shareModeTemplate">Eigene Vorlage</button>
+        </div>
+        <div id="share-fields-wrap" style="margin-top:14px;"></div>
+        <div id="share-template-wrap" style="margin-top:14px; display:none;">
+          <textarea id="share-template" rows="6" oninput="onShareTemplateInput()"></textarea>
+          <p class="hint" id="share-ph-hint"></p>
+        </div>
+        <div class="sectionlabel" style="margin-top:16px;" data-i18n="sharePreview">Vorschau</div>
+        <pre id="share-preview" class="share-prev"></pre>
+        <p class="hint" data-i18n="shareHint">Gilt für diesen Bereich (Solo / Gruppe / Verein).</p>
+      </div>
     </div>
   </section>
 
@@ -674,11 +695,11 @@ Object.assign(I18N.nl, {mapPin:"Locatie op kaart", myLocation:"Mijn locatie", ta
   m_new:"Nieuwe maan", m_wc:"Wassende sikkel", m_fq:"Eerste kwartier", m_wg:"Wassende maan", m_full:"Volle maan", m_ng:"Afnemende maan", m_lq:"Laatste kwartier", m_nc:"Afnemende sikkel",
   wc_clear:"Helder", wc_partly:"Licht bewolkt", wc_cloudy:"Bewolkt", wc_fog:"Mist", wc_drizzle:"Motregen", wc_rain:"Regen", wc_snow:"Sneeuw", wc_thunder:"Onweer"});
 Object.assign(I18N.de, {demoHint:"Demo: Felder sind schon ausgefüllt — einfach auf „Anmelden\" tippen.", photos:"Fotos", cover:"Titelbild", setCover:"Als Titelbild", photoHint:"Bis zu 10 Fotos. Tippe bei mehreren auf den Stern ☆, um das Titelbild festzulegen."});
-Object.assign(I18N.de, {method:"Angelmethode", bait:"Köder", rod:"Rute", boat:"Boot", methodPh:"z. B. Spinnfischen", baitPh:"z. B. Gummifisch 12 cm", rodPh:"z. B. 2,70 m / 40 g", boatPh:"z. B. Schlauchboot", fieldsTitle:"Fang-Felder", fieldsHint:"Lege fest, welche Felder beim Eintragen erscheinen und welche Pflicht sind. Gilt für diesen Bereich. (In dieser Demo für alle freigeschaltet; im echten Verein nur für den Admin.)", stRequired:"Pflicht", stOptional:"Optional", stOff:"Aus", moreFields:"Weitere Felder", errRequired:"Bitte Pflichtfelder ausfüllen:"});
+Object.assign(I18N.de, {method:"Angelmethode", bait:"Köder", rod:"Rute", boat:"Boot", methodPh:"z. B. Spinnfischen", baitPh:"z. B. Gummifisch 12 cm", rodPh:"z. B. 2,70 m / 40 g", boatPh:"z. B. Schlauchboot", fieldsTitle:"Fang-Felder", fieldsHint:"Lege fest, welche Felder beim Eintragen erscheinen und welche Pflicht sind. Gilt für diesen Bereich. (In dieser Demo für alle freigeschaltet; im echten Verein nur für den Admin.)", stRequired:"Pflicht", stOptional:"Optional", stOff:"Aus", moreFields:"Weitere Felder", errRequired:"Bitte Pflichtfelder ausfüllen:", shareTitle:"Teilen-Vorlage", shareModeFields:"Felder", shareModeTemplate:"Eigene Vorlage", sharePreview:"Vorschau", shareLink:"Link zur App", shareHint:"Gilt für diesen Bereich (Solo / Gruppe / Verein).", sharePhHint:"Platzhalter: {petri} {art} {länge} {gewicht} {maße} {methode} {köder} {rute} {boot} {ort} {datum} {angler} {wetter} {mond} {notiz} {bereich} {link}"});
 Object.assign(I18N.en, {demoHint:"Demo: fields are pre-filled — just tap Sign in.", photos:"Photos", cover:"Cover", setCover:"Set as cover", photoHint:"Up to 10 photos. With several, tap the star ☆ to choose the cover."});
-Object.assign(I18N.en, {method:"Method", bait:"Bait / lure", rod:"Rod", boat:"Boat", methodPh:"e.g. Spin fishing", baitPh:"e.g. 12 cm soft lure", rodPh:"e.g. 2.70 m / 40 g", boatPh:"e.g. dinghy", fieldsTitle:"Catch fields", fieldsHint:"Choose which fields appear when logging and which are required. Applies to this area. (Open to all in this demo; admin-only in a real club.)", stRequired:"Required", stOptional:"Optional", stOff:"Off", moreFields:"More fields", errRequired:"Please fill the required fields:"});
+Object.assign(I18N.en, {method:"Method", bait:"Bait / lure", rod:"Rod", boat:"Boat", methodPh:"e.g. Spin fishing", baitPh:"e.g. 12 cm soft lure", rodPh:"e.g. 2.70 m / 40 g", boatPh:"e.g. dinghy", fieldsTitle:"Catch fields", fieldsHint:"Choose which fields appear when logging and which are required. Applies to this area. (Open to all in this demo; admin-only in a real club.)", stRequired:"Required", stOptional:"Optional", stOff:"Off", moreFields:"More fields", errRequired:"Please fill the required fields:", shareTitle:"Share template", shareModeFields:"Fields", shareModeTemplate:"Custom template", sharePreview:"Preview", shareLink:"App link", shareHint:"Applies to this area (Solo / group / club).", sharePhHint:"Placeholders: {petri} {art} {länge} {gewicht} {maße} {methode} {köder} {rute} {boot} {ort} {datum} {angler} {wetter} {mond} {notiz} {bereich} {link}"});
 Object.assign(I18N.nl, {demoHint:"Demo: velden zijn al ingevuld — tik gewoon op Inloggen.", photos:"Foto's", cover:"Omslag", setCover:"Als omslag", photoHint:"Tot 10 foto's. Tik bij meerdere op de ster ☆ om de omslag te kiezen."});
-Object.assign(I18N.nl, {method:"Methode", bait:"Aas", rod:"Hengel", boat:"Boot", methodPh:"bijv. Kunstaasvissen", baitPh:"bijv. shad 12 cm", rodPh:"bijv. 2,70 m / 40 g", boatPh:"bijv. rubberboot", fieldsTitle:"Vangstvelden", fieldsHint:"Bepaal welke velden verschijnen bij het loggen en welke verplicht zijn. Geldt voor dit gebied. (In deze demo voor iedereen; in een echte vereniging alleen de beheerder.)", stRequired:"Verplicht", stOptional:"Optioneel", stOff:"Uit", moreFields:"Meer velden", errRequired:"Vul de verplichte velden in:"});
+Object.assign(I18N.nl, {method:"Methode", bait:"Aas", rod:"Hengel", boat:"Boot", methodPh:"bijv. Kunstaasvissen", baitPh:"bijv. shad 12 cm", rodPh:"bijv. 2,70 m / 40 g", boatPh:"bijv. rubberboot", fieldsTitle:"Vangstvelden", fieldsHint:"Bepaal welke velden verschijnen bij het loggen en welke verplicht zijn. Geldt voor dit gebied. (In deze demo voor iedereen; in een echte vereniging alleen de beheerder.)", stRequired:"Verplicht", stOptional:"Optioneel", stOff:"Uit", moreFields:"Meer velden", errRequired:"Vul de verplichte velden in:", shareTitle:"Deelsjabloon", shareModeFields:"Velden", shareModeTemplate:"Eigen sjabloon", sharePreview:"Voorbeeld", shareLink:"App-link", shareHint:"Geldt voor dit gebied (Solo / groep / vereniging).", sharePhHint:"Tijdelijke aanduidingen: {petri} {art} {länge} {gewicht} {maße} {methode} {köder} {rute} {boot} {ort} {datum} {angler} {wetter} {mond} {notiz} {bereich} {link}"});
 function curLang(){
   if(state && state.lang && state.lang!=='system') return state.lang;
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
@@ -798,6 +819,7 @@ function applyLang(){
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
   document.querySelectorAll('[data-i18n-title]').forEach(el=>{ const v=t(el.getAttribute('data-i18n-title')); el.title=v; el.setAttribute('aria-label', v); });
   fillMethodsDatalist(); renderFieldCfgPanel();
+  if(document.getElementById('s-settings').classList.contains('active')) renderShareCfgPanel();
   renderClubs();
 }
 function setLang(v){ state.lang=v; savePrefs(); applyLang(); if(state.mode && state.catches){ try{ renderList(); }catch(e){} } }
@@ -1314,6 +1336,36 @@ function applyFieldConfig(){
 }
 function showMoreFields(){ state.showMore=true; applyFieldConfig(); }
 
+// ---------- share config panel (settings) ----------
+function shareSampleCatch(){
+  return {species:'Hecht', length:78, weight:4.2, method:'Trolling/Schleppangeln', bait:'Wobbler 11 cm',
+    rod:'2,40 m / 40 g', boat:'Schlauchboot', location:'IJburg', date:new Date().toISOString(),
+    angler:(state.me&&state.me.name)||'Angler', notes:'Toller Drill am Abend.',
+    moon:moonPhaseKey(new Date()), weather:{cur:{code:1, temp:21, wind:12, pressure:1015}}};
+}
+function renderShareCfgPanel(){
+  const cfg=getShareCfg(null);
+  document.querySelectorAll('#share-mode-seg button').forEach(b=>b.classList.toggle('on', b.dataset.sm===cfg.mode));
+  document.getElementById('share-fields-wrap').style.display = cfg.mode==='fields' ? '' : 'none';
+  document.getElementById('share-template-wrap').style.display = cfg.mode==='template' ? '' : 'none';
+  const fw=document.getElementById('share-fields-wrap');
+  fw.innerHTML=SHARE_FIELDS.map(f=>`<label class="chkrow"><input type="checkbox" ${cfg.fields[f.key]?'checked':''} onchange="toggleShareField('${f.key}',this.checked)"><span>${t(f.i18n)}</span></label>`).join('');
+  const ta=document.getElementById('share-template');
+  if(cfg.mode==='template' && (!cfg.template || !cfg.template.trim()) && document.activeElement!==ta){ ta.value=defaultTemplate(); }
+  else if(document.activeElement!==ta){ ta.value=cfg.template||''; }
+  document.getElementById('share-ph-hint').textContent=t('sharePhHint');
+  updateSharePreview();
+}
+function defaultTemplate(){ return '{petri} {art} — {maße}\n{ort}\n{datum} · {angler}\n{link}'; }
+function setShareMode(m){
+  const cfg=getShareCfg(null); cfg.mode=m;
+  if(m==='template' && (!cfg.template || !cfg.template.trim())) cfg.template=defaultTemplate();
+  setShareCfg(cfg,null); renderShareCfgPanel();
+}
+function toggleShareField(key,val){ const cfg=getShareCfg(null); cfg.fields[key]=val; setShareCfg(cfg,null); updateSharePreview(); }
+function onShareTemplateInput(){ const cfg=getShareCfg(null); cfg.template=document.getElementById('share-template').value; setShareCfg(cfg,null); updateSharePreview(); }
+function updateSharePreview(){ const el=document.getElementById('share-preview'); if(el) el.textContent=catchText(shareSampleCatch()); }
+
 // ---------- form ----------
 function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
 function openForm(skipAuto){
@@ -1535,18 +1587,80 @@ function openDetailObj(c, from){
 
 // ---------- share ----------
 const APP_URL='https://fang-logbuch-demo.vercel.app';
+// ---- share config (per context): field toggles + optional free template ----
+const SHARE_FIELDS=[
+  {key:'species', i18n:'species'},
+  {key:'length',  i18n:'dLength'},
+  {key:'weight',  i18n:'dWeight'},
+  {key:'method',  i18n:'method'},
+  {key:'bait',    i18n:'bait'},
+  {key:'rod',     i18n:'rod'},
+  {key:'boat',    i18n:'boat'},
+  {key:'location',i18n:'water'},
+  {key:'datetime',i18n:'datetime'},
+  {key:'angler',  i18n:'angler'},
+  {key:'weather', i18n:'weather'},
+  {key:'moon',    i18n:'moon'},
+  {key:'notes',   i18n:'notes'},
+  {key:'link',    i18n:'shareLink'},
+];
+const DEFAULT_SHARE_CFG={ mode:'fields',
+  fields:{species:true,length:true,weight:true,method:false,bait:false,rod:false,boat:false,location:true,datetime:true,angler:true,weather:false,moon:false,notes:false,link:true},
+  template:'' };
+function shareCfgKeyFor(c){
+  if(c && c._ctxType){
+    if(c._ctxType==='solo') return 'fanglog_share_'+ctxKey('solo');
+    const list=c._ctxType==='club'?CLUBS:GROUPS; const f=list.find(x=>x.name===c._ctx);
+    if(f) return 'fanglog_share_'+ctxKey(c._ctxType,f.id);
+  }
+  return 'fanglog_share_'+ctxKey(state.mode, state.club&&state.club.id);
+}
+function getShareCfg(c){
+  let cfg=null; try{ cfg=JSON.parse(localStorage.getItem(shareCfgKeyFor(c))); }catch(e){}
+  const merged=Object.assign({}, DEFAULT_SHARE_CFG, cfg||{});
+  merged.fields=Object.assign({}, DEFAULT_SHARE_CFG.fields, (cfg&&cfg.fields)||{});
+  return merged;
+}
+function setShareCfg(cfg, c){ try{ localStorage.setItem(shareCfgKeyFor(c), JSON.stringify(cfg)); }catch(e){} }
+function shareTokens(c){
+  const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
+  const ctxName=(c._ctx&&c._ctx!=='Solo')?c._ctx:((state.mode!=='solo'&&state.club)?state.club.name:'');
+  let wetter='';
+  if(c.weather&&c.weather.cur){ const cw=c.weather.cur, ck=weatherCodeKey(cw.code); wetter=[ck?t(ck):null, cw.temp!=null?Math.round(cw.temp)+' °C':null].filter(Boolean).join(', '); }
+  const mond=c.moon?(moonEmoji(c.moon)+' '+t(c.moon)):'';
+  const len=c.length!=null?fmtLen(c.length):'', gew=c.weight!=null?fmtWeight(c.weight):'';
+  return {petri:t('petri'), art:trSpecies(c.species), 'länge':len, laenge:len, gewicht:gew,
+    'maße':size, masse:size, methode:c.method||'', 'köder':c.bait||'', koeder:c.bait||'',
+    rute:c.rod||'', boot:c.boat||'', ort:c.location||'', datum:fmtDateLong(c.date), angler:c.angler||'',
+    wetter, mond, notiz:c.notes||'', link:APP_URL, bereich:ctxName};
+}
+function fillTemplate(tpl, tok){
+  let s=tpl.replace(/\{(\w+|[a-zäöüß]+)\}/gi, (m,k)=>{ const v=tok[k.toLowerCase()]; return v!=null?v:''; });
+  return s.replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+}
 function catchText(c){
-  const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ') || t('shareNoMeasure');
-  // Area name: prefer the catch's own context (when shared from Meine Fänge), else the current area. Solo has no area.
-  const ctxName = (c._ctx && c._ctx!=='Solo') ? c._ctx : ((state.mode!=='solo' && state.club) ? state.club.name : null);
-  const area = ctxName ? ` (${ctxName})` : '';
-  return [
-    `${t('petri')} ${trSpecies(c.species)} — ${size}`,
-    c.location? `${t('shareWater')} ${c.location}` : null,
-    `${fmtDateLong(c.date)} · ${c.angler}`,
-    `${t('loggedWith')}${area}`,
-    APP_URL
-  ].filter(Boolean).join('\n');
+  const cfg=getShareCfg(c); const tok=shareTokens(c);
+  if(cfg.mode==='template' && cfg.template && cfg.template.trim()){
+    return fillTemplate(cfg.template, tok);
+  }
+  const f=cfg.fields, lines=[];
+  let l1=tok.petri; if(f.species) l1+=' '+tok.art;
+  const sz=[]; if(f.length&&tok['länge']) sz.push(tok['länge']); if(f.weight&&tok.gewicht) sz.push(tok.gewicht);
+  if(sz.length) l1+=' — '+sz.join(' · ');
+  lines.push(l1);
+  const mb=[]; if(f.method&&tok.methode) mb.push(t('method')+': '+tok.methode); if(f.bait&&tok['köder']) mb.push(t('bait')+': '+tok['köder']);
+  if(f.rod&&tok.rute) mb.push(t('rod')+': '+tok.rute); if(f.boat&&tok.boot) mb.push(t('boat')+': '+tok.boot);
+  if(mb.length) lines.push(mb.join(' · '));
+  if(f.location&&tok.ort) lines.push(t('shareWater')+' '+tok.ort);
+  const dl=[]; if(f.datetime) dl.push(tok.datum); if(f.angler&&tok.angler) dl.push(tok.angler);
+  if(dl.length) lines.push(dl.join(' · '));
+  if(f.weather&&tok.wetter) lines.push(t('weather')+': '+tok.wetter);
+  if(f.moon&&tok.mond) lines.push(t('moon')+': '+tok.mond);
+  if(f.notes&&tok.notiz) lines.push(tok.notiz);
+  const area=tok.bereich?` (${tok.bereich})`:'';
+  lines.push(`${t('loggedWith')}${area}`);
+  if(f.link) lines.push(APP_URL);
+  return lines.join('\n');
 }
 // Mobile only: native share sheet (with photo). On desktop the button is hidden.
 async function shareCatch(){
@@ -1582,6 +1696,7 @@ function openSettings(){
   document.getElementById('prof-name').textContent=state.me ? state.me.name : '';
   document.getElementById('prof-name-input').value=state.me ? state.me.name : '';
   renderFieldCfgPanel();
+  renderShareCfgPanel();
   syncMeasureSeg();
   syncThemeSeg();
   syncLangSel();
