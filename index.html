@@ -285,7 +285,7 @@
 </head>
 <body>
 <div id="app">
-  <span class="demo-tag">DEMO</span>
+  <span id="demo-tag" class="demo-tag" style="display:none;">DEMO</span>
 
   <!-- ============ CLUB ============ -->
   <section id="s-club" class="screen active">
@@ -948,8 +948,10 @@ function renderClubs(){
     const clubs = ctxs.filter(x=>x.type==='club'), groups = ctxs.filter(x=>x.type==='group');
     if(clubs.length){ c.appendChild(lbl(t('clubs'))); clubs.forEach(x=>ctxBtn(x,'club')); }
     if(groups.length){ c.appendChild(lbl(t('groups'))); groups.forEach(x=>ctxBtn(x,'group')); }
-    const h=document.createElement('p'); h.className='hint'; h.style.textAlign='center'; h.style.margin='16px 4px 0';
-    h.textContent=t('noContextsHint'); c.appendChild(h);
+    if(!clubs.length && !groups.length){
+      const h=document.createElement('p'); h.className='hint'; h.style.textAlign='center'; h.style.margin='16px 4px 0';
+      h.textContent=t('noContextsHint'); c.appendChild(h);
+    }
   } else {
     c.appendChild(lbl(t('clubs')));
     CLUBS.forEach(cl=>ctxBtn(cl,'club'));
@@ -957,8 +959,10 @@ function renderClubs(){
     GROUPS.forEach(g=>ctxBtn(g,'group'));
   }
 }
+function updateDemoBadge(){ const el=document.getElementById('demo-tag'); if(el) el.style.display = (state.auth==='demo') ? '' : 'none'; }
 async function goChooser(){
   if(state.auth==='supabase'){ try{ state.myContexts = await loadMyContexts(); }catch(e){ state.myContexts=[]; } }
+  updateDemoBadge();
   renderClubs(); go('club');
 }
 
@@ -1190,6 +1194,7 @@ function leaveArea(){ state.club=null; state.mode='club'; state.soloName=null; g
 async function signOut(){
   try{ if(state.auth==='supabase' && getSB()) await getSB().auth.signOut(); }catch(e){}
   state.me=null; state.auth=null; savePrefs();
+  updateDemoBadge();
   authMode='signin'; renderAuthMode();
   ['login-name','login-email','login-pass'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   go('login');
