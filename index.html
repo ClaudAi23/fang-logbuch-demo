@@ -121,6 +121,7 @@
   }
   .logo-badge img,.logo-badge svg{width:100%; height:100%; object-fit:contain; display:block;}
   .brandname{font-family:'Playfair Display',Georgia,serif !important; font-weight:700; letter-spacing:0;}
+  .beta-pill{display:inline-block; padding:2px 10px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:var(--teal); color:#fff;}
   .tagline{text-align:center; color:var(--teal-dark); font-size:13px; font-weight:600; letter-spacing:.04em; margin:0 0 6px;}
 
   .club{
@@ -317,9 +318,11 @@
       <div id="club-logo" class="logo-badge"></div>
       <h1 class="brandname" style="text-align:center; font-size:26px; margin:0 0 2px;" data-i18n="appName">The Fishing Butler</h1>
       <p class="tagline" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
+      <p style="text-align:center; margin:0 0 10px;"><span class="beta-pill">Beta</span></p>
       <p style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="chooseArea">Wähle deinen Bereich</p>
       <div id="club-list"></div>
       <p id="not-in-club-hint" class="hint" style="text-align:center; margin-top:18px;" data-i18n="notInClub">Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.</p>
+      <p class="hint" style="text-align:center; margin-top:22px;"><a href="javascript:void(0)" onclick="openLegal()" style="color:var(--muted); font-weight:600;" data-i18n="legalLink">Beta-Hinweis · Datenschutz · Impressum</a></p>
     </div>
   </section>
 
@@ -330,6 +333,7 @@
       <div class="logo-badge" id="login-logo"></div>
       <h1 class="brandname" style="text-align:center; font-size:26px; margin:0 0 2px;" data-i18n="appName">The Fishing Butler</h1>
       <p class="tagline" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
+      <p style="text-align:center; margin:0 0 10px;"><span class="beta-pill">Beta</span></p>
       <p style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="loginIntro2">Gib deine E-Mail ein — wir schicken dir einen Anmelde-Link. Kein Passwort nötig.</p>
       <div class="field" id="login-name-field" style="display:none;">
         <label data-i18n="name">Name</label>
@@ -350,6 +354,7 @@
       <p id="login-err" class="hint" style="color:var(--danger); text-align:center; display:none;"></p>
       <p id="login-msg" style="display:none; margin-top:14px; padding:12px 14px; background:var(--surface-2); border:1px solid var(--teal); border-radius:10px; color:var(--text); font-size:14px; line-height:1.45; text-align:left;"></p>
       <div id="login-mailbtns" style="display:none;"></div>
+      <p class="hint" style="text-align:center; margin-top:22px;"><a href="javascript:void(0)" onclick="openLegal()" style="color:var(--muted); font-weight:600;" data-i18n="legalLink">Beta-Hinweis · Datenschutz · Impressum</a></p>
       <p class="hint" style="text-align:center; margin-top:14px; display:none;">
         <a id="login-toggle" href="javascript:void(0)" style="color:var(--teal-dark); font-weight:600;" onclick="authToggleMode()" data-i18n="toRegister">Neu hier? Registrieren</a>
       </p>
@@ -604,6 +609,16 @@
           <option value="nl">Nederlands</option>
         </select>
       </div>
+      <div class="sectionlabel" data-i18n="betaAppSection">Beta &amp; App</div>
+      <div class="card-box">
+        <p class="hint" style="margin-top:0;" data-i18n="installHelpHint">Speichere The Fishing Butler wie eine App – für schnellen Zugriff und Vollbild.</p>
+        <button type="button" class="btn secondary sm" onclick="openInstallHelp()" data-i18n="installApp">Als App speichern …</button>
+      </div>
+      <div class="card-box">
+        <p class="hint" style="margin-top:0;" data-i18n="feedbackHint">Feedback, Bug oder Idee? Wir sind in der Beta und freuen uns über jeden Hinweis.</p>
+        <button type="button" class="btn secondary sm" onclick="sendFeedback()" data-i18n="feedbackBtn">Feedback senden</button>
+        <button type="button" class="btn secondary sm" style="margin-top:8px;" onclick="openLegal()" data-i18n="legalTitle">Rechtliches</button>
+      </div>
       <div id="danger-personal" style="display:none;">
         <div class="sectionlabel" style="color:var(--danger);" data-i18n="dangerZone">Gefahrenzone</div>
         <div class="card-box" style="border-color:var(--danger);">
@@ -765,6 +780,49 @@
       <div id="members-list" style="max-height:56vh; overflow:auto;"></div>
       <div style="margin-top:14px;">
         <button type="button" class="btn secondary" onclick="closeModal('members-modal')" data-i18n="close">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="install-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('install-modal')">
+    <div class="modal-box">
+      <h2 style="font-size:19px; margin:0 0 8px;" data-i18n="installApp">Als App speichern …</h2>
+      <div style="text-align:left; max-height:60vh; overflow:auto;">
+        <p style="font-weight:600; margin:6px 0 2px;" data-i18n="installIosT">iPhone / iPad (Safari)</p>
+        <p class="hint" style="margin:0 0 12px;" data-i18n="installIos">In Safari öffnen → unten auf „Teilen" → „Zum Home-Bildschirm". (Chrome auf dem iPhone: zuerst in Safari öffnen.)</p>
+        <p style="font-weight:600; margin:6px 0 2px;" data-i18n="installAndroidT">Android (Chrome)</p>
+        <p class="hint" style="margin:0 0 12px;" data-i18n="installAndroid">Menü (⋮) oben rechts → „App installieren" bzw. „Zum Startbildschirm hinzufügen".</p>
+        <p style="font-weight:600; margin:6px 0 2px;" data-i18n="installDesktopT">Computer (Chrome / Edge)</p>
+        <p class="hint" style="margin:0;" data-i18n="installDesktop">Auf das Installieren-Symbol in der Adressleiste klicken – oder Menü → „Installieren / App installieren".</p>
+      </div>
+      <div style="margin-top:14px;">
+        <button type="button" class="btn secondary" onclick="closeModal('install-modal')" data-i18n="close">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="legal-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('legal-modal')">
+    <div class="modal-box">
+      <h2 style="font-size:19px; margin:0 0 8px;" data-i18n="legalTitle">Rechtliches</h2>
+      <div style="text-align:left; max-height:64vh; overflow:auto; font-size:14px; line-height:1.5;">
+        <p style="font-weight:700; margin:2px 0 4px;">Beta-Hinweis</p>
+        <p class="hint" style="margin:0 0 14px;">The Fishing Butler befindet sich in einer geschlossenen Beta. Die App wird aktiv weiterentwickelt; Funktionen können sich ändern und Testdaten können im Rahmen der Beta zurückgesetzt werden. Es besteht kein Anspruch auf Verfügbarkeit oder Fehlerfreiheit. Danke fürs Testen – dein Feedback hilft.</p>
+
+        <p style="font-weight:700; margin:2px 0 4px;">Datenschutz <span style="font-weight:400; color:var(--muted);">(Entwurf)</span></p>
+        <p class="hint" style="margin:0 0 8px;">Verantwortlich: Johannes Claudi, [Anschrift bitte ergänzen], Kontakt: johannesclaudi@gmail.com.</p>
+        <p class="hint" style="margin:0 0 8px;">Verarbeitete Daten: Konto (E-Mail, Name), von dir erfasste Fänge (Art, Maße, Gewässer/Koordinaten, Datum, Notizen, Fotos) sowie deine Mitgliedschaft in Vereinen/Gruppen. Die Anmeldung erfolgt per Magic-Link (kein Passwort). Standortdaten nur, wenn du sie einträgst bzw. „Mein Standort“ nutzt.</p>
+        <p class="hint" style="margin:0 0 8px;">Zweck &amp; Rechtsgrundlage: Bereitstellung des Fang-Logbuchs und der Vereins-/Gruppenfunktionen (Art. 6 Abs. 1 lit. b DSGVO) bzw. deine Einwilligung. Keine Werbung, kein Werbe-Tracking.</p>
+        <p class="hint" style="margin:0 0 8px;">Dienstleister: Supabase (Datenbank, Anmeldung, Foto-Speicher, EU-Region), Resend (Versand der Anmelde-E-Mails), Vercel (Hosting/Auslieferung). Je nach Anbieter kann es zu Übermittlungen in Drittländer kommen – vor öffentlichem Launch prüfen.</p>
+        <p class="hint" style="margin:0 0 8px;">Speicherdauer: bis zur Löschung deines Kontos. Löschung jederzeit selbst möglich unter Einstellungen → „Konto löschen“ (löscht Konto, Fänge, Fotos und Mitgliedschaften unwiderruflich).</p>
+        <p class="hint" style="margin:0 0 14px;">Deine Rechte: Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch, Datenübertragbarkeit sowie Beschwerde bei einer Aufsichtsbehörde. Kontakt: johannesclaudi@gmail.com.</p>
+
+        <p style="font-weight:700; margin:2px 0 4px;">Impressum <span style="font-weight:400; color:var(--muted);">(Entwurf)</span></p>
+        <p class="hint" style="margin:0 0 10px;">Angaben gemäß § 5 DDG: [vollständiger Name], [Anschrift], Kontakt: johannesclaudi@gmail.com. Bitte vor öffentlichem Launch vervollständigen.</p>
+
+        <p class="hint" style="margin:0; font-style:italic;">Hinweis: Diese Texte sind ein Entwurf für die geschlossene Beta und ersetzen keine Rechtsberatung. Vor einem öffentlichen Launch bitte anwaltlich prüfen und vervollständigen lassen.</p>
+      </div>
+      <div style="margin-top:14px;">
+        <button type="button" class="btn secondary" onclick="closeModal('legal-modal')" data-i18n="close">Schließen</button>
       </div>
     </div>
   </div>
@@ -963,6 +1021,9 @@ Object.assign(I18N.nl, {loginIntro2:"Voer je e-mail in — we sturen je een inlo
 Object.assign(I18N.de, {joinByCode:"Bereich beitreten (Code)", createContext:"Verein/Gruppe anlegen", requestContext:"Verein/Gruppe fehlt? Anfragen", betaRequestNote:"In der Beta werden neue Vereine & Gruppen angefragt und vom Team freigeschaltet.", reqInbox:"Anfragen", joinTitle:"Bereich beitreten", joinHint:"Gib den Beitritts-Code deines Vereins oder deiner Gruppe ein.", join:"Beitreten", createTitle:"Verein/Gruppe anlegen", createHint:"Als App-Admin legst du einen neuen Bereich an. Du wirst automatisch dessen Admin.", clubOne:"Verein", groupOne:"Gruppe", locationOpt:"Ort (optional)", noteOpt:"Nachricht (optional)", create:"Anlegen", send:"Senden", requestTitle:"Bereich anfragen", requestHint:"Dein Verein oder deine Gruppe fehlt? Sende eine Anfrage an den App-Admin.", codeLabel:"Code", reqInboxTitle:"Beitritts-Anfragen", reqNone:"Keine offenen Anfragen.", approve:"Freigeben", reject:"Ablehnen", close:"Schließen", reqSentTitle:"Anfrage gesendet", reqSentBody:"Danke! Der App-Admin prüft deine Anfrage und richtet den Bereich ein.", errNameReq:"Bitte einen Namen eingeben.", errCodeReq:"Bitte einen Code eingeben.", errBadCode:"Dieser Code gehört zu keinem Bereich.", errGeneric:"Etwas ist schiefgelaufen. Bitte erneut versuchen.", errTitle:"Fehler", ok:"OK"});
 Object.assign(I18N.en, {joinByCode:"Join an area (code)", createContext:"Create club/group", requestContext:"Club/group missing? Request it", betaRequestNote:"During the beta, new clubs & groups are requested and enabled by the team.", reqInbox:"Requests", joinTitle:"Join an area", joinHint:"Enter the join code of your club or group.", join:"Join", createTitle:"Create club/group", createHint:"As app admin you create a new area. You automatically become its admin.", clubOne:"Club", groupOne:"Group", locationOpt:"Location (optional)", noteOpt:"Message (optional)", create:"Create", send:"Send", requestTitle:"Request an area", requestHint:"Your club or group is missing? Send a request to the app admin.", codeLabel:"Code", reqInboxTitle:"Join requests", reqNone:"No open requests.", approve:"Approve", reject:"Decline", close:"Close", reqSentTitle:"Request sent", reqSentBody:"Thanks! The app admin will review your request and set up the area.", errNameReq:"Please enter a name.", errCodeReq:"Please enter a code.", errBadCode:"That code doesn't match any area.", errGeneric:"Something went wrong. Please try again.", errTitle:"Error", ok:"OK"});
 Object.assign(I18N.nl, {joinByCode:"Deelnemen (code)", createContext:"Vereniging/groep aanmaken", requestContext:"Vereniging/groep ontbreekt? Aanvragen", betaRequestNote:"Tijdens de bèta worden nieuwe verenigingen & groepen aangevraagd en door het team vrijgegeven.", reqInbox:"Aanvragen", joinTitle:"Deelnemen aan een gebied", joinHint:"Voer de toetredingscode van je vereniging of groep in.", join:"Deelnemen", createTitle:"Vereniging/groep aanmaken", createHint:"Als app-beheerder maak je een nieuw gebied aan. Je wordt automatisch beheerder.", clubOne:"Vereniging", groupOne:"Groep", locationOpt:"Plaats (optioneel)", noteOpt:"Bericht (optioneel)", create:"Aanmaken", send:"Verzenden", requestTitle:"Gebied aanvragen", requestHint:"Ontbreekt je vereniging of groep? Stuur een aanvraag naar de app-beheerder.", codeLabel:"Code", reqInboxTitle:"Toetredingsverzoeken", reqNone:"Geen openstaande aanvragen.", approve:"Goedkeuren", reject:"Afwijzen", close:"Sluiten", reqSentTitle:"Aanvraag verzonden", reqSentBody:"Bedankt! De app-beheerder bekijkt je aanvraag en richt het gebied in.", errNameReq:"Voer een naam in.", errCodeReq:"Voer een code in.", errBadCode:"Die code hoort bij geen enkel gebied.", errGeneric:"Er ging iets mis. Probeer opnieuw.", errTitle:"Fout", ok:"OK"});
+Object.assign(I18N.de, {betaAppSection:"Beta & App", installApp:"Als App speichern …", installHelpHint:"Speichere The Fishing Butler wie eine App – für schnellen Zugriff und Vollbild.", installIosT:"iPhone / iPad (Safari)", installIos:"In Safari öffnen → unten auf „Teilen“ → „Zum Home-Bildschirm“. (Chrome auf dem iPhone: zuerst in Safari öffnen.)", installAndroidT:"Android (Chrome)", installAndroid:"Menü (⋮) oben rechts → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Auf das Installieren-Symbol in der Adressleiste klicken – oder Menü → „Installieren / App installieren“.", feedbackHint:"Feedback, Bug oder Idee? Wir sind in der Beta und freuen uns über jeden Hinweis.", feedbackBtn:"Feedback senden", feedbackSubject:"The Fishing Butler – Beta-Feedback", legalTitle:"Rechtliches", legalLink:"Beta-Hinweis · Datenschutz · Impressum"});
+Object.assign(I18N.en, {betaAppSection:"Beta & App", installApp:"Save as app …", installHelpHint:"Save The Fishing Butler like an app – for quick access and full screen.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tap Share → “Add to Home Screen”. (Chrome on iPhone: open in Safari first.)", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) top right → “Install app” or “Add to Home screen”.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Click the install icon in the address bar – or Menu → “Install”.", feedbackHint:"Feedback, bug or idea? We're in beta and value every note.", feedbackBtn:"Send feedback", feedbackSubject:"The Fishing Butler – beta feedback", legalTitle:"Legal", legalLink:"Beta notice · Privacy · Imprint"});
+Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app …", installHelpHint:"Sla The Fishing Butler op als een app – voor snelle toegang en volledig scherm.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tik op Delen → „Zet op beginscherm“. (Chrome op iPhone: open eerst in Safari.)", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) rechtsboven → „App installeren“ of „Toevoegen aan startscherm“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Klik op het installatie-icoon in de adresbalk – of Menu → „Installeren“.", feedbackHint:"Feedback, bug of idee? We zitten in de bèta en horen graag van je.", feedbackBtn:"Feedback sturen", feedbackSubject:"The Fishing Butler – bèta-feedback", legalTitle:"Juridisch", legalLink:"Bèta-info · Privacy · Colofon"});
 Object.assign(I18N.de, {membersTitle:"Mitglieder", membersHint:"Verwalte Rollen (Mitglied, Admin, Kassenwart) und entferne Mitglieder.", membersHintMember:"Mitglieder und ihre Rollen in diesem Bereich.", manageMembers:"Mitglieder verwalten …", viewMembers:"Mitglieder ansehen", me:"ich", loggedByRow:"Erfasst von", unconfirmed:"Noch nicht bestätigt", unconfShort:"unbestätigt", loggedByHint:"Dieser Fang wurde von {name} für dich eingetragen. Bestätige ihn, wenn er stimmt.", unconfirmedHint:"Dieser Fang wartet auf Bestätigung.", confirmCatch:"Bestätigen", rejectCatch:"Ablehnen", confirmReject:"Diesen Fang ablehnen und löschen?", roleMember:"Mitglied", roleAdmin:"Admin", roleTreasurer:"Kassenwart", removeMember:"Entfernen", lastAdminHint:"Der/die letzte Admin kann nicht herabgestuft oder entfernt werden.", confirmRemove:"{name} aus diesem Bereich entfernen?", you:"du", openMailbox:"Postfach öffnen", openMailApp:"Mail-App öffnen"});
 Object.assign(I18N.en, {membersTitle:"Members", membersHint:"Manage roles (Member, Admin, Treasurer) and remove members.", membersHintMember:"Members and their roles in this area.", manageMembers:"Manage members …", viewMembers:"View members", me:"me", loggedByRow:"Logged by", unconfirmed:"Not confirmed yet", unconfShort:"unconfirmed", loggedByHint:"This catch was logged for you by {name}. Confirm it if it's correct.", unconfirmedHint:"This catch is awaiting confirmation.", confirmCatch:"Confirm", rejectCatch:"Reject", confirmReject:"Reject and delete this catch?", roleMember:"Member", roleAdmin:"Admin", roleTreasurer:"Treasurer", removeMember:"Remove", lastAdminHint:"The last admin can't be demoted or removed.", confirmRemove:"Remove {name} from this area?", you:"you", openMailbox:"Open mailbox", openMailApp:"Open Mail app"});
 Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen (Lid, Beheerder, Penningmeester) en verwijder leden.", membersHintMember:"Leden en hun rollen in dit gebied.", manageMembers:"Leden beheren …", viewMembers:"Leden bekijken", me:"ik", loggedByRow:"Ingevoerd door", unconfirmed:"Nog niet bevestigd", unconfShort:"onbevestigd", loggedByHint:"Deze vangst is voor jou ingevoerd door {name}. Bevestig als het klopt.", unconfirmedHint:"Deze vangst wacht op bevestiging.", confirmCatch:"Bevestigen", rejectCatch:"Afwijzen", confirmReject:"Deze vangst afwijzen en verwijderen?", roleMember:"Lid", roleAdmin:"Beheerder", roleTreasurer:"Penningmeester", removeMember:"Verwijderen", lastAdminHint:"De laatste beheerder kan niet worden gedegradeerd of verwijderd.", confirmRemove:"{name} uit dit gebied verwijderen?", you:"jij", openMailbox:"Postvak openen", openMailApp:"Mail-app openen"});
@@ -2646,6 +2707,13 @@ async function rejectCatch(id){
     const { error } = await getSB().from('catches').delete().eq('id', id); if(error) throw error;
     await reloadCurrentDb(); renderList(); go('list');
   }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
+}
+function openInstallHelp(){ const m=document.getElementById('install-modal'); if(m) m.style.display='flex'; }
+function openLegal(){ const m=document.getElementById('legal-modal'); if(m) m.style.display='flex'; }
+function sendFeedback(){
+  const subj=encodeURIComponent(t('feedbackSubject'));
+  const body=encodeURIComponent('\n\n—\n'+t('appName')+' · Beta\n'+(navigator.userAgent||''));
+  location.href='mailto:johannesclaudi@gmail.com?subject='+subj+'&body='+body;
 }
 
 // ---------- share ----------
