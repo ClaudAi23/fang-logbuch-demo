@@ -592,6 +592,13 @@
           <option value="nl">Nederlands</option>
         </select>
       </div>
+      <div id="danger-personal" style="display:none;">
+        <div class="sectionlabel" style="color:var(--danger);" data-i18n="dangerZone">Gefahrenzone</div>
+        <div class="card-box" style="border-color:var(--danger);">
+          <p class="hint" style="margin-top:0;" data-i18n="deleteAccountHint">Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.</p>
+          <button type="button" class="btn sm" style="background:var(--danger);" onclick="deleteAccount()" data-i18n="deleteAccount">Konto löschen</button>
+        </div>
+      </div>
       </div><!-- /tab-personal -->
 
       <div id="tab-area" style="display:none;">
@@ -642,6 +649,14 @@
         <pre id="share-preview" class="share-prev"></pre>
         <p class="hint" data-i18n="shareHint">Gilt für diesen Bereich (Solo / Gruppe / Verein).</p>
         <button type="button" id="copy-share-btn" class="btn secondary sm" style="margin-top:12px;" onclick="openCopyConfig('share')" data-i18n="copyToAreas">Auf andere Bereiche übernehmen …</button>
+      </div>
+      <div id="danger-area" style="display:none;">
+        <div class="sectionlabel" style="color:var(--danger);" data-i18n="dangerZone">Gefahrenzone</div>
+        <div class="card-box" style="border-color:var(--danger);">
+          <button type="button" class="btn secondary sm" onclick="leaveContext()" data-i18n="leaveAreaBtn">Bereich verlassen</button>
+          <button type="button" id="del-ctx-btn" class="btn sm" style="background:var(--danger); margin-top:10px; display:none;" onclick="deleteContext()" data-i18n="deleteContext">Verein/Gruppe löschen</button>
+          <p class="hint" id="del-ctx-hint" style="display:none; margin-top:6px;" data-i18n="deleteContextHint">Löscht diesen Bereich mit allen Mitgliedschaften, Fängen und Fotos — unwiderruflich.</p>
+        </div>
       </div>
       </div><!-- /tab-area -->
     </div>
@@ -910,6 +925,9 @@ Object.assign(I18N.nl, {joinByCode:"Deelnemen (code)", createContext:"Vereniging
 Object.assign(I18N.de, {membersTitle:"Mitglieder", membersHint:"Verwalte Rollen (Mitglied, Admin, Kassenwart) und entferne Mitglieder.", manageMembers:"Mitglieder verwalten …", roleMember:"Mitglied", roleAdmin:"Admin", roleTreasurer:"Kassenwart", removeMember:"Entfernen", lastAdminHint:"Der/die letzte Admin kann nicht herabgestuft oder entfernt werden.", confirmRemove:"{name} aus diesem Bereich entfernen?", you:"du", openMailbox:"Postfach öffnen", openMailApp:"Mail-App öffnen"});
 Object.assign(I18N.en, {membersTitle:"Members", membersHint:"Manage roles (Member, Admin, Treasurer) and remove members.", manageMembers:"Manage members …", roleMember:"Member", roleAdmin:"Admin", roleTreasurer:"Treasurer", removeMember:"Remove", lastAdminHint:"The last admin can't be demoted or removed.", confirmRemove:"Remove {name} from this area?", you:"you", openMailbox:"Open mailbox", openMailApp:"Open Mail app"});
 Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen (Lid, Beheerder, Penningmeester) en verwijder leden.", manageMembers:"Leden beheren …", roleMember:"Lid", roleAdmin:"Beheerder", roleTreasurer:"Penningmeester", removeMember:"Verwijderen", lastAdminHint:"De laatste beheerder kan niet worden gedegradeerd of verwijderd.", confirmRemove:"{name} uit dit gebied verwijderen?", you:"jij", openMailbox:"Postvak openen", openMailApp:"Mail-app openen"});
+Object.assign(I18N.de, {dangerZone:"Gefahrenzone", deleteAccount:"Konto löschen", deleteAccountHint:"Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.", confirmDeleteAccount:"Konto wirklich löschen? Alle deine Daten werden unwiderruflich gelöscht.", confirmDeleteAccount2:"Letzte Warnung: Das kann nicht rückgängig gemacht werden. Fortfahren?", accountDeletedTitle:"Konto gelöscht", accountDeletedBody:"Dein Konto und deine Daten wurden gelöscht.", leaveAreaBtn:"Bereich verlassen", deleteContext:"Verein/Gruppe löschen", deleteContextHint:"Löscht diesen Bereich mit allen Mitgliedschaften, Fängen und Fotos — unwiderruflich.", confirmDeleteContext:"„{name}“ wirklich löschen? Alle Mitgliedschaften, Fänge und Fotos dieses Bereichs werden unwiderruflich gelöscht.", confirmLeave:"„{name}“ verlassen?", soleAdminLeave:"Du bist der/die einzige Admin. Mach zuerst jemanden zum Admin oder lösche den Bereich."});
+Object.assign(I18N.en, {dangerZone:"Danger zone", deleteAccount:"Delete account", deleteAccountHint:"Permanently deletes your account and all your data (catches, photos, memberships).", confirmDeleteAccount:"Really delete your account? All your data will be permanently deleted.", confirmDeleteAccount2:"Last warning: this cannot be undone. Continue?", accountDeletedTitle:"Account deleted", accountDeletedBody:"Your account and data have been deleted.", leaveAreaBtn:"Leave area", deleteContext:"Delete club/group", deleteContextHint:"Permanently deletes this area with all memberships, catches and photos.", confirmDeleteContext:"Really delete \"{name}\"? All memberships, catches and photos of this area will be permanently deleted.", confirmLeave:"Leave \"{name}\"?", soleAdminLeave:"You are the only admin. Make someone else an admin first, or delete the area."});
+Object.assign(I18N.nl, {dangerZone:"Gevarenzone", deleteAccount:"Account verwijderen", deleteAccountHint:"Verwijdert je account en al je gegevens (vangsten, foto's, lidmaatschappen) definitief.", confirmDeleteAccount:"Account echt verwijderen? Al je gegevens worden definitief verwijderd.", confirmDeleteAccount2:"Laatste waarschuwing: dit kan niet ongedaan worden gemaakt. Doorgaan?", accountDeletedTitle:"Account verwijderd", accountDeletedBody:"Je account en gegevens zijn verwijderd.", leaveAreaBtn:"Gebied verlaten", deleteContext:"Vereniging/groep verwijderen", deleteContextHint:"Verwijdert dit gebied met alle lidmaatschappen, vangsten en foto's — definitief.", confirmDeleteContext:"\"{name}\" echt verwijderen? Alle lidmaatschappen, vangsten en foto's van dit gebied worden definitief verwijderd.", confirmLeave:"\"{name}\" verlaten?", soleAdminLeave:"Je bent de enige beheerder. Maak eerst iemand anders beheerder of verwijder het gebied."});
 function curLang(){
   if(state && state.lang && state.lang!=='system') return state.lang;
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
@@ -1504,6 +1522,41 @@ async function startSolo(){
   }
 }
 function leaveArea(){ state.club=null; state.mode='club'; state.soloName=null; goChooser(); }
+// ---------- Löschen / Lifecycle (Beta #1) ----------
+async function deleteAccount(){
+  if(state.auth!=='supabase') return;
+  if(!confirm(t('confirmDeleteAccount'))) return;
+  if(!confirm(t('confirmDeleteAccount2'))) return;
+  try{
+    const { data, error } = await getSB().functions.invoke('delete', { body:{ action:'account' } });
+    if(error) throw error; if(data && data.error) throw new Error(data.error);
+    try{ await getSB().auth.signOut(); }catch(e){}
+    state.me=null; state.auth=null; savePrefs(); updateDemoBadge();
+    authMode='signin'; renderAuthMode(); go('login');
+    showInfo(t('accountDeletedTitle'), t('accountDeletedBody'));
+  }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
+}
+async function deleteContext(){
+  if(!(ctxIsDb() && canEditCtxCfg())) return;
+  if(!confirm(t('confirmDeleteContext').replace('{name}', state.club.name))) return;
+  try{
+    const { data, error } = await getSB().functions.invoke('delete', { body:{ action:'context', contextId: state.club.id } });
+    if(error) throw error; if(data && data.error) throw new Error(data.error);
+    await leaveArea();
+  }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
+}
+async function leaveContext(){
+  if(!ctxIsDb()) return;
+  const c=getSB(), ctx=state.club.id, uid=state.me.id;
+  if(canEditCtxCfg()){
+    try{ const { count } = await c.from('memberships').select('id',{count:'exact',head:true}).eq('context_id',ctx).eq('role','admin'); if((count||0)<=1){ showInfo(t('errTitle'), t('soleAdminLeave')); return; } }catch(e){}
+  }
+  if(!confirm(t('confirmLeave').replace('{name}', state.club.name))) return;
+  try{
+    const { error } = await c.from('memberships').delete().eq('context_id',ctx).eq('user_id',uid); if(error) throw error;
+    await leaveArea();
+  }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
+}
 async function signOut(){
   try{ if(state.auth==='supabase' && getSB()) await getSB().auth.signOut(); }catch(e){}
   state.me=null; state.auth=null; savePrefs();
@@ -2525,10 +2578,13 @@ function openSettings(){
   syncMeasureSeg();
   syncThemeSeg();
   syncLangSel();
+  document.getElementById('danger-personal').style.display = (state.auth==='supabase') ? '' : 'none';
   // Bereich (nur wenn in einem Bereich)
   if(!noArea){
     document.getElementById('logo-admin').style.display = (state.mode==='club' && (!ctxIsDb() || canEditCtxCfg())) ? '' : 'none';
     document.getElementById('members-admin').style.display = (ctxIsDb() && canEditCtxCfg()) ? '' : 'none';
+    document.getElementById('danger-area').style.display = ctxIsDb() ? '' : 'none';
+    { const isAdm = ctxIsDb() && canEditCtxCfg(); document.getElementById('del-ctx-btn').style.display = isAdm ? '' : 'none'; document.getElementById('del-ctx-hint').style.display = isAdm ? '' : 'none'; }
     if(state.mode==='club' && state.club){
       document.getElementById('set-clubname').textContent=state.club.name;
       document.getElementById('set-logo').innerHTML=clubLogoHTML(state.club);
