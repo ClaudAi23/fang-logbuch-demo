@@ -765,6 +765,34 @@
     </div>
   </div>
 
+  <!-- ============ BETA REQUEST MODAL (#2) ============ -->
+  <div id="beta-request-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('beta-request-modal')">
+    <div class="modal-box">
+      <h2 style="font-size:19px; margin:0 0 4px;" data-i18n="betaReqTitle">Beta-Zugang anfragen</h2>
+      <p class="hint" style="margin-top:0;" data-i18n="betaReqHint">Die App ist gerade in einer geschlossenen Beta. Frag Zugang an — der Team-Admin schaltet dich frei.</p>
+      <label class="fld-lbl" data-i18n="email">E-Mail</label>
+      <input id="beta-req-email" type="email" inputmode="email" autocomplete="username" />
+      <label class="fld-lbl" style="margin-top:10px;" data-i18n="noteOpt">Nachricht (optional)</label>
+      <textarea id="beta-req-note" rows="3"></textarea>
+      <p class="hint" id="beta-req-err" style="color:var(--danger); display:none;"></p>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button type="button" class="btn secondary" onclick="closeModal('beta-request-modal')" data-i18n="cancel">Abbrechen</button>
+        <button type="button" class="btn" id="beta-req-submit" onclick="submitBetaRequest()" data-i18n="send">Senden</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BETA REQUESTS INBOX (#2, app-admin) ============ -->
+  <div id="beta-reqs-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('beta-reqs-modal')">
+    <div class="modal-box">
+      <h2 style="font-size:19px; margin:0 0 8px;" data-i18n="betaReqInboxTitle">Beta-Zugangs-Anfragen</h2>
+      <div id="beta-reqs-list" style="max-height:56vh; overflow:auto;"></div>
+      <div style="margin-top:14px;">
+        <button type="button" class="btn secondary" onclick="closeModal('beta-reqs-modal')" data-i18n="close">Schließen</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ FILTER ============ -->
   <section id="s-filter" class="screen">
     <div class="topbar">
@@ -928,6 +956,9 @@ Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen (Lid, B
 Object.assign(I18N.de, {dangerZone:"Gefahrenzone", deleteAccount:"Konto löschen", deleteAccountHint:"Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.", confirmDeleteAccount:"Konto wirklich löschen? Alle deine Daten werden unwiderruflich gelöscht.", confirmDeleteAccount2:"Letzte Warnung: Das kann nicht rückgängig gemacht werden. Fortfahren?", accountDeletedTitle:"Konto gelöscht", accountDeletedBody:"Dein Konto und deine Daten wurden gelöscht.", leaveAreaBtn:"Bereich verlassen", deleteContext:"Verein/Gruppe löschen", deleteContextHint:"Löscht diesen Bereich mit allen Mitgliedschaften, Fängen und Fotos — unwiderruflich.", confirmDeleteContext:"„{name}“ wirklich löschen? Alle Mitgliedschaften, Fänge und Fotos dieses Bereichs werden unwiderruflich gelöscht.", confirmLeave:"„{name}“ verlassen?", soleAdminLeave:"Du bist der/die einzige Admin. Mach zuerst jemanden zum Admin oder lösche den Bereich."});
 Object.assign(I18N.en, {dangerZone:"Danger zone", deleteAccount:"Delete account", deleteAccountHint:"Permanently deletes your account and all your data (catches, photos, memberships).", confirmDeleteAccount:"Really delete your account? All your data will be permanently deleted.", confirmDeleteAccount2:"Last warning: this cannot be undone. Continue?", accountDeletedTitle:"Account deleted", accountDeletedBody:"Your account and data have been deleted.", leaveAreaBtn:"Leave area", deleteContext:"Delete club/group", deleteContextHint:"Permanently deletes this area with all memberships, catches and photos.", confirmDeleteContext:"Really delete \"{name}\"? All memberships, catches and photos of this area will be permanently deleted.", confirmLeave:"Leave \"{name}\"?", soleAdminLeave:"You are the only admin. Make someone else an admin first, or delete the area."});
 Object.assign(I18N.nl, {dangerZone:"Gevarenzone", deleteAccount:"Account verwijderen", deleteAccountHint:"Verwijdert je account en al je gegevens (vangsten, foto's, lidmaatschappen) definitief.", confirmDeleteAccount:"Account echt verwijderen? Al je gegevens worden definitief verwijderd.", confirmDeleteAccount2:"Laatste waarschuwing: dit kan niet ongedaan worden gemaakt. Doorgaan?", accountDeletedTitle:"Account verwijderd", accountDeletedBody:"Je account en gegevens zijn verwijderd.", leaveAreaBtn:"Gebied verlaten", deleteContext:"Vereniging/groep verwijderen", deleteContextHint:"Verwijdert dit gebied met alle lidmaatschappen, vangsten en foto's — definitief.", confirmDeleteContext:"\"{name}\" echt verwijderen? Alle lidmaatschappen, vangsten en foto's van dit gebied worden definitief verwijderd.", confirmLeave:"\"{name}\" verlaten?", soleAdminLeave:"Je bent de enige beheerder. Maak eerst iemand anders beheerder of verwijder het gebied."});
+Object.assign(I18N.de, {betaReqTitle:"Beta-Zugang anfragen", betaReqHint:"Die App ist gerade in einer geschlossenen Beta. Frag Zugang an — der Team-Admin schaltet dich frei.", betaReqSentTitle:"Anfrage gesendet", betaReqSentBody:"Danke! Der Team-Admin prüft deine Anfrage und schaltet dich frei.", betaReqInbox:"Beta-Anfragen", betaReqInboxTitle:"Beta-Zugangs-Anfragen"});
+Object.assign(I18N.en, {betaReqTitle:"Request beta access", betaReqHint:"The app is currently in a closed beta. Request access — the team admin will approve you.", betaReqSentTitle:"Request sent", betaReqSentBody:"Thanks! The team admin will review and approve you.", betaReqInbox:"Beta requests", betaReqInboxTitle:"Beta access requests"});
+Object.assign(I18N.nl, {betaReqTitle:"Bètatoegang aanvragen", betaReqHint:"De app is momenteel in een gesloten bèta. Vraag toegang aan — de teambeheerder geeft je vrij.", betaReqSentTitle:"Aanvraag verzonden", betaReqSentBody:"Bedankt! De teambeheerder bekijkt en geeft je vrij.", betaReqInbox:"Bèta-aanvragen", betaReqInboxTitle:"Bèta-toegangsaanvragen"});
 function curLang(){
   if(state && state.lang && state.lang!=='system') return state.lang;
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
@@ -1121,6 +1152,7 @@ function renderClubs(){
     if(state.me && state.me.isAppAdmin){
       mkbtn(t('createContext'), openCreateModal, true);
       if((state.pendingReqs||0)>0) mkbtn(t('reqInbox')+' ('+state.pendingReqs+')', openReqsInbox, false);
+      if((state.pendingBetaReqs||0)>0) mkbtn(t('betaReqInbox')+' ('+state.pendingBetaReqs+')', openBetaReqsInbox, false);
     } else {
       mkbtn(t('requestContext'), openRequestModal, false);
       const note=document.createElement('p'); note.className='hint'; note.style.textAlign='center'; note.style.margin='10px 4px 0';
@@ -1142,7 +1174,7 @@ async function countPendingReqs(){
 async function goChooser(){
   if(state.auth==='supabase'){
     try{ state.myContexts = await loadMyContexts(); }catch(e){ state.myContexts=[]; }
-    if(state.me && state.me.isAppAdmin){ try{ state.pendingReqs = await countPendingReqs(); }catch(e){ state.pendingReqs=0; } }
+    if(state.me && state.me.isAppAdmin){ try{ state.pendingReqs = await countPendingReqs(); }catch(e){ state.pendingReqs=0; } try{ state.pendingBetaReqs = await countPendingBetaReqs(); }catch(e){ state.pendingBetaReqs=0; } }
   }
   updateDemoBadge();
   renderClubs(); go('club');
@@ -1220,6 +1252,54 @@ async function rejectReq(id){
   try{
     const { error } = await getSB().from('context_requests').update({status:'rejected'}).eq('id',id); if(error) throw error;
     try{ state.pendingReqs=await countPendingReqs(); }catch(e){} renderClubs(); await openReqsInbox();
+  }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
+}
+
+// ---------- Beta-Zugang: Allowlist-Gate + Anfragen (Beta #2) ----------
+function openBetaRequest(email){
+  document.getElementById('beta-req-email').value = email||'';
+  document.getElementById('beta-req-note').value = '';
+  document.getElementById('beta-req-err').style.display='none';
+  document.getElementById('beta-request-modal').style.display='flex';
+}
+async function submitBetaRequest(){
+  const email=(document.getElementById('beta-req-email').value||'').trim().toLowerCase();
+  const note=(document.getElementById('beta-req-note').value||'').trim();
+  const err=document.getElementById('beta-req-err'); err.style.display='none';
+  if(!email || !/.+@.+\..+/.test(email)){ err.textContent=t('errEmail'); err.style.display=''; return; }
+  const btn=document.getElementById('beta-req-submit'); btn.disabled=true;
+  try{
+    const { error } = await getSB().from('beta_requests').insert({ email, note: note||null, status:'pending' });
+    if(error) throw error;
+    closeModal('beta-request-modal');
+    showInfo(t('betaReqSentTitle'), t('betaReqSentBody'));
+  }catch(e){ err.textContent=t('errGeneric'); err.style.display=''; }
+  finally{ btn.disabled=false; }
+}
+async function countPendingBetaReqs(){ const c=getSB(); const { count } = await c.from('beta_requests').select('id',{count:'exact',head:true}).eq('status','pending'); return count||0; }
+async function openBetaReqsInbox(){
+  document.getElementById('beta-reqs-modal').style.display='flex';
+  const box=document.getElementById('beta-reqs-list'); box.innerHTML=`<p class="hint">${esc(t('loading'))}</p>`;
+  try{
+    const { data } = await getSB().from('beta_requests').select('id,email,note,created_at').eq('status','pending').order('created_at',{ascending:true});
+    if(!data||!data.length){ box.innerHTML=`<p class="hint">${esc(t('reqNone'))}</p>`; return; }
+    box.innerHTML=data.map(r=>`<div class="card-box" style="margin-bottom:10px;">
+      <div style="font-weight:600;">${esc(r.email)}</div>
+      ${r.note?`<div class="hint" style="margin:6px 0;">${esc(r.note)}</div>`:''}
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button type="button" class="btn sm" onclick="approveBetaReq('${r.id}')">${esc(t('approve'))}</button>
+        <button type="button" class="btn secondary sm" onclick="rejectBetaReq('${r.id}')">${esc(t('reject'))}</button>
+      </div></div>`).join('');
+  }catch(e){ box.innerHTML=`<p class="hint">${esc(t('errGeneric'))}</p>`; }
+}
+async function approveBetaReq(id){
+  try{ const { error } = await getSB().rpc('approve_beta_request', { p_req:id }); if(error) throw error;
+    try{ state.pendingBetaReqs=await countPendingBetaReqs(); }catch(e){} renderClubs(); await openBetaReqsInbox();
+  }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
+}
+async function rejectBetaReq(id){
+  try{ const { error } = await getSB().from('beta_requests').update({status:'rejected'}).eq('id',id); if(error) throw error;
+    try{ state.pendingBetaReqs=await countPendingBetaReqs(); }catch(e){} renderClubs(); await openBetaReqsInbox();
   }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
 }
 
@@ -1342,6 +1422,8 @@ async function authMagicLink(){
   const c=getSB(); if(!c){ authShow('login-err', t('errNoConn')); return; }
   const btn=document.getElementById('login-magic'); if(btn) btn.disabled=true;
   try{
+    let allowed=true; try{ const { data } = await c.rpc('is_email_allowed', { p_email: email }); allowed = data!==false; }catch(e){}
+    if(!allowed){ if(btn) btn.disabled=false; openBetaRequest(email); return; }
     const { error } = await c.auth.signInWithOtp({ email, options:{ emailRedirectTo: location.origin, data:{ lang: curLang() } } });
     if(error) throw error;
     authShow('login-msg', t('magicSent').replace('{email}', email));
