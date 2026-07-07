@@ -122,6 +122,8 @@
   .logo-badge img,.logo-badge svg{width:100%; height:100%; object-fit:contain; display:block;}
   .brandname{font-family:'Playfair Display',Georgia,serif !important; font-weight:700; letter-spacing:0;}
   .beta-pill{display:inline-block; padding:2px 10px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:var(--teal); color:#fff;}
+  .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--teal); color:#fff; padding:10px 18px; border-radius:999px; font-size:14px; font-weight:600; z-index:9999; box-shadow:0 4px 16px rgba(0,0,0,.3); opacity:0; transition:opacity .2s; pointer-events:none;}
+  .toast.show{opacity:1;}
   .tagline{text-align:center; color:var(--teal-dark); font-size:13px; font-weight:600; letter-spacing:.04em; margin:0 0 6px;}
 
   .club{
@@ -309,9 +311,6 @@
       <button class="iconbtn" data-i18n-title="ttSettings" title="Einstellungen" aria-label="Einstellungen" onclick="openSettings()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M4 7h9"/><path d="M17 7h3"/><path d="M4 17h3"/><path d="M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="7" cy="17" r="2.2"/></svg>
       </button>
-      <button class="iconbtn" data-i18n-title="ttLogout" title="Abmelden" aria-label="Abmelden" onclick="signOut()">
-        <svg class="ic" viewBox="0 0 24 24"><path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/><path d="M14 12H9"/><path d="M12 9l3 3-3 3"/></svg>
-      </button>
     </div>
     <div class="scroll pad">
       <div style="height:20px"></div>
@@ -383,9 +382,6 @@
       </button>
       <button class="iconbtn" data-i18n-title="toStart" title="Zum Start" aria-label="Zum Start" onclick="leaveArea()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/></svg>
-      </button>
-      <button class="iconbtn" data-i18n-title="ttLogout" title="Abmelden" aria-label="Abmelden" onclick="signOut()">
-        <svg class="ic" viewBox="0 0 24 24"><path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/><path d="M14 12H9"/><path d="M12 9l3 3-3 3"/></svg>
       </button>
     </div>
     <div class="scroll pad">
@@ -572,7 +568,6 @@
           <div id="prof-av" class="hdr-logo" style="width:54px; height:54px; border-radius:12px;"></div>
           <div>
             <div id="prof-name" style="font-weight:600;">—</div>
-            <div class="hint" style="margin:0;" data-i18n="initialsDefault">Standard: deine Initialen</div>
           </div>
         </div>
         <label data-i18n="name">Name</label>
@@ -626,6 +621,7 @@
           <button type="button" class="btn sm" style="background:var(--danger);" onclick="deleteAccount()" data-i18n="deleteAccount">Konto löschen</button>
         </div>
       </div>
+      <button type="button" class="btn secondary" style="margin-top:18px;" onclick="signOut()" data-i18n="signOut">Abmelden</button>
       </div><!-- /tab-personal -->
 
       <div id="tab-area" style="display:none;">
@@ -804,25 +800,20 @@
   <div id="legal-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('legal-modal')">
     <div class="modal-box">
       <h2 style="font-size:19px; margin:0 0 8px;" data-i18n="legalTitle">Rechtliches</h2>
-      <div style="text-align:left; max-height:64vh; overflow:auto; font-size:14px; line-height:1.5;">
-        <p style="font-weight:700; margin:2px 0 4px;">Beta-Hinweis</p>
-        <p class="hint" style="margin:0 0 14px;">The Fishing Butler befindet sich in einer geschlossenen Beta. Die App wird aktiv weiterentwickelt; Funktionen können sich ändern und Testdaten können im Rahmen der Beta zurückgesetzt werden. Es besteht kein Anspruch auf Verfügbarkeit oder Fehlerfreiheit. Danke fürs Testen – dein Feedback hilft.</p>
-
-        <p style="font-weight:700; margin:2px 0 4px;">Datenschutz <span style="font-weight:400; color:var(--muted);">(Entwurf)</span></p>
-        <p class="hint" style="margin:0 0 8px;">Verantwortlich: Johannes Claudi, [Anschrift bitte ergänzen], Kontakt: johannesclaudi@gmail.com.</p>
-        <p class="hint" style="margin:0 0 8px;">Verarbeitete Daten: Konto (E-Mail, Name), von dir erfasste Fänge (Art, Maße, Gewässer/Koordinaten, Datum, Notizen, Fotos) sowie deine Mitgliedschaft in Vereinen/Gruppen. Die Anmeldung erfolgt per Magic-Link (kein Passwort). Standortdaten nur, wenn du sie einträgst bzw. „Mein Standort“ nutzt.</p>
-        <p class="hint" style="margin:0 0 8px;">Zweck &amp; Rechtsgrundlage: Bereitstellung des Fang-Logbuchs und der Vereins-/Gruppenfunktionen (Art. 6 Abs. 1 lit. b DSGVO) bzw. deine Einwilligung. Keine Werbung, kein Werbe-Tracking.</p>
-        <p class="hint" style="margin:0 0 8px;">Dienstleister: Supabase (Datenbank, Anmeldung, Foto-Speicher, EU-Region), Resend (Versand der Anmelde-E-Mails), Vercel (Hosting/Auslieferung). Je nach Anbieter kann es zu Übermittlungen in Drittländer kommen – vor öffentlichem Launch prüfen.</p>
-        <p class="hint" style="margin:0 0 8px;">Speicherdauer: bis zur Löschung deines Kontos. Löschung jederzeit selbst möglich unter Einstellungen → „Konto löschen“ (löscht Konto, Fänge, Fotos und Mitgliedschaften unwiderruflich).</p>
-        <p class="hint" style="margin:0 0 14px;">Deine Rechte: Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch, Datenübertragbarkeit sowie Beschwerde bei einer Aufsichtsbehörde. Kontakt: johannesclaudi@gmail.com.</p>
-
-        <p style="font-weight:700; margin:2px 0 4px;">Impressum <span style="font-weight:400; color:var(--muted);">(Entwurf)</span></p>
-        <p class="hint" style="margin:0 0 10px;">Angaben gemäß § 5 DDG: [vollständiger Name], [Anschrift], Kontakt: johannesclaudi@gmail.com. Bitte vor öffentlichem Launch vervollständigen.</p>
-
-        <p class="hint" style="margin:0; font-style:italic;">Hinweis: Diese Texte sind ein Entwurf für die geschlossene Beta und ersetzen keine Rechtsberatung. Vor einem öffentlichen Launch bitte anwaltlich prüfen und vervollständigen lassen.</p>
-      </div>
+      <div id="legal-body" style="text-align:left; max-height:64vh; overflow:auto; font-size:14px; line-height:1.5;"></div>
       <div style="margin-top:14px;">
         <button type="button" class="btn secondary" onclick="closeModal('legal-modal')" data-i18n="close">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirm-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)_confirmClose(false)">
+    <div class="modal-box" style="max-width:390px;">
+      <h2 id="confirm-title" style="font-size:19px; margin:0 0 8px;"></h2>
+      <p id="confirm-msg" class="hint" style="margin:0 0 18px;"></p>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button type="button" class="btn secondary" onclick="_confirmClose(false)" data-i18n="cancel">Abbrechen</button>
+        <button type="button" class="btn" id="confirm-yes" onclick="_confirmClose(true)">Ja</button>
       </div>
     </div>
   </div>
@@ -874,14 +865,9 @@
     <div class="scroll pad">
       <div class="sectionlabel" data-i18n="period">Zeitraum</div>
       <div class="row">
-        <div class="field"><label data-i18n="year">Jahr</label><select id="flt-year" onchange="onPeriodPreset()"></select></div>
-        <div class="field"><label data-i18n="month">Monat</label><select id="flt-month" onchange="onPeriodPreset()"></select></div>
+        <div class="field"><label data-i18n="from">Von</label><input id="flt-from" type="date" /></div>
+        <div class="field"><label data-i18n="to">Bis</label><input id="flt-to" type="date" /></div>
       </div>
-      <div class="row">
-        <div class="field"><label data-i18n="from">Von</label><input id="flt-from" type="date" onchange="onPeriodRange()" /></div>
-        <div class="field"><label data-i18n="to">Bis</label><input id="flt-to" type="date" onchange="onPeriodRange()" /></div>
-      </div>
-      <p class="hint" style="margin:0 4px 6px;" data-i18n="periodHint">Entweder Jahr/Monat <em>oder</em> Von–Bis — sie schließen sich gegenseitig aus.</p>
 
       <div class="sectionlabel" style="margin-top:6px;" data-i18n="properties">Eigenschaften</div>
       <div class="field"><label data-i18n="species">Fischart</label><select id="flt-species"></select></div>
@@ -896,6 +882,7 @@
         <div class="field"><label data-i18n="weightFrom">Gewicht von (kg)</label><input id="flt-wmin" type="number" inputmode="decimal" placeholder="min" data-i18n-ph="minPh" /></div>
         <div class="field"><label data-i18n="weightTo">Gewicht bis (kg)</label><input id="flt-wmax" type="number" inputmode="decimal" placeholder="max" data-i18n-ph="maxPh" /></div>
       </div>
+      <label style="display:flex; align-items:center; gap:10px; margin:10px 4px 0; cursor:pointer;"><input type="checkbox" id="flt-hideunconf" style="width:auto; margin:0;" /> <span data-i18n="hideUnconfirmed">Unbestätigte Fänge ausblenden</span></label>
 
       <button class="btn" onclick="applyFilter()" data-i18n="applyFilter">Filter anwenden</button>
       <button class="btn secondary" style="margin-top:10px;" onclick="resetFilter()" data-i18n="reset">Zurücksetzen</button>
@@ -916,9 +903,6 @@
       </button>
       <button class="iconbtn" data-i18n-title="toStart" title="Zum Start" aria-label="Zum Start" onclick="leaveArea()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/></svg>
-      </button>
-      <button class="iconbtn" data-i18n-title="ttLogout" title="Abmelden" aria-label="Abmelden" onclick="signOut()">
-        <svg class="ic" viewBox="0 0 24 24"><path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/><path d="M14 12H9"/><path d="M12 9l3 3-3 3"/></svg>
       </button>
     </div>
     <div class="scroll pad">
@@ -1021,9 +1005,9 @@ Object.assign(I18N.nl, {loginIntro2:"Voer je e-mail in — we sturen je een inlo
 Object.assign(I18N.de, {joinByCode:"Bereich beitreten (Code)", createContext:"Verein/Gruppe anlegen", requestContext:"Verein/Gruppe fehlt? Anfragen", betaRequestNote:"In der Beta werden neue Vereine & Gruppen angefragt und vom Team freigeschaltet.", reqInbox:"Anfragen", joinTitle:"Bereich beitreten", joinHint:"Gib den Beitritts-Code deines Vereins oder deiner Gruppe ein.", join:"Beitreten", createTitle:"Verein/Gruppe anlegen", createHint:"Als App-Admin legst du einen neuen Bereich an. Du wirst automatisch dessen Admin.", clubOne:"Verein", groupOne:"Gruppe", locationOpt:"Ort (optional)", noteOpt:"Nachricht (optional)", create:"Anlegen", send:"Senden", requestTitle:"Bereich anfragen", requestHint:"Dein Verein oder deine Gruppe fehlt? Sende eine Anfrage an den App-Admin.", codeLabel:"Code", reqInboxTitle:"Beitritts-Anfragen", reqNone:"Keine offenen Anfragen.", approve:"Freigeben", reject:"Ablehnen", close:"Schließen", reqSentTitle:"Anfrage gesendet", reqSentBody:"Danke! Der App-Admin prüft deine Anfrage und richtet den Bereich ein.", errNameReq:"Bitte einen Namen eingeben.", errCodeReq:"Bitte einen Code eingeben.", errBadCode:"Dieser Code gehört zu keinem Bereich.", errGeneric:"Etwas ist schiefgelaufen. Bitte erneut versuchen.", errTitle:"Fehler", ok:"OK"});
 Object.assign(I18N.en, {joinByCode:"Join an area (code)", createContext:"Create club/group", requestContext:"Club/group missing? Request it", betaRequestNote:"During the beta, new clubs & groups are requested and enabled by the team.", reqInbox:"Requests", joinTitle:"Join an area", joinHint:"Enter the join code of your club or group.", join:"Join", createTitle:"Create club/group", createHint:"As app admin you create a new area. You automatically become its admin.", clubOne:"Club", groupOne:"Group", locationOpt:"Location (optional)", noteOpt:"Message (optional)", create:"Create", send:"Send", requestTitle:"Request an area", requestHint:"Your club or group is missing? Send a request to the app admin.", codeLabel:"Code", reqInboxTitle:"Join requests", reqNone:"No open requests.", approve:"Approve", reject:"Decline", close:"Close", reqSentTitle:"Request sent", reqSentBody:"Thanks! The app admin will review your request and set up the area.", errNameReq:"Please enter a name.", errCodeReq:"Please enter a code.", errBadCode:"That code doesn't match any area.", errGeneric:"Something went wrong. Please try again.", errTitle:"Error", ok:"OK"});
 Object.assign(I18N.nl, {joinByCode:"Deelnemen (code)", createContext:"Vereniging/groep aanmaken", requestContext:"Vereniging/groep ontbreekt? Aanvragen", betaRequestNote:"Tijdens de bèta worden nieuwe verenigingen & groepen aangevraagd en door het team vrijgegeven.", reqInbox:"Aanvragen", joinTitle:"Deelnemen aan een gebied", joinHint:"Voer de toetredingscode van je vereniging of groep in.", join:"Deelnemen", createTitle:"Vereniging/groep aanmaken", createHint:"Als app-beheerder maak je een nieuw gebied aan. Je wordt automatisch beheerder.", clubOne:"Vereniging", groupOne:"Groep", locationOpt:"Plaats (optioneel)", noteOpt:"Bericht (optioneel)", create:"Aanmaken", send:"Verzenden", requestTitle:"Gebied aanvragen", requestHint:"Ontbreekt je vereniging of groep? Stuur een aanvraag naar de app-beheerder.", codeLabel:"Code", reqInboxTitle:"Toetredingsverzoeken", reqNone:"Geen openstaande aanvragen.", approve:"Goedkeuren", reject:"Afwijzen", close:"Sluiten", reqSentTitle:"Aanvraag verzonden", reqSentBody:"Bedankt! De app-beheerder bekijkt je aanvraag en richt het gebied in.", errNameReq:"Voer een naam in.", errCodeReq:"Voer een code in.", errBadCode:"Die code hoort bij geen enkel gebied.", errGeneric:"Er ging iets mis. Probeer opnieuw.", errTitle:"Fout", ok:"OK"});
-Object.assign(I18N.de, {betaAppSection:"Beta & App", installApp:"Als App speichern …", installHelpHint:"Speichere The Fishing Butler wie eine App – für schnellen Zugriff und Vollbild.", installIosT:"iPhone / iPad (Safari)", installIos:"In Safari öffnen → unten auf „Teilen“ → „Zum Home-Bildschirm“. (Chrome auf dem iPhone: zuerst in Safari öffnen.)", installAndroidT:"Android (Chrome)", installAndroid:"Menü (⋮) oben rechts → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Auf das Installieren-Symbol in der Adressleiste klicken – oder Menü → „Installieren / App installieren“.", feedbackHint:"Feedback, Bug oder Idee? Wir sind in der Beta und freuen uns über jeden Hinweis.", feedbackBtn:"Feedback senden", feedbackSubject:"The Fishing Butler – Beta-Feedback", legalTitle:"Rechtliches", legalLink:"Beta-Hinweis · Datenschutz · Impressum"});
-Object.assign(I18N.en, {betaAppSection:"Beta & App", installApp:"Save as app …", installHelpHint:"Save The Fishing Butler like an app – for quick access and full screen.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tap Share → “Add to Home Screen”. (Chrome on iPhone: open in Safari first.)", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) top right → “Install app” or “Add to Home screen”.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Click the install icon in the address bar – or Menu → “Install”.", feedbackHint:"Feedback, bug or idea? We're in beta and value every note.", feedbackBtn:"Send feedback", feedbackSubject:"The Fishing Butler – beta feedback", legalTitle:"Legal", legalLink:"Beta notice · Privacy · Imprint"});
-Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app …", installHelpHint:"Sla The Fishing Butler op als een app – voor snelle toegang en volledig scherm.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tik op Delen → „Zet op beginscherm“. (Chrome op iPhone: open eerst in Safari.)", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) rechtsboven → „App installeren“ of „Toevoegen aan startscherm“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Klik op het installatie-icoon in de adresbalk – of Menu → „Installeren“.", feedbackHint:"Feedback, bug of idee? We zitten in de bèta en horen graag van je.", feedbackBtn:"Feedback sturen", feedbackSubject:"The Fishing Butler – bèta-feedback", legalTitle:"Juridisch", legalLink:"Bèta-info · Privacy · Colofon"});
+Object.assign(I18N.de, {betaAppSection:"Beta & App", installApp:"Als App speichern …", installHelpHint:"Speichere The Fishing Butler wie eine App – für schnellen Zugriff und Vollbild.", installIosT:"iPhone / iPad (Safari)", installIos:"In Safari öffnen → unten auf „Teilen“ → „Zum Home-Bildschirm“. (Chrome auf dem iPhone: zuerst in Safari öffnen.)", installAndroidT:"Android (Chrome)", installAndroid:"Menü (⋮) oben rechts → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Auf das Installieren-Symbol in der Adressleiste klicken – oder Menü → „Installieren / App installieren“.", feedbackHint:"Feedback, Bug oder Idee? Wir sind in der Beta und freuen uns über jeden Hinweis.", feedbackBtn:"Feedback senden", feedbackSubject:"The Fishing Butler – Beta-Feedback", legalTitle:"Rechtliches", legalLink:"Beta-Hinweis · Datenschutz · Impressum", hideUnconfirmed:"Unbestätigte Fänge ausblenden", unconfirmedByHint:"Von {name} eingetragen – noch nicht vom Angler bestätigt.", unconfirmedOtherHint:"Noch nicht vom Angler bestätigt.", photoLimitTitle:"Zu viele Fotos", photoLimitMsg:"Maximal {n} Fotos pro Fang.", copy:"kopieren", copied:"Code kopiert", confirmTitle:"Bist du sicher?", yesDo:"Ja", confirmLogout:"Möchtest du dich wirklich abmelden?", cancel:"Abbrechen"});
+Object.assign(I18N.en, {betaAppSection:"Beta & App", installApp:"Save as app …", installHelpHint:"Save The Fishing Butler like an app – for quick access and full screen.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tap Share → “Add to Home Screen”. (Chrome on iPhone: open in Safari first.)", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) top right → “Install app” or “Add to Home screen”.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Click the install icon in the address bar – or Menu → “Install”.", feedbackHint:"Feedback, bug or idea? We're in beta and value every note.", feedbackBtn:"Send feedback", feedbackSubject:"The Fishing Butler – beta feedback", legalTitle:"Legal", legalLink:"Beta notice · Privacy · Imprint", hideUnconfirmed:"Hide unconfirmed catches", unconfirmedByHint:"Logged by {name} – not yet confirmed by the angler.", unconfirmedOtherHint:"Not yet confirmed by the angler.", photoLimitTitle:"Too many photos", photoLimitMsg:"Maximum {n} photos per catch.", copy:"copy", copied:"Code copied", confirmTitle:"Are you sure?", yesDo:"Yes", confirmLogout:"Do you really want to sign out?", cancel:"Cancel"});
+Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app …", installHelpHint:"Sla The Fishing Butler op als een app – voor snelle toegang en volledig scherm.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tik op Delen → „Zet op beginscherm“. (Chrome op iPhone: open eerst in Safari.)", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) rechtsboven → „App installeren“ of „Toevoegen aan startscherm“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Klik op het installatie-icoon in de adresbalk – of Menu → „Installeren“.", feedbackHint:"Feedback, bug of idee? We zitten in de bèta en horen graag van je.", feedbackBtn:"Feedback sturen", feedbackSubject:"The Fishing Butler – bèta-feedback", legalTitle:"Juridisch", legalLink:"Bèta-info · Privacy · Colofon", hideUnconfirmed:"Onbevestigde vangsten verbergen", unconfirmedByHint:"Ingevoerd door {name} – nog niet bevestigd door de visser.", unconfirmedOtherHint:"Nog niet bevestigd door de visser.", photoLimitTitle:"Te veel foto's", photoLimitMsg:"Maximaal {n} foto's per vangst.", copy:"kopiëren", copied:"Code gekopieerd", confirmTitle:"Weet je het zeker?", yesDo:"Ja", confirmLogout:"Wil je echt uitloggen?", cancel:"Annuleren"});
 Object.assign(I18N.de, {membersTitle:"Mitglieder", membersHint:"Verwalte Rollen (Mitglied, Admin, Kassenwart) und entferne Mitglieder.", membersHintMember:"Mitglieder und ihre Rollen in diesem Bereich.", manageMembers:"Mitglieder verwalten …", viewMembers:"Mitglieder ansehen", me:"ich", loggedByRow:"Erfasst von", unconfirmed:"Noch nicht bestätigt", unconfShort:"unbestätigt", loggedByHint:"Dieser Fang wurde von {name} für dich eingetragen. Bestätige ihn, wenn er stimmt.", unconfirmedHint:"Dieser Fang wartet auf Bestätigung.", confirmCatch:"Bestätigen", rejectCatch:"Ablehnen", confirmReject:"Diesen Fang ablehnen und löschen?", roleMember:"Mitglied", roleAdmin:"Admin", roleTreasurer:"Kassenwart", removeMember:"Entfernen", lastAdminHint:"Der/die letzte Admin kann nicht herabgestuft oder entfernt werden.", confirmRemove:"{name} aus diesem Bereich entfernen?", you:"du", openMailbox:"Postfach öffnen", openMailApp:"Mail-App öffnen"});
 Object.assign(I18N.en, {membersTitle:"Members", membersHint:"Manage roles (Member, Admin, Treasurer) and remove members.", membersHintMember:"Members and their roles in this area.", manageMembers:"Manage members …", viewMembers:"View members", me:"me", loggedByRow:"Logged by", unconfirmed:"Not confirmed yet", unconfShort:"unconfirmed", loggedByHint:"This catch was logged for you by {name}. Confirm it if it's correct.", unconfirmedHint:"This catch is awaiting confirmation.", confirmCatch:"Confirm", rejectCatch:"Reject", confirmReject:"Reject and delete this catch?", roleMember:"Member", roleAdmin:"Admin", roleTreasurer:"Treasurer", removeMember:"Remove", lastAdminHint:"The last admin can't be demoted or removed.", confirmRemove:"Remove {name} from this area?", you:"you", openMailbox:"Open mailbox", openMailApp:"Open Mail app"});
 Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen (Lid, Beheerder, Penningmeester) en verwijder leden.", membersHintMember:"Leden en hun rollen in dit gebied.", manageMembers:"Leden beheren …", viewMembers:"Leden bekijken", me:"ik", loggedByRow:"Ingevoerd door", unconfirmed:"Nog niet bevestigd", unconfShort:"onbevestigd", loggedByHint:"Deze vangst is voor jou ingevoerd door {name}. Bevestig als het klopt.", unconfirmedHint:"Deze vangst wacht op bevestiging.", confirmCatch:"Bevestigen", rejectCatch:"Afwijzen", confirmReject:"Deze vangst afwijzen en verwijderen?", roleMember:"Lid", roleAdmin:"Beheerder", roleTreasurer:"Penningmeester", removeMember:"Verwijderen", lastAdminHint:"De laatste beheerder kan niet worden gedegradeerd of verwijderd.", confirmRemove:"{name} uit dit gebied verwijderen?", you:"jij", openMailbox:"Postvak openen", openMailApp:"Mail-app openen"});
@@ -1080,7 +1064,7 @@ let state = { club:null, mode:"club", soloName:null, user:null, userId:null, me:
   catches:[], editPhotos:[], current:null, speciesKey:null, editId:null, formLat:null, formLon:null, formWeather:null, filterTarget:"list",
   measure:"length", theme:"system", lang:"system", sort:"newest", logos:{}, soloAvatar:null, filter:emptyFilter() };
 
-function emptyFilter(){ return {year:"",month:"",from:"",to:"",species:"",angler:"",ort:"",lmin:"",lmax:"",wmin:"",wmax:"",ctx:""}; }
+function emptyFilter(){ return {from:"",to:"",species:"",angler:"",ort:"",lmin:"",lmax:"",wmin:"",wmax:"",ctx:"",hideUnconfirmed:false}; }
 
 // ---------- persistence ----------
 function savePrefs(){ try{ localStorage.setItem("fanglog_prefs", JSON.stringify(
@@ -1203,7 +1187,7 @@ function renderClubs(){
   c.appendChild(s);
   const ctxBtn=(ctx, kind)=>{
     const b=document.createElement('button'); b.className='club';
-    const code = (ctx.role==='admin' && ctx.join_code) ? `<br><span class="loc" style="opacity:.85;">${t('codeLabel')}: <b style="letter-spacing:.08em;">${esc(ctx.join_code)}</b></span>` : '';
+    const code = (ctx.role==='admin' && ctx.join_code) ? `<br><span class="loc" style="opacity:.85;">${t('codeLabel')}: <b style="letter-spacing:.08em;">${esc(ctx.join_code)}</b> <a href="javascript:void(0)" onclick="event.stopPropagation();copyJoinCode('${esc(ctx.join_code)}')" style="color:var(--teal); font-weight:700;">${t('copy')}</a></span>` : '';
     b.innerHTML=`<span class="av">${clubLogoHTML(ctx)}</span>
       <span style="min-width:0;"><span class="nm">${esc(ctx.name)}</span><br><span class="loc">${esc(ctx.loc||ctx.location||'')}</span>${code}</span>
       ${CHEV_IC}`;
@@ -1224,7 +1208,7 @@ function renderClubs(){
     const mkbtn=(label,fn,primary)=>{ const b=document.createElement('button'); b.type='button'; b.className='btn '+(primary?'':'secondary')+' sm'; b.style.width='100%'; b.style.marginTop='8px'; b.textContent=label; b.onclick=fn; act.appendChild(b); };
     mkbtn(t('joinByCode'), openJoinModal, false);
     if(state.me && state.me.isAppAdmin){
-      mkbtn(t('createContext'), openCreateModal, true);
+      mkbtn(t('createContext'), openCreateModal, false);
       if((state.pendingReqs||0)>0) mkbtn(t('reqInbox')+' ('+state.pendingReqs+')', openReqsInbox, false);
       if((state.pendingBetaReqs||0)>0) mkbtn(t('betaReqInbox')+' ('+state.pendingBetaReqs+')', openBetaReqsInbox, false);
     } else {
@@ -1433,7 +1417,7 @@ async function setMemberRole(memId, userId, role){
   }catch(e){ showInfo(t('errTitle'), t('errGeneric')); await renderMembers(); }
 }
 async function removeMember(memId, userId, name){
-  if(!confirm(t('confirmRemove').replace('{name}', name))) return;
+  if(!(await confirmDialog(t('confirmTitle'), t('confirmRemove').replace('{name}', name), t('removeMember'), true))) return;
   try{
     const { error } = await getSB().from('memberships').delete().eq('id', memId); if(error) throw error;
     if(state.me && userId===state.me.id){ closeModal('members-modal'); await leaveArea(); return; }
@@ -1702,8 +1686,8 @@ function leaveArea(){ state.club=null; state.mode='club'; state.soloName=null; g
 // ---------- Löschen / Lifecycle (Beta #1) ----------
 async function deleteAccount(){
   if(state.auth!=='supabase') return;
-  if(!confirm(t('confirmDeleteAccount'))) return;
-  if(!confirm(t('confirmDeleteAccount2'))) return;
+  if(!(await confirmDialog(t('confirmTitle'), t('confirmDeleteAccount'), t('deleteAccount'), true))) return;
+  if(!(await confirmDialog(t('confirmTitle'), t('confirmDeleteAccount2'), t('deleteAccount'), true))) return;
   try{
     const { data, error } = await getSB().functions.invoke('delete', { body:{ action:'account' } });
     if(error) throw error; if(data && data.error) throw new Error(data.error);
@@ -1715,7 +1699,7 @@ async function deleteAccount(){
 }
 async function deleteContext(){
   if(!(ctxIsDb() && canEditCtxCfg())) return;
-  if(!confirm(t('confirmDeleteContext').replace('{name}', state.club.name))) return;
+  if(!(await confirmDialog(t('confirmTitle'), t('confirmDeleteContext').replace('{name}', state.club.name), t('deleteContext'), true))) return;
   try{
     const { data, error } = await getSB().functions.invoke('delete', { body:{ action:'context', contextId: state.club.id } });
     if(error) throw error; if(data && data.error) throw new Error(data.error);
@@ -1728,13 +1712,14 @@ async function leaveContext(){
   if(canEditCtxCfg()){
     try{ const { count } = await c.from('memberships').select('id',{count:'exact',head:true}).eq('context_id',ctx).eq('role','admin'); if((count||0)<=1){ showInfo(t('errTitle'), t('soleAdminLeave')); return; } }catch(e){}
   }
-  if(!confirm(t('confirmLeave').replace('{name}', state.club.name))) return;
+  if(!(await confirmDialog(t('confirmTitle'), t('confirmLeave').replace('{name}', state.club.name), t('leaveAreaBtn'), true))) return;
   try{
     const { error } = await c.from('memberships').delete().eq('context_id',ctx).eq('user_id',uid); if(error) throw error;
     await leaveArea();
   }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
 }
 async function signOut(){
+  if(!(await confirmDialog(t('confirmTitle'), t('confirmLogout'), t('signOut'), false))) return;
   try{ if(state.auth==='supabase' && getSB()) await getSB().auth.signOut(); }catch(e){}
   state.me=null; state.auth=null; savePrefs();
   updateDemoBadge();
@@ -1764,10 +1749,9 @@ function matchesFilter(c){
     else if(f.ctx==='__clubs__'){ if(c._ctxType!=='club') return false; }
     else if(c._ctx!==f.ctx) return false;
   }
-  if(f.year && d.getFullYear()!==+f.year) return false;
-  if(f.month!=='' && d.getMonth()!==+f.month) return false;
   if(f.from && d < new Date(f.from+'T00:00')) return false;
   if(f.to && d > new Date(f.to+'T23:59')) return false;
+  if(f.hideUnconfirmed && c && c._db && c.confirmed===false) return false;
   if(f.species && c.species!==f.species) return false;
   if(f.angler && c.angler!==f.angler) return false;
   if(f.ort && !(c.location||'').toLowerCase().includes(f.ort.toLowerCase())) return false;
@@ -1777,7 +1761,7 @@ function matchesFilter(c){
   if(f.wmax!=='' && (c.weight==null || c.weight>+parseFloat(String(f.wmax).replace(',','.')))) return false;
   return true;
 }
-function activeFilterCount(){ return Object.values(state.filter).filter(v=>v!=='' && v!=null).length; }
+function activeFilterCount(){ return Object.values(state.filter).filter(v=>v!=='' && v!=null && v!==false).length; }
 
 // ---------- list ----------
 function sortCatches(arr){
@@ -2228,7 +2212,7 @@ const CFG_FIELDS=[
   {key:'photos',  i18n:'photos'},
   {key:'notes',   i18n:'notes'},
 ];
-const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',location:'optional',method:'optional',bait:'optional',rod:'off',boat:'off',watertemp:'off',trolling:'off',released:'optional',mapPin:'optional',photos:'optional',notes:'optional'};
+const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',location:'optional',method:'optional',bait:'optional',rod:'off',boat:'off',watertemp:'off',trolling:'off',released:'off',mapPin:'optional',photos:'optional',notes:'optional'};
 function fieldCfgKey(){ return 'fanglog_fields_'+ctxKey(state.mode, state.club&&state.club.id); }
 // ---- role helpers (Phase 2d): shared Verein/Gruppen-Config wird vom Admin gesteuert ----
 function ctxIsDb(){ return state.auth==='supabase' && !!state.club && state.mode!=='solo'; }
@@ -2426,8 +2410,8 @@ function openEdit(c){
   CFG_FIELDS.forEach(f=>{ if(cfg[f.key]==='off' && fieldHasValue(f.key)) force[f.key]=true; });
   applyFieldConfig(force);
 }
-function deleteCatch(id){
-  if(!window.confirm(t('delConfirm'))) return;
+async function deleteCatch(id){
+  if(!(await confirmDialog(t('confirmTitle'), t('delConfirm'), t('del'), true))) return;
   if(isDbCatch()){
     (async ()=>{
       try{ await deleteSoloPhotos(id); const { error }=await getSB().from('catches').delete().eq('id', id); if(error) throw error;
@@ -2553,6 +2537,7 @@ function onPhoto(e){
   const files=Array.from(e.target.files||[]); if(!files.length) return;
   let left=MAX_PHOTOS - state.editPhotos.length;
   const pick=files.slice(0, Math.max(0,left));
+  if(files.length > pick.length){ showInfo(t('photoLimitTitle'), t('photoLimitMsg').replace('{n}', MAX_PHOTOS)); }
   let pending=pick.length;
   if(pending===0){ document.getElementById('f-photo').value=''; return; }
   const firstPhoto = state.editPhotos.length===0 && !state.editId;   // first photo on a new catch → try EXIF prefill
@@ -2673,7 +2658,9 @@ function openDetailObj(c, from){
   let banner='';
   if(c._db && c.confirmed===false){
     const iAmOwner = state.me && c.userId===state.me.id;
-    const hint = c.loggedByName ? t('loggedByHint').replace('{name}', esc(c.loggedByName)) : t('unconfirmedHint');
+    const hint = iAmOwner
+      ? (c.loggedByName ? t('loggedByHint').replace('{name}', esc(c.loggedByName)) : t('unconfirmedHint'))
+      : (c.loggedByName ? t('unconfirmedByHint').replace('{name}', esc(c.loggedByName)) : t('unconfirmedOtherHint'));
     banner = `<div class="card-box" style="margin-top:10px; border:1px solid var(--teal);">
       <div style="font-weight:600; margin-bottom:4px;">⏳ ${esc(t('unconfirmed'))}</div>
       <p class="hint" style="margin:0 0 8px;">${hint}</p>
@@ -2683,7 +2670,8 @@ function openDetailObj(c, from){
   document.getElementById('d-rows').innerHTML=rows.map(r=>`<div class="drow"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('')+banner;
   const nw=document.getElementById('d-notes-wrap');
   if(c.notes){ nw.style.display='block'; document.getElementById('d-notes').textContent=c.notes; } else nw.style.display='none';
-  const editable = state.detailFrom==='list';
+  const isMine = !c._db || (state.me && c.userId===state.me.id);
+  const editable = state.detailFrom==='list' && isMine;
   document.getElementById('edit-btn').style.display = editable ? '' : 'none';
   document.getElementById('del-btn').style.display = editable ? '' : 'none';
   const mw=document.getElementById('d-map-wrap');
@@ -2701,7 +2689,7 @@ async function confirmCatch(id){
   }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
 }
 async function rejectCatch(id){
-  if(!confirm(t('confirmReject'))) return;
+  if(!(await confirmDialog(t('confirmTitle'), t('confirmReject'), t('rejectCatch'), true))) return;
   try{
     try{ await deleteSoloPhotos(id); }catch(e){}
     const { error } = await getSB().from('catches').delete().eq('id', id); if(error) throw error;
@@ -2709,7 +2697,71 @@ async function rejectCatch(id){
   }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
 }
 function openInstallHelp(){ const m=document.getElementById('install-modal'); if(m) m.style.display='flex'; }
-function openLegal(){ const m=document.getElementById('legal-modal'); if(m) m.style.display='flex'; }
+const LEGAL_HTML={
+  de:`<p style="font-weight:700;margin:2px 0 4px;">Beta-Hinweis</p>
+<p class="hint" style="margin:0 0 14px;">The Fishing Butler befindet sich in einer geschlossenen Beta. Die App wird aktiv weiterentwickelt; Funktionen können sich ändern und Testdaten können im Rahmen der Beta zurückgesetzt werden. Es besteht kein Anspruch auf Verfügbarkeit oder Fehlerfreiheit. Danke fürs Testen – dein Feedback hilft.</p>
+<p style="font-weight:700;margin:2px 0 4px;">Datenschutz</p>
+<p class="hint" style="margin:0 0 8px;">Verantwortlich: Johannes Claudi, Alexandrine Tinnehof 22, 1087 CM Amsterdam, Niederlande. Kontakt: johannesclaudi@gmail.com.</p>
+<p class="hint" style="margin:0 0 8px;">Verarbeitete Daten: Konto (E-Mail, Name), von dir erfasste Fänge (Art, Maße, Gewässer/Koordinaten, Datum, Notizen, Fotos) sowie deine Mitgliedschaft in Vereinen/Gruppen. Anmeldung per Magic-Link (kein Passwort). Standortdaten nur, wenn du sie einträgst bzw. „Mein Standort" nutzt.</p>
+<p class="hint" style="margin:0 0 8px;">Zweck &amp; Rechtsgrundlage: Bereitstellung des Fang-Logbuchs und der Vereins-/Gruppenfunktionen (Art. 6 Abs. 1 lit. b DSGVO) bzw. Einwilligung. Keine Werbung, kein Werbe-Tracking.</p>
+<p class="hint" style="margin:0 0 8px;">Dienstleister: Supabase (Datenbank, Anmeldung, Foto-Speicher, EU-Region), Resend (E-Mail-Versand), Vercel (Hosting). Mögliche Übermittlung in Drittländer je nach Anbieter.</p>
+<p class="hint" style="margin:0 0 8px;">Speicherdauer: bis zur Löschung deines Kontos. Löschung jederzeit unter Einstellungen → „Konto löschen".</p>
+<p class="hint" style="margin:0 0 14px;">Deine Rechte: Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch, Datenübertragbarkeit; Beschwerde bei einer Aufsichtsbehörde. Kontakt: johannesclaudi@gmail.com.</p>
+<p style="font-weight:700;margin:2px 0 4px;">Anbieter</p>
+<p class="hint" style="margin:0 0 10px;">Johannes Claudi, Alexandrine Tinnehof 22, 1087 CM Amsterdam, Niederlande. Kontakt: johannesclaudi@gmail.com.</p>
+<p class="hint" style="margin:0;font-style:italic;">Entwurf für die geschlossene Beta; ersetzt keine Rechtsberatung. Vor einem öffentlichen Launch anwaltlich prüfen lassen.</p>`,
+  en:`<p style="font-weight:700;margin:2px 0 4px;">Beta notice</p>
+<p class="hint" style="margin:0 0 14px;">The Fishing Butler is in a closed beta. The app is under active development; features may change and test data may be reset during the beta. No guarantee of availability or freedom from errors. Thanks for testing – your feedback helps.</p>
+<p style="font-weight:700;margin:2px 0 4px;">Privacy</p>
+<p class="hint" style="margin:0 0 8px;">Controller: Johannes Claudi, Alexandrine Tinnehof 22, 1087 CM Amsterdam, Netherlands. Contact: johannesclaudi@gmail.com.</p>
+<p class="hint" style="margin:0 0 8px;">Data processed: account (email, name), catches you log (species, measurements, water/coordinates, date, notes, photos) and your club/group membership. Sign-in via magic link (no password). Location only when you enter it or use "My location".</p>
+<p class="hint" style="margin:0 0 8px;">Purpose &amp; legal basis: providing the catch log and club/group features (Art. 6(1)(b) GDPR) or your consent. No advertising, no ad tracking.</p>
+<p class="hint" style="margin:0 0 8px;">Processors: Supabase (database, auth, photo storage, EU region), Resend (email delivery), Vercel (hosting). Possible transfers to third countries depending on the provider.</p>
+<p class="hint" style="margin:0 0 8px;">Retention: until you delete your account. You can delete it anytime under Settings → "Delete account".</p>
+<p class="hint" style="margin:0 0 14px;">Your rights: access, rectification, erasure, restriction, objection, portability; and to lodge a complaint with a supervisory authority. Contact: johannesclaudi@gmail.com.</p>
+<p style="font-weight:700;margin:2px 0 4px;">Provider</p>
+<p class="hint" style="margin:0 0 10px;">Johannes Claudi, Alexandrine Tinnehof 22, 1087 CM Amsterdam, Netherlands. Contact: johannesclaudi@gmail.com.</p>
+<p class="hint" style="margin:0;font-style:italic;">Draft for the closed beta; not legal advice. Have it reviewed by a lawyer before a public launch.</p>`,
+  nl:`<p style="font-weight:700;margin:2px 0 4px;">Bèta-info</p>
+<p class="hint" style="margin:0 0 14px;">The Fishing Butler is in een gesloten bèta. De app wordt actief ontwikkeld; functies kunnen veranderen en testgegevens kunnen tijdens de bèta worden gewist. Geen garantie op beschikbaarheid of foutloosheid. Bedankt voor het testen – je feedback helpt.</p>
+<p style="font-weight:700;margin:2px 0 4px;">Privacy</p>
+<p class="hint" style="margin:0 0 8px;">Verwerkingsverantwoordelijke: Johannes Claudi, Alexandrine Tinnehof 22, 1087 CM Amsterdam, Nederland. Contact: johannesclaudi@gmail.com.</p>
+<p class="hint" style="margin:0 0 8px;">Verwerkte gegevens: account (e-mail, naam), door jou geregistreerde vangsten (soort, maten, water/coördinaten, datum, notities, foto's) en je lidmaatschap van verenigingen/groepen. Inloggen via magic link (geen wachtwoord). Locatie alleen als je die invoert of "Mijn locatie" gebruikt.</p>
+<p class="hint" style="margin:0 0 8px;">Doel &amp; grondslag: het aanbieden van het vangstlogboek en verenigings-/groepsfuncties (art. 6 lid 1 sub b AVG) of jouw toestemming. Geen advertenties, geen advertentietracking.</p>
+<p class="hint" style="margin:0 0 8px;">Verwerkers: Supabase (database, inloggen, foto-opslag, EU-regio), Resend (e-mailverzending), Vercel (hosting). Mogelijke doorgifte naar derde landen afhankelijk van de aanbieder.</p>
+<p class="hint" style="margin:0 0 8px;">Bewaartermijn: tot je je account verwijdert. Verwijderen kan altijd via Instellingen → "Account verwijderen".</p>
+<p class="hint" style="margin:0 0 14px;">Je rechten: inzage, rectificatie, verwijdering, beperking, bezwaar, overdraagbaarheid; en klacht bij een toezichthouder. Contact: johannesclaudi@gmail.com.</p>
+<p style="font-weight:700;margin:2px 0 4px;">Aanbieder</p>
+<p class="hint" style="margin:0 0 10px;">Johannes Claudi, Alexandrine Tinnehof 22, 1087 CM Amsterdam, Nederland. Contact: johannesclaudi@gmail.com.</p>
+<p class="hint" style="margin:0;font-style:italic;">Concept voor de gesloten bèta; geen juridisch advies. Laat het vóór een openbare lancering juridisch controleren.</p>`
+};
+function openLegal(){ const b=document.getElementById('legal-body'); if(b) b.innerHTML=LEGAL_HTML[curLang()]||LEGAL_HTML.de; const m=document.getElementById('legal-modal'); if(m) m.style.display='flex'; }
+let _toastT=null;
+function toast(msg){
+  let el=document.getElementById('app-toast');
+  if(!el){ el=document.createElement('div'); el.id='app-toast'; el.className='toast'; document.body.appendChild(el); }
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(_toastT); _toastT=setTimeout(()=>el.classList.remove('show'), 1800);
+}
+function copyJoinCode(code){
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(code); }
+    else { const ta=document.createElement('textarea'); ta.value=code; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  }catch(e){}
+  toast(t('copied'));
+}
+let _confirmResolve=null;
+function confirmDialog(title, msg, yesLabel, danger){
+  return new Promise(resolve=>{
+    _confirmResolve=resolve;
+    document.getElementById('confirm-title').textContent=title||t('confirmTitle');
+    document.getElementById('confirm-msg').textContent=msg||'';
+    const yb=document.getElementById('confirm-yes');
+    yb.textContent=yesLabel||t('yesDo'); yb.style.background=danger?'var(--danger)':'';
+    document.getElementById('confirm-modal').style.display='flex';
+  });
+}
+function _confirmClose(val){ document.getElementById('confirm-modal').style.display='none'; const r=_confirmResolve; _confirmResolve=null; if(r) r(val); }
 function sendFeedback(){
   const subj=encodeURIComponent(t('feedbackSubject'));
   const body=encodeURIComponent('\n\n—\n'+t('appName')+' · Beta\n'+(navigator.userAgent||''));
@@ -2952,9 +3004,6 @@ function onSoloAvatar(e){
 function openFilter(target){
   state.filterTarget = target || 'list';
   const data = state.filterTarget==='stats' ? myCatches() : state.catches;
-  const years=[...new Set(data.map(c=>new Date(c.date).getFullYear()))].sort((a,b)=>b-a);
-  fillSelect('flt-year', [['',t('all')]].concat(years.map(y=>[String(y),String(y)])), state.filter.year);
-  fillSelect('flt-month', [['',t('all')]].concat(MONTHS[curLang()].l.map((m,i)=>[String(i),m])), state.filter.month);
   const sp=[...new Set(data.map(c=>c.species))].sort();
   fillSelect('flt-species', [['',t('all')]].concat(sp.map(s=>[s,trSpecies(s)])), state.filter.species);
   const ang=[...new Set(data.map(c=>c.angler))].sort();
@@ -2980,6 +3029,7 @@ function openFilter(target){
   document.getElementById('flt-to').max=todayStr;
   document.getElementById('flt-from').value=state.filter.from;
   document.getElementById('flt-to').value=state.filter.to;
+  document.getElementById('flt-hideunconf').checked=!!state.filter.hideUnconfirmed;
   document.getElementById('flt-ort').value=state.filter.ort;
   document.getElementById('flt-lmin').value=state.filter.lmin;
   document.getElementById('flt-lmax').value=state.filter.lmax;
@@ -2992,12 +3042,8 @@ function fillSelect(id, pairs, val){
   pairs.forEach(([v,t])=>{ const o=document.createElement('option'); o.value=v; o.textContent=t; s.appendChild(o); });
   s.value=val;
 }
-function onPeriodPreset(){ document.getElementById('flt-from').value=''; document.getElementById('flt-to').value=''; }
-function onPeriodRange(){ document.getElementById('flt-year').value=''; document.getElementById('flt-month').value=''; }
 function applyFilter(){
   state.filter={
-    year:document.getElementById('flt-year').value,
-    month:document.getElementById('flt-month').value,
     from:document.getElementById('flt-from').value,
     to:document.getElementById('flt-to').value,
     species:document.getElementById('flt-species').value,
@@ -3008,6 +3054,7 @@ function applyFilter(){
     wmin:document.getElementById('flt-wmin').value,
     wmax:document.getElementById('flt-wmax').value,
     ctx: state.filterTarget==='stats' ? document.getElementById('flt-ctx').value : '',
+    hideUnconfirmed: document.getElementById('flt-hideunconf').checked,
   };
   if(state.filterTarget==='stats'){ renderStats(); go('stats'); }
   else { renderList(); go('list'); }
