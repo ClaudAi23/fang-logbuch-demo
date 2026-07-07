@@ -3,16 +3,26 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Fang-Logbuch — Demo</title>
+<title>The Fishing Butler</title>
+<meta name="description" content="The Fishing Butler — Catch. Log. Organize." />
+<link rel="icon" type="image/png" href="/favicon.png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta name="theme-color" content="#317E95" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="The Fishing Butler" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root{
-    --teal:#16263F; --teal-dark:#0F1B2D; --teal-tint:#E7EAF0;
+    --teal:#2E7A8E; --teal-dark:#245F70; --teal-tint:#E2EDF0;
+    --navy:#18202A;
     --rust:#C2502A; --rust-tint:#F1E2D8;
     --sand:#EFEAE0; --surface:#FFFFFF; --surface-2:#F7F2E8;
     --text:#1C1B18; --muted:#6F6A5F; --border:#E1DACC; --border-2:#D3CAB8;
@@ -22,7 +32,7 @@
   :root, [data-theme="light"]{ color-scheme:light; }
   [data-theme="dark"]{
     color-scheme:dark;
-    --teal:#3E6FA1; --teal-dark:#34608C; --teal-tint:#22303D;
+    --teal:#3E97AE; --teal-dark:#317E95; --teal-tint:#1E2E36;
     --rust:#D9663B; --rust-tint:#33261F;
     --sand:#15181C; --surface:#1E242B; --surface-2:#232A31;
     --text:#ECEAE3; --muted:#9BA1A3; --border:#2C333B; --border-2:#3A434C;
@@ -106,11 +116,12 @@
   .hint{font-size:12px; color:var(--muted); margin:6px 0 0;}
 
   .logo-badge{
-    width:72px; height:72px; border-radius:12px; overflow:hidden; margin:0 auto 16px;
-    display:flex; align-items:center; justify-content:center; background:var(--surface);
-    border:1px solid var(--border);
+    width:96px; height:96px; border-radius:20px; overflow:hidden; margin:0 auto 12px;
+    display:flex; align-items:center; justify-content:center; background:transparent;
   }
-  .logo-badge img,.logo-badge svg{width:100%; height:100%; object-fit:cover; display:block;}
+  .logo-badge img,.logo-badge svg{width:100%; height:100%; object-fit:contain; display:block;}
+  .brandname{font-family:'Playfair Display',Georgia,serif !important; font-weight:700; letter-spacing:0;}
+  .tagline{text-align:center; color:var(--teal-dark); font-size:13px; font-weight:600; letter-spacing:.04em; margin:0 0 6px;}
 
   .club{
     display:flex; align-items:center; gap:14px; width:100%; text-align:left;
@@ -303,8 +314,9 @@
     </div>
     <div class="scroll pad">
       <div style="height:20px"></div>
-      <div id="club-logo" class="logo-badge">🎣</div>
-      <h1 style="text-align:center; font-size:24px; margin:0 0 4px;" data-i18n="appName">Fang-Logbuch</h1>
+      <div id="club-logo" class="logo-badge"></div>
+      <h1 class="brandname" style="text-align:center; font-size:26px; margin:0 0 2px;" data-i18n="appName">The Fishing Butler</h1>
+      <p class="tagline" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
       <p style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="chooseArea">Wähle deinen Bereich</p>
       <div id="club-list"></div>
       <p id="not-in-club-hint" class="hint" style="text-align:center; margin-top:18px;" data-i18n="notInClub">Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.</p>
@@ -315,9 +327,10 @@
   <section id="s-login" class="screen">
     <div class="scroll pad">
       <div style="height:24px"></div>
-      <div class="logo-badge" id="login-logo">🎣</div>
-      <h1 style="text-align:center; font-size:24px; margin:0 0 4px;" data-i18n="appName">Fang-Logbuch</h1>
-      <p style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="loginIntro2">Melde dich an oder registriere dich.</p>
+      <div class="logo-badge" id="login-logo"></div>
+      <h1 class="brandname" style="text-align:center; font-size:26px; margin:0 0 2px;" data-i18n="appName">The Fishing Butler</h1>
+      <p class="tagline" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
+      <p style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="loginIntro2">Gib deine E-Mail ein — wir schicken dir einen Anmelde-Link. Kein Passwort nötig.</p>
       <div class="field" id="login-name-field" style="display:none;">
         <label data-i18n="name">Name</label>
         <input id="login-name" type="text" placeholder="z. B. Johannes" data-i18n-ph="namePh" autocomplete="name" />
@@ -828,7 +841,7 @@ const MONTHS = {
 };
 const I18N = {
   de:{
-    appName:"Fang-Logbuch", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
+    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
     personal:"Persönlich", clubs:"Vereine", groups:"Gruppen", statsTile:"Meine Fänge", statsTileSub:"Alle Fänge, alle Bereiche", soloTile:"Solo — ohne Verein", soloTileSub:"Eigenes Logbuch, privat",
     signIn:"Anmelden", email:"E-Mail", emailPh:"name@beispiel.de", password:"Passwort", loginHint:"Demo: beliebige E-Mail und beliebiges Passwort funktionieren. Konten werden vom Vereinsadmin angelegt.",
     solo:"Solo", withoutClub:"Ohne Verein", yourName:"Dein Name", namePh:"z. B. Johannes", next:"Weiter", errName:"Bitte gib deinen Namen ein.", soloHint:"Im Solo-Modus dokumentierst du deine Fänge privat — ohne Verein, ohne Login.",
@@ -838,10 +851,10 @@ const I18N = {
     settings:"Einstellungen", display:"Anzeige", appearance:"Darstellung", themeLight:"Hell", themeDark:"Dunkel", themeSystem:"System", themeHint:"„System\" folgt automatisch der Hell/Dunkel-Einstellung deines Geräts.", measureLabel:"Standard-Maß in Übersicht & Statistik", mLength:"Länge", mWeight:"Gewicht", measureHint:"Bestimmt, welches Maß in der Fangliste angezeigt wird und wonach der größte Fang berechnet wird.", language:"Sprache", clubLogoAdmin:"Vereinslogo · Admin", currentLogo:"Aktuelles Logo", uploadLogo:"Logo hochladen", logoHint:"Nur Vereins-Admins können das Logo ändern. Es gilt für alle Mitglieder.", myImage:"Mein Bild", initialsDefault:"Standard: deine Initialen", uploadImage:"Bild hochladen",
     filter:"Filter", narrow:"Fänge eingrenzen", ttReset:"Zurücksetzen", period:"Zeitraum", year:"Jahr", month:"Monat", from:"Von", to:"Bis", periodHint:"Entweder Jahr/Monat <em>oder</em> Von–Bis — sie schließen sich gegenseitig aus.", properties:"Eigenschaften", locationContains:"Ort / Gewässer enthält", locationPh:"z. B. Vereinsteich", lengthFrom:"Länge von (cm)", lengthTo:"Länge bis (cm)", weightFrom:"Gewicht von (kg)", weightTo:"Gewicht bis (kg)", minPh:"min", maxPh:"max", applyFilter:"Filter anwenden", reset:"Zurücksetzen", all:"Alle",
     myStats:"Meine Fänge", statsSub:"Alle Bereiche zusammen", byContext:"Nach Verein / Solo", bySpecies:"Nach Fischart", longest:"Längster", heaviest:"Schwerster", noneYet:"Noch keine Fänge.", speciesCount:"Arten", thisYear:"Dieses Jahr", ctxFilter:"Bereich",
-    clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit Fang-Logbuch", shareNoMeasure:"ohne Maße"
+    clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit The Fishing Butler", shareNoMeasure:"ohne Maße"
   },
   en:{
-    appName:"Catch Log", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
+    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
     personal:"Personal", clubs:"Clubs", groups:"Groups", statsTile:"My catches", statsTileSub:"All catches, everywhere", soloTile:"Solo — no club", soloTileSub:"Your own private log",
     signIn:"Sign in", email:"Email", emailPh:"name@example.com", password:"Password", loginHint:"Demo: any email and password work. Accounts are created by the club admin.",
     solo:"Solo", withoutClub:"Without a club", yourName:"Your name", namePh:"e.g. John", next:"Continue", errName:"Please enter your name.", soloHint:"In solo mode you log your catches privately — no club, no login.",
@@ -851,10 +864,10 @@ const I18N = {
     settings:"Settings", display:"Display", appearance:"Appearance", themeLight:"Light", themeDark:"Dark", themeSystem:"System", themeHint:"\"System\" follows your device's light/dark setting.", measureLabel:"Default measure in list & stats", mLength:"Length", mWeight:"Weight", measureHint:"Sets which measure shows in the catch list and how the biggest catch is determined.", language:"Language", clubLogoAdmin:"Club logo · admin", currentLogo:"Current logo", uploadLogo:"Upload logo", logoHint:"Only club admins can change the logo. It applies to all members.", myImage:"My picture", initialsDefault:"Default: your initials", uploadImage:"Upload picture",
     filter:"Filter", narrow:"Narrow down catches", ttReset:"Reset", period:"Period", year:"Year", month:"Month", from:"From", to:"To", periodHint:"Either year/month <em>or</em> from–to — they're mutually exclusive.", properties:"Properties", locationContains:"Location / water contains", locationPh:"e.g. Club pond", lengthFrom:"Length from (cm)", lengthTo:"Length to (cm)", weightFrom:"Weight from (kg)", weightTo:"Weight to (kg)", minPh:"min", maxPh:"max", applyFilter:"Apply filter", reset:"Reset", all:"All",
     myStats:"My catches", statsSub:"All areas combined", byContext:"By club / solo", bySpecies:"By species", longest:"Longest", heaviest:"Heaviest", noneYet:"No catches yet.", speciesCount:"Species", thisYear:"This year", ctxFilter:"Area",
-    clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with Catch Log", shareNoMeasure:"no measurements"
+    clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with The Fishing Butler", shareNoMeasure:"no measurements"
   },
   nl:{
-    appName:"Vangstlogboek", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
+    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
     personal:"Persoonlijk", clubs:"Verenigingen", groups:"Groepen", statsTile:"Mijn vangsten", statsTileSub:"Alle vangsten, overal", soloTile:"Solo — geen vereniging", soloTileSub:"Eigen logboek, privé",
     signIn:"Inloggen", email:"E-mail", emailPh:"naam@voorbeeld.nl", password:"Wachtwoord", loginHint:"Demo: elke e-mail en elk wachtwoord werken. Accounts worden aangemaakt door de verenigingsbeheerder.",
     solo:"Solo", withoutClub:"Zonder vereniging", yourName:"Je naam", namePh:"bijv. Jan", next:"Verder", errName:"Voer je naam in.", soloHint:"In solomodus leg je je vangsten privé vast — zonder vereniging, zonder inloggen.",
@@ -864,7 +877,7 @@ const I18N = {
     settings:"Instellingen", display:"Weergave", appearance:"Weergave", themeLight:"Licht", themeDark:"Donker", themeSystem:"Systeem", themeHint:"\"Systeem\" volgt de licht/donker-instelling van je apparaat.", measureLabel:"Standaardmaat in lijst & statistiek", mLength:"Lengte", mWeight:"Gewicht", measureHint:"Bepaalt welke maat in de vangstlijst staat en hoe de grootste vangst wordt bepaald.", language:"Taal", clubLogoAdmin:"Verenigingslogo · beheer", currentLogo:"Huidig logo", uploadLogo:"Logo uploaden", logoHint:"Alleen verenigingsbeheerders kunnen het logo wijzigen. Het geldt voor alle leden.", myImage:"Mijn foto", initialsDefault:"Standaard: je initialen", uploadImage:"Foto uploaden",
     filter:"Filter", narrow:"Vangsten filteren", ttReset:"Resetten", period:"Periode", year:"Jaar", month:"Maand", from:"Van", to:"Tot", periodHint:"Of jaar/maand <em>of</em> van–tot — ze sluiten elkaar uit.", properties:"Eigenschappen", locationContains:"Plek / water bevat", locationPh:"bijv. Verenigingsvijver", lengthFrom:"Lengte van (cm)", lengthTo:"Lengte tot (cm)", weightFrom:"Gewicht van (kg)", weightTo:"Gewicht tot (kg)", minPh:"min", maxPh:"max", applyFilter:"Filter toepassen", reset:"Resetten", all:"Alle",
     myStats:"Mijn vangsten", statsSub:"Alle gebieden samen", byContext:"Per vereniging / solo", bySpecies:"Per vissoort", longest:"Langste", heaviest:"Zwaarste", noneYet:"Nog geen vangsten.", speciesCount:"Soorten", thisYear:"Dit jaar", ctxFilter:"Gebied",
-    clock:" uur", petri:"🎣 Petri heil!", shareWater:"Water:", loggedWith:"— vastgelegd met Vangstlogboek", shareNoMeasure:"zonder maten"
+    clock:" uur", petri:"🎣 Petri heil!", shareWater:"Water:", loggedWith:"— vastgelegd met The Fishing Butler", shareNoMeasure:"zonder maten"
   }
 };
 Object.assign(I18N.de, {editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart", switchArea:"Bereich wechseln", toStart:"Zum Start", profile:"Profil", signOut:"Abmelden", loginIntro:"Melde dich einmal an. Danach wählst du frei zwischen Solo, Gruppen und Vereinen.", name:"Name", nameHint:"Wird bei deinen Fängen und als Initialen genutzt."});
@@ -2694,7 +2707,7 @@ loadPrefs();
 applyTheme();
 applyLang();
 if((navigator.maxTouchPoints||0)>0 && navigator.share){ document.getElementById('share-btn').style.display=''; }
-document.getElementById('club-logo').innerHTML=`<svg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'><rect width='120' height='120' rx='26' fill='#16263F'/><g fill='#F2EEE6'><path d='M46 60 C58 45 78 45 90 60 C78 75 58 75 46 60 Z'/><path d='M48 60 L30 49 L35 60 L30 71 Z'/></g><circle cx='80' cy='56' r='3.2' fill='#16263F'/></svg>`;
+document.getElementById('club-logo').innerHTML=`<img src="/logo.png" alt="The Fishing Butler" />`;
 document.getElementById('login-logo').innerHTML=document.getElementById('club-logo').innerHTML;
 initAuth();
 </script>
