@@ -312,6 +312,35 @@
   .ph-chip{font-size:12px; font-family:ui-monospace,monospace; background:var(--surface-2); border:1px solid var(--border-2);
     color:var(--teal-dark); border-radius:6px; padding:4px 8px; cursor:pointer;}
   .ph-chip:active{background:var(--teal); color:#fff; border-color:var(--teal);}
+  .ob-ov{position:fixed; inset:0; z-index:150; background:linear-gradient(160deg,var(--teal-tint),var(--surface-2)); display:flex; justify-content:center;}
+  .ob-card{background:var(--surface); width:100%; max-width:440px; margin:0 auto; min-height:100%; display:flex; flex-direction:column; padding:14px 20px calc(20px + env(safe-area-inset-bottom));}
+  @media(min-width:470px){ .ob-card{min-height:auto; margin:auto; border-radius:18px; max-height:94vh; box-shadow:var(--shadow); overflow:hidden;} }
+  .ob-top{display:flex; align-items:center; justify-content:space-between; padding-top:calc(4px + env(safe-area-inset-top));}
+  .ob-dots{display:flex; gap:7px;}
+  .ob-dot{width:8px; height:8px; border-radius:50%; background:var(--border-2); transition:all .2s;}
+  .ob-dot.on{background:var(--teal); width:22px; border-radius:5px;}
+  .ob-skip{background:none; border:none; color:var(--muted); font:inherit; font-size:14px; cursor:pointer; padding:6px 4px;}
+  .ob-body{flex:1; display:flex; flex-direction:column; justify-content:center; overflow-y:auto; padding:10px 2px;}
+  .ob-step{display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px;}
+  .ob-logo img{width:92px; height:92px;}
+  .ob-h{font-family:var(--head); font-size:26px; font-weight:700; margin:2px 0 0; color:var(--text); line-height:1.12;}
+  .ob-p{color:var(--muted); margin:0; max-width:330px; line-height:1.4;}
+  .ob-p.sm{font-size:13px;}
+  .ob-avwrap{position:relative; width:96px; height:96px; margin:2px auto;}
+  .ob-av{width:96px; height:96px; border-radius:50%; overflow:hidden; background:var(--teal-tint); display:flex; align-items:center; justify-content:center;}
+  .ob-av img{width:100%; height:100%; object-fit:cover;}
+  .ob-avbtn{position:absolute; right:-2px; bottom:-2px; width:32px; height:32px; border-radius:50%; background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; border:3px solid var(--surface);}
+  .ob-avbtn svg{width:16px; height:16px;}
+  .ob-label{align-self:stretch; text-align:left; font-size:13px; color:var(--muted); margin:6px 0 4px;}
+  .ob-input{align-self:stretch; padding:12px 14px; border:1px solid var(--border-2); border-radius:10px; font:inherit; background:var(--surface); color:var(--text);}
+  .ob-cards{display:flex; flex-direction:column; gap:10px; align-self:stretch; margin-top:4px;}
+  .ob-c{display:flex; gap:12px; align-items:center; text-align:left; padding:12px 14px; border:1px solid var(--border); border-radius:12px; background:var(--surface-2);}
+  .ob-cic{font-size:24px; line-height:1;}
+  .ob-c b{display:block; font-family:var(--head); font-size:17px; color:var(--text);}
+  .ob-c span{font-size:13px; color:var(--muted);}
+  .ob-foot{display:flex; gap:10px; align-items:center; padding-top:12px;}
+  .ob-foot .btn{flex:1;}
+  #ob-back{flex:0 0 auto; min-width:92px;}
   .modal-ov{position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.5); display:flex; align-items:flex-end; justify-content:center;
     padding:16px; padding-bottom:calc(16px + env(safe-area-inset-bottom));}
   .modal-box{background:var(--surface); border:1px solid var(--border-2); border-radius:16px; padding:20px;
@@ -662,6 +691,7 @@
         <div class="accbody">
           <p class="hint" style="margin-top:6px;" data-i18n="installHelpHint">Speichere The Fishing Butler wie eine App – für schnellen Zugriff und Vollbild.</p>
           <button type="button" class="btn secondary sm" onclick="openInstallHelp()" data-i18n="installApp">Als App speichern …</button>
+          <button type="button" class="btn secondary sm" style="margin-top:8px;" onclick="startOnboarding()" data-i18n="obReplay">Einführung ansehen</button>
           <p class="hint" style="margin-top:16px;" data-i18n="feedbackHint">Feedback, Bug oder Idee? Wir sind in der Beta und freuen uns über jeden Hinweis.</p>
           <button type="button" class="btn secondary sm" onclick="sendFeedback()" data-i18n="feedbackBtn">Feedback senden</button>
           <button type="button" class="btn secondary sm" style="margin-top:8px;" onclick="openLegal()" data-i18n="legalTitle">Rechtliches</button>
@@ -855,6 +885,50 @@
     </div>
   </div>
 
+  <div id="onboarding-ov" class="ob-ov" style="display:none;">
+    <div class="ob-card">
+      <div class="ob-top">
+        <div class="ob-dots" id="ob-dots"></div>
+        <button type="button" class="ob-skip" onclick="obSkip()" data-i18n="obSkip">Überspringen</button>
+      </div>
+      <div class="ob-body">
+        <div class="ob-step" data-step="0">
+          <div class="ob-logo" id="ob-logo"></div>
+          <h2 class="ob-h" data-i18n="obWelcomeTitle">Willkommen beim Fishing Butler</h2>
+          <p class="ob-p" data-i18n="obWelcomeText">Dein digitales Fang-Logbuch – solo oder mit deinem Verein.</p>
+        </div>
+        <div class="ob-step" data-step="1" style="display:none;">
+          <h2 class="ob-h" data-i18n="obProfileTitle">Wie sollen dich andere sehen?</h2>
+          <div class="ob-avwrap">
+            <div class="ob-av" id="ob-av"></div>
+            <label class="ob-avbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg><input type="file" accept="image/*" style="display:none" onchange="onUserAvatar(event)"></label>
+          </div>
+          <label class="ob-label" data-i18n="name">Name</label>
+          <input id="ob-name-input" class="ob-input" type="text" autocomplete="off" oninput="onProfileName(this.value)">
+          <p class="ob-p sm" data-i18n="obProfileText">Name und optional ein Bild.</p>
+        </div>
+        <div class="ob-step" data-step="2" style="display:none;">
+          <h2 class="ob-h" data-i18n="obTeamTitle">Allein oder gemeinsam angeln?</h2>
+          <div class="ob-cards">
+            <div class="ob-c"><div class="ob-cic">🎣</div><div><b data-i18n="obSoloTitle">Solo</b><span data-i18n="obSoloText">Nur für dich.</span></div></div>
+            <div class="ob-c"><div class="ob-cic">🛡️</div><div><b data-i18n="obVereinTitle">Verein</b><span data-i18n="obVereinText">Feste Gemeinschaft.</span></div></div>
+            <div class="ob-c"><div class="ob-cic">👥</div><div><b data-i18n="obGruppeTitle">Gruppe</b><span data-i18n="obGruppeText">Lockere Runde.</span></div></div>
+          </div>
+          <p class="ob-p sm" data-i18n="obTeamHint">Beitreten per Code oder anlegen/anfragen.</p>
+        </div>
+        <div class="ob-step" data-step="3" style="display:none;">
+          <div style="font-size:46px; line-height:1;">📲</div>
+          <h2 class="ob-h" data-i18n="obInstallTitle">Speichere den Butler auf deinem Handy</h2>
+          <p class="ob-p" data-i18n="obInstallText">Als App im Vollbild und schneller griffbereit.</p>
+          <button type="button" class="btn secondary sm" onclick="openInstallHelp()" data-i18n="installApp">Als App speichern …</button>
+        </div>
+      </div>
+      <div class="ob-foot">
+        <button type="button" class="btn secondary" id="ob-back" onclick="obBack()" data-i18n="obBack" style="visibility:hidden;">Zurück</button>
+        <button type="button" class="btn" id="ob-next" onclick="obNext()">Weiter</button>
+      </div>
+    </div>
+  </div>
   <div id="confirm-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)_confirmClose(false)">
     <div class="modal-box" style="max-width:390px;">
       <h2 id="confirm-title" style="font-size:19px; margin:0 0 8px;"></h2>
@@ -1087,9 +1161,9 @@ Object.assign(I18N.en, {demoHint:"Demo: fields are pre-filled — just tap Sign 
 Object.assign(I18N.en, {method:"Method", bait:"Bait / lure", rod:"Rod", boat:"Boat", watertemp:"Water temperature (°C)", watertempPh:"e.g. 18", trolling:"Trolling speed (km/h)", trollingPh:"e.g. 3.2", releasedLabel:"Kept / released", releasedNone:"—", releasedKept:"Kept", releasedReleased:"Released", methodPh:"e.g. Spin fishing", baitPh:"e.g. 12 cm soft lure", rodPh:"e.g. 2.70 m / 40 g", boatPh:"e.g. dinghy", fieldsTitle:"Catch entry", fieldsHint:"Choose which fields appear when logging and which are required.", fieldsHintAdmin:"As admin you can additionally show fields for everyone or make them required. You can't hide fields — each person picks their own.", fieldsHintMember:"These are set by the admin (read-only). Pick your own fields in personal settings.", stRequired:"Required", stOptional:"Always show", stOff:"Don't force", moreFields:"More fields", errRequired:"Please fill the required fields:", shareTitle:"Share template", shareModeFields:"Fields", shareModeTemplate:"Custom template", sharePreview:"Preview", shareLink:"App link", shareHint:"Applies to this area (Solo / group / club).", sharePhHint:"Placeholders: {petri} {art} {länge} {gewicht} {maße} {methode} {köder} {rute} {boot} {wassertemp} {schlepp} {entnahme} {ort} {datum} {angler} {wetter} {mond} {notiz} {bereich} {link}", exportCsv:"Export as CSV", exportPdf:"Export as PDF (with photos)", exportEmpty:"No catches to export.", exportPdfErr:"Couldn't load PDF export (internet required)."});
 Object.assign(I18N.nl, {demoHint:"Demo: velden zijn al ingevuld — tik gewoon op Inloggen.", photos:"Foto's", cover:"Omslag", setCover:"Als omslag", photoHint:"Tot 10 foto's. Tik bij meerdere op de ster ☆ om de omslag te kiezen."});
 Object.assign(I18N.nl, {method:"Methode", bait:"Aas", rod:"Hengel", boat:"Boot", watertemp:"Watertemperatuur (°C)", watertempPh:"bijv. 18", trolling:"Sleepsnelheid (km/h)", trollingPh:"bijv. 3,2", releasedLabel:"Meenemen / terugzetten", releasedNone:"—", releasedKept:"Meegenomen", releasedReleased:"Teruggezet", methodPh:"bijv. Kunstaasvissen", baitPh:"bijv. shad 12 cm", rodPh:"bijv. 2,70 m / 40 g", boatPh:"bijv. rubberboot", fieldsTitle:"Vangst invoeren", fieldsHint:"Bepaal welke velden verschijnen bij het loggen en welke verplicht zijn.", fieldsHintAdmin:"Als beheerder kun je velden extra tonen voor iedereen of verplicht maken. Verbergen kan niet — ieder kiest zelf eigen velden.", fieldsHintMember:"Dit stelt de beheerder in (alleen lezen). Je eigen velden kies je in persoonlijke instellingen.", stRequired:"Verplicht", stOptional:"Altijd tonen", stOff:"Niet afdwingen", moreFields:"Meer velden", errRequired:"Vul de verplichte velden in:", shareTitle:"Deelsjabloon", shareModeFields:"Velden", shareModeTemplate:"Eigen sjabloon", sharePreview:"Voorbeeld", shareLink:"App-link", shareHint:"Geldt voor dit gebied (Solo / groep / vereniging).", sharePhHint:"Tijdelijke aanduidingen: {petri} {art} {länge} {gewicht} {maße} {methode} {köder} {rute} {boot} {wassertemp} {schlepp} {entnahme} {ort} {datum} {angler} {wetter} {mond} {notiz} {bereich} {link}", exportCsv:"Exporteren als CSV", exportPdf:"Exporteren als PDF (met foto's)", exportEmpty:"Geen vangsten om te exporteren.", exportPdfErr:"Kon PDF-export niet laden (internet vereist)."});
-Object.assign(I18N.de, {tabPersonal:"Persönlich", tabArea:"Bereich", areaCtxHint:"Einstellungen für: {ctx}", copyToAreas:"Auf andere Bereiche übernehmen …", copySub:"in welche Bereiche kopieren?", selectAll:"Alle auswählen", cancel:"Abbrechen", apply:"Übernehmen", copyDone:"Auf {n} Bereich(e) übernommen.", shareBereich:"Verein/Gruppe", shareFieldsHint:"Wähle, welche Infos geteilt werden — die Vorschau unten zeigt das Ergebnis.", shareTemplateHint:"Schreibe den Text selbst. Platzhalter werden beim Teilen durch echte Werte ersetzt.", sharePhTapHint:"Tippe einen Platzhalter an, um ihn einzufügen:", exifGps:"Ort aus Foto übernommen", exifDate:"Zeit aus Foto übernommen", exifBoth:"Ort & Zeit aus Foto übernommen", exifNone:"Kein Ort/keine Zeit im Foto gefunden", exifRedo:"Ort & Zeit aus diesem Foto übernehmen"});
-Object.assign(I18N.en, {tabPersonal:"Personal", tabArea:"Area", areaCtxHint:"Settings for: {ctx}", copyToAreas:"Copy to other areas …", copySub:"copy into which areas?", selectAll:"Select all", cancel:"Cancel", apply:"Apply", copyDone:"Copied to {n} area(s).", shareBereich:"Club/group", shareFieldsHint:"Choose which info gets shared — the preview below shows the result.", shareTemplateHint:"Write the text yourself. Placeholders are replaced with real values when sharing.", sharePhTapHint:"Tap a placeholder to insert it:", exifGps:"Location taken from photo", exifDate:"Time taken from photo", exifBoth:"Location & time taken from photo", exifNone:"No location/time found in photo", exifRedo:"Take location & time from this photo"});
-Object.assign(I18N.nl, {tabPersonal:"Persoonlijk", tabArea:"Gebied", areaCtxHint:"Instellingen voor: {ctx}", copyToAreas:"Naar andere gebieden kopiëren …", copySub:"naar welke gebieden kopiëren?", selectAll:"Alles selecteren", cancel:"Annuleren", apply:"Toepassen", copyDone:"Naar {n} gebied(en) gekopieerd.", shareBereich:"Vereniging/groep", shareFieldsHint:"Kies welke info wordt gedeeld — het voorbeeld hieronder toont het resultaat.", shareTemplateHint:"Schrijf de tekst zelf. Tijdelijke aanduidingen worden bij het delen vervangen door echte waarden.", sharePhTapHint:"Tik op een aanduiding om die in te voegen:", exifGps:"Locatie uit foto overgenomen", exifDate:"Tijd uit foto overgenomen", exifBoth:"Locatie & tijd uit foto overgenomen", exifNone:"Geen locatie/tijd in foto gevonden", exifRedo:"Locatie & tijd uit deze foto overnemen"});
+Object.assign(I18N.de, {tabPersonal:"Persönlich", tabArea:"Bereich", areaCtxHint:"Einstellungen für: {ctx}", copyToAreas:"Auf andere Bereiche übernehmen …", copySub:"in welche Bereiche kopieren?", selectAll:"Alle auswählen", cancel:"Abbrechen", apply:"Übernehmen", copyDone:"Auf {n} Bereich(e) übernommen.", shareBereich:"Verein/Gruppe", shareFieldsHint:"Wähle, welche Infos geteilt werden — die Vorschau unten zeigt das Ergebnis.", shareTemplateHint:"Schreibe den Text selbst. Platzhalter werden beim Teilen durch echte Werte ersetzt.", sharePhTapHint:"Tippe einen Platzhalter an, um ihn einzufügen:", exifGps:"Ort aus Foto übernommen", exifDate:"Zeit aus Foto übernommen", exifBoth:"Ort & Zeit aus Foto übernommen", exifNone:"Kein Ort/keine Zeit im Foto gefunden", exifRedo:"Ort & Zeit aus diesem Foto übernehmen", obSkip:"Überspringen", obNext:"Weiter", obBack:"Zurück", obStart:"Los geht's", obFinish:"Fertig – los geht's! 🎣", obWelcomeTitle:"Willkommen beim Fishing Butler", obWelcomeText:"Dein digitales Fang-Logbuch – solo oder mit deinem Verein.", obProfileTitle:"Wie sollen dich andere sehen?", obProfileText:"Name und optional ein Bild – jederzeit in den Einstellungen änderbar.", obTeamTitle:"Allein oder gemeinsam angeln?", obSoloTitle:"Solo", obSoloText:"Nur für dich – dein privates Logbuch.", obVereinTitle:"Verein", obVereinText:"Feste Gemeinschaft, oft mit Logo & Regeln.", obGruppeTitle:"Gruppe", obGruppeText:"Lockere Runde – Angelfreunde oder ein Trip.", obTeamHint:"Beitreten per Code oder anlegen/anfragen – jederzeit über ＋ auf dem Startbildschirm.", obInstallTitle:"Speichere den Butler auf deinem Handy", obInstallText:"Als App installiert startet er im Vollbild und ist schneller griffbereit.", obReplay:"Einführung ansehen"});
+Object.assign(I18N.en, {tabPersonal:"Personal", tabArea:"Area", areaCtxHint:"Settings for: {ctx}", copyToAreas:"Copy to other areas …", copySub:"copy into which areas?", selectAll:"Select all", cancel:"Cancel", apply:"Apply", copyDone:"Copied to {n} area(s).", shareBereich:"Club/group", shareFieldsHint:"Choose which info gets shared — the preview below shows the result.", shareTemplateHint:"Write the text yourself. Placeholders are replaced with real values when sharing.", sharePhTapHint:"Tap a placeholder to insert it:", exifGps:"Location taken from photo", exifDate:"Time taken from photo", exifBoth:"Location & time taken from photo", exifNone:"No location/time found in photo", exifRedo:"Take location & time from this photo", obSkip:"Skip", obNext:"Next", obBack:"Back", obStart:"Let's go", obFinish:"Done — let's go! 🎣", obWelcomeTitle:"Welcome to The Fishing Butler", obWelcomeText:"Your digital catch log – solo or with your club.", obProfileTitle:"How should others see you?", obProfileText:"A name and optional photo – changeable anytime in settings.", obTeamTitle:"Fishing solo or together?", obSoloTitle:"Solo", obSoloText:"Just for you – your private log.", obVereinTitle:"Club", obVereinText:"A lasting community, often with logo & rules.", obGruppeTitle:"Group", obGruppeText:"A casual crew – fishing buddies or a trip.", obTeamHint:"Join by code or create/request – anytime via ＋ on the home screen.", obInstallTitle:"Save the Butler to your phone", obInstallText:"Installed as an app it opens full-screen and is quicker to reach.", obReplay:"View intro"});
+Object.assign(I18N.nl, {tabPersonal:"Persoonlijk", tabArea:"Gebied", areaCtxHint:"Instellingen voor: {ctx}", copyToAreas:"Naar andere gebieden kopiëren …", copySub:"naar welke gebieden kopiëren?", selectAll:"Alles selecteren", cancel:"Annuleren", apply:"Toepassen", copyDone:"Naar {n} gebied(en) gekopieerd.", shareBereich:"Vereniging/groep", shareFieldsHint:"Kies welke info wordt gedeeld — het voorbeeld hieronder toont het resultaat.", shareTemplateHint:"Schrijf de tekst zelf. Tijdelijke aanduidingen worden bij het delen vervangen door echte waarden.", sharePhTapHint:"Tik op een aanduiding om die in te voegen:", exifGps:"Locatie uit foto overgenomen", exifDate:"Tijd uit foto overgenomen", exifBoth:"Locatie & tijd uit foto overgenomen", exifNone:"Geen locatie/tijd in foto gevonden", exifRedo:"Locatie & tijd uit deze foto overnemen", obSkip:"Overslaan", obNext:"Verder", obBack:"Terug", obStart:"Aan de slag", obFinish:"Klaar — op naar het water! 🎣", obWelcomeTitle:"Welkom bij The Fishing Butler", obWelcomeText:"Je digitale vangstlogboek – solo of met je vereniging.", obProfileTitle:"Hoe zien anderen jou?", obProfileText:"Een naam en optioneel een foto – altijd te wijzigen in instellingen.", obTeamTitle:"Alleen of samen vissen?", obSoloTitle:"Solo", obSoloText:"Alleen voor jou – je privélogboek.", obVereinTitle:"Vereniging", obVereinText:"Vaste gemeenschap, vaak met logo & regels.", obGruppeTitle:"Groep", obGruppeText:"Losse club – visvrienden of een trip.", obTeamHint:"Deelnemen met code of aanmaken/aanvragen – altijd via ＋ op het startscherm.", obInstallTitle:"Bewaar de Butler op je telefoon", obInstallText:"Als app geïnstalleerd opent hij schermvullend en is sneller bij de hand.", obReplay:"Introductie bekijken"});
 Object.assign(I18N.de, {loginIntro2:"Gib deine E-Mail ein — wir schicken dir einen Code. Kein Passwort nötig.", magicLink:"Anmelde-Link per E-Mail", toRegister:"Neu hier? Registrieren", toSignin:"Schon ein Konto? Anmelden", register:"Registrieren", tryDemo:"Ohne Konto testen", checkEmail:"Fast geschafft! Bestätige deine E-Mail über den Link, den wir dir geschickt haben.", magicSent:"Anmelde-Link an {email} gesendet. Öffne die E-Mail und tippe auf den Link — er gilt nur kurz und nur einmal. (Schau auch im Spam-Ordner.)", errAuthFields:"Bitte E-Mail und Passwort eingeben.", errNoConn:"Keine Verbindung zum Server. Bitte später erneut versuchen.", errEmail:"Bitte gib deine E-Mail ein.", errConfirm:"Bitte bestätige zuerst deine E-Mail (Link in deinem Postfach).", errInvalid:"E-Mail oder Passwort falsch.", errExists:"Diese E-Mail ist schon registriert. Melde dich an.", errRate:"Zu viele Versuche. Bitte kurz warten.", errAuth:"Anmeldung fehlgeschlagen. Bitte erneut versuchen.", loading:"Lädt …", errSave:"Speichern fehlgeschlagen. Bitte erneut versuchen.", noContextsHint:"Noch keine Vereine oder Gruppen. Nutze die Schaltflächen unten."});
 Object.assign(I18N.en, {loginIntro2:"Enter your email — we'll send you a code. No password needed.", magicLink:"Email me a sign-in link", toRegister:"New here? Register", toSignin:"Already have an account? Sign in", register:"Register", tryDemo:"Try without an account", checkEmail:"Almost done! Confirm your email via the link we sent you.", magicSent:"Sign-in link sent to {email}. Open the email and tap the link — it's valid briefly and only once. (Check your spam folder too.)", errAuthFields:"Please enter email and password.", errNoConn:"Can't reach the server. Please try again later.", errEmail:"Please enter your email.", errConfirm:"Please confirm your email first (link in your inbox).", errInvalid:"Wrong email or password.", errExists:"This email is already registered. Please sign in.", errRate:"Too many attempts. Please wait a moment.", errAuth:"Sign-in failed. Please try again.", loading:"Loading …", errSave:"Couldn't save. Please try again.", noContextsHint:"No clubs or groups yet. Use the buttons below."});
 Object.assign(I18N.nl, {loginIntro2:"Voer je e-mail in — we sturen je een code. Geen wachtwoord nodig.", magicLink:"Mail me een inloglink", toRegister:"Nieuw hier? Registreren", toSignin:"Al een account? Inloggen", register:"Registreren", tryDemo:"Zonder account proberen", checkEmail:"Bijna klaar! Bevestig je e-mail via de link die we je stuurden.", magicSent:"Inloglink verzonden naar {email}. Open de e-mail en tik op de link — hij is kort en eenmalig geldig. (Kijk ook in je spam.)", errAuthFields:"Voer e-mail en wachtwoord in.", errNoConn:"Geen verbinding met de server. Probeer later opnieuw.", errEmail:"Voer je e-mail in.", errConfirm:"Bevestig eerst je e-mail (link in je inbox).", errInvalid:"Onjuiste e-mail of wachtwoord.", errExists:"Dit e-mailadres is al geregistreerd. Log in.", errRate:"Te veel pogingen. Wacht even.", errAuth:"Inloggen mislukt. Probeer opnieuw.", loading:"Laden …", errSave:"Opslaan mislukt. Probeer opnieuw.", noContextsHint:"Nog geen verenigingen of groepen. Gebruik de knoppen hieronder."});
@@ -1267,6 +1341,8 @@ function go(name, isBack){
 function _openModalEls(){ return Array.prototype.slice.call(document.querySelectorAll('.modal-ov')).filter(m=>{ const d=m.style.display; return d && d!=='none'; }); }
 // Called for every hardware/gesture "back" (Android back button, edge-swipe). Navigates WITHIN the app; never closes it.
 function appBack(){
+  const _ob=document.getElementById('onboarding-ov');
+  if(_ob && _ob.style.display && _ob.style.display!=='none'){ if(_obStep>0){ obBack(); } else { obFinish(); } return; }
   // 1) topmost open dialog/modal → close it
   const mods=_openModalEls();
   if(mods.length){ const m=mods[mods.length-1]; if(m.id==='confirm-modal'){ _confirmClose(false); } else { m.style.display='none'; } return; }
@@ -1661,16 +1737,17 @@ async function onAuthed(session){
   if(!session || !session.user) return;
   const u=session.user;
   let name=(u.user_metadata && u.user_metadata.display_name) || (u.email? u.email.split('@')[0] : 'Angler');
-  let avatar=null, isAppAdmin=false, fieldPref=null, shareCfg=null;
+  let avatar=null, isAppAdmin=false, fieldPref=null, shareCfg=null, obDone=false;
   try{
-    const { data } = await getSB().from('profiles').select('display_name, avatar_url, is_app_admin, field_pref, share_pref').eq('id', u.id).maybeSingle();
-    if(data){ if(data.display_name) name=data.display_name; if(data.avatar_url) avatar=data.avatar_url; isAppAdmin=!!data.is_app_admin; fieldPref=data.field_pref||null; shareCfg=data.share_pref||null; }
+    const { data } = await getSB().from('profiles').select('display_name, avatar_url, is_app_admin, field_pref, share_pref, onboarding_done').eq('id', u.id).maybeSingle();
+    if(data){ if(data.display_name) name=data.display_name; if(data.avatar_url) avatar=data.avatar_url; isAppAdmin=!!data.is_app_admin; fieldPref=data.field_pref||null; shareCfg=data.share_pref||null; obDone=!!data.onboarding_done; }
   }catch(e){}
-  state.me={ id:u.id, email:u.email, name, avatar, isAppAdmin, fieldPref, shareCfg };
+  state.me={ id:u.id, email:u.email, name, avatar, isAppAdmin, fieldPref, shareCfg, onboardingDone:obDone };
   state.auth='supabase'; savePrefs();
   // Sprache für ältere Konten nachtragen, falls noch nicht gesetzt (für lokalisierte Auth-Mails)
   if(!(u.user_metadata && u.user_metadata.lang)){ try{ getSB().auth.updateUser({ data:{ lang: curLang() } }); }catch(e){} }
   await goChooser();
+  if(!obDone) startOnboarding();
 }
 function startDemo(){
   state.auth='demo';
@@ -2921,6 +2998,32 @@ async function rejectCatch(id){
   }catch(e){ showInfo(t('errTitle'), t('errGeneric')); }
 }
 function openInstallHelp(){ const m=document.getElementById('install-modal'); if(m) m.style.display='flex'; }
+// ---------- Onboarding (4 steps) ----------
+let _obStep=0; const OB_STEPS=4;
+function startOnboarding(){
+  _obStep=0;
+  const lg=document.getElementById('ob-logo'); if(lg) lg.innerHTML='<img src="/logo.png" alt="">';
+  const ni=document.getElementById('ob-name-input'); if(ni) ni.value=(state.me&&state.me.name)||'';
+  obRender();
+  const ov=document.getElementById('onboarding-ov'); if(ov) ov.style.display='flex';
+}
+function obRender(){
+  document.querySelectorAll('#onboarding-ov .ob-step').forEach(el=>{ el.style.display=(+el.dataset.step===_obStep)?'flex':'none'; });
+  const d=document.getElementById('ob-dots'); if(d){ let h=''; for(let i=0;i<OB_STEPS;i++) h+='<span class="ob-dot'+(i===_obStep?' on':'')+'"></span>'; d.innerHTML=h; }
+  const back=document.getElementById('ob-back'); if(back) back.style.visibility=_obStep===0?'hidden':'visible';
+  const next=document.getElementById('ob-next'); if(next) next.textContent=_obStep===0?t('obStart'):(_obStep===OB_STEPS-1?t('obFinish'):t('obNext'));
+  const av=document.getElementById('ob-av'); if(av) av.innerHTML=userAvatarHTML();
+}
+function obNext(){ if(_obStep>=OB_STEPS-1){ obFinish(); return; } _obStep++; obRender(); }
+function obBack(){ if(_obStep>0){ _obStep--; obRender(); } }
+function obSkip(){ obFinish(); }
+async function obFinish(){
+  const ov=document.getElementById('onboarding-ov'); if(ov) ov.style.display='none';
+  if(state.me){ state.me.onboardingDone=true; savePrefs(); }
+  if(state.auth==='supabase' && getSB() && state.me){
+    try{ await getSB().from('profiles').upsert({ id:state.me.id, onboarding_done:true }); }catch(e){}
+  }
+}
 function openExportMenu(target){ state._exportTarget=target; const m=document.getElementById('export-modal'); if(m) m.style.display='flex'; }
 function doExport(kind){ const t=state._exportTarget||'list'; closeModal('export-modal'); if(kind==='csv') exportCsv(t); else exportPdf(t); }
 function sortHeadline(){ return ({newest:t('recent'), oldest:t('hdrOldest'), longest:t('hdrLongest'), heaviest:t('hdrHeaviest'), species:t('hdrSpecies')})[state.sort] || t('recent'); }
@@ -3146,7 +3249,7 @@ function openSettings(){
   const tabsEl=document.getElementById('settings-tabs'); if(tabsEl) tabsEl.style.display = ctxIsDb() ? '' : 'none';
   document.getElementById('set-sub').textContent = state.me ? state.me.name : '';
   // Persönlich (immer)
-  document.getElementById('prof-av').innerHTML=userAvatarHTML();
+  document.getElementById('prof-av').innerHTML=userAvatarHTML(); { const _oa=document.getElementById('ob-av'); if(_oa) _oa.innerHTML=userAvatarHTML(); }
   document.getElementById('prof-name').textContent=state.me ? state.me.name : '';
   document.getElementById('prof-name-input').value=state.me ? state.me.name : '';
   syncThemeSeg();
@@ -3206,7 +3309,7 @@ function onProfileName(v){
   const name=(v||'').trim(); if(!name) return;
   state.me.name=name; savePrefs();
   document.getElementById('prof-name').textContent=name;
-  document.getElementById('prof-av').innerHTML=userAvatarHTML();
+  document.getElementById('prof-av').innerHTML=userAvatarHTML(); { const _oa=document.getElementById('ob-av'); if(_oa) _oa.innerHTML=userAvatarHTML(); }
   if(state.mode==='solo'){ document.getElementById('list-hdr').innerHTML=userAvatarHTML();
     document.getElementById('set-sub').textContent=t('solo')+' · '+name; }
   if(state.auth==='supabase' && getSB()){
@@ -3232,7 +3335,7 @@ function onUserAvatar(e){
   const r=new FileReader();
   r.onload=ev=>{ downscaleImage(ev.target.result, 256, async dataUrl=>{
     state.me.avatar=dataUrl; savePrefs();
-    document.getElementById('prof-av').innerHTML=userAvatarHTML();
+    document.getElementById('prof-av').innerHTML=userAvatarHTML(); { const _oa=document.getElementById('ob-av'); if(_oa) _oa.innerHTML=userAvatarHTML(); }
     if(state.mode==='solo') document.getElementById('list-hdr').innerHTML=userAvatarHTML();
     if(state.auth==='supabase' && getSB()){
       try{ const { error } = await getSB().from('profiles').upsert({id:state.me.id, avatar_url:dataUrl}); if(error) throw error; toast(t('savedToast')); }
