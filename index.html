@@ -1877,7 +1877,8 @@ async function signOutAll(){
   try{ if(state.auth==='supabase' && getSB()) await getSB().auth.signOut({ scope:'global' }); }catch(e){}
   state.me=null; state.auth=null; savePrefs(); updateDemoBadge();
   authMode='signin'; renderAuthMode();
-  ['login-name','login-email','login-pass'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['login-name','login-email','login-pass','login-code'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  changeLoginEmail();
   go('login');
 }
 async function signOut(){
@@ -1886,7 +1887,8 @@ async function signOut(){
   state.me=null; state.auth=null; savePrefs();
   updateDemoBadge();
   authMode='signin'; renderAuthMode();
-  ['login-name','login-email','login-pass'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['login-name','login-email','login-pass','login-code'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  changeLoginEmail();
   go('login');
 }
 
