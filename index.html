@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>The Fishing Butler</title>
 <meta name="description" content="The Fishing Butler — Catch. Log. Organize." />
 <link rel="icon" type="image/png" href="/favicon.png" />
@@ -64,7 +64,7 @@
   .scroll{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;}
 
   .topbar{
-    display:flex; align-items:center; gap:10px; padding:14px 16px;
+    display:flex; align-items:center; gap:10px; padding:14px 16px; padding-top:calc(14px + env(safe-area-inset-top));
     background:var(--surface); border-bottom:1px solid var(--border);
     position:sticky; top:0; z-index:5;
   }
