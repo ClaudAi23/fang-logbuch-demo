@@ -1780,6 +1780,24 @@ async function saveCatchDb(obj, editId, contextId){
   await reloadCurrentDb();
   return catchId;
 }
+let _rtChannel=null, _rtReloadT=null;
+function unsubscribeRealtime(){ if(_rtChannel){ try{ getSB().removeChannel(_rtChannel); }catch(e){} _rtChannel=null; } clearTimeout(_rtReloadT); }
+function subscribeContextRealtime(ctxId){
+  unsubscribeRealtime();
+  if(state.auth!=='supabase' || !getSB() || !ctxId) return;
+  try{
+    _rtChannel = getSB().channel('ctx-'+ctxId)
+      .on('postgres_changes', { event:'*', schema:'public', table:'catches', filter:'context_id=eq.'+ctxId }, ()=>{
+        clearTimeout(_rtReloadT);
+        _rtReloadT=setTimeout(async ()=>{
+          if(state.auth==='supabase' && state.mode!=='solo' && state.club && state.club.id===ctxId){
+            try{ state.catches=await loadContextCatches(ctxId); renderList(); }catch(e){}
+          }
+        }, 600);
+      })
+      .subscribe();
+  }catch(e){}
+}
 async function chooseClub(cl, kind){
   state.club=cl; state.mode=kind||'club';
   state.user=state.me.name; state.userId=state.me.id; state.soloName=null; state.filter=emptyFilter();
@@ -1791,11 +1809,13 @@ async function chooseClub(cl, kind){
     document.getElementById('stats').innerHTML='';
     try{ state.catches = await loadContextCatches(state.club.id); }catch(e){ state.catches=[]; }
     renderList();
+    subscribeContextRealtime(state.club.id);
   } else {
     state.catches=loadCatchesFor(state.mode, state.club.id); renderList(); go('list');
   }
 }
 async function startSolo(){
+  unsubscribeRealtime();
   state.mode='solo'; state.club=null; state.soloName=state.me.name;
   state.user=state.me.name; state.userId=state.me.id; state.filter=emptyFilter();
   document.getElementById('list-sub').textContent=`${t('solo')} · ${state.me.name}`;
@@ -1810,7 +1830,7 @@ async function startSolo(){
     state.catches=loadCatchesFor('solo'); renderList(); go('list');
   }
 }
-function leaveArea(){ state.club=null; state.mode='club'; state.soloName=null; goChooser(); }
+function leaveArea(){ unsubscribeRealtime(); state.club=null; state.mode='club'; state.soloName=null; goChooser(); }
 // ---------- Löschen / Lifecycle (Beta #1) ----------
 async function deleteAccount(){
   if(state.auth!=='supabase') return;
