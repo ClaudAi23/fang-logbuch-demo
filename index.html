@@ -346,10 +346,6 @@
   .ob-li:last-child{border-bottom:1px solid var(--border);}
   .ob-li b{display:block; font-family:var(--head); font-size:16px; color:var(--teal); letter-spacing:.2px;}
   .ob-li span{font-size:13px; color:var(--muted);}
-  #ob-splash{position:fixed; inset:0; z-index:400; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg,var(--teal-dark),var(--navy)); opacity:1; transition:opacity .5s ease;}
-  #ob-splash.hide{opacity:0;}
-  #ob-splash img{width:150px; height:150px; border-radius:28px; filter:drop-shadow(0 14px 34px rgba(0,0,0,.4));}
-  .ob-splash-name{font-family:var(--head); color:#fff; font-size:27px; margin-top:16px; letter-spacing:.5px;}
   .modal-ov{position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.5); display:flex; align-items:flex-end; justify-content:center;
     padding:16px; padding-bottom:calc(16px + env(safe-area-inset-bottom));}
   .modal-box{background:var(--surface); border:1px solid var(--border-2); border-radius:16px; padding:20px;
@@ -361,12 +357,6 @@
 </style>
 </head>
 <body>
-  <div id="ob-splash">
-    <div style="text-align:center;">
-      <div id="ob-splash-logo"><img src="/logo.png" alt=""></div>
-      <div class="ob-splash-name">The Fishing Butler</div>
-    </div>
-  </div>
 <div id="app">
   <span id="demo-tag" class="demo-tag" style="display:none;">DEMO</span>
 
@@ -3047,11 +3037,6 @@ async function obFinish(splash){
     try{ await getSB().from('profiles').upsert({ id:state.me.id, onboarding_done:true }); }catch(e){}
   }
 }
-// Startup launch screen: logo shown on app open, fades out shortly after.
-function hideStartupSplash(){
-  const sp=document.getElementById('ob-splash'); if(!sp) return;
-  setTimeout(()=>{ sp.classList.add('hide'); setTimeout(()=>{ sp.style.display='none'; }, 550); }, 1800);
-}
 function openExportMenu(target){ state._exportTarget=target; const m=document.getElementById('export-modal'); if(m) m.style.display='flex'; }
 function doExport(kind){ const t=state._exportTarget||'list'; closeModal('export-modal'); if(kind==='csv') exportCsv(t); else exportPdf(t); }
 function sortHeadline(){ return ({newest:t('recent'), oldest:t('hdrOldest'), longest:t('hdrLongest'), heaviest:t('hdrHeaviest'), species:t('hdrSpecies')})[state.sort] || t('recent'); }
@@ -3524,8 +3509,7 @@ if((navigator.maxTouchPoints||0)>0 && navigator.share){ document.getElementById(
 document.getElementById('club-logo').innerHTML=`<img src="/logo.png" alt="The Fishing Butler" />`;
 document.getElementById('login-logo').innerHTML=document.getElementById('club-logo').innerHTML;
 initAuth();
-_armBack();
-hideStartupSplash();   // put one guard entry on the history stack so back/swipe is captured in-app
+_armBack();   // put one guard entry on the history stack so back/swipe is captured in-app
 </script>
 </body>
 </html>
