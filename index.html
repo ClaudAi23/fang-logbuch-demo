@@ -1944,9 +1944,6 @@ async function exportCsv(target){
   const csv=buildCsv(items, target);
   const fname=(target==='stats'?'meine-faenge':'faenge')+'-'+isoDateOnly(new Date())+'.csv';
   const blob=new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  try{
-    if(navigator.canShare){ const file=new File([blob], fname, {type:'text/csv'}); if(navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:fname}); return; } }
-  }catch(e){ if(e && e.name==='AbortError') return; }
   const url=URL.createObjectURL(blob), a=document.createElement('a');
   a.href=url; a.download=fname; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1500);
@@ -2005,8 +2002,6 @@ async function exportPdf(target){
     doc.setDrawColor(232); doc.line(M, y-4, pw-M, y-4);
   }
   const fname=(target==='stats'?'meine-faenge':'faenge')+'-'+isoDateOnly(today)+'.pdf';
-  const blob=doc.output('blob');
-  try{ if(navigator.canShare){ const file=new File([blob],fname,{type:'application/pdf'}); if(navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:fname}); return; } } }catch(e){ if(e&&e.name==='AbortError') return; }
   doc.save(fname);
 }
 function renderList(){
