@@ -1432,6 +1432,7 @@ async function submitBetaRequest(){
   try{
     const { error } = await getSB().from('beta_requests').insert({ email, note: note||null, status:'pending' });
     if(error) throw error;
+    try{ getSB().functions.invoke('beta-request-notify', { body:{ email } }); }catch(e){}
     closeModal('beta-request-modal');
     showInfo(t('betaReqSentTitle'), t('betaReqSentBody'));
   }catch(e){ err.textContent=t('errGeneric'); err.style.display=''; }
