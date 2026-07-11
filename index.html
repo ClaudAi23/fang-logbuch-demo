@@ -572,10 +572,9 @@
       </div>
 
       <div class="fgroup" id="fg-cond" data-i18n="grpConditions">Bedingungen</div>
-      <div class="field" id="ff-weather">
-        <label data-i18n="weather">Wetter</label>
-        <input id="f-weather" type="text" placeholder="z. B. Bewölkt · 18 °C · 12 km/h" data-i18n-ph="weatherPh" oninput="state.weatherEdited=true" />
-        <div class="hint" data-i18n="weatherAutoHint">Automatisch vorausgefüllt, wenn ein Standort gesetzt ist – frei editierbar.</div>
+      <div id="f-weather-wrap" style="display:none; margin-bottom:16px;">
+        <div class="sectionlabel" data-i18n="weather">Wetter</div>
+        <div id="f-weather"></div>
       </div>
       <div class="field" id="ff-watertemp">
         <label data-i18n="watertemp">Wassertemperatur (°C)</label>
@@ -2534,35 +2533,29 @@ async function enrichWeather(c){
   if(state.current && state.current===c) renderWeather(c);
 }
 let previewTimer=null, previewSeq=0;
-function wxSummaryString(w){
-  if(!w||!w.cur) return '';
-  const cur=w.cur, ck=weatherCodeKey(cur.code); const parts=[];
-  if(ck) parts.push(t(ck));
-  if(cur.temp!=null) parts.push(Math.round(cur.temp)+' °C');
-  if(cur.wind!=null) parts.push(Math.round(cur.wind)+' km/h');
-  if(cur.pressure!=null) parts.push(Math.round(cur.pressure)+' hPa');
-  return parts.join(' · ');
-}
+function wxOn(key){ const pref=getUserFieldPref(); const admin=ctxAdminCfg(); const a=admin[key]; return pref[key]===true || a==='optional' || a==='required'; }
 function previewWeather(){
   const lat=state.formLat, lon=state.formLon;
-  const inp=document.getElementById('f-weather');
-  if(lat==null) return;
+  const wrap=document.getElementById('f-weather-wrap');
+  if(lat==null){ if(wrap) wrap.style.display='none'; state.formWeather=null; return; }
+  if(wrap) wrap.style.display='block';
+  const box=document.getElementById('f-weather'); if(box) box.innerHTML=`<div class="hint" style="margin:0;">${t('wLoading')}</div>`;
   const date=document.getElementById('f-date').value;
   clearTimeout(previewTimer);
   const seq=++previewSeq;
   previewTimer=setTimeout(async ()=>{
     const w=await fetchWeather(lat, lon, date);
     if(seq!==previewSeq) return;
-    const sum=wxSummaryString(w);
-    if(inp && sum && !state.weatherEdited){ inp.value=sum; }
+    state.formWeather=w;
+    renderWeatherInto(w, date, 'f-weather','f-weather-wrap');
+    try{ syncFormGroups(); }catch(e){}
   }, 350);
 }
 function renderWeather(c){ renderWeatherInto(c.weather, c.date, 'd-weather','d-weather-wrap'); }
 function renderWeatherInto(weather, date, boxId, wrapId){
   const box=document.getElementById(boxId); const wrap=wrapId?document.getElementById(wrapId):box; const showEl=wrap||box;
-  if(weather && (weather.text||weather.manual)){ if(showEl) showEl.style.display='block'; if(box) box.innerHTML=`<div class="wrow"><span class="v">${esc(weather.text||weather.manual)}</span></div>`; return; }
+  if(weather && weather.text && !weather.cur){ if(showEl) showEl.style.display='block'; if(box) box.innerHTML=`<div class="wrow"><span class="v">${esc(weather.text)}</span></div>`; return; }
   if(!weather || !weather.cur){ if(showEl) showEl.style.display='none'; return; }
-  if(showEl) showEl.style.display='block';
   const cur=weather.cur, daily=weather.daily||[];
   const sep=curLang()==='en'?'.':',';
   const num=(n,d)=> n==null?'—':String(Number(n).toFixed(d)).replace('.',sep);
@@ -2583,15 +2576,16 @@ function renderWeatherInto(weather, date, boxId, wrapId){
   const tChip = days>=2 ? chip(trendNet(temps),0.5,1,'°C') : '';
   const wChip = days>=2 ? chip(trendNet(winds),3,0,'km/h') : '';
   const pChip = days>=2 ? chip(trendNet(pres),1.5,0,'hPa') : '';
-  let html=`
-    <div class="wrow"><span class="k">${t('wCond')}</span><span class="v">${condKey?t(condKey):'—'}</span></div>
-    <div class="wrow"><span class="k">${t('wTemp')}</span><span class="v">${num(cur.temp,1)} °C${tChip}</span></div>
-    <div class="wrow"><span class="k">${t('wWind')}</span><span class="v">${num(cur.wind,0)} km/h${wChip}</span></div>
-    <div class="wrow"><span class="k">${t('wPressure')}</span><span class="v">${num(cur.pressure,0)} hPa${pChip}</span></div>
-    <div class="wrow" style="border-bottom:none;"><span class="k">${t('moon')}</span><span class="v">${moonEmoji(moonKey)} ${t(moonKey)}${moonDir?' · '+t(moonDir):''}</span></div>`;
-  if(days>=2){
-    html+=`<div class="wtrend-note">${t('trendNote').replace('{n}',days)}</div>`;
-  }
+  const rows=[];
+  if(wxOn('wxCond')) rows.push(`<div class="wrow"><span class="k">${t('wCond')}</span><span class="v">${condKey?t(condKey):'—'}</span></div>`);
+  if(wxOn('wxTemp')) rows.push(`<div class="wrow"><span class="k">${t('wTemp')}</span><span class="v">${num(cur.temp,1)} °C${tChip}</span></div>`);
+  if(wxOn('wxWind')) rows.push(`<div class="wrow"><span class="k">${t('wWind')}</span><span class="v">${num(cur.wind,0)} km/h${wChip}</span></div>`);
+  if(wxOn('wxPress')) rows.push(`<div class="wrow"><span class="k">${t('wPressure')}</span><span class="v">${num(cur.pressure,0)} hPa${pChip}</span></div>`);
+  if(wxOn('wxMoon')) rows.push(`<div class="wrow"><span class="k">${t('moon')}</span><span class="v">${moonEmoji(moonKey)} ${t(moonKey)}${moonDir?' · '+t(moonDir):''}</span></div>`);
+  if(!rows.length){ if(showEl) showEl.style.display='none'; return; }
+  if(showEl) showEl.style.display='block';
+  let html=rows.join('');
+  if(days>=2 && (wxOn('wxTemp')||wxOn('wxWind')||wxOn('wxPress'))) html+=`<div class="wtrend-note">${t('trendNote').replace('{n}',days)}</div>`;
   html+=`<div class="wsrc"><a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer">${t('wSource')}: Open-Meteo</a></div>`;
   box.innerHTML=html;
 }
@@ -2643,21 +2637,25 @@ const CFG_FIELDS=[
   {key:'rod',     i18n:'rod'},
   {key:'boat',    i18n:'boat'},
   {key:'watertemp',i18n:'watertemp'},
-  {key:'weather',  i18n:'weather'},
+  {key:'wxCond',   i18n:'wCond'},
+  {key:'wxTemp',   i18n:'wTemp'},
+  {key:'wxWind',   i18n:'wWind'},
+  {key:'wxPress',  i18n:'wPressure'},
+  {key:'wxMoon',   i18n:'moon'},
   {key:'trolling',i18n:'trolling'},
   {key:'released',i18n:'releasedLabel'},
   {key:'mapPin',  i18n:'mapPin'},
   {key:'photos',  i18n:'photos'},
   {key:'notes',   i18n:'notes'},
 ];
-const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',released:'optional',photos:'optional',location:'optional',mapPin:'optional',watertemp:'off',weather:'optional',method:'off',bait:'off',rod:'off',boat:'off',trolling:'off',notes:'optional'};
+const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',released:'optional',photos:'optional',location:'optional',mapPin:'optional',watertemp:'off',wxCond:'optional',wxTemp:'optional',wxWind:'optional',wxPress:'optional',wxMoon:'off',method:'off',bait:'off',rod:'off',boat:'off',trolling:'off',notes:'optional'};
 // Globale, additive Feld-Wünsche des Nutzers (an/aus). Admin-Config kann Felder zusätzlich anzeigen/Pflicht machen, nie verbieten.
-const DEFAULT_FIELD_PREF={length:true,weight:true,location:true,method:false,bait:false,rod:false,boat:false,watertemp:false,weather:true,trolling:false,released:true,mapPin:true,photos:true,notes:true};
+const DEFAULT_FIELD_PREF={length:true,weight:true,location:true,method:false,bait:false,rod:false,boat:false,watertemp:false,wxCond:true,wxTemp:true,wxWind:true,wxPress:true,wxMoon:false,trolling:false,released:true,mapPin:true,photos:true,notes:true};
 const FIELD_GROUPS=[
   {i18n:'grpCatch',  keys:['length','weight','released']},
   {i18n:'grpPhotos', keys:['photos']},
   {i18n:'grpWater',  keys:['location','mapPin']},
-  {i18n:'grpConditions', keys:['weather','watertemp']},
+  {i18n:'grpConditions', keys:['wxCond','wxTemp','wxWind','wxPress','wxMoon','watertemp']},
   {i18n:'grpGear',   keys:['method','bait','rod','boat','trolling']},
   {i18n:'grpNotes',  keys:['notes']},
 ];
@@ -2711,7 +2709,6 @@ function fieldHasValue(key){
     case 'rod': return document.getElementById('f-rod').value.trim()!=='';
     case 'boat': return document.getElementById('f-boat').value.trim()!=='';
     case 'watertemp': return document.getElementById('f-watertemp').value.trim()!=='';
-    case 'weather': return document.getElementById('f-weather').value.trim()!=='';
     case 'trolling': return document.getElementById('f-trolling').value.trim()!=='';
     case 'released': return document.getElementById('f-released').value!=='';
     case 'mapPin': return state.formLat!=null;
@@ -2742,8 +2739,8 @@ function applyFieldConfig(force){
   syncFormGroups();
 }
 function syncFormGroups(){
-  const groups=[['fg-catch',['ff-length','ff-weight','ff-released']],['fg-photos',['ff-photos']],['fg-water',['ff-location','ff-mapPin']],['fg-cond',['ff-weather','ff-watertemp']],['fg-gear',['ff-method','ff-bait','ff-rod','ff-boat','ff-trolling']],['fg-notes',['ff-notes']]];
-  groups.forEach(([hid,ids])=>{ const h=document.getElementById(hid); if(!h) return; let vis=ids.some(id=>{ const el=document.getElementById(id); return el && el.style.display!=='none'; }); h.style.display = vis ? '' : 'none'; });
+  const groups=[['fg-catch',['ff-length','ff-weight','ff-released']],['fg-photos',['ff-photos']],['fg-water',['ff-location','ff-mapPin']],['fg-cond',['ff-watertemp']],['fg-gear',['ff-method','ff-bait','ff-rod','ff-boat','ff-trolling']],['fg-notes',['ff-notes']]];
+  groups.forEach(([hid,ids])=>{ const h=document.getElementById(hid); if(!h) return; let vis=ids.some(id=>{ const el=document.getElementById(id); return el && el.style.display!=='none'; }); if(hid==='fg-cond'){ const w=document.getElementById('f-weather-wrap'); if(w && w.style.display!=='none') vis=true; } h.style.display = vis ? '' : 'none'; });
 }
 
 // ---------- share config panel (settings) ----------
@@ -2837,7 +2834,7 @@ async function openForm(skipAuto){
   document.getElementById('form-err').style.display='none';
   { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display='none'; }
   state.formLat=null; state.formLon=null; state.formWeather=null;
-  { const _wf=document.getElementById('f-weather'); if(_wf) _wf.value=''; state.weatherEdited=false; }
+  { const _wb=document.getElementById('f-weather'); if(_wb) _wb.innerHTML=''; const _ww=document.getElementById('f-weather-wrap'); if(_ww) _ww.style.display='none'; }
   clearPhoto(); closeSpecies(); populateAreaSelect(); go('form');
   ensureFormMap(null,null);
   // no automatic geolocation on open — the browser prompt should only appear when the user taps "Mein Standort"
@@ -2865,7 +2862,7 @@ function openEdit(c){
   state.editId=c.id;
   { const _fa=document.getElementById('ff-area'); if(_fa) _fa.style.display='none'; }
   { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display=''; }
-  { const _wf=document.getElementById('f-weather'); if(_wf) _wf.value=(c.weather&&(c.weather.text||c.weather.manual))||((c.weather&&c.weather.cur)?wxSummaryString(c.weather):''); state.weatherEdited=true; }
+  { if(c.weather){ state.formWeather=c.weather; try{ renderWeatherInto(c.weather, c.date, 'f-weather','f-weather-wrap'); }catch(e){} } }
   document.getElementById('f-title').textContent=t('editCatch');
   document.getElementById('f-sub').textContent=t('editSub');
   document.getElementById('f-species').value=trSpecies(c.species); state.speciesKey=c.species;
@@ -2986,7 +2983,7 @@ function saveCatch(){
   if(new Date(date) > new Date()){ err.textContent=t('errFuture'); err.style.display='block'; return; }
   // enforce configured required fields (the minimum can't be skipped)
   const cfg=ctxAdminCfg();
-  const missing=CFG_FIELDS.filter(f=>cfg[f.key]==='required' && !fieldHasValue(f.key));
+  const missing=CFG_FIELDS.filter(f=>cfg[f.key]==='required' && f.key.indexOf('wx')!==0 && !fieldHasValue(f.key));
   if(missing.length){ err.textContent=t('errRequired')+' '+missing.map(f=>t(f.i18n)).join(', '); err.style.display='block'; return; }
   const w=document.getElementById('f-weight').value, l=document.getElementById('f-length').value;
   const obj={
@@ -3005,7 +3002,7 @@ function saveCatch(){
     notes:document.getElementById('f-notes').value.trim(),
     photos: state.editPhotos.slice(), photo: state.editPhotos[0] || null, userId: state.userId || null,
     lat: state.formLat!=null?state.formLat:null, lon: state.formLon!=null?state.formLon:null,
-    moon: moonPhaseKey(new Date(date)), weather: (function(){ const _v=(document.getElementById('f-weather').value||'').trim(); return _v?{text:_v}:null; })()
+    moon: moonPhaseKey(new Date(date)), weather: state.formWeather || null
   };
   if(isDbCatch()){
     const btn=document.querySelector('#s-form .btn[onclick="saveCatch()"]'); if(btn) btn.disabled=true;
