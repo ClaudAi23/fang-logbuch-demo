@@ -23,7 +23,7 @@
   :root{
     --teal:#2E7A8E; --teal-dark:#245F70; --teal-tint:#E2EDF0;
     --navy:#18202A;
-    --rust:#C2502A; --rust-tint:#F1E2D8;
+    --rust:#2E7A8E; --rust-tint:#E2EDF0;
     --sand:#EFEAE0; --surface:#FFFFFF; --surface-2:#F7F2E8;
     --text:#1C1B18; --muted:#6F6A5F; --border:#E1DACC; --border-2:#D3CAB8;
     --danger:#B23A3A; --shadow:0 10px 34px rgba(28,27,24,.12);
@@ -33,7 +33,7 @@
   [data-theme="dark"]{
     color-scheme:dark;
     --teal:#3E97AE; --teal-dark:#317E95; --teal-tint:#1E2E36;
-    --rust:#D9663B; --rust-tint:#33261F;
+    --rust:#3E97AE; --rust-tint:#1E2E36;
     --sand:#15181C; --surface:#1E242B; --surface-2:#232A31;
     --text:#ECEAE3; --muted:#9BA1A3; --border:#2C333B; --border-2:#3A434C;
     --danger:#E0716B; --shadow:0 12px 36px rgba(0,0,0,.5);
@@ -79,13 +79,14 @@
 
   .pad{padding:20px 16px;}
   .btn{
-    width:100%; border:none; background:var(--teal); color:#fff;
+    width:100%; border:none; background:linear-gradient(180deg,var(--teal),var(--teal-dark)); color:#fff;
     font-family:'Barlow Condensed',sans-serif; font-size:19px; font-weight:600;
-    text-transform:uppercase; letter-spacing:.04em; padding:14px;
-    border-radius:8px; cursor:pointer;
+    text-transform:uppercase; letter-spacing:.04em; padding:15px;
+    border-radius:13px; cursor:pointer;
+    box-shadow:0 10px 22px rgba(46,122,142,.40), inset 0 1px 0 rgba(255,255,255,.22);
   }
-  .btn:active{background:var(--teal-dark);}
-  .btn.secondary{background:transparent; color:var(--teal); border:1.5px solid var(--border-2);}
+  .btn:active{background:var(--teal-dark); box-shadow:0 4px 12px rgba(46,122,142,.30);}
+  .btn.secondary{background:transparent; color:var(--teal); border:1.5px solid var(--border-2); box-shadow:none;}
   .btn.sm{padding:10px; font-size:16px;}
   label{display:block; font-size:12px; font-weight:600; color:var(--muted); margin:0 0 6px;
     text-transform:uppercase; letter-spacing:.05em;}
@@ -121,7 +122,8 @@
   }
   .logo-badge img,.logo-badge svg{width:100%; height:100%; object-fit:contain; display:block;}
   .brandname{font-family:'Playfair Display',Georgia,serif !important; font-weight:700; letter-spacing:0;}
-  .beta-pill{display:inline-block; padding:2px 10px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:var(--teal); color:#fff;}
+  .beta-pill{display:inline-block; padding:4px 13px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; background:transparent; color:var(--teal); border:1px solid var(--teal);}
+  .brand-foot{flex:0 0 auto; text-align:center; padding:10px 16px calc(14px + env(safe-area-inset-bottom));}
   .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--teal); color:#fff; padding:10px 18px; border-radius:999px; font-size:14px; font-weight:600; z-index:9999; box-shadow:0 4px 16px rgba(0,0,0,.3); opacity:0; transition:opacity .2s; pointer-events:none;}
   .toast.show{opacity:1;}
   .accgroup{border:1px solid var(--border); border-radius:12px; margin-bottom:10px; overflow:hidden; background:var(--surface);}
@@ -346,8 +348,8 @@
   .ob-li:last-child{border-bottom:1px solid var(--border);}
   .ob-li b{display:block; font-family:var(--head); font-size:16px; color:var(--teal); letter-spacing:.2px;}
   .ob-li span{font-size:13px; color:var(--muted);}
-  .mascot-band{position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:22px; background:linear-gradient(155deg,var(--teal),var(--teal-dark)); box-shadow:0 8px 22px rgba(0,0,0,.20);}
-  .mascot-band::before{content:""; position:absolute; inset:0; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><polygon points='0,0 32,0 0,32' fill='%23ffffff' opacity='0.06'/><polygon points='64,64 32,64 64,32' fill='%23000000' opacity='0.07'/></svg>"); background-size:64px 64px;}
+  .mascot-band{position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:22px; background:radial-gradient(ellipse 92% 80% at 50% 36%, #4EA6BB 0%, #2E7A8E 46%, #143845 100%); box-shadow:0 10px 26px rgba(0,0,0,.42), inset 0 0 0 1px rgba(255,255,255,.14);}
+  .mascot-band::before{content:""; position:absolute; inset:0; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><polygon points='0,0 32,0 0,32' fill='%23ffffff' opacity='0.05'/><polygon points='64,64 32,64 64,32' fill='%23000000' opacity='0.06'/></svg>"); background-size:64px 64px; mix-blend-mode:overlay;}
   .mascot-band img{position:relative; z-index:1; max-width:86%; max-height:86%; width:auto; height:auto; display:block; filter:drop-shadow(0 6px 14px rgba(0,0,0,.30));}
   .mb-empty{width:100%; max-width:340px; height:190px; margin:2px auto 12px;}
   .mb-home{width:150px; height:150px; margin:0 auto;}
@@ -375,34 +377,25 @@
       </button>
     </div>
     <div class="scroll pad">
-      <div style="height:14px"></div>
-      <div style="display:flex; align-items:center; gap:12px; justify-content:center; margin:0 0 6px;">
-        <div id="club-logo" class="mascot-band" style="width:58px; height:58px; flex:0 0 auto;"></div>
-        <div style="text-align:left; min-width:0;">
-          <h1 class="brandname" style="font-size:22px; margin:0; line-height:1.05;" data-i18n="appName">The Fishing Butler</h1>
-          <p class="tagline" style="margin:2px 0 0; font-size:12px;" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
-        </div>
-      </div>
-      <p style="text-align:center; margin:0 0 10px;"><span class="beta-pill">Beta</span></p>
-      <p style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="chooseArea">Wähle deinen Bereich</p>
+      <div style="height:18px"></div>
+      <div id="club-logo" class="mascot-band" style="width:72px; height:72px; border-radius:18px; margin:0 auto 12px;"></div>
+      <h1 class="brandname" style="text-align:center; font-size:25px; margin:0 0 3px; line-height:1.05;" data-i18n="appName">The Fishing Butler</h1>
+      <p class="tagline" style="text-align:center; color:var(--teal); font-weight:500; font-size:14px; margin:0 0 16px;" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
+      <p style="text-align:center; color:var(--muted); margin:0 0 20px;" data-i18n="chooseArea">Wähle deinen Bereich</p>
       <div id="club-list"></div>
       <p id="not-in-club-hint" class="hint" style="text-align:center; margin-top:18px;" data-i18n="notInClub">Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.</p>
       <p class="hint" style="text-align:center; margin-top:22px;"><a href="javascript:void(0)" onclick="openLegal()" style="color:var(--muted); font-weight:600;" data-i18n="legalLink">Beta-Hinweis · Datenschutz · Impressum</a></p>
     </div>
+    <div class="brand-foot"><span class="beta-pill">Beta</span></div>
   </section>
 
   <!-- ============ LOGIN ============ -->
   <section id="s-login" class="screen">
     <div class="scroll pad">
-      <div style="height:18px"></div>
-      <div style="display:flex; align-items:center; gap:16px; margin:0 0 22px; padding:18px 20px; background:linear-gradient(150deg, var(--teal), var(--teal-dark)); border-radius:20px; box-shadow:0 10px 30px rgba(24,32,42,.28);">
-        <div id="login-logo" style="width:88px; height:88px; flex:0 0 auto;"></div>
-        <div style="min-width:0; text-align:left;">
-          <h1 class="brandname" style="font-size:26px; margin:0 0 2px; color:#fff; line-height:1.05;" data-i18n="appName">The Fishing Butler</h1>
-          <p class="tagline" style="color:rgba(255,255,255,.86); margin:0 0 8px; font-size:13px;" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
-          <span class="beta-pill" style="background:rgba(255,255,255,.22);">Beta</span>
-        </div>
-      </div>
+      <div style="height:44px"></div>
+      <div id="login-logo" class="mascot-band" style="width:132px; height:132px; border-radius:30px; margin:0 auto 20px;"></div>
+      <h1 class="brandname" style="text-align:center; font-size:31px; margin:0 0 6px; line-height:1.04;" data-i18n="appName">The Fishing Butler</h1>
+      <p class="tagline" style="text-align:center; color:var(--teal); font-weight:500; font-size:16px; margin:0 0 30px;" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
       <p id="login-intro2" style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="loginIntro2">Gib deine E-Mail ein — wir schicken dir einen Code. Kein Passwort nötig.</p>
       <div class="field" id="login-name-field" style="display:none;">
         <label data-i18n="name">Name</label>
@@ -445,6 +438,7 @@
         <a href="javascript:void(0)" style="color:var(--muted);" onclick="startDemo()" data-i18n="tryDemo">Ohne Konto testen</a>
       </p>
     </div>
+    <div class="brand-foot"><span class="beta-pill">Beta</span></div>
   </section>
 
   <!-- ============ LIST ============ -->
@@ -3564,7 +3558,7 @@ applyTheme();
 applyLang();
 if((navigator.maxTouchPoints||0)>0 && navigator.share){ document.getElementById('share-btn').style.display=''; }
 document.getElementById('club-logo').innerHTML=`<img src="/mascot.png" alt="The Fishing Butler" />`;
-document.getElementById('login-logo').innerHTML=`<img src="/mascot.png" alt="The Fishing Butler" style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));">`;
+document.getElementById('login-logo').innerHTML=`<img src="/mascot.png" alt="The Fishing Butler" />`;
 initAuth();
 _armBack();   // put one guard entry on the history stack so back/swipe is captured in-app
 </script>
