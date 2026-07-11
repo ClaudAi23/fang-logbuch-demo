@@ -2491,6 +2491,16 @@ async function openStats(){
   }
   renderStats(); go('stats');
 }
+function otherCtxBadge(c){
+  const ids=(c._ctxIds||[]).filter(Boolean);
+  if(ids.length<2) return '';
+  const others=ids.filter(id=>id!==c._ctxId);
+  const n=others.length; if(n<=0) return '';
+  const map={}; (state.myContexts||[]).forEach(x=>{ if(x&&x.id) map[x.id]=x.name; });
+  const names=others.map(id=>map[id]).filter(Boolean);
+  const title=names.length?names.join(', '):'';
+  return '<span class="ctxbadge" title="'+esc(title)+'" style="opacity:.7; margin-left:-2px;">+'+n+'</span>';
+}
 function renderStats(){
   const cnt=activeFilterCount();
   const fc=document.getElementById('stats-filter-count');
@@ -2524,7 +2534,7 @@ function renderStats(){
     b.innerHTML=`${thumb}
       <span style="flex:1; min-width:0;">
         <span class="top"><span class="sp">${trSpecies(c.species)}</span><span class="val">${primaryStr(c)}</span></span>
-        <span class="meta"><span class="ctxbadge">${c._ctx}</span>${(c._db&&c.confirmed===false)?`<span style="display:inline-block;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;background:var(--teal);color:#fff;margin-right:4px;">${esc(t('unconfShort'))}</span>`:''}${c.angler} · ${fmtDate(c.date)}</span>
+        <span class="meta"><span class="ctxbadge">${c._ctx}</span>${otherCtxBadge(c)}${(c._db&&c.confirmed===false)?`<span style="display:inline-block;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;background:var(--teal);color:#fff;margin-right:4px;">${esc(t('unconfShort'))}</span>`:''}${c.angler} · ${fmtDate(c.date)}</span>
       </span>
       ${CHEV_IC}`;
     list.appendChild(wrapSwipe(b, c, 'stats'));
