@@ -599,6 +599,9 @@
       <p class="hint" style="margin:2px 0 14px;"><span class="req">*</span> <span data-i18n="starReq">immer erforderlich</span> &nbsp;·&nbsp; <span style="color:var(--danger); font-weight:600;">*</span> <span data-i18n="starAdmin">vom Verein/Gruppe als Pflicht gesetzt</span></p>
       <button class="btn" onclick="saveCatch()" data-i18n="saveCatch">Fang speichern</button>
       <p id="form-err" class="hint" style="color:var(--danger); text-align:center; display:none;">Bitte Fischart, Datum und Angler ausfüllen.</p>
+      <div id="form-del-wrap" style="display:none; margin-top:26px; padding-top:18px; border-top:1px solid var(--border);">
+        <button type="button" id="form-del-btn" class="btn secondary" style="color:var(--danger); border-color:var(--border-2);" onclick="deleteCatch(state.editId)" data-i18n="del">Löschen</button>
+      </div>
       <div style="height:20px"></div>
     </div>
   </section>
@@ -632,7 +635,6 @@
           <div class="sectionlabel" data-i18n="notes">Notizen</div>
           <p id="d-notes" style="margin:0; color:var(--text);">—</p>
         </div>
-        <button id="del-btn" class="btn secondary" style="display:none; color:var(--danger); border-color:var(--border-2); margin-top:20px;" onclick="deleteCatch(state.current.id)" data-i18n="del">Löschen</button>
         <div style="height:24px"></div>
       </div>
     </div>
@@ -2211,8 +2213,8 @@ function renderList(){
     </div>`;
   document.getElementById('stats').innerHTML =
     scard(cnt>0?t('hits'):t('total'), items.length, false) +
-    scard(t('longestStat'), bigLen?fmtLen(bigLen.length):'—', true) +
-    scard(t('heaviestStat'), bigWt?fmtWeight(bigWt.weight):'—', true);
+    (bigLen ? scard(t('longestStat'), fmtLen(bigLen.length), true) : '') +
+    (bigWt ? scard(t('heaviestStat'), fmtWeight(bigWt.weight), true) : '');
 
   document.getElementById('sort-list').innerHTML=sortOptionsHtml();
   const list=document.getElementById('catch-list'); list.innerHTML='';
@@ -2274,8 +2276,8 @@ function renderStats(){
     <div style="font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:700; line-height:1.1;${rust?' color:var(--rust);':''}">${val}</div></div>`;
   document.getElementById('stats-cards').innerHTML =
     kpi(t('total'), items.length) +
-    kpi(t('longest'), bigLen?fmtLen(bigLen.length):'—', true) +
-    kpi(t('heaviest'), bigWt?fmtWeight(bigWt.weight):'—', true) +
+    (bigLen ? kpi(t('longest'), fmtLen(bigLen.length), true) : '') +
+    (bigWt ? kpi(t('heaviest'), fmtWeight(bigWt.weight), true) : '') +
     kpi(t('speciesCount'), speciesCount) +
     kpi(t('thisYear'), thisYearCount);
   document.getElementById('sort-stats').innerHTML=sortOptionsHtml();
@@ -2699,6 +2701,7 @@ async function openForm(skipAuto){
   buildAnglerOptions();
   if(ctxIsDb()){ const keep=state.editId; loadCtxMembers().then(()=>{ const sel=document.getElementById('f-angler'); if(state.editId===keep && sel && sel.value===`u:${state.me.id}`) buildAnglerOptions(); }); }
   document.getElementById('form-err').style.display='none';
+  { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display='none'; }
   state.formLat=null; state.formLon=null; state.formWeather=null;
   document.getElementById('f-weather-wrap').style.display='none';
   clearPhoto(); closeSpecies(); populateAreaSelect(); go('form');
@@ -2727,6 +2730,7 @@ function openEdit(c){
   openForm(true);
   state.editId=c.id;
   { const _fa=document.getElementById('ff-area'); if(_fa) _fa.style.display='none'; }
+  { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display=''; }
   document.getElementById('f-title').textContent=t('editCatch');
   document.getElementById('f-sub').textContent=t('editSub');
   document.getElementById('f-species').value=trSpecies(c.species); state.speciesKey=c.species;
@@ -3041,7 +3045,6 @@ function openDetailObj(c, from){
   const isMine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
   const editable = state.detailFrom==='list' && isMine;
   document.getElementById('edit-btn').style.display = editable ? '' : 'none';
-  document.getElementById('del-btn').style.display = editable ? '' : 'none';
   const mw=document.getElementById('d-map-wrap');
   mw.style.display = c.lat!=null ? 'block' : 'none';
   if(c.weather) renderWeather(c);
