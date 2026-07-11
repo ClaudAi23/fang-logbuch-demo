@@ -182,7 +182,7 @@
   .catch{
     display:flex; gap:13px; width:100%; text-align:left; align-items:center;
     background:var(--surface); border:1px solid var(--border); border-radius:10px;
-    padding:12px; margin-bottom:10px; cursor:pointer; font-family:inherit;
+    padding:12px; margin-bottom:10px; cursor:pointer; font-family:inherit; color:var(--text);
   }
   .catch:active{border-color:var(--teal);}
   .thumb{
@@ -576,9 +576,11 @@
         <label data-i18n="watertemp">Wassertemperatur (°C)</label>
         <input id="f-watertemp" type="number" inputmode="decimal" step="0.1" placeholder="z. B. 18" data-i18n-ph="watertempPh" />
       </div>
-      <div id="f-weather-wrap" style="display:none; margin-bottom:16px;">
-        <div class="sectionlabel" data-i18n="weather">Wetter</div>
+      <div class="field" id="ff-weather">
+        <label data-i18n="weather">Wetter</label>
         <div id="f-weather"></div>
+        <input id="f-weather-manual" type="text" placeholder="z. B. sonnig, 18 °C, leichter Wind" data-i18n-ph="weatherManualPh" style="margin-top:8px;" />
+        <div class="hint" data-i18n="weatherManualHint">Automatisch geladen, wenn ein Standort gesetzt ist – manuell überschreibbar.</div>
       </div>
 
       <div class="fgroup" id="fg-gear" data-i18n="grpGear">Technik & Ausrüstung</div>
@@ -679,7 +681,7 @@
               <span class="av-edit-badge"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
               <input id="prof-av-file" type="file" accept="image/*" style="display:none" onchange="onUserAvatar(event)" />
             </label>
-            <div><div id="prof-name" style="font-weight:600;">—</div><div class="hint" style="margin:2px 0 0;" data-i18n="tapToChange">Zum Ändern tippen</div></div>
+            <div><div id="prof-name" style="font-weight:600;">—</div><div class="hint" style="margin:2px 0 0;" data-i18n="tapToChange">Zum Ändern tippen</div><a id="prof-av-remove" href="javascript:void(0)" onclick="removeUserAvatar()" class="hint" style="display:none; color:var(--danger); font-weight:600; margin-top:2px;" data-i18n="removeImage">Bild entfernen</a></div>
           </div>
           <label data-i18n="name">Name</label>
           <input id="prof-name-input" type="text" autocomplete="off" oninput="onProfileName(this.value)" />
@@ -777,6 +779,7 @@
               <div>
                 <div id="set-clubname" style="font-weight:600;">—</div>
                 <div class="hint" style="margin:2px 0 0;" data-i18n="tapToChange">Zum Ändern tippen</div>
+                <a id="logo-remove" href="javascript:void(0)" onclick="removeContextLogo()" class="hint" style="display:none; color:var(--danger); font-weight:600; margin-top:2px;" data-i18n="removeImage">Bild entfernen</a>
               </div>
             </div>
             <div class="sectionlabel" style="margin:16px 0 6px;" data-i18n="logoInitials">Kürzel-Logo (ohne Bild)</div>
@@ -1191,7 +1194,7 @@ const MONTHS = {
 };
 const I18N = {
   de:{
-    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", grpBasis:"Basis", grpCatch:"Der Fang", grpPhotos:"Fotos", grpWater:"Gewässer & Standort", grpConditions:"Bedingungen", grpGear:"Technik & Ausrüstung", grpNotes:"Notizen", logoInitials:"Kürzel-Logo (ohne Bild)", logoInitialsHint:"Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).", logoLight:"Heller Text", logoDark:"Dunkler Text", editImage:"Bild anpassen", editImageHint:"Ziehen zum Verschieben, Regler zum Zoomen.", cropApply:"Übernehmen", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
+    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", grpBasis:"Basis", grpCatch:"Der Fang", grpPhotos:"Fotos", grpWater:"Gewässer & Standort", grpConditions:"Bedingungen", grpGear:"Technik & Ausrüstung", grpNotes:"Notizen", logoInitials:"Kürzel-Logo (ohne Bild)", logoInitialsHint:"Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).", logoLight:"Heller Text", logoDark:"Dunkler Text", editImage:"Bild anpassen", editImageHint:"Ziehen zum Verschieben, Regler zum Zoomen.", cropApply:"Übernehmen", removeImage:"Bild entfernen", weatherManualPh:"z. B. sonnig, 18 °C, leichter Wind", weatherManualHint:"Automatisch geladen, wenn ein Standort gesetzt ist – manuell überschreibbar.", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
     personal:"Persönlich", clubs:"Vereine", groups:"Gruppen", statsTile:"Meine Fänge", statsTileSub:"Alle Fänge, alle Bereiche", soloTile:"Solo", soloTileSub:"Eigenes Logbuch, privat",
     signIn:"Anmelden", email:"E-Mail", emailPh:"name@beispiel.de", password:"Passwort", loginHint:"Demo: beliebige E-Mail und beliebiges Passwort funktionieren. Konten werden vom Vereinsadmin angelegt.",
     solo:"Solo", withoutClub:"Ohne Verein", yourName:"Dein Name", namePh:"z. B. Johannes", next:"Weiter", errName:"Bitte gib deinen Namen ein.", soloHint:"Im Solo-Modus dokumentierst du deine Fänge privat — ohne Verein, ohne Login.",
@@ -1204,7 +1207,7 @@ const I18N = {
     clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit The Fishing Butler", shareNoMeasure:"ohne Maße"
   },
   en:{
-    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", grpBasis:"Basics", grpCatch:"The catch", grpPhotos:"Photos", grpWater:"Water & location", grpConditions:"Conditions", grpGear:"Technique & gear", grpNotes:"Notes", logoInitials:"Initials logo (no image)", logoInitialsHint:"Shown when no image is set (max. 3 characters).", logoLight:"Light text", logoDark:"Dark text", editImage:"Adjust image", editImageHint:"Drag to move, slider to zoom.", cropApply:"Apply", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
+    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", grpBasis:"Basics", grpCatch:"The catch", grpPhotos:"Photos", grpWater:"Water & location", grpConditions:"Conditions", grpGear:"Technique & gear", grpNotes:"Notes", logoInitials:"Initials logo (no image)", logoInitialsHint:"Shown when no image is set (max. 3 characters).", logoLight:"Light text", logoDark:"Dark text", editImage:"Adjust image", editImageHint:"Drag to move, slider to zoom.", cropApply:"Apply", removeImage:"Remove image", weatherManualPh:"e.g. sunny, 18 °C, light wind", weatherManualHint:"Auto-filled when a location is set – you can override it.", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
     personal:"Personal", clubs:"Clubs", groups:"Groups", statsTile:"My catches", statsTileSub:"All catches, everywhere", soloTile:"Solo", soloTileSub:"Your own private log",
     signIn:"Sign in", email:"Email", emailPh:"name@example.com", password:"Password", loginHint:"Demo: any email and password work. Accounts are created by the club admin.",
     solo:"Solo", withoutClub:"Without a club", yourName:"Your name", namePh:"e.g. John", next:"Continue", errName:"Please enter your name.", soloHint:"In solo mode you log your catches privately — no club, no login.",
@@ -1217,7 +1220,7 @@ const I18N = {
     clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with The Fishing Butler", shareNoMeasure:"no measurements"
   },
   nl:{
-    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", grpBasis:"Basis", grpCatch:"De vangst", grpPhotos:"Foto's", grpWater:"Water & locatie", grpConditions:"Omstandigheden", grpGear:"Techniek & uitrusting", grpNotes:"Notities", logoInitials:"Initialen-logo (geen afbeelding)", logoInitialsHint:"Wordt getoond als er geen afbeelding is (max. 3 tekens).", logoLight:"Lichte tekst", logoDark:"Donkere tekst", editImage:"Afbeelding aanpassen", editImageHint:"Sleep om te verplaatsen, schuif om te zoomen.", cropApply:"Toepassen", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
+    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", grpBasis:"Basis", grpCatch:"De vangst", grpPhotos:"Foto's", grpWater:"Water & locatie", grpConditions:"Omstandigheden", grpGear:"Techniek & uitrusting", grpNotes:"Notities", logoInitials:"Initialen-logo (geen afbeelding)", logoInitialsHint:"Wordt getoond als er geen afbeelding is (max. 3 tekens).", logoLight:"Lichte tekst", logoDark:"Donkere tekst", editImage:"Afbeelding aanpassen", editImageHint:"Sleep om te verplaatsen, schuif om te zoomen.", cropApply:"Toepassen", removeImage:"Afbeelding verwijderen", weatherManualPh:"bijv. zonnig, 18 °C, lichte wind", weatherManualHint:"Automatisch geladen als er een locatie is – handmatig te overschrijven.", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
     personal:"Persoonlijk", clubs:"Verenigingen", groups:"Groepen", statsTile:"Mijn vangsten", statsTileSub:"Alle vangsten, overal", soloTile:"Solo", soloTileSub:"Eigen logboek, privé",
     signIn:"Inloggen", email:"E-mail", emailPh:"naam@voorbeeld.nl", password:"Wachtwoord", loginHint:"Demo: elke e-mail en elk wachtwoord werken. Accounts worden aangemaakt door de verenigingsbeheerder.",
     solo:"Solo", withoutClub:"Zonder vereniging", yourName:"Je naam", namePh:"bijv. Jan", next:"Verder", errName:"Voer je naam in.", soloHint:"In solomodus leg je je vangsten privé vast — zonder vereniging, zonder inloggen.",
@@ -1453,6 +1456,7 @@ function go(name, isBack){
   { const _fb=document.getElementById('mainfab'); if(_fb) _fb.style.display=(name==='club'||name==='stats'||name==='list')?'':'none'; }
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('s-'+name).classList.add('active');
+  if(name==='login'){ try{ changeLoginEmail(); const _lc=document.getElementById('login-code'); if(_lc) _lc.value=''; }catch(e){} }
   const sc=document.querySelector('#s-'+name+' .scroll'); if(sc) sc.scrollTop=0;
 }
 function _openModalEls(){ return Array.prototype.slice.call(document.querySelectorAll('.modal-ov')).filter(m=>{ const d=m.style.display; return d && d!=='none'; }); }
@@ -1885,6 +1889,24 @@ async function initAuth(){
   go('login');
 }
 function userAvatarHTML(){ return (state.me && state.me.avatar) ? `<img src="${state.me.avatar}" alt="">` : initialsAvatar(state.me ? state.me.name : '?'); }
+function updateAvRemove(){ const el=document.getElementById('prof-av-remove'); if(el) el.style.display=(state.me && state.me.avatar)?'':'none'; }
+async function removeUserAvatar(){
+  if(!state.me) return;
+  state.me.avatar=null; savePrefs();
+  document.getElementById('prof-av').innerHTML=userAvatarHTML(); { const _oa=document.getElementById('ob-av'); if(_oa) _oa.innerHTML=userAvatarHTML(); }
+  if(state.mode==='solo'){ const lh=document.getElementById('list-hdr'); if(lh) lh.innerHTML=userAvatarHTML(); }
+  updateAvRemove();
+  if(state.auth==='supabase' && getSB()){ try{ await getSB().from('profiles').upsert({id:state.me.id, avatar_url:null}); toast(t('savedToast')); }catch(e){} }
+}
+function updateLogoRemove(){ const el=document.getElementById('logo-remove'); if(el) el.style.display=(state.club && (state.club.logo_url || (state.logos&&state.logos[state.club.id])))?'':'none'; }
+async function removeContextLogo(){
+  if(!state.club) return;
+  if(ctxIsDb()){ if(!canEditCtxCfg()) return; try{ await getSB().from('contexts').update({logo_url:null}).eq('id', state.club.id); }catch(e){} state.club.logo_url=null; }
+  else { if(state.logos) delete state.logos[state.club.id]; savePrefs(); }
+  const sl=document.getElementById('set-logo'); if(sl) sl.innerHTML=clubLogoHTML(state.club);
+  const lh=document.getElementById('list-hdr'); if(lh) lh.innerHTML=clubLogoHTML(state.club);
+  renderClubs(); try{ renderLogoEditor(); }catch(e){} updateLogoRemove(); toast(t('savedToast'));
+}
 // ---------- Supabase data layer (solo + shared context catches) ----------
 function isDbCatch(){ return state.auth==='supabase'; }
 function currentContextId(){ return state.mode==='solo' ? null : (state.club? state.club.id : null); }
@@ -2191,7 +2213,7 @@ function buildCsv(items, target){
   items.forEach(c=>{
     const d=new Date(c.date), p=n=>String(n).padStart(2,'0');
     const dstr=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
-    let wetter=''; if(c.weather&&c.weather.cur){ const cw=c.weather.cur, ck=weatherCodeKey(cw.code); wetter=[ck?t(ck):null, cw.temp!=null?Math.round(cw.temp)+' °C':null].filter(Boolean).join(', '); }
+    let wetter=''; if(c.weather&&c.weather.manual){ wetter=c.weather.manual; } else if(c.weather&&c.weather.cur){ const cw=c.weather.cur, ck=weatherCodeKey(cw.code); wetter=[ck?t(ck):null, cw.temp!=null?Math.round(cw.temp)+' °C':null].filter(Boolean).join(', '); }
     const bereich = target==='stats' ? (c._ctx||'') : (state.mode==='solo'?t('solo'):(state.club?state.club.name:''));
     const vals=[dstr, trSpecies(c.species),
       c.length!=null?c.length:'', c.weight!=null?String(c.weight).replace('.',','):'',
@@ -2264,7 +2286,7 @@ async function exportPdf(target){
     if(c.released!=null) det.push(t('releasedLabel')+': '+(c.released?t('releasedReleased'):t('releasedKept')));
     det.push(t('dAngler')+': '+c.angler);
     det.push(t('dDate')+': '+fmtDateLong(c.date));
-    if(c.weather&&c.weather.cur){ const cw=c.weather.cur,ck=weatherCodeKey(cw.code); det.push(t('weather')+': '+[ck?t(ck):null,cw.temp!=null?Math.round(cw.temp)+' °C':null].filter(Boolean).join(', ')); }
+    if(c.weather&&c.weather.manual){ det.push(t('weather')+': '+c.weather.manual); } else if(c.weather&&c.weather.cur){ const cw=c.weather.cur,ck=weatherCodeKey(cw.code); det.push(t('weather')+': '+[ck?t(ck):null,cw.temp!=null?Math.round(cw.temp)+' °C':null].filter(Boolean).join(', ')); }
     if(c.moon) det.push(t('moon')+': '+t(c.moon));
     if(c.notes) det.push(t('notes')+': '+c.notes);
     doc.setFontSize(10);
@@ -2515,10 +2537,9 @@ async function enrichWeather(c){
 let previewTimer=null, previewSeq=0;
 function previewWeather(){
   const lat=state.formLat, lon=state.formLon;
-  const wrap=document.getElementById('f-weather-wrap');
-  if(lat==null){ wrap.style.display='none'; state.formWeather=null; return; }
-  wrap.style.display='block';
-  document.getElementById('f-weather').innerHTML=`<div class="hint" style="margin:0;">${t('wLoading')}</div>`;
+  const box=document.getElementById('f-weather');
+  if(lat==null){ if(box){ box.style.display='none'; box.innerHTML=''; } state.formWeather=null; return; }
+  if(box){ box.style.display='block'; box.innerHTML=`<div class="hint" style="margin:0;">${t('wLoading')}</div>`; }
   const date=document.getElementById('f-date').value;
   clearTimeout(previewTimer);
   const seq=++previewSeq;
@@ -2526,14 +2547,15 @@ function previewWeather(){
     const w=await fetchWeather(lat, lon, date);
     if(seq!==previewSeq) return;
     state.formWeather=w;
-    renderWeatherInto(w, date, 'f-weather','f-weather-wrap');
+    renderWeatherInto(w, date, 'f-weather', null);
   }, 350);
 }
 function renderWeather(c){ renderWeatherInto(c.weather, c.date, 'd-weather','d-weather-wrap'); }
 function renderWeatherInto(weather, date, boxId, wrapId){
-  const wrap=document.getElementById(wrapId), box=document.getElementById(boxId);
-  if(!weather || !weather.cur){ wrap.style.display='none'; return; }
-  wrap.style.display='block';
+  const box=document.getElementById(boxId); const wrap=wrapId?document.getElementById(wrapId):box; const showEl=wrap||box;
+  if(weather && weather.manual){ if(showEl) showEl.style.display='block'; if(box) box.innerHTML=`<div class="wrow"><span class="v">${esc(weather.manual)}</span></div>`; return; }
+  if(!weather || !weather.cur){ if(showEl) showEl.style.display='none'; return; }
+  if(showEl) showEl.style.display='block';
   const cur=weather.cur, daily=weather.daily||[];
   const sep=curLang()==='en'?'.':',';
   const num=(n,d)=> n==null?'—':String(Number(n).toFixed(d)).replace('.',sep);
@@ -2614,20 +2636,21 @@ const CFG_FIELDS=[
   {key:'rod',     i18n:'rod'},
   {key:'boat',    i18n:'boat'},
   {key:'watertemp',i18n:'watertemp'},
+  {key:'weather',  i18n:'weather'},
   {key:'trolling',i18n:'trolling'},
   {key:'released',i18n:'releasedLabel'},
   {key:'mapPin',  i18n:'mapPin'},
   {key:'photos',  i18n:'photos'},
   {key:'notes',   i18n:'notes'},
 ];
-const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',released:'optional',photos:'optional',location:'optional',mapPin:'optional',watertemp:'off',method:'off',bait:'off',rod:'off',boat:'off',trolling:'off',notes:'optional'};
+const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',released:'optional',photos:'optional',location:'optional',mapPin:'optional',watertemp:'off',weather:'optional',method:'off',bait:'off',rod:'off',boat:'off',trolling:'off',notes:'optional'};
 // Globale, additive Feld-Wünsche des Nutzers (an/aus). Admin-Config kann Felder zusätzlich anzeigen/Pflicht machen, nie verbieten.
-const DEFAULT_FIELD_PREF={length:true,weight:true,location:true,method:false,bait:false,rod:false,boat:false,watertemp:false,trolling:false,released:true,mapPin:true,photos:true,notes:true};
+const DEFAULT_FIELD_PREF={length:true,weight:true,location:true,method:false,bait:false,rod:false,boat:false,watertemp:false,weather:true,trolling:false,released:true,mapPin:true,photos:true,notes:true};
 const FIELD_GROUPS=[
   {i18n:'grpCatch',  keys:['length','weight','released']},
   {i18n:'grpPhotos', keys:['photos']},
   {i18n:'grpWater',  keys:['location','mapPin']},
-  {i18n:'grpConditions', keys:['watertemp']},
+  {i18n:'grpConditions', keys:['watertemp','weather']},
   {i18n:'grpGear',   keys:['method','bait','rod','boat','trolling']},
   {i18n:'grpNotes',  keys:['notes']},
 ];
@@ -2681,6 +2704,7 @@ function fieldHasValue(key){
     case 'rod': return document.getElementById('f-rod').value.trim()!=='';
     case 'boat': return document.getElementById('f-boat').value.trim()!=='';
     case 'watertemp': return document.getElementById('f-watertemp').value.trim()!=='';
+    case 'weather': return (document.getElementById('f-weather-manual').value.trim()!=='') || !!state.formWeather;
     case 'trolling': return document.getElementById('f-trolling').value.trim()!=='';
     case 'released': return document.getElementById('f-released').value!=='';
     case 'mapPin': return state.formLat!=null;
@@ -2711,8 +2735,8 @@ function applyFieldConfig(force){
   syncFormGroups();
 }
 function syncFormGroups(){
-  const groups=[['fg-catch',['ff-length','ff-weight','ff-released']],['fg-photos',['ff-photos']],['fg-water',['ff-location','ff-mapPin']],['fg-cond',['ff-watertemp']],['fg-gear',['ff-method','ff-bait','ff-rod','ff-boat','ff-trolling']],['fg-notes',['ff-notes']]];
-  groups.forEach(([hid,ids])=>{ const h=document.getElementById(hid); if(!h) return; let vis=ids.some(id=>{ const el=document.getElementById(id); return el && el.style.display!=='none'; }); if(hid==='fg-cond'){ const w=document.getElementById('f-weather-wrap'); if(w && w.style.display!=='none') vis=true; } h.style.display = vis ? '' : 'none'; });
+  const groups=[['fg-catch',['ff-length','ff-weight','ff-released']],['fg-photos',['ff-photos']],['fg-water',['ff-location','ff-mapPin']],['fg-cond',['ff-watertemp','ff-weather']],['fg-gear',['ff-method','ff-bait','ff-rod','ff-boat','ff-trolling']],['fg-notes',['ff-notes']]];
+  groups.forEach(([hid,ids])=>{ const h=document.getElementById(hid); if(!h) return; let vis=ids.some(id=>{ const el=document.getElementById(id); return el && el.style.display!=='none'; }); h.style.display = vis ? '' : 'none'; });
 }
 
 // ---------- share config panel (settings) ----------
@@ -2806,7 +2830,7 @@ async function openForm(skipAuto){
   document.getElementById('form-err').style.display='none';
   { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display='none'; }
   state.formLat=null; state.formLon=null; state.formWeather=null;
-  document.getElementById('f-weather-wrap').style.display='none';
+  { const _wb=document.getElementById('f-weather'); if(_wb){ _wb.style.display='none'; _wb.innerHTML=''; } const _wm=document.getElementById('f-weather-manual'); if(_wm) _wm.value=''; }
   clearPhoto(); closeSpecies(); populateAreaSelect(); go('form');
   ensureFormMap(null,null);
   // no automatic geolocation on open — the browser prompt should only appear when the user taps "Mein Standort"
@@ -2834,6 +2858,7 @@ function openEdit(c){
   state.editId=c.id;
   { const _fa=document.getElementById('ff-area'); if(_fa) _fa.style.display='none'; }
   { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display=''; }
+  { const _wm=document.getElementById('f-weather-manual'); if(_wm) _wm.value=(c.weather&&c.weather.manual)||''; }
   document.getElementById('f-title').textContent=t('editCatch');
   document.getElementById('f-sub').textContent=t('editSub');
   document.getElementById('f-species').value=trSpecies(c.species); state.speciesKey=c.species;
@@ -2973,7 +2998,7 @@ function saveCatch(){
     notes:document.getElementById('f-notes').value.trim(),
     photos: state.editPhotos.slice(), photo: state.editPhotos[0] || null, userId: state.userId || null,
     lat: state.formLat!=null?state.formLat:null, lon: state.formLon!=null?state.formLon:null,
-    moon: moonPhaseKey(new Date(date)), weather: state.formWeather || null
+    moon: moonPhaseKey(new Date(date)), weather: (function(){ let w=state.formWeather||null; const _m=(document.getElementById('f-weather-manual').value||'').trim(); if(_m) w=Object.assign({}, w||{}, {manual:_m}); return w; })()
   };
   if(isDbCatch()){
     const btn=document.querySelector('#s-form .btn[onclick="saveCatch()"]'); if(btn) btn.disabled=true;
@@ -3400,7 +3425,7 @@ function shareTokens(c){
   const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
   const ctxName=(c._ctx&&c._ctx!=='Solo')?c._ctx:((state.mode!=='solo'&&state.club)?state.club.name:'');
   let wetter='';
-  if(c.weather&&c.weather.cur){ const cw=c.weather.cur, ck=weatherCodeKey(cw.code); wetter=[ck?t(ck):null, cw.temp!=null?Math.round(cw.temp)+' °C':null].filter(Boolean).join(', '); }
+  if(c.weather&&c.weather.manual){ wetter=c.weather.manual; } else if(c.weather&&c.weather.cur){ const cw=c.weather.cur, ck=weatherCodeKey(cw.code); wetter=[ck?t(ck):null, cw.temp!=null?Math.round(cw.temp)+' °C':null].filter(Boolean).join(', '); }
   const mond=c.moon?(moonEmoji(c.moon)+' '+t(c.moon)):'';
   const len=c.length!=null?fmtLen(c.length):'', gew=c.weight!=null?fmtWeight(c.weight):'';
   return {petri:t('petri'), art:trSpecies(c.species), 'länge':len, laenge:len, gewicht:gew,
@@ -3447,7 +3472,7 @@ function openSettings(){
   document.getElementById('set-sub').textContent = state.me ? state.me.name : '';
   // Persönlich (immer)
   document.getElementById('prof-av').innerHTML=userAvatarHTML(); { const _oa=document.getElementById('ob-av'); if(_oa) _oa.innerHTML=userAvatarHTML(); }
-  document.getElementById('prof-name').textContent=state.me ? state.me.name : '';
+  document.getElementById('prof-name').textContent=state.me ? state.me.name : ''; try{ updateAvRemove(); }catch(e){}
   document.getElementById('prof-name-input').value=state.me ? state.me.name : '';
   syncThemeSeg();
   syncLangSel();
@@ -3477,7 +3502,7 @@ function openSettings(){
     if(state.club){
       document.getElementById('set-clubname').textContent=state.club.name;
       document.getElementById('set-logo').innerHTML=clubLogoHTML(state.club);
-      try{ renderLogoEditor(); }catch(e){}
+      try{ renderLogoEditor(); }catch(e){} try{ updateLogoRemove(); }catch(e){}
     }
     renderFieldCfgPanel();
     const hideCopy = state.auth==='supabase';   // "Auf andere Bereiche übernehmen" ist Demo-only
@@ -3576,7 +3601,7 @@ function onUserAvatar(e){
   const f=e.target.files[0]; if(!f||!state.me) return; e.target.value='';
   openCrop(f, true, cf=>{ const r=new FileReader();
     r.onload=ev=>{ downscaleImage(ev.target.result, 256, async dataUrl=>{
-      state.me.avatar=dataUrl; savePrefs();
+      state.me.avatar=dataUrl; savePrefs(); try{ updateAvRemove(); }catch(e){}
       document.getElementById('prof-av').innerHTML=userAvatarHTML(); { const _oa=document.getElementById('ob-av'); if(_oa) _oa.innerHTML=userAvatarHTML(); }
       if(state.mode==='solo') document.getElementById('list-hdr').innerHTML=userAvatarHTML();
       if(state.auth==='supabase' && getSB()){
@@ -3656,7 +3681,7 @@ async function processLogoFile(f){
       await uploadContextLogo(f);
       if(setLogo) setLogo.innerHTML=clubLogoHTML(state.club);
       const lh=document.getElementById('list-hdr'); if(lh) lh.innerHTML=clubLogoHTML(state.club);
-      renderClubs();
+      renderClubs(); try{ updateLogoRemove(); }catch(e){}
     }catch(err){ if(setLogo) setLogo.innerHTML=prev; showInfo(t('errTitle'), t('errGeneric')); }
     return;
   }
