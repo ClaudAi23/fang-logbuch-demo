@@ -1324,6 +1324,7 @@ function curLang(){
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
   return (n==='de'||n==='nl') ? n : 'en';
 }
+try{ (function(){ var _P={ de:{offlineSaved:'Offline gespeichert \u2013 wird synchronisiert',pendingChip:'Ausstehend',pendingSyncMsg:'Wird synchronisiert, sobald du online bist',syncedToast:'F\u00e4nge synchronisiert'}, en:{offlineSaved:'Saved offline \u2013 will sync',pendingChip:'Pending',pendingSyncMsg:'Will sync once you are online',syncedToast:'Catches synced'}, nl:{offlineSaved:'Offline opgeslagen \u2013 wordt gesynchroniseerd',pendingChip:'In wachtrij',pendingSyncMsg:'Wordt gesynchroniseerd zodra je online bent',syncedToast:'Vangsten gesynchroniseerd'} }; Object.keys(_P).forEach(function(l){ if(I18N[l]) Object.assign(I18N[l],_P[l]); }); })(); }catch(e){}
 function t(k){ const L=curLang(); return (I18N[L] && I18N[L][k]!=null) ? I18N[L][k] : (I18N.en[k]!=null ? I18N.en[k] : k); }
 function trSpecies(name){ const m=SPECIES_TR[name]; return m ? m[curLang()] : name; }
 const GROUPS = [
@@ -1362,7 +1363,7 @@ function seed(){
   ];
 }
 
-let state = { club:null, mode:"club", soloName:null, user:null, userId:null, me:null, auth:null, soloCatches:[], myContexts:[], myAllCatches:[],
+let state = { club:null, mode:"club", soloName:null, user:null, userId:null, me:null, auth:null, soloCatches:[], myContexts:[], myAllCatches:[], pending:[],
   catches:[], editPhotos:[], current:null, speciesKey:null, editId:null, formLat:null, formLon:null, formWeather:null, filterTarget:"list",
   measure:"length", theme:"system", lang:"system", sort:"newest", logos:{}, soloAvatar:null, filter:emptyFilter() };
 
@@ -1529,6 +1530,9 @@ function appBack(){
 function _armBack(){ try{ history.pushState({_fb:1}, ''); }catch(e){} }
 window.addEventListener('popstate', function(){ _armBack(); appBack(); });
  if('serviceWorker' in navigator){ window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); }); }
+ window.addEventListener('online', function(){ try{ syncFlush(); }catch(e){} });
+ window.addEventListener('load', function(){ setTimeout(function(){ if(navigator.onLine){ try{ syncFlush(); }catch(e){} } }, 3500); });
+ setInterval(function(){ if(navigator.onLine){ try{ syncFlush(); }catch(e){} } }, 30000);
 
 // ---------- club ----------
 function toggleCat(id){ const g=document.getElementById('cat-'+id); if(g) g.classList.toggle('open'); }
@@ -2002,9 +2006,10 @@ async function rowsToCatches(rows, nameById){
   });
 }
 async function loadSoloCatches(){
-  const c=getSB(); if(!c || !state.me) return [];
-  const { data: rows } = await c.from('catches').select('*').eq('owner_id', state.me.id).is('context_id', null).order('caught_at', {ascending:false});
-  return rows ? await rowsToCatches(rows) : [];
+  await ensurePending();
+  const c=getSB(); let out=[];
+  if(c && state.me){ try{ const { data: rows } = await c.from('catches').select('*').eq('owner_id', state.me.id).is('context_id', null).order('caught_at', {ascending:false}); if(rows) out=await rowsToCatches(rows); }catch(e){} }
+  return prependPending(out, 'solo', null);
 }
 async function loadMyContexts(){
   const c=getSB(); if(!c || !state.me) return [];
@@ -2034,11 +2039,13 @@ async function ownerNameMap(ownerIds){
   return map;
 }
 async function loadContextCatches(ctxId){
-  const c=getSB();
-  const { data: rows } = await c.from('catches').select('*').or('context_id.eq.'+ctxId+',context_ids.cs.{'+ctxId+'}').order('caught_at', {ascending:false});
-  if(!rows) return [];
-  const nameById = await ownerNameMap([...new Set(rows.flatMap(r=>[r.owner_id, r.logged_by]).filter(Boolean))]);
-  return rowsToCatches(rows, nameById);
+  await ensurePending();
+  const c=getSB(); let out=[];
+  try{
+    const { data: rows } = await c.from('catches').select('*').or('context_id.eq.'+ctxId+',context_ids.cs.{'+ctxId+'}').order('caught_at', {ascending:false});
+    if(rows){ const nameById = await ownerNameMap([...new Set(rows.flatMap(r=>[r.owner_id, r.logged_by]).filter(Boolean))]); out = await rowsToCatches(rows, nameById); }
+  }catch(e){}
+  return prependPending(out, 'ctx', ctxId);
 }
 async function loadMyAllCatches(){  // for "Meine Fänge": all of my own catches across every area
   const c=getSB(); if(!c || !state.me) return [];
@@ -2096,6 +2103,64 @@ async function saveCatchDb(obj, editId, contextId){
   await saveSoloPhotos(catchId, state.editPhotos.slice());
   await reloadCurrentDb();
   return catchId;
+}
+/* ---------- offline write-queue + auto-sync ---------- */
+const OQ_DB='tb-offline', OQ_STORE='queue';
+function oqOpen(){ return new Promise((res,rej)=>{ let r; try{ r=indexedDB.open(OQ_DB,1); }catch(e){ return rej(e); } r.onupgradeneeded=()=>{ const db=r.result; if(!db.objectStoreNames.contains(OQ_STORE)) db.createObjectStore(OQ_STORE,{keyPath:'qid'}); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+async function oqAll(){ try{ const db=await oqOpen(); return await new Promise((res,rej)=>{ const tx=db.transaction(OQ_STORE,'readonly'); const rq=tx.objectStore(OQ_STORE).getAll(); rq.onsuccess=()=>res(rq.result||[]); rq.onerror=()=>rej(rq.error); }); }catch(e){ return []; } }
+async function oqPut(rec){ const db=await oqOpen(); return new Promise((res,rej)=>{ const tx=db.transaction(OQ_STORE,'readwrite'); tx.objectStore(OQ_STORE).put(rec); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); }); }
+async function oqDel(qid){ try{ const db=await oqOpen(); return await new Promise((res)=>{ const tx=db.transaction(OQ_STORE,'readwrite'); tx.objectStore(OQ_STORE).delete(qid); tx.oncomplete=()=>res(); tx.onerror=()=>res(); }); }catch(e){} }
+function recToCatch(rec){ const o=Object.assign({}, rec.obj||{}); o._pending=true; o._qid=rec.qid; o._db=true; o._ctxId=rec.contextId||null; o._ctxIds=(rec.targets&&rec.targets.length>1)?rec.targets:null; o.confirmed=true; if(state.me){ o.userId=state.me.id; if(!o.angler) o.angler=state.me.name; } return o; }
+let _pendingLoaded=false;
+async function oqLoadPending(){ const recs=await oqAll(); state.pending=recs.map(recToCatch); _pendingLoaded=true; return state.pending; }
+async function ensurePending(){ if(_pendingLoaded) return; try{ await oqLoadPending(); }catch(e){ state.pending=state.pending||[]; _pendingLoaded=true; } }
+function prependPending(list, kind, ctxId){
+  const ps=(state.pending||[]).filter(o=>{
+    if(kind==='ctx') return o._ctxId===ctxId || (o._ctxIds&&o._ctxIds.indexOf(ctxId)>=0);
+    if(kind==='solo') return !o._ctxId && !(o._ctxIds&&o._ctxIds.length);
+    return true;
+  });
+  return ps.concat(list||[]);
+}
+function isOfflineErr(e){ if(!navigator.onLine) return true; const m=((e&&(e.message||e.error||e))+'').toLowerCase(); return /fetch|network|failed to fetch|load failed|timeout|offline/.test(m); }
+async function enqueueCatch(obj, editId, primary){
+  const qid='q_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+  let so; try{ so=JSON.parse(JSON.stringify(obj)); }catch(e){ so=obj; }
+  const rec={ qid, editId:editId||null, contextId:primary||null, targets:(obj._targets||[]).slice(), obj:so, owner:(state.me&&state.me.id)||null, createdAt:Date.now(), tries:0 };
+  await oqPut(rec);
+  await ensurePending();
+  const oc=recToCatch(rec);
+  state.pending=(state.pending||[]).filter(p=>p._qid!==qid); state.pending.unshift(oc);
+  state.catches=state.catches||[];
+  if(editId){ const i=state.catches.findIndex(x=>x.id===editId); if(i>=0) state.catches[i]=oc; else state.catches.unshift(oc); }
+  else state.catches.unshift(oc);
+  return rec;
+}
+let _syncing=false;
+async function syncOne(rec){
+  const c=getSB(); if(!c) throw new Error('no-sb');
+  const obj=Object.assign({}, rec.obj||{}); obj._targets=rec.targets||[];
+  const row=catchToDbRow(obj, rec.contextId||null);
+  let catchId=rec.editId;
+  if(catchId){ const {error}=await c.from('catches').update(row).eq('id',catchId); if(error) throw error; }
+  else { const {data,error}=await c.from('catches').insert(row).select('id').single(); if(error) throw error; catchId=data.id; }
+  await saveSoloPhotos(catchId, (obj.photos||[]).slice());
+  return catchId;
+}
+async function syncFlush(){
+  if(_syncing) return; if(!navigator.onLine) return; if(state.auth!=='supabase'||!getSB()||!state.me) return;
+  _syncing=true; let done=0;
+  try{
+    const recs=await oqAll();
+    for(const rec of recs){
+      if(rec.owner && state.me && rec.owner!==state.me.id) continue;
+      try{ await syncOne(rec); await oqDel(rec.qid); done++; }
+      catch(e){ if(isOfflineErr(e)) break; rec.tries=(rec.tries||0)+1; if(rec.tries<8){ try{ await oqPut(rec); }catch(_e){} } else { await oqDel(rec.qid); done++; } }
+    }
+  }catch(e){}
+  _pendingLoaded=false; try{ await ensurePending(); }catch(e){}
+  _syncing=false;
+  if(done>0){ try{ await reloadCurrentDb(); }catch(e){} try{ renderList(); }catch(e){} try{ toast(t('syncedToast')); }catch(e){} try{ haptic(12); }catch(e){} }
 }
 let _rtChannel=null, _rtReloadT=null;
 function unsubscribeRealtime(){ if(_rtChannel){ try{ getSB().removeChannel(_rtChannel); }catch(e){} _rtChannel=null; } clearTimeout(_rtReloadT); }
@@ -2393,9 +2458,10 @@ function renderList(){
     b.innerHTML=`${thumb}
       <span style="flex:1; min-width:0;">
         <span class="top"><span class="sp">${trSpecies(c.species)}</span><span class="val">${primaryStr(c)}</span></span>
-        <span class="meta">${(c._db&&c.confirmed===false)?`<span style="display:inline-block;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;background:var(--teal);color:#fff;margin-right:4px;">${esc(t('unconfShort'))}</span>`:''}${[c.angler, c.location, fmtDate(c.date)].filter(Boolean).join(' · ')}</span>
+        <span class="meta">${c._pending?('<span style="display:inline-block;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;background:var(--surface);border:1px solid var(--teal);color:var(--teal-bright);margin-right:4px;">'+esc(t('pendingChip'))+'</span>'):''}${(c._db&&c.confirmed===false)?`<span style="display:inline-block;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;background:var(--teal);color:#fff;margin-right:4px;">${esc(t('unconfShort'))}</span>`:''}${[c.angler, c.location, fmtDate(c.date)].filter(Boolean).join(' · ')}</span>
       </span>
       ${CHEV_IC}`;
+    if(c._pending){ b.style.opacity='.72'; b.onclick=()=>{ haptic(6); toast(t('pendingSyncMsg')); }; list.appendChild(b); return; }
     b.onclick=()=>{ if(b._swiped){ b._swiped=false; return; } openDetail(c.id); };
     const mine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
     list.appendChild(mine ? wrapSwipe(b, c, 'list') : b);
@@ -3122,14 +3188,18 @@ function saveCatch(){
     const btn=document.querySelector('#s-form .btn[onclick="saveCatch()"]'); if(btn) btn.disabled=true;
     const wasEdit=!!state.editId;
     (async ()=>{
+      const _primary = (state.formTargets && state.formTargets.length) ? state.formTargets[0] : null;
       try{
-        const _primary = (state.formTargets && state.formTargets.length) ? state.formTargets[0] : null;
+        if(!navigator.onLine){ await enqueueCatch(obj, state.editId, _primary); state.editId=null; renderList(); go('list'); haptic(12); toast(t('offlineSaved')); return; }
         const cid=await saveCatchDb(obj, state.editId, _primary);
         state.editId=null; renderList();
         const saved=state.catches.find(c=>c.id===cid);
         if(wasEdit && saved){ if(state.editReturn==='stats'){ try{ state.myAllCatches=await loadMyAllCatches(); }catch(_e){} renderStats(); openDetailObj(saved,'stats'); } else openDetailObj(saved,'list'); } else go('list');
         haptic(12); toast(t('savedToast'));
-      }catch(e){ err.textContent=t('errSave'); err.style.display='block'; }
+      }catch(e){
+        if(isOfflineErr(e)){ try{ await enqueueCatch(obj, state.editId, _primary); state.editId=null; renderList(); go('list'); haptic(12); toast(t('offlineSaved')); }catch(e2){ err.textContent=t('errSave'); err.style.display='block'; } }
+        else { err.textContent=t('errSave'); err.style.display='block'; }
+      }
       finally{ if(btn) btn.disabled=false; }
     })();
     return;
