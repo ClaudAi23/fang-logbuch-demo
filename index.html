@@ -1934,6 +1934,7 @@ function subscribeContextRealtime(ctxId){
   }catch(e){}
 }
 async function chooseClub(cl, kind, keepForm){
+  keepForm = keepForm===true;
   state.club=cl; state.mode=kind||'club';
   state.user=state.me.name; state.userId=state.me.id; state.soloName=null; state.filter=emptyFilter();
   document.getElementById('list-sub').textContent=state.club.name;
@@ -1951,6 +1952,7 @@ async function chooseClub(cl, kind, keepForm){
   }
 }
 async function startSolo(keepForm){
+  keepForm = keepForm===true;
   unsubscribeRealtime();
   state.mode='solo'; state.club=null; state.soloName=state.me.name;
   state.user=state.me.name; state.userId=state.me.id; state.filter=emptyFilter();
