@@ -21,7 +21,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root{
-    --teal:#2E7A8E; --teal-dark:#245F70; --teal-tint:#E2EDF0;
+    --teal:#2E7A8E; --teal-dark:#245F70; --teal-tint:#E2EDF0; --teal-bright:#2E7A8E;
     --navy:#18202A;
     --rust:#2E7A8E; --rust-tint:#E2EDF0;
     --sand:#EFEAE0; --surface:#FFFFFF; --surface-2:#F7F2E8;
@@ -32,7 +32,7 @@
   :root, [data-theme="light"]{ color-scheme:light; }
   [data-theme="dark"]{
     color-scheme:dark;
-    --teal:#3E97AE; --teal-dark:#317E95; --teal-tint:#1E2E36;
+    --teal:#3E97AE; --teal-dark:#317E95; --teal-tint:#1E2E36; --teal-bright:#5FB8CE;
     --rust:#3E97AE; --rust-tint:#1E2E36;
     --sand:#15181C; --surface:#1E242B; --surface-2:#232A31;
     --text:#ECEAE3; --muted:#9BA1A3; --border:#2C333B; --border-2:#3A434C;
@@ -122,7 +122,7 @@
   }
   .logo-badge img,.logo-badge svg{width:100%; height:100%; object-fit:contain; display:block;}
   .brandname{font-family:'Playfair Display',Georgia,serif !important; font-weight:700; letter-spacing:0;}
-  .beta-pill{display:inline-block; padding:4px 13px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; background:transparent; color:var(--teal); border:1px solid var(--teal);}
+  .beta-pill{display:inline-block; padding:3px 11px; border-radius:999px; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; background:transparent; color:var(--teal-bright); border:1px solid rgba(94,184,206,.45); vertical-align:middle;}
   .brand-foot{flex:0 0 auto; text-align:center; padding:10px 16px calc(14px + env(safe-area-inset-bottom));}
   .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--teal); color:#fff; padding:10px 18px; border-radius:999px; font-size:14px; font-weight:600; z-index:9999; box-shadow:0 4px 16px rgba(0,0,0,.3); opacity:0; transition:opacity .2s; pointer-events:none;}
   .toast.show{opacity:1;}
@@ -148,7 +148,7 @@
   .club{
     display:flex; align-items:center; gap:14px; width:100%; text-align:left;
     background:var(--surface); border:1px solid var(--border); border-radius:10px;
-    padding:14px; margin-bottom:12px; cursor:pointer; font-family:inherit;
+    padding:14px; margin-bottom:12px; cursor:pointer; font-family:inherit; color:var(--text);
   }
   .club:active{border-color:var(--teal);}
   .club .av{
@@ -157,7 +157,7 @@
     display:flex; align-items:center; justify-content:center; font-size:22px;
   }
   .club .av img,.club .av svg{width:100%; height:100%; object-fit:cover; display:block;}
-  .club .nm{font-weight:600; font-size:16px;}
+  .club .nm{font-weight:600; font-size:16px; color:var(--teal-bright);}
   .club .loc{font-size:13px; color:var(--muted);}
   .club .chev{margin-left:auto; color:var(--muted); font-size:20px;}
 
@@ -371,22 +371,21 @@
   <!-- ============ CLUB ============ -->
   <section id="s-club" class="screen active">
     <div class="topbar">
-      <div style="flex:1; min-width:0;"></div>
+      <div id="club-logo" class="mascot-band" style="width:44px; height:44px; border-radius:12px; flex:0 0 auto;"></div>
+      <div style="flex:1; min-width:0;">
+        <h1 class="brandname" style="font-size:20px; margin:0; line-height:1.05; display:flex; align-items:center; gap:8px;"><span data-i18n="appName">The Fishing Butler</span><span class="beta-pill">Beta</span></h1>
+        <p class="sub" style="margin:0;" data-i18n="chooseArea">Wähle deinen Bereich</p>
+      </div>
       <button class="iconbtn" data-i18n-title="ttSettings" title="Einstellungen" aria-label="Einstellungen" onclick="openSettings()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M4 7h9"/><path d="M17 7h3"/><path d="M4 17h3"/><path d="M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="7" cy="17" r="2.2"/></svg>
       </button>
     </div>
     <div class="scroll pad">
-      <div style="height:18px"></div>
-      <div id="club-logo" class="mascot-band" style="width:72px; height:72px; border-radius:18px; margin:0 auto 12px;"></div>
-      <h1 class="brandname" style="text-align:center; font-size:25px; margin:0 0 3px; line-height:1.05;" data-i18n="appName">The Fishing Butler</h1>
-      <p class="tagline" style="text-align:center; color:var(--teal); font-weight:500; font-size:14px; margin:0 0 16px;" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
-      <p style="text-align:center; color:var(--muted); margin:0 0 20px;" data-i18n="chooseArea">Wähle deinen Bereich</p>
+      <div style="height:6px"></div>
       <div id="club-list"></div>
       <p id="not-in-club-hint" class="hint" style="text-align:center; margin-top:18px;" data-i18n="notInClub">Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.</p>
       <p class="hint" style="text-align:center; margin-top:22px;"><a href="javascript:void(0)" onclick="openLegal()" style="color:var(--muted); font-weight:600;" data-i18n="legalLink">Beta-Hinweis · Datenschutz · Impressum</a></p>
     </div>
-    <div class="brand-foot"><span class="beta-pill">Beta</span></div>
   </section>
 
   <!-- ============ LOGIN ============ -->
@@ -395,7 +394,8 @@
       <div style="height:44px"></div>
       <div id="login-logo" class="mascot-band" style="width:132px; height:132px; border-radius:30px; margin:0 auto 20px;"></div>
       <h1 class="brandname" style="text-align:center; font-size:31px; margin:0 0 6px; line-height:1.04;" data-i18n="appName">The Fishing Butler</h1>
-      <p class="tagline" style="text-align:center; color:var(--teal); font-weight:500; font-size:16px; margin:0 0 30px;" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
+      <p class="tagline" style="text-align:center; color:var(--teal-bright); font-weight:500; font-size:16px; margin:0 0 12px;" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
+      <p style="text-align:center; margin:0 0 30px;"><span class="beta-pill">Beta</span></p>
       <p id="login-intro2" style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="loginIntro2">Gib deine E-Mail ein — wir schicken dir einen Code. Kein Passwort nötig.</p>
       <div class="field" id="login-name-field" style="display:none;">
         <label data-i18n="name">Name</label>
@@ -438,7 +438,6 @@
         <a href="javascript:void(0)" style="color:var(--muted);" onclick="startDemo()" data-i18n="tryDemo">Ohne Konto testen</a>
       </p>
     </div>
-    <div class="brand-foot"><span class="beta-pill">Beta</span></div>
   </section>
 
   <!-- ============ LIST ============ -->
