@@ -386,6 +386,17 @@
   .sheet-row .sr-tx small{font-size:13px; color:var(--muted); margin-top:1px;}
   .sheet-row .sr-go{width:20px; height:20px; color:var(--muted); flex:0 0 auto;}
   .sheet-cancel{display:block; width:100%; text-align:center; background:none; border:none; color:var(--muted); font-family:inherit; font-size:15px; font-weight:600; padding:12px; margin-top:4px; cursor:pointer;}
+  .area-selector{width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--surface); border:1.5px solid var(--border-2); border-radius:8px; padding:13px 14px; color:var(--text); font-family:inherit; font-size:16px; cursor:pointer; text-align:left;}
+  .area-selector:active{border-color:var(--teal);}
+  .area-grp{font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:14px 4px 6px;}
+  .area-row{width:100%; display:flex; align-items:center; gap:12px; background:none; border:none; border-radius:10px; padding:10px 8px; cursor:pointer; font-family:inherit; color:var(--text); text-align:left;}
+  .area-row:active{background:var(--surface-2);}
+  .area-row.on{background:var(--teal-tint);}
+  .area-row .ar-logo{width:34px; height:34px; border-radius:9px; overflow:hidden; background:var(--surface-2); flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:13px;}
+  .area-row .ar-logo img{width:100%; height:100%; object-fit:cover;}
+  .area-row .ar-name{flex:1; min-width:0; font-weight:500; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .area-row .ar-check{width:22px; height:22px; flex:0 0 auto; color:var(--teal-bright);}
+  .area-row .ar-check svg{width:22px; height:22px; stroke:currentColor; stroke-width:2.6; fill:none;}
   .toast{position:fixed; left:50%; bottom:calc(84px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(10px);
     background:var(--teal-dark); color:#fff; padding:10px 16px; border-radius:10px; font-size:14px; font-weight:500;
     box-shadow:0 4px 16px rgba(0,0,0,.3); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:300; max-width:88%; text-align:center;}
@@ -509,7 +520,10 @@
     <div class="scroll pad">
       <div class="field" id="ff-area" style="display:none;">
         <label data-i18n="logToArea">Eintragen in</label>
-        <div id="f-area-chips" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+        <button type="button" id="area-selector" class="area-selector" onclick="openAreaSheet()">
+          <span id="area-summary">Solo</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:var(--muted); stroke-width:2; fill:none; flex:0 0 auto;"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
         <div class="hint" style="margin-top:6px;" data-i18n="logToAreaHint">Mehrere Vereine/Gruppen möglich.</div>
       </div>
       <div class="fgroup" id="fg-photos" data-i18n="grpPhotos">Fotos</div>
@@ -1043,6 +1057,14 @@
     </div>
   </div>
 
+  <div id="area-sheet" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('area-sheet')">
+    <div class="modal-box">
+      <h2 style="font-size:20px; margin:0 0 10px;" data-i18n="logToArea">Eintragen in</h2>
+      <input id="area-search" type="text" data-i18n-ph="areaSearch" placeholder="Suchen…" oninput="renderAreaSheet()" style="margin-bottom:8px;">
+      <div id="area-sheet-list" style="max-height:52vh; overflow:auto; margin:0 -2px;"></div>
+      <button type="button" class="btn" style="margin-top:12px;" onclick="closeModal('area-sheet')" data-i18n="areaDone">Fertig</button>
+    </div>
+  </div>
   <div id="lightbox" style="display:none; position:fixed; inset:0; z-index:400; background:#000; touch-action:none;">
     <div style="width:100%; height:100%; overflow:hidden; display:flex; align-items:center; justify-content:center;">
       <img id="lb-img" src="" alt="" style="max-width:100%; max-height:100%; object-fit:contain; will-change:transform;">
@@ -1205,7 +1227,7 @@ const MONTHS = {
 };
 const I18N = {
   de:{
-    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", grpBasis:"Basis", grpCatch:"Der Fang", grpPhotos:"Fotos", grpWater:"Gewässer & Standort", grpConditions:"Bedingungen", grpGear:"Technik & Ausrüstung", grpNotes:"Notizen", logoInitials:"Kürzel-Logo (ohne Bild)", logoInitialsHint:"Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).", logoLight:"Heller Text", logoDark:"Dunkler Text", editImage:"Bild anpassen", editImageHint:"Ziehen zum Verschieben, Regler zum Zoomen.", cropApply:"Übernehmen", removeImage:"Bild entfernen", converting:"Konvertiere Foto …", logToAreaHint:"Mehrere Vereine/Gruppen möglich.", weatherManualPh:"z. B. sonnig, 18 °C, leichter Wind", weatherManualHint:"Automatisch geladen, wenn ein Standort gesetzt ist – manuell überschreibbar.", weatherPh:"z. B. Bewölkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch vorausgefüllt, wenn ein Standort gesetzt ist – frei editierbar.", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
+    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", grpBasis:"Basis", grpCatch:"Der Fang", grpPhotos:"Fotos", grpWater:"Gewässer & Standort", grpConditions:"Bedingungen", grpGear:"Technik & Ausrüstung", grpNotes:"Notizen", logoInitials:"Kürzel-Logo (ohne Bild)", logoInitialsHint:"Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).", logoLight:"Heller Text", logoDark:"Dunkler Text", editImage:"Bild anpassen", editImageHint:"Ziehen zum Verschieben, Regler zum Zoomen.", cropApply:"Übernehmen", removeImage:"Bild entfernen", converting:"Konvertiere Foto …", logToAreaHint:"Mehrere Vereine/Gruppen möglich.", areaSearch:"Suchen…", areaDone:"Fertig", weatherManualPh:"z. B. sonnig, 18 °C, leichter Wind", weatherManualHint:"Automatisch geladen, wenn ein Standort gesetzt ist – manuell überschreibbar.", weatherPh:"z. B. Bewölkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch vorausgefüllt, wenn ein Standort gesetzt ist – frei editierbar.", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
     personal:"Persönlich", clubs:"Vereine", groups:"Gruppen", statsTile:"Meine Fänge", statsTileSub:"Alle Fänge, alle Bereiche", soloTile:"Solo", soloTileSub:"Eigenes Logbuch, privat",
     signIn:"Anmelden", email:"E-Mail", emailPh:"name@beispiel.de", password:"Passwort", loginHint:"Demo: beliebige E-Mail und beliebiges Passwort funktionieren. Konten werden vom Vereinsadmin angelegt.",
     solo:"Solo", withoutClub:"Ohne Verein", yourName:"Dein Name", namePh:"z. B. Johannes", next:"Weiter", errName:"Bitte gib deinen Namen ein.", soloHint:"Im Solo-Modus dokumentierst du deine Fänge privat — ohne Verein, ohne Login.",
@@ -1218,7 +1240,7 @@ const I18N = {
     clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit The Fishing Butler", shareNoMeasure:"ohne Maße"
   },
   en:{
-    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", grpBasis:"Basics", grpCatch:"The catch", grpPhotos:"Photos", grpWater:"Water & location", grpConditions:"Conditions", grpGear:"Technique & gear", grpNotes:"Notes", logoInitials:"Initials logo (no image)", logoInitialsHint:"Shown when no image is set (max. 3 characters).", logoLight:"Light text", logoDark:"Dark text", editImage:"Adjust image", editImageHint:"Drag to move, slider to zoom.", cropApply:"Apply", removeImage:"Remove image", converting:"Converting photo …", logToAreaHint:"You can pick multiple clubs/groups.", weatherManualPh:"e.g. sunny, 18 °C, light wind", weatherManualHint:"Auto-filled when a location is set – you can override it.", weatherPh:"e.g. Cloudy · 18 °C · 12 km/h", weatherAutoHint:"Auto-filled when a location is set – fully editable.", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
+    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", grpBasis:"Basics", grpCatch:"The catch", grpPhotos:"Photos", grpWater:"Water & location", grpConditions:"Conditions", grpGear:"Technique & gear", grpNotes:"Notes", logoInitials:"Initials logo (no image)", logoInitialsHint:"Shown when no image is set (max. 3 characters).", logoLight:"Light text", logoDark:"Dark text", editImage:"Adjust image", editImageHint:"Drag to move, slider to zoom.", cropApply:"Apply", removeImage:"Remove image", converting:"Converting photo …", logToAreaHint:"You can pick multiple clubs/groups.", areaSearch:"Search…", areaDone:"Done", weatherManualPh:"e.g. sunny, 18 °C, light wind", weatherManualHint:"Auto-filled when a location is set – you can override it.", weatherPh:"e.g. Cloudy · 18 °C · 12 km/h", weatherAutoHint:"Auto-filled when a location is set – fully editable.", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
     personal:"Personal", clubs:"Clubs", groups:"Groups", statsTile:"My catches", statsTileSub:"All catches, everywhere", soloTile:"Solo", soloTileSub:"Your own private log",
     signIn:"Sign in", email:"Email", emailPh:"name@example.com", password:"Password", loginHint:"Demo: any email and password work. Accounts are created by the club admin.",
     solo:"Solo", withoutClub:"Without a club", yourName:"Your name", namePh:"e.g. John", next:"Continue", errName:"Please enter your name.", soloHint:"In solo mode you log your catches privately — no club, no login.",
@@ -1231,7 +1253,7 @@ const I18N = {
     clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with The Fishing Butler", shareNoMeasure:"no measurements"
   },
   nl:{
-    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", grpBasis:"Basis", grpCatch:"De vangst", grpPhotos:"Foto's", grpWater:"Water & locatie", grpConditions:"Omstandigheden", grpGear:"Techniek & uitrusting", grpNotes:"Notities", logoInitials:"Initialen-logo (geen afbeelding)", logoInitialsHint:"Wordt getoond als er geen afbeelding is (max. 3 tekens).", logoLight:"Lichte tekst", logoDark:"Donkere tekst", editImage:"Afbeelding aanpassen", editImageHint:"Sleep om te verplaatsen, schuif om te zoomen.", cropApply:"Toepassen", removeImage:"Afbeelding verwijderen", converting:"Foto converteren …", logToAreaHint:"Meerdere verenigingen/groepen mogelijk.", weatherManualPh:"bijv. zonnig, 18 °C, lichte wind", weatherManualHint:"Automatisch geladen als er een locatie is – handmatig te overschrijven.", weatherPh:"bijv. Bewolkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch ingevuld als er een locatie is – vrij bewerkbaar.", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
+    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", grpBasis:"Basis", grpCatch:"De vangst", grpPhotos:"Foto's", grpWater:"Water & locatie", grpConditions:"Omstandigheden", grpGear:"Techniek & uitrusting", grpNotes:"Notities", logoInitials:"Initialen-logo (geen afbeelding)", logoInitialsHint:"Wordt getoond als er geen afbeelding is (max. 3 tekens).", logoLight:"Lichte tekst", logoDark:"Donkere tekst", editImage:"Afbeelding aanpassen", editImageHint:"Sleep om te verplaatsen, schuif om te zoomen.", cropApply:"Toepassen", removeImage:"Afbeelding verwijderen", converting:"Foto converteren …", logToAreaHint:"Meerdere verenigingen/groepen mogelijk.", areaSearch:"Zoeken…", areaDone:"Klaar", weatherManualPh:"bijv. zonnig, 18 °C, lichte wind", weatherManualHint:"Automatisch geladen als er een locatie is – handmatig te overschrijven.", weatherPh:"bijv. Bewolkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch ingevuld als er een locatie is – vrij bewerkbaar.", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
     personal:"Persoonlijk", clubs:"Verenigingen", groups:"Groepen", statsTile:"Mijn vangsten", statsTileSub:"Alle vangsten, overal", soloTile:"Solo", soloTileSub:"Eigen logboek, privé",
     signIn:"Inloggen", email:"E-mail", emailPh:"naam@voorbeeld.nl", password:"Wachtwoord", loginHint:"Demo: elke e-mail en elk wachtwoord werken. Accounts worden aangemaakt door de verenigingsbeheerder.",
     solo:"Solo", withoutClub:"Zonder vereniging", yourName:"Je naam", namePh:"bijv. Jan", next:"Verder", errName:"Voer je naam in.", soloHint:"In solomodus leg je je vangsten privé vast — zonder vereniging, zonder inloggen.",
@@ -2853,20 +2875,35 @@ async function openForm(skipAuto){
   ensureFormMap(null,null);
   // no automatic geolocation on open — the browser prompt should only appear when the user taps "Mein Standort"
 }
-function renderAreaChips(){
-  const box=document.getElementById('f-area-chips'); if(!box) return;
+function updateAreaSummary(){
+  const el=document.getElementById('area-summary'); if(!el) return;
+  const tg=state.formTargets||[]; const ctxs=state.myContexts||[];
+  if(!tg.length){ el.textContent=t('solo'); return; }
+  const names=tg.map(id=>{ const c=ctxs.find(x=>x.id===id); return c?c.name:''; }).filter(Boolean);
+  el.textContent = names.length<=2 ? names.join(', ') : (names[0]+' +'+(names.length-1));
+}
+function openAreaSheet(){ const s=document.getElementById('area-search'); if(s) s.value=''; const sh=document.getElementById('area-sheet'); if(sh) sh.style.display='flex'; renderAreaSheet(); }
+function renderAreaSheet(){
+  const box=document.getElementById('area-sheet-list'); if(!box) return;
+  const q=(document.getElementById('area-search').value||'').toLowerCase().trim();
   const ctxs=state.myContexts||[]; const tg=state.formTargets||[]; const solo=tg.length===0;
-  const chip=(key,label,on)=>`<button type="button" class="chip${on?' on':''}" onclick="toggleArea('${key}')">${esc(label)}</button>`;
-  let h=chip('solo', t('solo'), solo);
-  ctxs.filter(x=>x.type==='club').forEach(c=>{ h+=chip(c.id, c.name, tg.indexOf(c.id)>=0); });
-  ctxs.filter(x=>x.type==='group').forEach(g=>{ h+=chip(g.id, g.name, tg.indexOf(g.id)>=0); });
+  const CHK='<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>';
+  const row=(key,label,logo,on)=>`<button type="button" class="area-row${on?' on':''}" onclick="toggleArea('${key}')"><span class="ar-logo">${logo||''}</span><span class="ar-name">${esc(label)}</span><span class="ar-check">${on?CHK:''}</span></button>`;
+  const match=nm=>!q || nm.toLowerCase().indexOf(q)>=0;
+  let h='';
+  if(match(t('solo'))) h+=`<div class="area-grp">${esc(t('personal'))}</div>`+row('solo', t('solo'), '', solo);
+  const clubs=ctxs.filter(x=>x.type==='club'&&match(x.name));
+  const groups=ctxs.filter(x=>x.type==='group'&&match(x.name));
+  if(clubs.length){ h+=`<div class="area-grp">${esc(t('clubs'))}</div>`; clubs.forEach(c=>{ h+=row(c.id, c.name, clubLogoHTML(c), tg.indexOf(c.id)>=0); }); }
+  if(groups.length){ h+=`<div class="area-grp">${esc(t('groups'))}</div>`; groups.forEach(g=>{ h+=row(g.id, g.name, clubLogoHTML(g), tg.indexOf(g.id)>=0); }); }
+  if(!h) h=`<p class="hint" style="text-align:center; padding:22px 0;">—</p>`;
   box.innerHTML=h;
 }
 function populateAreaSelect(){
   const wrap=document.getElementById('ff-area'); if(!wrap) return;
   if(state.editId){ wrap.style.display='none'; return; }
   state.formTargets = (state.mode!=='solo' && state.club) ? [state.club.id] : [];
-  renderAreaChips(); wrap.style.display='';
+  updateAreaSummary(); wrap.style.display='';
 }
 async function toggleArea(key){
   let tg=(state.formTargets||[]).slice();
@@ -2876,7 +2913,7 @@ async function toggleArea(key){
   const primary = tg.length ? tg[0] : null;
   if(primary){ const ctx=(state.myContexts||[]).find(x=>x.id===primary); if(ctx){ try{ await chooseClub(ctx, ctx.type==='group'?'group':'club', true); }catch(e){} } }
   else { try{ await startSolo(true); }catch(e){} }
-  renderAreaChips();
+  updateAreaSummary(); renderAreaSheet();
 }
 function isoToLocalInput(iso){ const d=new Date(iso); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
 function openEdit(c){
@@ -2885,7 +2922,7 @@ function openEdit(c){
   state.editId=c.id;
   { const _fa=document.getElementById('ff-area'); if(_fa) _fa.style.display=''; }
   state.formTargets = (c._ctxIds && c._ctxIds.length) ? c._ctxIds.slice() : (c._ctxId!=null ? [c._ctxId] : (currentContextId()!=null?[currentContextId()]:[]));
-  try{ renderAreaChips(); }catch(e){}
+  try{ updateAreaSummary(); }catch(e){}
   { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display=''; }
   { if(c.weather){ state.formWeather=c.weather; try{ renderWeatherInto(c.weather, c.date, 'f-weather','f-weather-wrap'); }catch(e){} } }
   document.getElementById('f-title').textContent=t('editCatch');
