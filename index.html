@@ -60,7 +60,18 @@
     #app{min-height:auto; height:840px; border-radius:32px; border:1px solid var(--border-2);}
   }
   .screen{display:none; flex:1; flex-direction:column; min-height:0;}
-  .screen.active{display:flex;}
+  .screen.active{display:flex; animation:scrIn .24s cubic-bezier(.22,.61,.36,1);}
+  .screen.active.is-back{animation:scrBack .24s cubic-bezier(.22,.61,.36,1);}
+  @keyframes scrIn{from{opacity:.35; transform:translateX(16px);} to{opacity:1; transform:none;}}
+  @keyframes scrBack{from{opacity:.35; transform:translateX(-16px);} to{opacity:1; transform:none;}}
+  :focus-visible{outline:2px solid var(--teal-bright); outline-offset:2px; border-radius:6px;}
+  .input-err{border-color:var(--danger)!important; box-shadow:0 0 0 1px var(--danger);}
+  .skel{background:linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%); background-size:400% 100%; animation:shimmer 1.3s ease infinite; border-radius:8px;}
+  @keyframes shimmer{from{background-position:100% 0;} to{background-position:0 0;}}
+  .skel-row{display:flex; gap:13px; align-items:center; padding:12px; margin-bottom:10px; background:var(--surface); border:1px solid var(--border); border-radius:10px;}
+  .skel-th{width:60px; height:60px; flex:0 0 auto;}
+  .skel-l1{height:14px; width:55%; margin-bottom:8px;} .skel-l2{height:11px; width:75%;}
+  @media (prefers-reduced-motion: reduce){ .screen.active, .screen.active.is-back, .skel, .modal-box{animation:none!important;} }
   .scroll{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;}
 
   .topbar{
@@ -1487,8 +1498,8 @@ function go(name, isBack){
   }
   _curScreen=name;
   { const _fb=document.getElementById('mainfab'); if(_fb) _fb.style.display=(name==='club'||name==='stats'||name==='list')?'':'none'; }
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('s-'+name).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active','is-back'));
+  { const _sc=document.getElementById('s-'+name); _sc.classList.add('active'); _sc.classList.toggle('is-back', !!isBack); }
   if(name==='login'){ try{ changeLoginEmail(); const _lc=document.getElementById('login-code'); if(_lc) _lc.value=''; }catch(e){} }
   const sc=document.querySelector('#s-'+name+' .scroll'); if(sc) sc.scrollTop=0;
 }
@@ -2105,7 +2116,7 @@ async function chooseClub(cl, kind, keepForm){
   document.getElementById('list-hdr').innerHTML=clubLogoHTML(state.club);
   if(state.auth==='supabase'){
     if(!keepForm) go('list');
-    document.getElementById('catch-list').innerHTML=`<div class="empty"><p>${t('loading')}</p></div>`;
+    document.getElementById('catch-list').innerHTML=skelRows(5);
     document.getElementById('stats').innerHTML='';
     try{ state.catches = await loadContextCatches(state.club.id); }catch(e){ state.catches=[]; }
     renderList();
@@ -2124,7 +2135,7 @@ async function startSolo(keepForm){
   document.getElementById('list-hdr').innerHTML=userAvatarHTML();
   if(state.auth==='supabase'){
     if(!keepForm) go('list');
-    document.getElementById('catch-list').innerHTML=`<div class="empty"><p>${t('loading')}</p></div>`;
+    document.getElementById('catch-list').innerHTML=skelRows(5);
     document.getElementById('stats').innerHTML='';
     try{ state.soloCatches = await loadSoloCatches(); }catch(e){ state.soloCatches=[]; }
     state.catches = state.soloCatches; renderList();
@@ -2370,7 +2381,7 @@ function renderList(){
   }
   sorted.forEach(c=>{
     const b=document.createElement('button'); b.className='catch';
-    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="">` : `<span class="thumb">${FISH_IC}</span>`;
+    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="" loading="lazy" decoding="async">` : `<span class="thumb">${FISH_IC}</span>`;
     b.innerHTML=`${thumb}
       <span style="flex:1; min-width:0;">
         <span class="top"><span class="sp">${trSpecies(c.species)}</span><span class="val">${primaryStr(c)}</span></span>
@@ -2435,7 +2446,7 @@ function renderStats(){
   }
   sorted.forEach(c=>{
     const b=document.createElement('button'); b.className='catch';
-    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="">` : `<span class="thumb">${FISH_IC}</span>`;
+    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="" loading="lazy" decoding="async">` : `<span class="thumb">${FISH_IC}</span>`;
     b.innerHTML=`${thumb}
       <span style="flex:1; min-width:0;">
         <span class="top"><span class="sp">${trSpecies(c.species)}</span><span class="val">${primaryStr(c)}</span></span>
@@ -3051,6 +3062,9 @@ function selectedAngler(){
   const v=document.getElementById('f-angler').value;
   return v==='__other__' ? document.getElementById('f-angler-other').value.trim() : v;
 }
+function haptic(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||10); }catch(e){} }
+function markInvalid(id){ const el=document.getElementById(id); if(!el) return null; el.classList.add('input-err'); el.addEventListener('input', ()=>el.classList.remove('input-err'), {once:true}); return el; }
+function skelRows(n){ let h=''; for(let i=0;i<(n||5);i++) h+='<div class="skel-row"><div class="skel skel-th"></div><div style="flex:1; min-width:0;"><div class="skel skel-l1"></div><div class="skel skel-l2"></div></div></div>'; return h; }
 function saveCatch(){
   const species=(state.speciesKey!=null && state.speciesKey!=='') ? state.speciesKey : document.getElementById('f-species').value.trim();
   const date=document.getElementById('f-date').value;
@@ -3062,7 +3076,15 @@ function saveCatch(){
     else { const m=(state.ctxMembers||[]).find(x=>x.id===forUser); anglerDisplay=m?m.name:''; }
   }
   const err=document.getElementById('form-err');
-  if(!species||!date||!angler){ err.textContent=t('errFields'); err.style.display='block'; return; }
+  if(!species||!date||!angler){
+    let first=null;
+    if(!species){ const e=markInvalid('f-species'); first=first||e; }
+    if(!date){ const e=markInvalid('f-date'); first=first||e; }
+    if(!angler){ const e=markInvalid('f-angler'); first=first||e; }
+    err.textContent=t('errFields'); err.style.display='block'; haptic(30);
+    if(first){ try{ first.scrollIntoView({behavior:'smooth', block:'center'}); first.focus(); }catch(_e){} }
+    return;
+  }
   if(new Date(date) > new Date()){ err.textContent=t('errFuture'); err.style.display='block'; return; }
   // enforce configured required fields (the minimum can't be skipped)
   const cfg=ctxAdminCfg();
@@ -3097,6 +3119,7 @@ function saveCatch(){
         state.editId=null; renderList();
         const saved=state.catches.find(c=>c.id===cid);
         if(wasEdit && saved){ if(state.editReturn==='stats'){ try{ state.myAllCatches=await loadMyAllCatches(); }catch(_e){} renderStats(); openDetailObj(saved,'stats'); } else openDetailObj(saved,'list'); } else go('list');
+        haptic(12); toast(t('savedToast'));
       }catch(e){ err.textContent=t('errSave'); err.style.display='block'; }
       finally{ if(btn) btn.disabled=false; }
     })();
