@@ -129,6 +129,9 @@
   .av-edit:active .hdr-logo{filter:brightness(.82);}
   .av-edit-badge{position:absolute; right:-3px; bottom:-3px; width:24px; height:24px; border-radius:50%; background:var(--teal); border:2px solid var(--sand); display:flex; align-items:center; justify-content:center; color:#fff; pointer-events:none;}
   .av-edit-badge svg{width:13px; height:13px; stroke:currentColor; stroke-width:2; fill:none;}
+  .fgroup{font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--teal-bright); margin:24px 0 12px; padding-bottom:7px; border-bottom:1px solid var(--border);}
+  .setgroup{font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:18px 0 8px;}
+  .setgroup:first-child{margin-top:2px;}
   .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--teal); color:#fff; padding:10px 18px; border-radius:999px; font-size:14px; font-weight:600; z-index:9999; box-shadow:0 4px 16px rgba(0,0,0,.3); opacity:0; transition:opacity .2s; pointer-events:none;}
   .toast.show{opacity:1;}
   .accgroup{border:1px solid var(--border); border-radius:12px; margin-bottom:10px; overflow:hidden; background:var(--surface);}
@@ -499,13 +502,7 @@
         <label data-i18n="logToArea">Eintragen in</label>
         <select id="f-area" onchange="onFormAreaChange(this.value)" style="width:100%; padding:12px 14px; border-radius:10px; font:inherit; background:var(--surface); border:1px solid var(--border-2); color:var(--text);"></select>
       </div>
-      <div class="field" id="ff-photos">
-        <label data-i18n="photos">Fotos</label>
-        <div id="photo-grid" class="photo-grid"></div>
-        <div class="photo-hint" id="photo-hint" data-i18n="photoHint">Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen.</div>
-        <input id="f-photo" type="file" accept="image/*" multiple style="display:none" onchange="onPhoto(event)" />
-      </div>
-
+      <div class="fgroup" id="fg-basis" data-i18n="grpBasis">Basis</div>
       <div class="field">
         <label><span data-i18n="species">Fischart</span> <span class="req">*</span></label>
         <div class="combo">
@@ -514,7 +511,19 @@
           <div id="combo-list" class="combo-list"></div>
         </div>
       </div>
+      <div class="row">
+        <div class="field">
+          <label><span data-i18n="datetime">Datum &amp; Zeit</span> <span class="req">*</span></label>
+          <input id="f-date" type="datetime-local" onchange="previewWeather()" />
+        </div>
+        <div class="field">
+          <label><span data-i18n="angler">Angler</span> <span class="req">*</span></label>
+          <select id="f-angler" onchange="onAnglerChange()"></select>
+          <input id="f-angler-other" type="text" placeholder="Name eingeben" data-i18n-ph="anglerOtherPh" style="display:none; margin-top:8px;" />
+        </div>
+      </div>
 
+      <div class="fgroup" id="fg-catch" data-i18n="grpCatch">Der Fang</div>
       <div class="row">
         <div class="field" id="ff-length">
           <label data-i18n="lengthCm">Länge (cm)</label>
@@ -525,12 +534,48 @@
           <input id="f-weight" type="number" inputmode="decimal" step="0.1" min="0" placeholder="z. B. 5,5" data-i18n-ph="weightPh" />
         </div>
       </div>
+      <div class="field" id="ff-released">
+        <label data-i18n="releasedLabel">Entnahme</label>
+        <select id="f-released">
+          <option value="" data-i18n="releasedNone">—</option>
+          <option value="kept" data-i18n="releasedKept">Entnommen</option>
+          <option value="released" data-i18n="releasedReleased">Zurückgesetzt</option>
+        </select>
+      </div>
 
+      <div class="fgroup" id="fg-photos" data-i18n="grpPhotos">Fotos</div>
+      <div class="field" id="ff-photos">
+        <label data-i18n="photos">Fotos</label>
+        <div id="photo-grid" class="photo-grid"></div>
+        <div class="photo-hint" id="photo-hint" data-i18n="photoHint">Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen.</div>
+        <input id="f-photo" type="file" accept="image/*" multiple style="display:none" onchange="onPhoto(event)" />
+      </div>
+
+      <div class="fgroup" id="fg-water" data-i18n="grpWater">Gewässer & Standort</div>
       <div class="field" id="ff-location">
         <label data-i18n="water">Gewässer / Platz</label>
         <input id="f-location" type="text" placeholder="z. B. Vereinsteich, Platz 4" data-i18n-ph="waterPh" />
       </div>
+      <div class="field" id="ff-mapPin">
+        <label data-i18n="mapPin">Standort auf Karte</label>
+        <div id="f-map" class="map"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px;">
+          <span id="f-coord" class="coord" data-i18n="tapMap">Tippe auf die Karte, um den Fangort zu setzen.</span>
+          <button type="button" class="btn secondary sm" style="width:auto; padding:8px 12px; white-space:nowrap;" onclick="useMyLocation()" data-i18n="myLocation">Mein Standort</button>
+        </div>
+      </div>
 
+      <div class="fgroup" id="fg-cond" data-i18n="grpConditions">Bedingungen</div>
+      <div class="field" id="ff-watertemp">
+        <label data-i18n="watertemp">Wassertemperatur (°C)</label>
+        <input id="f-watertemp" type="number" inputmode="decimal" step="0.1" placeholder="z. B. 18" data-i18n-ph="watertempPh" />
+      </div>
+      <div id="f-weather-wrap" style="display:none; margin-bottom:16px;">
+        <div class="sectionlabel" data-i18n="weather">Wetter</div>
+        <div id="f-weather"></div>
+      </div>
+
+      <div class="fgroup" id="fg-gear" data-i18n="grpGear">Technik & Ausrüstung</div>
       <div class="field" id="ff-method">
         <label data-i18n="method">Angelmethode</label>
         <div class="combo">
@@ -552,50 +597,12 @@
           <input id="f-boat" type="text" autocomplete="off" placeholder="z. B. Schlauchboot" data-i18n-ph="boatPh" />
         </div>
       </div>
-
-      <div class="field" id="ff-watertemp">
-        <label data-i18n="watertemp">Wassertemperatur (°C)</label>
-        <input id="f-watertemp" type="number" inputmode="decimal" step="0.1" placeholder="z. B. 18" data-i18n-ph="watertempPh" />
-      </div>
       <div class="field" id="ff-trolling">
         <label data-i18n="trolling">Schleppgeschw. (km/h)</label>
         <input id="f-trolling" type="number" inputmode="decimal" step="0.1" placeholder="z. B. 3,2" data-i18n-ph="trollingPh" />
       </div>
-      <div class="field" id="ff-released">
-        <label data-i18n="releasedLabel">Entnahme</label>
-        <select id="f-released">
-          <option value="" data-i18n="releasedNone">—</option>
-          <option value="kept" data-i18n="releasedKept">Entnommen</option>
-          <option value="released" data-i18n="releasedReleased">Zurückgesetzt</option>
-        </select>
-      </div>
 
-      <div class="field" id="ff-mapPin">
-        <label data-i18n="mapPin">Standort auf Karte</label>
-        <div id="f-map" class="map"></div>
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px;">
-          <span id="f-coord" class="coord" data-i18n="tapMap">Tippe auf die Karte, um den Fangort zu setzen.</span>
-          <button type="button" class="btn secondary sm" style="width:auto; padding:8px 12px; white-space:nowrap;" onclick="useMyLocation()" data-i18n="myLocation">Mein Standort</button>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label><span data-i18n="datetime">Datum &amp; Zeit</span> <span class="req">*</span></label>
-          <input id="f-date" type="datetime-local" onchange="previewWeather()" />
-        </div>
-        <div class="field">
-          <label><span data-i18n="angler">Angler</span> <span class="req">*</span></label>
-          <select id="f-angler" onchange="onAnglerChange()"></select>
-          <input id="f-angler-other" type="text" placeholder="Name eingeben" data-i18n-ph="anglerOtherPh" style="display:none; margin-top:8px;" />
-        </div>
-      </div>
-
-      <div id="f-weather-wrap" style="display:none; margin-bottom:16px;">
-        <div class="sectionlabel" data-i18n="weather">Wetter</div>
-        <div id="f-weather"></div>
-      </div>
-
+      <div class="fgroup" id="fg-notes" data-i18n="grpNotes">Notizen</div>
       <div class="field" id="ff-notes">
         <label data-i18n="notes">Notizen</label>
         <textarea id="f-notes" placeholder="Köder, Wetter, Bemerkungen …" data-i18n-ph="notesPh"></textarea>
@@ -1154,7 +1161,7 @@ const MONTHS = {
 };
 const I18N = {
   de:{
-    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
+    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", grpBasis:"Basis", grpCatch:"Der Fang", grpPhotos:"Fotos", grpWater:"Gewässer & Standort", grpConditions:"Bedingungen", grpGear:"Technik & Ausrüstung", grpNotes:"Notizen", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
     personal:"Persönlich", clubs:"Vereine", groups:"Gruppen", statsTile:"Meine Fänge", statsTileSub:"Alle Fänge, alle Bereiche", soloTile:"Solo", soloTileSub:"Eigenes Logbuch, privat",
     signIn:"Anmelden", email:"E-Mail", emailPh:"name@beispiel.de", password:"Passwort", loginHint:"Demo: beliebige E-Mail und beliebiges Passwort funktionieren. Konten werden vom Vereinsadmin angelegt.",
     solo:"Solo", withoutClub:"Ohne Verein", yourName:"Dein Name", namePh:"z. B. Johannes", next:"Weiter", errName:"Bitte gib deinen Namen ein.", soloHint:"Im Solo-Modus dokumentierst du deine Fänge privat — ohne Verein, ohne Login.",
@@ -1167,7 +1174,7 @@ const I18N = {
     clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit The Fishing Butler", shareNoMeasure:"ohne Maße"
   },
   en:{
-    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
+    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", grpBasis:"Basics", grpCatch:"The catch", grpPhotos:"Photos", grpWater:"Water & location", grpConditions:"Conditions", grpGear:"Technique & gear", grpNotes:"Notes", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
     personal:"Personal", clubs:"Clubs", groups:"Groups", statsTile:"My catches", statsTileSub:"All catches, everywhere", soloTile:"Solo", soloTileSub:"Your own private log",
     signIn:"Sign in", email:"Email", emailPh:"name@example.com", password:"Password", loginHint:"Demo: any email and password work. Accounts are created by the club admin.",
     solo:"Solo", withoutClub:"Without a club", yourName:"Your name", namePh:"e.g. John", next:"Continue", errName:"Please enter your name.", soloHint:"In solo mode you log your catches privately — no club, no login.",
@@ -1180,7 +1187,7 @@ const I18N = {
     clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with The Fishing Butler", shareNoMeasure:"no measurements"
   },
   nl:{
-    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
+    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", grpBasis:"Basis", grpCatch:"De vangst", grpPhotos:"Foto's", grpWater:"Water & locatie", grpConditions:"Omstandigheden", grpGear:"Techniek & uitrusting", grpNotes:"Notities", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
     personal:"Persoonlijk", clubs:"Verenigingen", groups:"Groepen", statsTile:"Mijn vangsten", statsTileSub:"Alle vangsten, overal", soloTile:"Solo", soloTileSub:"Eigen logboek, privé",
     signIn:"Inloggen", email:"E-mail", emailPh:"naam@voorbeeld.nl", password:"Wachtwoord", loginHint:"Demo: elke e-mail en elk wachtwoord werken. Accounts worden aangemaakt door de verenigingsbeheerder.",
     solo:"Solo", withoutClub:"Zonder vereniging", yourName:"Je naam", namePh:"bijv. Jan", next:"Verder", errName:"Voer je naam in.", soloHint:"In solomodus leg je je vangsten privé vast — zonder vereniging, zonder inloggen.",
@@ -2558,9 +2565,18 @@ const CFG_FIELDS=[
   {key:'photos',  i18n:'photos'},
   {key:'notes',   i18n:'notes'},
 ];
-const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',location:'optional',method:'optional',bait:'optional',rod:'off',boat:'off',watertemp:'off',trolling:'off',released:'off',mapPin:'optional',photos:'optional',notes:'optional'};
+const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',released:'optional',photos:'optional',location:'optional',mapPin:'optional',watertemp:'off',method:'off',bait:'off',rod:'off',boat:'off',trolling:'off',notes:'optional'};
 // Globale, additive Feld-Wünsche des Nutzers (an/aus). Admin-Config kann Felder zusätzlich anzeigen/Pflicht machen, nie verbieten.
-const DEFAULT_FIELD_PREF={length:true,weight:true,location:true,method:true,bait:true,rod:false,boat:false,watertemp:false,trolling:false,released:false,mapPin:true,photos:true,notes:true};
+const DEFAULT_FIELD_PREF={length:true,weight:true,location:true,method:false,bait:false,rod:false,boat:false,watertemp:false,trolling:false,released:true,mapPin:true,photos:true,notes:true};
+const FIELD_GROUPS=[
+  {i18n:'grpCatch',  keys:['length','weight','released']},
+  {i18n:'grpPhotos', keys:['photos']},
+  {i18n:'grpWater',  keys:['location','mapPin']},
+  {i18n:'grpConditions', keys:['watertemp']},
+  {i18n:'grpGear',   keys:['method','bait','rod','boat','trolling']},
+  {i18n:'grpNotes',  keys:['notes']},
+];
+function cfgFieldI18n(key){ const f=CFG_FIELDS.find(x=>x.key===key); return f?f.i18n:key; }
 function getUserFieldPref(){ return Object.assign({}, DEFAULT_FIELD_PREF, (state.me&&state.me.fieldPref)||{}); }
 async function setUserFieldPref(pref){
   if(state.me) state.me.fieldPref=pref;
@@ -2569,7 +2585,7 @@ async function setUserFieldPref(pref){
 function renderFieldPrefPanel(){
   const box=document.getElementById('field-pref-list'); if(!box) return;
   const pref=getUserFieldPref();
-  box.innerHTML=CFG_FIELDS.map(f=>`<label class="chkrow"><input type="checkbox" ${pref[f.key]?'checked':''} onchange="setFieldPref('${f.key}', this.checked)"><span>${t(f.i18n)}</span></label>`).join('');
+  box.innerHTML=FIELD_GROUPS.map(g=>`<div class="setgroup">${t(g.i18n)}</div>`+g.keys.map(key=>`<label class="chkrow"><input type="checkbox" ${pref[key]?'checked':''} onchange="setFieldPref('${key}', this.checked)"><span>${t(cfgFieldI18n(key))}</span></label>`).join('')).join('');
 }
 function setFieldPref(key, on){ const pref=getUserFieldPref(); pref[key]=!!on; setUserFieldPref(pref); }
 function fieldCfgKey(){ return 'fanglog_fields_'+ctxKey(state.mode, state.club&&state.club.id); }
@@ -2595,8 +2611,8 @@ function renderFieldCfgPanel(){
   const c=getFieldCfg();
   const ro = ctxIsDb() && !canEditCtxCfg();
   const states=[['required','stRequired'],['optional','stOptional'],['off','stOff']];
-  box.innerHTML=CFG_FIELDS.map(f=>`<div class="ffrow"><span class="ffname">${t(f.i18n)}</span>
-    <div class="seg ffseg${ro?' seg-ro':''}">${states.map(([s,lab])=>`<button type="button" onclick="setFieldState('${f.key}','${s}')" class="${c[f.key]===s?'on':''}">${t(lab)}</button>`).join('')}</div></div>`).join('');
+  box.innerHTML=FIELD_GROUPS.map(g=>`<div class="setgroup">${t(g.i18n)}</div>`+g.keys.map(key=>`<div class="ffrow"><span class="ffname">${t(cfgFieldI18n(key))}</span>
+    <div class="seg ffseg${ro?' seg-ro':''}">${states.map(([s,lab])=>`<button type="button" onclick="setFieldState('${key}','${s}')" class="${c[key]===s?'on':''}">${t(lab)}</button>`).join('')}</div></div>`).join('')).join('');
   const hint=document.getElementById('fields-hint');
   if(hint) hint.textContent = ro ? t('fieldsHintMember') : (ctxIsDb() ? t('fieldsHintAdmin') : t('fieldsHint'));
 }
@@ -2637,6 +2653,11 @@ function applyFieldConfig(force){
     const fields=[...row.querySelectorAll('.field')];
     if(fields.length){ row.style.display = fields.every(f=>f.style.display==='none') ? 'none' : ''; }
   });
+  syncFormGroups();
+}
+function syncFormGroups(){
+  const groups=[['fg-catch',['ff-length','ff-weight','ff-released']],['fg-photos',['ff-photos']],['fg-water',['ff-location','ff-mapPin']],['fg-cond',['ff-watertemp']],['fg-gear',['ff-method','ff-bait','ff-rod','ff-boat','ff-trolling']],['fg-notes',['ff-notes']]];
+  groups.forEach(([hid,ids])=>{ const h=document.getElementById(hid); if(!h) return; let vis=ids.some(id=>{ const el=document.getElementById(id); return el && el.style.display!=='none'; }); if(hid==='fg-cond'){ const w=document.getElementById('f-weather-wrap'); if(w && w.style.display!=='none') vis=true; } h.style.display = vis ? '' : 'none'; });
 }
 
 // ---------- share config panel (settings) ----------
