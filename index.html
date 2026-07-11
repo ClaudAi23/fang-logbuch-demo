@@ -1154,7 +1154,7 @@ const MONTHS = {
 };
 const I18N = {
   de:{
-    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
+    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
     personal:"Persönlich", clubs:"Vereine", groups:"Gruppen", statsTile:"Meine Fänge", statsTileSub:"Alle Fänge, alle Bereiche", soloTile:"Solo", soloTileSub:"Eigenes Logbuch, privat",
     signIn:"Anmelden", email:"E-Mail", emailPh:"name@beispiel.de", password:"Passwort", loginHint:"Demo: beliebige E-Mail und beliebiges Passwort funktionieren. Konten werden vom Vereinsadmin angelegt.",
     solo:"Solo", withoutClub:"Ohne Verein", yourName:"Dein Name", namePh:"z. B. Johannes", next:"Weiter", errName:"Bitte gib deinen Namen ein.", soloHint:"Im Solo-Modus dokumentierst du deine Fänge privat — ohne Verein, ohne Login.",
@@ -1167,7 +1167,7 @@ const I18N = {
     clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit The Fishing Butler", shareNoMeasure:"ohne Maße"
   },
   en:{
-    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
+    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
     personal:"Personal", clubs:"Clubs", groups:"Groups", statsTile:"My catches", statsTileSub:"All catches, everywhere", soloTile:"Solo", soloTileSub:"Your own private log",
     signIn:"Sign in", email:"Email", emailPh:"name@example.com", password:"Password", loginHint:"Demo: any email and password work. Accounts are created by the club admin.",
     solo:"Solo", withoutClub:"Without a club", yourName:"Your name", namePh:"e.g. John", next:"Continue", errName:"Please enter your name.", soloHint:"In solo mode you log your catches privately — no club, no login.",
@@ -1180,7 +1180,7 @@ const I18N = {
     clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with The Fishing Butler", shareNoMeasure:"no measurements"
   },
   nl:{
-    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
+    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
     personal:"Persoonlijk", clubs:"Verenigingen", groups:"Groepen", statsTile:"Mijn vangsten", statsTileSub:"Alle vangsten, overal", soloTile:"Solo", soloTileSub:"Eigen logboek, privé",
     signIn:"Inloggen", email:"E-mail", emailPh:"naam@voorbeeld.nl", password:"Wachtwoord", loginHint:"Demo: elke e-mail en elk wachtwoord werken. Accounts worden aangemaakt door de verenigingsbeheerder.",
     solo:"Solo", withoutClub:"Zonder vereniging", yourName:"Je naam", namePh:"bijv. Jan", next:"Verder", errName:"Voer je naam in.", soloHint:"In solomodus leg je je vangsten privé vast — zonder vereniging, zonder inloggen.",
@@ -1432,7 +1432,7 @@ function renderClubs(){
   const c=document.getElementById('club-list'); c.innerHTML='';
   const nih=document.getElementById('not-in-club-hint'); if(nih) nih.style.display='none';
   const tile=(icon,nm,sub,fn)=>{ const b=document.createElement('button'); b.className='club'; b.innerHTML=`<span class="av">${icon}</span><span style="min-width:0;"><span class="nm">${nm}</span><br><span class="loc">${sub}</span></span>${CHEV_IC}`; b.onclick=fn; return b; };
-  const ctxTile=(ctx,kind)=>{ const b=document.createElement('button'); b.className='club'; b.innerHTML=`<span class="av">${clubLogoHTML(ctx)}</span><span style="min-width:0;"><span class="nm">${esc(ctx.name)}</span><br><span class="loc">${esc(ctx.loc||ctx.location||'')}</span></span>${CHEV_IC}`; b.onclick=()=>chooseClub(ctx,kind); return b; };
+  const ctxTile=(ctx,kind)=>{ const b=document.createElement('button'); b.className='club'; const _nc=(state.ctxNew&&state.ctxNew[ctx.id])||0; const _pill=_nc>0?`<span class="cat-pill" style="margin-left:auto;" title="${esc(t('newCatches'))}">${_nc>99?'99+':_nc}</span>`:''; b.innerHTML=`<span class="av">${clubLogoHTML(ctx)}</span><span style="min-width:0;"><span class="nm">${esc(ctx.name)}</span><br><span class="loc">${esc(ctx.loc||ctx.location||'')}</span></span>${_pill}${CHEV_IC}`; b.onclick=()=>chooseClub(ctx,kind); return b; };
   const emptyHint=(txt)=>{ const p=document.createElement('p'); p.className='hint'; p.style.margin='2px 4px 0'; p.textContent=txt; return p; };
 
   const supa = state.auth==='supabase';
@@ -1480,6 +1480,7 @@ async function countPendingReqs(){
 async function goChooser(){
   if(state.auth==='supabase'){
     try{ state.myContexts = await loadMyContexts(); }catch(e){ state.myContexts=[]; }
+    try{ await loadCtxActivity(); }catch(e){ state.ctxNew={}; }
     if(state.me && state.me.isAppAdmin){ try{ state.pendingReqs = await countPendingReqs(); }catch(e){ state.pendingReqs=0; } try{ state.pendingBetaReqs = await countPendingBetaReqs(); }catch(e){ state.pendingBetaReqs=0; } try{ state.pendingFeedback = await countFeedback(); }catch(e){ state.pendingFeedback=0; } }
   }
   updateDemoBadge();
@@ -1876,6 +1877,22 @@ async function loadMyContexts(){
   if(!data) return [];
   return data.map(m=>Object.assign({}, m.contexts, {role:m.role, _db:true})).filter(x=>x&&x.id);
 }
+function loadSeen(){ try{ return JSON.parse(localStorage.getItem('tb_seen')||'{}'); }catch(e){ return {}; } }
+function markSeen(ctxId){ if(!ctxId) return; const sn=loadSeen(); sn[ctxId]=new Date().toISOString(); try{ localStorage.setItem('tb_seen', JSON.stringify(sn)); }catch(e){} state.seen=sn; }
+async function loadCtxActivity(){
+  state.ctxNew={};
+  const c=getSB(); if(!c||!state.me) return;
+  const ids=(state.myContexts||[]).map(x=>x.id).filter(Boolean); if(!ids.length) return;
+  const sn=loadSeen(); let changed=false;
+  ids.forEach(id=>{ if(!sn[id]){ sn[id]=new Date().toISOString(); changed=true; } });
+  if(changed){ try{ localStorage.setItem('tb_seen', JSON.stringify(sn)); }catch(e){} }
+  state.seen=sn;
+  const { data } = await c.from('catches').select('context_id, created_at, owner_id').in('context_id', ids).order('created_at',{ascending:false}).limit(1000);
+  if(!data) return;
+  const cnt={};
+  data.forEach(r=>{ if(!r.context_id || r.owner_id===state.me.id) return; const seenAt=sn[r.context_id]; if(seenAt && r.created_at>seenAt) cnt[r.context_id]=(cnt[r.context_id]||0)+1; });
+  state.ctxNew=cnt;
+}
 async function ownerNameMap(ownerIds){
   const c=getSB(); const map={};
   if(ownerIds.length){ const { data } = await c.from('profiles').select('id, display_name').in('id', ownerIds); (data||[]).forEach(p=>map[p.id]=p.display_name); }
@@ -1963,6 +1980,7 @@ function subscribeContextRealtime(ctxId){
 }
 async function chooseClub(cl, kind, keepForm){
   keepForm = keepForm===true;
+  if(cl && cl.id) markSeen(cl.id);
   state.club=cl; state.mode=kind||'club';
   state.user=state.me.name; state.userId=state.me.id; state.soloName=null; state.filter=emptyFilter();
   document.getElementById('list-sub').textContent=state.club.name;
@@ -1997,7 +2015,7 @@ async function startSolo(keepForm){
     state.catches=loadCatchesFor('solo'); renderList(); go('list');
   }
 }
-function leaveArea(){ unsubscribeRealtime(); state.club=null; state.mode='club'; state.soloName=null; goChooser(); }
+function leaveArea(){ if(state.club&&state.club.id) markSeen(state.club.id); unsubscribeRealtime(); state.club=null; state.mode='club'; state.soloName=null; goChooser(); }
 // ---------- Löschen / Lifecycle (Beta #1) ----------
 async function deleteAccount(){
   if(state.auth!=='supabase') return;
