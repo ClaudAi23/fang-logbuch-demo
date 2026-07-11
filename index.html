@@ -129,6 +129,7 @@
   .av-edit:active .hdr-logo{filter:brightness(.82);}
   .av-edit-badge{position:absolute; right:-3px; bottom:-3px; width:24px; height:24px; border-radius:50%; background:var(--teal); border:2px solid var(--sand); display:flex; align-items:center; justify-content:center; color:#fff; pointer-events:none;}
   .av-edit-badge svg{width:13px; height:13px; stroke:currentColor; stroke-width:2; fill:none;}
+  .av-remove{position:absolute; top:-6px; right:-6px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:#fff; font-size:16px; line-height:19px; text-align:center; cursor:pointer; border:2px solid var(--sand); box-shadow:0 1px 3px rgba(0,0,0,.3); z-index:2;}
   .fgroup{font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--teal-bright); margin:24px 0 12px; padding-bottom:7px; border-bottom:1px solid var(--border);}
   .setgroup{font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:18px 0 8px;}
   .setgroup:first-child{margin-top:2px;}
@@ -508,7 +509,8 @@
     <div class="scroll pad">
       <div class="field" id="ff-area" style="display:none;">
         <label data-i18n="logToArea">Eintragen in</label>
-        <select id="f-area" onchange="onFormAreaChange(this.value)" style="width:100%; padding:12px 14px; border-radius:10px; font:inherit; background:var(--surface); border:1px solid var(--border-2); color:var(--text);"></select>
+        <div id="f-area-chips" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+        <div class="hint" style="margin-top:6px;" data-i18n="logToAreaHint">Mehrere Vereine/Gruppen möglich.</div>
       </div>
       <div class="fgroup" id="fg-basis" data-i18n="grpBasis">Basis</div>
       <div class="field">
@@ -679,9 +681,10 @@
             <label class="av-edit" data-i18n-title="tapToChange" title="Zum Ändern tippen">
               <div id="prof-av" class="hdr-logo" style="width:64px; height:64px; border-radius:14px;"></div>
               <span class="av-edit-badge"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+              <span id="prof-av-remove" class="av-remove" style="display:none;" onclick="event.preventDefault(); event.stopPropagation(); removeUserAvatar();" title="Entfernen">&times;</span>
               <input id="prof-av-file" type="file" accept="image/*" style="display:none" onchange="onUserAvatar(event)" />
             </label>
-            <div><div id="prof-name" style="font-weight:600;">—</div><div class="hint" style="margin:2px 0 0;" data-i18n="tapToChange">Zum Ändern tippen</div><a id="prof-av-remove" href="javascript:void(0)" onclick="removeUserAvatar()" class="hint" style="display:none; color:var(--danger); font-weight:600; margin-top:2px;" data-i18n="removeImage">Bild entfernen</a></div>
+            <div><div id="prof-name" style="font-weight:600;">—</div><div class="hint" style="margin:2px 0 0;" data-i18n="tapToChange">Zum Ändern tippen</div></div>
           </div>
           <label data-i18n="name">Name</label>
           <input id="prof-name-input" type="text" autocomplete="off" oninput="onProfileName(this.value)" />
@@ -774,12 +777,12 @@
               <label class="av-edit" data-i18n-title="tapToChange" title="Zum Ändern tippen">
                 <div id="set-logo" class="hdr-logo" style="width:64px; height:64px; border-radius:14px;"></div>
                 <span class="av-edit-badge"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+                <span id="logo-remove" class="av-remove" style="display:none;" onclick="event.preventDefault(); event.stopPropagation(); removeContextLogo();" title="Entfernen">&times;</span>
                 <input id="logo-file" type="file" accept="image/*" style="display:none" onchange="onLogo(event)" />
               </label>
               <div>
                 <div id="set-clubname" style="font-weight:600;">—</div>
                 <div class="hint" style="margin:2px 0 0;" data-i18n="tapToChange">Zum Ändern tippen</div>
-                <a id="logo-remove" href="javascript:void(0)" onclick="removeContextLogo()" class="hint" style="display:none; color:var(--danger); font-weight:600; margin-top:2px;" data-i18n="removeImage">Bild entfernen</a>
               </div>
             </div>
             <div class="sectionlabel" style="margin:16px 0 6px;" data-i18n="logoInitials">Kürzel-Logo (ohne Bild)</div>
@@ -1203,7 +1206,7 @@ const MONTHS = {
 };
 const I18N = {
   de:{
-    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", grpBasis:"Basis", grpCatch:"Der Fang", grpPhotos:"Fotos", grpWater:"Gewässer & Standort", grpConditions:"Bedingungen", grpGear:"Technik & Ausrüstung", grpNotes:"Notizen", logoInitials:"Kürzel-Logo (ohne Bild)", logoInitialsHint:"Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).", logoLight:"Heller Text", logoDark:"Dunkler Text", editImage:"Bild anpassen", editImageHint:"Ziehen zum Verschieben, Regler zum Zoomen.", cropApply:"Übernehmen", removeImage:"Bild entfernen", converting:"Konvertiere Foto …", weatherManualPh:"z. B. sonnig, 18 °C, leichter Wind", weatherManualHint:"Automatisch geladen, wenn ein Standort gesetzt ist – manuell überschreibbar.", weatherPh:"z. B. Bewölkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch vorausgefüllt, wenn ein Standort gesetzt ist – frei editierbar.", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
+    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", grpBasis:"Basis", grpCatch:"Der Fang", grpPhotos:"Fotos", grpWater:"Gewässer & Standort", grpConditions:"Bedingungen", grpGear:"Technik & Ausrüstung", grpNotes:"Notizen", logoInitials:"Kürzel-Logo (ohne Bild)", logoInitialsHint:"Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).", logoLight:"Heller Text", logoDark:"Dunkler Text", editImage:"Bild anpassen", editImageHint:"Ziehen zum Verschieben, Regler zum Zoomen.", cropApply:"Übernehmen", removeImage:"Bild entfernen", converting:"Konvertiere Foto …", logToAreaHint:"Mehrere Vereine/Gruppen möglich.", weatherManualPh:"z. B. sonnig, 18 °C, leichter Wind", weatherManualHint:"Automatisch geladen, wenn ein Standort gesetzt ist – manuell überschreibbar.", weatherPh:"z. B. Bewölkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch vorausgefüllt, wenn ein Standort gesetzt ist – frei editierbar.", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
     personal:"Persönlich", clubs:"Vereine", groups:"Gruppen", statsTile:"Meine Fänge", statsTileSub:"Alle Fänge, alle Bereiche", soloTile:"Solo", soloTileSub:"Eigenes Logbuch, privat",
     signIn:"Anmelden", email:"E-Mail", emailPh:"name@beispiel.de", password:"Passwort", loginHint:"Demo: beliebige E-Mail und beliebiges Passwort funktionieren. Konten werden vom Vereinsadmin angelegt.",
     solo:"Solo", withoutClub:"Ohne Verein", yourName:"Dein Name", namePh:"z. B. Johannes", next:"Weiter", errName:"Bitte gib deinen Namen ein.", soloHint:"Im Solo-Modus dokumentierst du deine Fänge privat — ohne Verein, ohne Login.",
@@ -1216,7 +1219,7 @@ const I18N = {
     clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit The Fishing Butler", shareNoMeasure:"ohne Maße"
   },
   en:{
-    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", grpBasis:"Basics", grpCatch:"The catch", grpPhotos:"Photos", grpWater:"Water & location", grpConditions:"Conditions", grpGear:"Technique & gear", grpNotes:"Notes", logoInitials:"Initials logo (no image)", logoInitialsHint:"Shown when no image is set (max. 3 characters).", logoLight:"Light text", logoDark:"Dark text", editImage:"Adjust image", editImageHint:"Drag to move, slider to zoom.", cropApply:"Apply", removeImage:"Remove image", converting:"Converting photo …", weatherManualPh:"e.g. sunny, 18 °C, light wind", weatherManualHint:"Auto-filled when a location is set – you can override it.", weatherPh:"e.g. Cloudy · 18 °C · 12 km/h", weatherAutoHint:"Auto-filled when a location is set – fully editable.", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
+    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", grpBasis:"Basics", grpCatch:"The catch", grpPhotos:"Photos", grpWater:"Water & location", grpConditions:"Conditions", grpGear:"Technique & gear", grpNotes:"Notes", logoInitials:"Initials logo (no image)", logoInitialsHint:"Shown when no image is set (max. 3 characters).", logoLight:"Light text", logoDark:"Dark text", editImage:"Adjust image", editImageHint:"Drag to move, slider to zoom.", cropApply:"Apply", removeImage:"Remove image", converting:"Converting photo …", logToAreaHint:"You can pick multiple clubs/groups.", weatherManualPh:"e.g. sunny, 18 °C, light wind", weatherManualHint:"Auto-filled when a location is set – you can override it.", weatherPh:"e.g. Cloudy · 18 °C · 12 km/h", weatherAutoHint:"Auto-filled when a location is set – fully editable.", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
     personal:"Personal", clubs:"Clubs", groups:"Groups", statsTile:"My catches", statsTileSub:"All catches, everywhere", soloTile:"Solo", soloTileSub:"Your own private log",
     signIn:"Sign in", email:"Email", emailPh:"name@example.com", password:"Password", loginHint:"Demo: any email and password work. Accounts are created by the club admin.",
     solo:"Solo", withoutClub:"Without a club", yourName:"Your name", namePh:"e.g. John", next:"Continue", errName:"Please enter your name.", soloHint:"In solo mode you log your catches privately — no club, no login.",
@@ -1229,7 +1232,7 @@ const I18N = {
     clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with The Fishing Butler", shareNoMeasure:"no measurements"
   },
   nl:{
-    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", grpBasis:"Basis", grpCatch:"De vangst", grpPhotos:"Foto's", grpWater:"Water & locatie", grpConditions:"Omstandigheden", grpGear:"Techniek & uitrusting", grpNotes:"Notities", logoInitials:"Initialen-logo (geen afbeelding)", logoInitialsHint:"Wordt getoond als er geen afbeelding is (max. 3 tekens).", logoLight:"Lichte tekst", logoDark:"Donkere tekst", editImage:"Afbeelding aanpassen", editImageHint:"Sleep om te verplaatsen, schuif om te zoomen.", cropApply:"Toepassen", removeImage:"Afbeelding verwijderen", converting:"Foto converteren …", weatherManualPh:"bijv. zonnig, 18 °C, lichte wind", weatherManualHint:"Automatisch geladen als er een locatie is – handmatig te overschrijven.", weatherPh:"bijv. Bewolkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch ingevuld als er een locatie is – vrij bewerkbaar.", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
+    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", grpBasis:"Basis", grpCatch:"De vangst", grpPhotos:"Foto's", grpWater:"Water & locatie", grpConditions:"Omstandigheden", grpGear:"Techniek & uitrusting", grpNotes:"Notities", logoInitials:"Initialen-logo (geen afbeelding)", logoInitialsHint:"Wordt getoond als er geen afbeelding is (max. 3 tekens).", logoLight:"Lichte tekst", logoDark:"Donkere tekst", editImage:"Afbeelding aanpassen", editImageHint:"Sleep om te verplaatsen, schuif om te zoomen.", cropApply:"Toepassen", removeImage:"Afbeelding verwijderen", converting:"Foto converteren …", logToAreaHint:"Meerdere verenigingen/groepen mogelijk.", weatherManualPh:"bijv. zonnig, 18 °C, lichte wind", weatherManualHint:"Automatisch geladen als er een locatie is – handmatig te overschrijven.", weatherPh:"bijv. Bewolkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch ingevuld als er een locatie is – vrij bewerkbaar.", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
     personal:"Persoonlijk", clubs:"Verenigingen", groups:"Groepen", statsTile:"Mijn vangsten", statsTileSub:"Alle vangsten, overal", soloTile:"Solo", soloTileSub:"Eigen logboek, privé",
     signIn:"Inloggen", email:"E-mail", emailPh:"naam@voorbeeld.nl", password:"Wachtwoord", loginHint:"Demo: elke e-mail en elk wachtwoord werken. Accounts worden aangemaakt door de verenigingsbeheerder.",
     solo:"Solo", withoutClub:"Zonder vereniging", yourName:"Je naam", namePh:"bijv. Jan", next:"Verder", errName:"Voer je naam in.", soloHint:"In solomodus leg je je vangsten privé vast — zonder vereniging, zonder inloggen.",
@@ -1992,7 +1995,7 @@ async function ownerNameMap(ownerIds){
 }
 async function loadContextCatches(ctxId){
   const c=getSB();
-  const { data: rows } = await c.from('catches').select('*').eq('context_id', ctxId).order('caught_at', {ascending:false});
+  const { data: rows } = await c.from('catches').select('*').or('context_id.eq.'+ctxId+',context_ids.cs.{'+ctxId+'}').order('caught_at', {ascending:false});
   if(!rows) return [];
   const nameById = await ownerNameMap([...new Set(rows.flatMap(r=>[r.owner_id, r.logged_by]).filter(Boolean))]);
   return rowsToCatches(rows, nameById);
@@ -2013,7 +2016,7 @@ async function reloadCurrentDb(){
 function catchToDbRow(obj, contextId){
   const forUser = obj.forUser || state.me.id;
   const loggedFor = !!contextId && forUser !== state.me.id;
-  return {
+  const row = {
     owner_id: forUser, logged_by: loggedFor ? state.me.id : null, confirmed: loggedFor ? false : true,
     context_id: contextId||null, species: obj.species,
     length_cm: obj.length!=null? obj.length : null, weight_kg: obj.weight!=null? obj.weight : null,
@@ -2024,6 +2027,8 @@ function catchToDbRow(obj, contextId){
     lat: obj.lat!=null? obj.lat : null, lon: obj.lon!=null? obj.lon : null,
     caught_at: obj.date, notes: obj.notes||null, moon: obj.moon||null, weather: obj.weather||null
   };
+  if(obj._targets){ row.context_ids = obj._targets.length>1 ? obj._targets : null; }
+  return row;
 }
 async function deleteSoloPhotos(catchId){
   const c=getSB();
@@ -2849,21 +2854,30 @@ async function openForm(skipAuto){
   ensureFormMap(null,null);
   // no automatic geolocation on open — the browser prompt should only appear when the user taps "Mein Standort"
 }
-function populateAreaSelect(){
-  const sel=document.getElementById('f-area'); const wrap=document.getElementById('ff-area');
-  if(!sel) return;
-  if(state.editId){ if(wrap) wrap.style.display='none'; return; }
-  const ctxs=state.myContexts||[];
-  let h=`<option value="solo">${esc(t('solo'))}</option>`;
-  ctxs.filter(x=>x.type==='club').forEach(c=>{ h+=`<option value="${c.id}">${esc(c.name)}</option>`; });
-  ctxs.filter(x=>x.type==='group').forEach(g=>{ h+=`<option value="${g.id}">${esc(g.name)}</option>`; });
-  sel.innerHTML=h;
-  sel.value = (state.mode!=='solo' && state.club) ? state.club.id : 'solo';
-  if(wrap) wrap.style.display='';
+function renderAreaChips(){
+  const box=document.getElementById('f-area-chips'); if(!box) return;
+  const ctxs=state.myContexts||[]; const tg=state.formTargets||[]; const solo=tg.length===0;
+  const chip=(key,label,on)=>`<button type="button" class="chip${on?' on':''}" onclick="toggleArea('${key}')">${esc(label)}</button>`;
+  let h=chip('solo', t('solo'), solo);
+  ctxs.filter(x=>x.type==='club').forEach(c=>{ h+=chip(c.id, c.name, tg.indexOf(c.id)>=0); });
+  ctxs.filter(x=>x.type==='group').forEach(g=>{ h+=chip(g.id, g.name, tg.indexOf(g.id)>=0); });
+  box.innerHTML=h;
 }
-async function onFormAreaChange(val){
-  if(val==='solo'){ await startSolo(true); }
-  else { const ctx=(state.myContexts||[]).find(x=>x.id===val); if(ctx){ await chooseClub(ctx, ctx.type==='group'?'group':'club', true); } }
+function populateAreaSelect(){
+  const wrap=document.getElementById('ff-area'); if(!wrap) return;
+  if(state.editId){ wrap.style.display='none'; return; }
+  state.formTargets = (state.mode!=='solo' && state.club) ? [state.club.id] : [];
+  renderAreaChips(); wrap.style.display='';
+}
+async function toggleArea(key){
+  let tg=(state.formTargets||[]).slice();
+  if(key==='solo'){ tg=[]; }
+  else { const i=tg.indexOf(key); if(i>=0) tg.splice(i,1); else tg.push(key); }
+  state.formTargets=tg;
+  const primary = tg.length ? tg[0] : null;
+  if(primary){ const ctx=(state.myContexts||[]).find(x=>x.id===primary); if(ctx){ try{ await chooseClub(ctx, ctx.type==='group'?'group':'club', true); }catch(e){} } }
+  else { try{ await startSolo(true); }catch(e){} }
+  renderAreaChips();
 }
 function isoToLocalInput(iso){ const d=new Date(iso); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
 function openEdit(c){
@@ -3035,6 +3049,7 @@ function saveCatch(){
     lat: state.formLat!=null?state.formLat:null, lon: state.formLon!=null?state.formLon:null,
     moon: moonPhaseKey(new Date(date)), weather: state.formWeather || null
   };
+  if(!state.editId) obj._targets = (state.formTargets||[]);
   if(isDbCatch()){
     const btn=document.querySelector('#s-form .btn[onclick="saveCatch()"]'); if(btn) btn.disabled=true;
     const wasEdit=!!state.editId;
