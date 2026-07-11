@@ -346,6 +346,12 @@
   .ob-li:last-child{border-bottom:1px solid var(--border);}
   .ob-li b{display:block; font-family:var(--head); font-size:16px; color:var(--teal); letter-spacing:.2px;}
   .ob-li span{font-size:13px; color:var(--muted);}
+  .mascot-band{position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:22px; background:linear-gradient(155deg,var(--teal),var(--teal-dark)); box-shadow:0 8px 22px rgba(0,0,0,.20);}
+  .mascot-band::before{content:""; position:absolute; inset:0; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><polygon points='0,0 32,0 0,32' fill='%23ffffff' opacity='0.06'/><polygon points='64,64 32,64 64,32' fill='%23000000' opacity='0.07'/></svg>"); background-size:64px 64px;}
+  .mascot-band img{position:relative; z-index:1; max-width:86%; max-height:86%; width:auto; height:auto; display:block; filter:drop-shadow(0 6px 14px rgba(0,0,0,.30));}
+  .mb-empty{width:100%; max-width:340px; height:190px; margin:2px auto 12px;}
+  .mb-home{width:150px; height:150px; margin:0 auto;}
+  .mb-ob{width:150px; height:150px;}
   .modal-ov{position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.5); display:flex; align-items:flex-end; justify-content:center;
     padding:16px; padding-bottom:calc(16px + env(safe-area-inset-bottom));}
   .modal-box{background:var(--surface); border:1px solid var(--border-2); border-radius:16px; padding:20px;
@@ -370,7 +376,7 @@
     </div>
     <div class="scroll pad">
       <div style="height:20px"></div>
-      <div id="club-logo" class="logo-badge"></div>
+      <div id="club-logo" class="mascot-band mb-home"></div>
       <h1 class="brandname" style="text-align:center; font-size:26px; margin:0 0 2px;" data-i18n="appName">The Fishing Butler</h1>
       <p class="tagline" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
       <p style="text-align:center; margin:0 0 10px;"><span class="beta-pill">Beta</span></p>
@@ -386,7 +392,7 @@
     <div class="scroll pad">
       <div style="height:18px"></div>
       <div style="text-align:center; margin:0 0 22px; padding:30px 20px 24px; background:linear-gradient(160deg, var(--teal) 0%, #18202A 125%); border-radius:22px; box-shadow:0 10px 30px rgba(24,32,42,.28);">
-        <div class="logo-badge" id="login-logo" style="width:108px; height:108px; margin:0 auto 14px; box-shadow:0 8px 22px rgba(0,0,0,.30);"></div>
+        <div id="login-logo" style="width:150px; height:150px; margin:0 auto 14px; border-radius:26px; overflow:hidden; background:#fff; box-shadow:0 8px 22px rgba(0,0,0,.30); display:flex; align-items:center; justify-content:center;"></div>
         <h1 class="brandname" style="text-align:center; font-size:30px; margin:0 0 3px; color:#fff;" data-i18n="appName">The Fishing Butler</h1>
         <p class="tagline" style="color:rgba(255,255,255,.86); margin:0 0 12px;" data-i18n="tagline">Fangen. Protokollieren. Organisieren.</p>
         <span class="beta-pill" style="background:rgba(255,255,255,.22);">Beta</span>
@@ -438,6 +444,7 @@
   <!-- ============ LIST ============ -->
   <section id="s-list" class="screen">
     <div class="topbar">
+      <button class="iconbtn" onclick="leaveArea()" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div id="list-hdr" class="hdr-logo"></div>
       <div style="flex:1; min-width:0;">
         <h1 data-i18n="catches">Fänge</h1>
@@ -450,25 +457,20 @@
       <button class="iconbtn" data-i18n-title="ttSettings" title="Einstellungen" aria-label="Einstellungen" onclick="openSettings()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M4 7h9"/><path d="M17 7h3"/><path d="M4 17h3"/><path d="M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="7" cy="17" r="2.2"/></svg>
       </button>
-      <button class="iconbtn" data-i18n-title="toStart" title="Zum Start" aria-label="Zum Start" onclick="leaveArea()">
-        <svg class="ic" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/></svg>
-      </button>
+      
     </div>
     <div class="scroll pad">
       <div id="stats" style="display:flex; gap:10px; margin-bottom:18px;"></div>
-      <div style="display:flex; align-items:center; justify-content:space-between; margin:4px 4px 10px; gap:10px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin:4px 4px 12px; gap:10px; border-bottom:1px solid var(--border); padding-bottom:10px;">
         <span class="sectionlabel" id="list-label" style="margin:0;">Neueste Fänge</span>
         <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="exportbtn" onclick="openExportMenu('list')" data-i18n-title="exportTitle" title="Exportieren" aria-label="Exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg><span data-i18n="exportBtn">Export</span></button>
+          <button type="button" class="exportbtn" onclick="openExportMenu('list')" data-i18n-title="exportTitle" title="Exportieren" aria-label="Exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg></button>
           <select id="sort-list" onchange="setSort(this.value)" style="width:auto; padding:6px 10px; font-size:13px; border-radius:8px;"></select>
         </div>
       </div>
       <div id="catch-list"></div>
       <div style="height:84px"></div>
     </div>
-    <button class="fab" data-i18n-title="addCatch" title="Fang eintragen" aria-label="Fang eintragen" onclick="openForm()">
-      <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-    </button>
   </section>
 
   <!-- ============ FORM ============ -->
@@ -478,6 +480,10 @@
       <div><h1 id="f-title" data-i18n="logCatch">Fang eintragen</h1><p class="sub" id="f-sub" data-i18n="newCatch">Neuer Fang</p></div>
     </div>
     <div class="scroll pad">
+      <div class="field" id="ff-area" style="display:none;">
+        <label data-i18n="logToArea">Eintragen in</label>
+        <select id="f-area" onchange="onFormAreaChange(this.value)" style="width:100%; padding:12px 14px; border-radius:10px; font:inherit; background:var(--surface); border:1px solid var(--border-2); color:var(--text);"></select>
+      </div>
       <div class="field" id="ff-photos">
         <label data-i18n="photos">Fotos</label>
         <div id="photo-grid" class="photo-grid"></div>
@@ -718,44 +724,53 @@
       </div><!-- /tab-personal -->
 
       <div id="tab-area" style="display:none;">
-      <div id="name-admin" style="display:none;">
-        <div class="sectionlabel" data-i18n="ctxNameTitle">Name</div>
-        <div class="card-box">
-          <input id="ctx-name-input" type="text" autocomplete="off" oninput="onCtxName(this.value)" />
-          <p class="hint" data-i18n="ctxNameHint">Nur Admins können den Namen ändern. Er ist für alle Mitglieder sichtbar.</p>
-        </div>
-      </div>
-      <div id="logo-admin">
-        <div class="sectionlabel" data-i18n="clubLogoAdmin">Vereinslogo · Admin</div>
-        <div class="card-box">
-          <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
-            <div id="set-logo" class="hdr-logo" style="width:54px; height:54px; border-radius:12px;"></div>
-            <div>
-              <div id="set-clubname" style="font-weight:600;">—</div>
-              <div class="hint" style="margin:0;" data-i18n="currentLogo">Aktuelles Logo</div>
-            </div>
+      <div class="accgroup open" id="acc-area-info">
+        <button type="button" class="acchead" onclick="toggleAcc('area-info')"><span data-i18n="areaSection">Bereich</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="accbody">
+          <div id="name-admin" style="display:none;">
+            <label data-i18n="ctxNameTitle">Name</label>
+            <input id="ctx-name-input" type="text" autocomplete="off" oninput="onCtxName(this.value)" />
+            <label data-i18n="ctxLocTitle" style="display:block; margin-top:12px;">Standort</label>
+            <input id="ctx-loc-input" type="text" autocomplete="off" data-i18n-ph="ctxLocPh" oninput="onCtxLoc(this.value)" />
+            <p class="hint" data-i18n="ctxNameHint">Nur Admins können Name und Standort ändern. Sie sind für alle Mitglieder sichtbar.</p>
           </div>
-          <button class="btn secondary sm" onclick="document.getElementById('logo-file').click()" data-i18n="uploadLogo">Logo hochladen</button>
-          <input id="logo-file" type="file" accept="image/*" style="display:none" onchange="onLogo(event)" />
-          <p class="hint" data-i18n="logoHint">Nur der Vereinsadmin sollte das Logo ändern. (In dieser Demo für alle freigeschaltet.)</p>
+          <div id="logo-admin">
+            <div class="sectionlabel" style="margin-left:0;" data-i18n="clubLogoAdmin">Logo · Admin</div>
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
+              <div id="set-logo" class="hdr-logo" style="width:54px; height:54px; border-radius:12px;"></div>
+              <div>
+                <div id="set-clubname" style="font-weight:600;">—</div>
+                <div class="hint" style="margin:0;" data-i18n="currentLogo">Aktuelles Logo</div>
+              </div>
+            </div>
+            <button class="btn secondary sm" onclick="document.getElementById('logo-file').click()" data-i18n="uploadLogo">Logo hochladen</button>
+            <input id="logo-file" type="file" accept="image/*" style="display:none" onchange="onLogo(event)" />
+            <p class="hint" data-i18n="logoHint">Nur Admins können das Logo ändern. Es gilt für alle Mitglieder.</p>
+          </div>
         </div>
-      </div>
-      <div id="members-admin" style="display:none;">
-        <div class="sectionlabel" data-i18n="membersTitle">Mitglieder</div>
-        <div class="card-box">
-          <p class="hint" style="margin-top:0;" id="members-panel-hint" data-i18n="membersHint">Verwalte Rollen und entferne Mitglieder.</p>
-          <button type="button" class="btn secondary sm" id="members-btn" onclick="openMembersModal()">Mitglieder verwalten …</button>
-          <div id="invite-box" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--border);"></div>
-        </div>
-      </div>
-      <div class="sectionlabel" data-i18n="fieldsAdminTitle">Fang-Felder · Verein/Gruppe</div>
-      <div class="card-box">
-        <div id="fields-cfg-list"></div>
-        <p class="hint" id="fields-hint" data-i18n="fieldsHint">Lege fest, welche Felder beim Eintragen erscheinen und welche Pflicht sind.</p>
-        <button type="button" id="copy-fields-btn" class="btn secondary sm" style="margin-top:12px;" onclick="openCopyConfig('fields')" data-i18n="copyToAreas">Auf andere Bereiche übernehmen …</button>
       </div>
 
-      <div id="danger-area" style="display:none;">
+      <div class="accgroup" id="acc-area-members">
+        <button type="button" class="acchead" onclick="toggleAcc('area-members')"><span data-i18n="membersTitle">Mitglieder</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="accbody">
+          <div id="members-admin" style="display:none;">
+            <p class="hint" style="margin-top:6px;" id="members-panel-hint" data-i18n="membersHint">Verwalte Rollen und entferne Mitglieder.</p>
+            <button type="button" class="btn secondary sm" id="members-btn" onclick="openMembersModal()">Mitglieder verwalten …</button>
+            <div id="invite-box" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--border);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accgroup" id="acc-area-fields">
+        <button type="button" class="acchead" onclick="toggleAcc('area-fields')"><span data-i18n="fieldsAdminShort">Fang-Felder</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="accbody">
+          <div id="fields-cfg-list"></div>
+          <p class="hint" id="fields-hint" style="margin-top:10px;" data-i18n="fieldsHint">Lege fest, welche Felder beim Eintragen erscheinen und welche Pflicht sind.</p>
+          <button type="button" id="copy-fields-btn" class="btn secondary sm" style="margin-top:12px;" onclick="openCopyConfig('fields')" data-i18n="copyToAreas">Auf andere Bereiche übernehmen …</button>
+        </div>
+      </div>
+
+      <div id="danger-area" style="display:none; margin-top:18px;">
         <div class="sectionlabel" style="color:var(--danger);" data-i18n="dangerZone">Gefahrenzone</div>
         <div class="card-box" style="border-color:var(--danger);">
           <button type="button" id="leave-ctx-btn" class="btn secondary sm" style="color:var(--danger); border-color:var(--danger); font-weight:600;" onclick="leaveContext()">Bereich verlassen</button>
@@ -899,7 +914,7 @@
       </div>
       <div class="ob-body">
         <div class="ob-step" data-step="0">
-          <div class="ob-logo" id="ob-logo"></div>
+          <div class="mascot-band mb-ob" id="ob-logo"></div>
           <h2 class="ob-h" data-i18n="obWelcomeTitle">Willkommen beim Fishing Butler</h2>
           <p class="ob-p" data-i18n="obWelcomeText">Dein digitales Fang-Logbuch – solo oder mit deinem Verein.</p>
         </div>
@@ -936,6 +951,7 @@
       </div>
     </div>
   </div>
+  <button id="mainfab" class="fab" style="display:none;" data-i18n-title="addCatch" title="Fang eintragen" aria-label="Fang eintragen" onclick="openForm()"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
   <div id="confirm-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)_confirmClose(false)">
     <div class="modal-box" style="max-width:390px;">
       <h2 id="confirm-title" style="font-size:19px; margin:0 0 8px;"></h2>
@@ -1066,6 +1082,7 @@
   <!-- ============ MY STATS ============ -->
   <section id="s-stats" class="screen">
     <div class="topbar">
+      <button class="iconbtn" onclick="leaveArea()" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div style="flex:1; min-width:0;"><h1 data-i18n="myStats">Meine Statistik</h1><p class="sub" data-i18n="statsSub">Vereinsübergreifend + Solo</p></div>
       <button class="iconbtn" data-i18n-title="ttFilter" title="Filter" aria-label="Filter" onclick="openFilter('stats')" style="position:relative;">
         <svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16l-6 7v5l-4 2v-7z"/></svg>
@@ -1074,15 +1091,13 @@
       <button class="iconbtn" data-i18n-title="ttSettings" title="Einstellungen" aria-label="Einstellungen" onclick="openSettings()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M4 7h9"/><path d="M17 7h3"/><path d="M4 17h3"/><path d="M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="7" cy="17" r="2.2"/></svg>
       </button>
-      <button class="iconbtn" data-i18n-title="toStart" title="Zum Start" aria-label="Zum Start" onclick="leaveArea()">
-        <svg class="ic" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/></svg>
-      </button>
+      
     </div>
     <div class="scroll pad">
       <div id="stats-cards" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px;"></div>
       <div id="stats-map" class="map map-stats" style="display:none;"></div>
       <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; margin:0 4px 10px;">
-        <button type="button" class="exportbtn" onclick="openExportMenu('stats')" data-i18n-title="exportTitle" title="Exportieren" aria-label="Exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg><span data-i18n="exportBtn">Export</span></button>
+        <button type="button" class="exportbtn" onclick="openExportMenu('stats')" data-i18n-title="exportTitle" title="Exportieren" aria-label="Exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg></button>
         <select id="sort-stats" onchange="setSort(this.value)" style="width:auto; padding:6px 10px; font-size:13px; border-radius:8px;"></select>
       </div>
       <div id="stats-list"></div>
@@ -1177,9 +1192,9 @@ Object.assign(I18N.nl, {loginIntro2:"Voer je e-mail in — we sturen je een code
 Object.assign(I18N.de, {joinByCode:"Bereich beitreten (Code)", createContext:"Verein/Gruppe anlegen", requestContext:"Verein/Gruppe fehlt? Anfragen", betaRequestNote:"In der Beta werden neue Vereine & Gruppen angefragt und vom Team freigeschaltet.", reqInbox:"Anfragen", joinTitle:"Bereich beitreten", joinHint:"Gib den Beitritts-Code deines Vereins oder deiner Gruppe ein.", join:"Beitreten", createTitle:"Verein/Gruppe anlegen", createHint:"Als App-Admin legst du einen neuen Bereich an. Du wirst automatisch dessen Admin.", clubOne:"Verein", groupOne:"Gruppe", locationOpt:"Ort (optional)", noteOpt:"Nachricht (optional)", create:"Anlegen", send:"Senden", requestTitle:"Bereich anfragen", requestHint:"Dein Verein oder deine Gruppe fehlt? Sende eine Anfrage an den App-Admin.", codeLabel:"Code", reqInboxTitle:"Beitritts-Anfragen", reqNone:"Keine offenen Anfragen.", approve:"Freigeben", reject:"Ablehnen", close:"Schließen", reqSentTitle:"Anfrage gesendet", reqSentBody:"Danke! Der App-Admin prüft deine Anfrage und richtet den Bereich ein.", errNameReq:"Bitte einen Namen eingeben.", errCodeReq:"Bitte einen Code eingeben.", errBadCode:"Dieser Code gehört zu keinem Bereich.", errGeneric:"Etwas ist schiefgelaufen. Bitte erneut versuchen.", errTitle:"Fehler", ok:"OK"});
 Object.assign(I18N.en, {joinByCode:"Join an area (code)", createContext:"Create club/group", requestContext:"Club/group missing? Request it", betaRequestNote:"During the beta, new clubs & groups are requested and enabled by the team.", reqInbox:"Requests", joinTitle:"Join an area", joinHint:"Enter the join code of your club or group.", join:"Join", createTitle:"Create club/group", createHint:"As app admin you create a new area. You automatically become its admin.", clubOne:"Club", groupOne:"Group", locationOpt:"Location (optional)", noteOpt:"Message (optional)", create:"Create", send:"Send", requestTitle:"Request an area", requestHint:"Your club or group is missing? Send a request to the app admin.", codeLabel:"Code", reqInboxTitle:"Join requests", reqNone:"No open requests.", approve:"Approve", reject:"Decline", close:"Close", reqSentTitle:"Request sent", reqSentBody:"Thanks! The app admin will review your request and set up the area.", errNameReq:"Please enter a name.", errCodeReq:"Please enter a code.", errBadCode:"That code doesn't match any area.", errGeneric:"Something went wrong. Please try again.", errTitle:"Error", ok:"OK"});
 Object.assign(I18N.nl, {joinByCode:"Deelnemen (code)", createContext:"Vereniging/groep aanmaken", requestContext:"Vereniging/groep ontbreekt? Aanvragen", betaRequestNote:"Tijdens de bèta worden nieuwe verenigingen & groepen aangevraagd en door het team vrijgegeven.", reqInbox:"Aanvragen", joinTitle:"Deelnemen aan een gebied", joinHint:"Voer de toetredingscode van je vereniging of groep in.", join:"Deelnemen", createTitle:"Vereniging/groep aanmaken", createHint:"Als app-beheerder maak je een nieuw gebied aan. Je wordt automatisch beheerder.", clubOne:"Vereniging", groupOne:"Groep", locationOpt:"Plaats (optioneel)", noteOpt:"Bericht (optioneel)", create:"Aanmaken", send:"Verzenden", requestTitle:"Gebied aanvragen", requestHint:"Ontbreekt je vereniging of groep? Stuur een aanvraag naar de app-beheerder.", codeLabel:"Code", reqInboxTitle:"Toetredingsverzoeken", reqNone:"Geen openstaande aanvragen.", approve:"Goedkeuren", reject:"Afwijzen", close:"Sluiten", reqSentTitle:"Aanvraag verzonden", reqSentBody:"Bedankt! De app-beheerder bekijkt je aanvraag en richt het gebied in.", errNameReq:"Voer een naam in.", errCodeReq:"Voer een code in.", errBadCode:"Die code hoort bij geen enkel gebied.", errGeneric:"Er ging iets mis. Probeer opnieuw.", errTitle:"Fout", ok:"OK"});
-Object.assign(I18N.de, {betaAppSection:"Beta & App", installApp:"Als App speichern …", installHelpHint:"Speichere The Fishing Butler wie eine App – für schnellen Zugriff und Vollbild.", installIosT:"iPhone / iPad (Safari)", installIos:"In Safari öffnen → unten auf „Teilen“ → „Zum Home-Bildschirm“.", installAndroidT:"Android (Chrome)", installAndroid:"Menü (⋮) oben rechts → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Auf das Installieren-Symbol in der Adressleiste klicken – oder Menü → „Installieren / App installieren“.", feedbackHint:"Feedback, Bug oder Idee? Wir sind in der Beta und freuen uns über jeden Hinweis.", feedbackBtn:"Feedback senden", feedbackSubject:"The Fishing Butler – Beta-Feedback", legalTitle:"Rechtliches", legalLink:"Beta-Hinweis · Datenschutz · Impressum", hideUnconfirmed:"Unbestätigte Fänge ausblenden", unconfirmedByHint:"Von {name} eingetragen – noch nicht vom Angler bestätigt.", unconfirmedOtherHint:"Noch nicht vom Angler bestätigt.", photoLimitTitle:"Zu viele Fotos", photoLimitMsg:"Maximal {n} Fotos pro Fang.", copy:"kopieren", copied:"Code kopiert", confirmTitle:"Bist du sicher?", yesDo:"Ja", confirmLogout:"Möchtest du dich wirklich abmelden?", cancel:"Abbrechen", fieldPrefHint:"Wähle, welche Felder beim Eintragen erscheinen. Gilt überall. Ein Verein/eine Gruppe kann zusätzliche Felder anzeigen oder zur Pflicht machen.", fieldsAdminTitle:"Fang-Felder · Verein/Gruppe", shareHintGlobal:"Gilt für alle deine Bereiche.", adminOnlyTitle:"Nur für Admins", adminOnlyMsg:"Diese Vorgabe legt der Verein-/Gruppen-Admin fest. Deine eigenen Felder wählst du in den persönlichen Einstellungen.", savedToast:"Gespeichert", starReq:"immer erforderlich", starAdmin:"vom Verein/Gruppe als Pflicht gesetzt", leaveClub:"Verein verlassen", leaveGroup:"Gruppe verlassen", deleteClub:"Verein löschen", deleteGroup:"Gruppe löschen", ctxNameTitle:"Name", ctxNameHint:"Nur Admins können den Namen ändern. Er ist für alle Mitglieder sichtbar.", inviteHint:"Lade Angler in diesen Bereich ein – teile Link und Code.", copyCode:"Code kopieren", inviteShare:"Einladen / Teilen", inviteMsg:"Tritt „{name}“ bei The Fishing Butler bei!\n{url}\nBeitritts-Code: {code}", feedbackTitle:"Feedback senden", feedbackModalHint:"Bug, Idee oder Hinweis? Schreib uns – danke fürs Testen!", feedbackPh:"Deine Nachricht …", feedbackEmpty:"Bitte etwas eingeben.", feedbackSentTitle:"Danke!", feedbackSentBody:"Dein Feedback ist angekommen. Vielen Dank fürs Testen!", feedbackInbox:"Feedback", feedbackInboxTitle:"Feedback-Eingang", feedbackNone:"Kein Feedback.", feedbackDone:"Erledigt", appHelpSection:"App & Hilfe", accountSection:"Konto", shareTemplateIntro:"Passe den Text an, den du beim Teilen eines Fangs verschickst. Platzhalter werden automatisch gefüllt; leere Felder fallen weg.", shareEditLabel:"Vorlage", tasksTitle:"Aufgaben", addClub:"Verein hinzufügen", addGroup:"Gruppe hinzufügen", noClubsYet:"Noch kein Verein.", noGroupsYet:"Noch keine Gruppe.", signOutAll:"Von allen Geräten abmelden", signOutAllHint:"Meldet dich überall ab – nützlich, wenn du dich auf einem fremden Gerät angemeldet hast.", confirmLogoutAll:"Auf allen Geräten abmelden? Andere Sitzungen werden beendet.", requestCode:"Code anfordern", codeLabel2:"Code aus der E-Mail", codeSent:"Wir haben einen Code an {email} geschickt. Gib ihn hier ein. (Auch Spam prüfen.)", resendCode:"Code erneut senden", changeEmail:"Andere E-Mail", errCode:"Bitte den Code eingeben.", errCodeWrong:"Code ungültig oder abgelaufen. Bitte neu anfordern.", exportTitle:"Exportieren", exportBtn:"Export", exportCsvBtn:"Als CSV", exportPdfBtn:"Als PDF (mit Fotos)", hdrOldest:"Älteste Fänge", hdrLongest:"Längste Fänge", hdrHeaviest:"Schwerste Fänge", hdrSpecies:"Nach Art"});
-Object.assign(I18N.en, {betaAppSection:"Beta & App", installApp:"Save as app …", installHelpHint:"Save The Fishing Butler like an app – for quick access and full screen.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tap Share → “Add to Home Screen”.", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) top right → “Install app” or “Add to Home screen”.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Click the install icon in the address bar – or Menu → “Install”.", feedbackHint:"Feedback, bug or idea? We're in beta and value every note.", feedbackBtn:"Send feedback", feedbackSubject:"The Fishing Butler – beta feedback", legalTitle:"Legal", legalLink:"Beta notice · Privacy · Imprint", hideUnconfirmed:"Hide unconfirmed catches", unconfirmedByHint:"Logged by {name} – not yet confirmed by the angler.", unconfirmedOtherHint:"Not yet confirmed by the angler.", photoLimitTitle:"Too many photos", photoLimitMsg:"Maximum {n} photos per catch.", copy:"copy", copied:"Code copied", confirmTitle:"Are you sure?", yesDo:"Yes", confirmLogout:"Do you really want to sign out?", cancel:"Cancel", fieldPrefHint:"Choose which fields appear when logging. Applies everywhere. A club/group can additionally show fields or make them required.", fieldsAdminTitle:"Catch fields · club/group", shareHintGlobal:"Applies to all your areas.", adminOnlyTitle:"Admins only", adminOnlyMsg:"This is set by the club/group admin. Pick your own fields in personal settings.", savedToast:"Saved", starReq:"always required", starAdmin:"required by the club/group", leaveClub:"Leave club", leaveGroup:"Leave group", deleteClub:"Delete club", deleteGroup:"Delete group", ctxNameTitle:"Name", ctxNameHint:"Only admins can change the name. It's visible to all members.", inviteHint:"Invite anglers to this area – share link and code.", copyCode:"Copy code", inviteShare:"Invite / Share", inviteMsg:"Join \"{name}\" on The Fishing Butler!\n{url}\nJoin code: {code}", feedbackTitle:"Send feedback", feedbackModalHint:"Bug, idea or note? Tell us – thanks for testing!", feedbackPh:"Your message …", feedbackEmpty:"Please enter something.", feedbackSentTitle:"Thanks!", feedbackSentBody:"Your feedback was received. Thanks for testing!", feedbackInbox:"Feedback", feedbackInboxTitle:"Feedback inbox", feedbackNone:"No feedback.", feedbackDone:"Done", appHelpSection:"App & Help", accountSection:"Account", shareTemplateIntro:"Customize the text you send when sharing a catch. Placeholders fill in automatically; empty fields are dropped.", shareEditLabel:"Template", tasksTitle:"Tasks", addClub:"Add club", addGroup:"Add group", noClubsYet:"No club yet.", noGroupsYet:"No group yet.", signOutAll:"Sign out of all devices", signOutAllHint:"Signs you out everywhere – useful if you signed in on someone else's device.", confirmLogoutAll:"Sign out of all devices? Other sessions will end.", requestCode:"Request code", codeLabel2:"Code from the email", codeSent:"We sent a code to {email}. Enter it here. (Check spam too.)", resendCode:"Resend code", changeEmail:"Change email", errCode:"Please enter the code.", errCodeWrong:"Code invalid or expired. Please request a new one.", exportTitle:"Export", exportBtn:"Export", exportCsvBtn:"As CSV", exportPdfBtn:"As PDF (with photos)", hdrOldest:"Oldest catches", hdrLongest:"Longest catches", hdrHeaviest:"Heaviest catches", hdrSpecies:"By species"});
-Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app …", installHelpHint:"Sla The Fishing Butler op als een app – voor snelle toegang en volledig scherm.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tik op Delen → „Zet op beginscherm“.", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) rechtsboven → „App installeren“ of „Toevoegen aan startscherm“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Klik op het installatie-icoon in de adresbalk – of Menu → „Installeren“.", feedbackHint:"Feedback, bug of idee? We zitten in de bèta en horen graag van je.", feedbackBtn:"Feedback sturen", feedbackSubject:"The Fishing Butler – bèta-feedback", legalTitle:"Juridisch", legalLink:"Bèta-info · Privacy · Colofon", hideUnconfirmed:"Onbevestigde vangsten verbergen", unconfirmedByHint:"Ingevoerd door {name} – nog niet bevestigd door de visser.", unconfirmedOtherHint:"Nog niet bevestigd door de visser.", photoLimitTitle:"Te veel foto's", photoLimitMsg:"Maximaal {n} foto's per vangst.", copy:"kopiëren", copied:"Code gekopieerd", confirmTitle:"Weet je het zeker?", yesDo:"Ja", confirmLogout:"Wil je echt uitloggen?", cancel:"Annuleren", fieldPrefHint:"Kies welke velden verschijnen bij het loggen. Geldt overal. Een vereniging/groep kan extra velden tonen of verplicht maken.", fieldsAdminTitle:"Vangstvelden · vereniging/groep", shareHintGlobal:"Geldt voor al je gebieden.", adminOnlyTitle:"Alleen beheerders", adminOnlyMsg:"Dit stelt de beheerder in. Kies je eigen velden in persoonlijke instellingen.", savedToast:"Opgeslagen", starReq:"altijd vereist", starAdmin:"verplicht door vereniging/groep", leaveClub:"Vereniging verlaten", leaveGroup:"Groep verlaten", deleteClub:"Vereniging verwijderen", deleteGroup:"Groep verwijderen", ctxNameTitle:"Naam", ctxNameHint:"Alleen beheerders kunnen de naam wijzigen. Zichtbaar voor alle leden.", inviteHint:"Nodig vissers uit voor dit gebied – deel link en code.", copyCode:"Code kopiëren", inviteShare:"Uitnodigen / Delen", inviteMsg:"Word lid van \"{name}\" op The Fishing Butler!\n{url}\nToetredingscode: {code}", feedbackTitle:"Feedback sturen", feedbackModalHint:"Bug, idee of opmerking? Laat het weten – bedankt voor het testen!", feedbackPh:"Je bericht …", feedbackEmpty:"Voer iets in.", feedbackSentTitle:"Bedankt!", feedbackSentBody:"Je feedback is ontvangen. Bedankt voor het testen!", feedbackInbox:"Feedback", feedbackInboxTitle:"Feedback-inbox", feedbackNone:"Geen feedback.", feedbackDone:"Klaar", appHelpSection:"App & Hulp", accountSection:"Account", shareTemplateIntro:"Pas de tekst aan die je verstuurt bij het delen van een vangst. Plaatshouders worden automatisch ingevuld; lege velden vervallen.", shareEditLabel:"Sjabloon", tasksTitle:"Taken", addClub:"Vereniging toevoegen", addGroup:"Groep toevoegen", noClubsYet:"Nog geen vereniging.", noGroupsYet:"Nog geen groep.", signOutAll:"Overal afmelden", signOutAllHint:"Meldt je overal af – handig als je op andermans apparaat bent ingelogd.", confirmLogoutAll:"Op alle apparaten afmelden? Andere sessies worden beëindigd.", requestCode:"Code aanvragen", codeLabel2:"Code uit de e-mail", codeSent:"We hebben een code naar {email} gestuurd. Voer die hier in. (Check ook spam.)", resendCode:"Code opnieuw sturen", changeEmail:"Andere e-mail", errCode:"Voer de code in.", errCodeWrong:"Code ongeldig of verlopen. Vraag een nieuwe aan.", exportTitle:"Exporteren", exportBtn:"Export", exportCsvBtn:"Als CSV", exportPdfBtn:"Als PDF (met foto's)", hdrOldest:"Oudste vangsten", hdrLongest:"Langste vangsten", hdrHeaviest:"Zwaarste vangsten", hdrSpecies:"Op soort"});
+Object.assign(I18N.de, {betaAppSection:"Beta & App", installApp:"Als App speichern …", installHelpHint:"Speichere The Fishing Butler wie eine App – für schnellen Zugriff und Vollbild.", installIosT:"iPhone / iPad (Safari)", installIos:"In Safari öffnen → unten auf „Teilen“ → „Zum Home-Bildschirm“.", installAndroidT:"Android (Chrome)", installAndroid:"Menü (⋮) oben rechts → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Auf das Installieren-Symbol in der Adressleiste klicken – oder Menü → „Installieren / App installieren“.", feedbackHint:"Feedback, Bug oder Idee? Wir sind in der Beta und freuen uns über jeden Hinweis.", feedbackBtn:"Feedback senden", feedbackSubject:"The Fishing Butler – Beta-Feedback", legalTitle:"Rechtliches", legalLink:"Beta-Hinweis · Datenschutz · Impressum", hideUnconfirmed:"Unbestätigte Fänge ausblenden", unconfirmedByHint:"Von {name} eingetragen – noch nicht vom Angler bestätigt.", unconfirmedOtherHint:"Noch nicht vom Angler bestätigt.", photoLimitTitle:"Zu viele Fotos", photoLimitMsg:"Maximal {n} Fotos pro Fang.", copy:"kopieren", copied:"Code kopiert", confirmTitle:"Bist du sicher?", yesDo:"Ja", confirmLogout:"Möchtest du dich wirklich abmelden?", cancel:"Abbrechen", fieldPrefHint:"Wähle, welche Felder beim Eintragen erscheinen. Gilt überall. Ein Verein/eine Gruppe kann zusätzliche Felder anzeigen oder zur Pflicht machen.", fieldsAdminTitle:"Fang-Felder · Verein/Gruppe", shareHintGlobal:"Gilt für alle deine Bereiche.", adminOnlyTitle:"Nur für Admins", adminOnlyMsg:"Diese Vorgabe legt der Verein-/Gruppen-Admin fest. Deine eigenen Felder wählst du in den persönlichen Einstellungen.", savedToast:"Gespeichert", starReq:"immer erforderlich", starAdmin:"vom Verein/Gruppe als Pflicht gesetzt", leaveClub:"Verein verlassen", leaveGroup:"Gruppe verlassen", deleteClub:"Verein löschen", deleteGroup:"Gruppe löschen", ctxNameTitle:"Name", ctxNameHint:"Nur Admins können Name und Standort ändern. Sie sind für alle Mitglieder sichtbar.", areaSection:"Bereich", logToArea:"Eintragen in", ctxLocTitle:"Standort", fieldsAdminShort:"Fang-Felder", inviteHint:"Lade Angler in diesen Bereich ein – teile Link und Code.", copyCode:"Code kopieren", inviteShare:"Einladen / Teilen", inviteMsg:"Tritt „{name}“ bei The Fishing Butler bei!\n{url}\nBeitritts-Code: {code}", feedbackTitle:"Feedback senden", feedbackModalHint:"Bug, Idee oder Hinweis? Schreib uns – danke fürs Testen!", feedbackPh:"Deine Nachricht …", feedbackEmpty:"Bitte etwas eingeben.", feedbackSentTitle:"Danke!", feedbackSentBody:"Dein Feedback ist angekommen. Vielen Dank fürs Testen!", feedbackInbox:"Feedback", feedbackInboxTitle:"Feedback-Eingang", feedbackNone:"Kein Feedback.", feedbackDone:"Erledigt", appHelpSection:"App & Hilfe", accountSection:"Konto", shareTemplateIntro:"Passe den Text an, den du beim Teilen eines Fangs verschickst. Platzhalter werden automatisch gefüllt; leere Felder fallen weg.", shareEditLabel:"Vorlage", tasksTitle:"Aufgaben", addClub:"Verein hinzufügen", addGroup:"Gruppe hinzufügen", noClubsYet:"Noch kein Verein.", noGroupsYet:"Noch keine Gruppe.", signOutAll:"Von allen Geräten abmelden", signOutAllHint:"Meldet dich überall ab – nützlich, wenn du dich auf einem fremden Gerät angemeldet hast.", confirmLogoutAll:"Auf allen Geräten abmelden? Andere Sitzungen werden beendet.", requestCode:"Code anfordern", codeLabel2:"Code aus der E-Mail", codeSent:"Wir haben einen Code an {email} geschickt. Gib ihn hier ein. (Auch Spam prüfen.)", resendCode:"Code erneut senden", changeEmail:"Andere E-Mail", errCode:"Bitte den Code eingeben.", errCodeWrong:"Code ungültig oder abgelaufen. Bitte neu anfordern.", exportTitle:"Exportieren", exportBtn:"Export", exportCsvBtn:"Als CSV", exportPdfBtn:"Als PDF (mit Fotos)", hdrOldest:"Älteste Fänge", hdrLongest:"Längste Fänge", hdrHeaviest:"Schwerste Fänge", hdrSpecies:"Nach Art"});
+Object.assign(I18N.en, {betaAppSection:"Beta & App", installApp:"Save as app …", installHelpHint:"Save The Fishing Butler like an app – for quick access and full screen.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tap Share → “Add to Home Screen”.", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) top right → “Install app” or “Add to Home screen”.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Click the install icon in the address bar – or Menu → “Install”.", feedbackHint:"Feedback, bug or idea? We're in beta and value every note.", feedbackBtn:"Send feedback", feedbackSubject:"The Fishing Butler – beta feedback", legalTitle:"Legal", legalLink:"Beta notice · Privacy · Imprint", hideUnconfirmed:"Hide unconfirmed catches", unconfirmedByHint:"Logged by {name} – not yet confirmed by the angler.", unconfirmedOtherHint:"Not yet confirmed by the angler.", photoLimitTitle:"Too many photos", photoLimitMsg:"Maximum {n} photos per catch.", copy:"copy", copied:"Code copied", confirmTitle:"Are you sure?", yesDo:"Yes", confirmLogout:"Do you really want to sign out?", cancel:"Cancel", fieldPrefHint:"Choose which fields appear when logging. Applies everywhere. A club/group can additionally show fields or make them required.", fieldsAdminTitle:"Catch fields · club/group", shareHintGlobal:"Applies to all your areas.", adminOnlyTitle:"Admins only", adminOnlyMsg:"This is set by the club/group admin. Pick your own fields in personal settings.", savedToast:"Saved", starReq:"always required", starAdmin:"required by the club/group", leaveClub:"Leave club", leaveGroup:"Leave group", deleteClub:"Delete club", deleteGroup:"Delete group", ctxNameTitle:"Name", ctxNameHint:"Only admins can change name and location. They're visible to all members.", areaSection:"Area", logToArea:"Log to", ctxLocTitle:"Location", fieldsAdminShort:"Catch fields", inviteHint:"Invite anglers to this area – share link and code.", copyCode:"Copy code", inviteShare:"Invite / Share", inviteMsg:"Join \"{name}\" on The Fishing Butler!\n{url}\nJoin code: {code}", feedbackTitle:"Send feedback", feedbackModalHint:"Bug, idea or note? Tell us – thanks for testing!", feedbackPh:"Your message …", feedbackEmpty:"Please enter something.", feedbackSentTitle:"Thanks!", feedbackSentBody:"Your feedback was received. Thanks for testing!", feedbackInbox:"Feedback", feedbackInboxTitle:"Feedback inbox", feedbackNone:"No feedback.", feedbackDone:"Done", appHelpSection:"App & Help", accountSection:"Account", shareTemplateIntro:"Customize the text you send when sharing a catch. Placeholders fill in automatically; empty fields are dropped.", shareEditLabel:"Template", tasksTitle:"Tasks", addClub:"Add club", addGroup:"Add group", noClubsYet:"No club yet.", noGroupsYet:"No group yet.", signOutAll:"Sign out of all devices", signOutAllHint:"Signs you out everywhere – useful if you signed in on someone else's device.", confirmLogoutAll:"Sign out of all devices? Other sessions will end.", requestCode:"Request code", codeLabel2:"Code from the email", codeSent:"We sent a code to {email}. Enter it here. (Check spam too.)", resendCode:"Resend code", changeEmail:"Change email", errCode:"Please enter the code.", errCodeWrong:"Code invalid or expired. Please request a new one.", exportTitle:"Export", exportBtn:"Export", exportCsvBtn:"As CSV", exportPdfBtn:"As PDF (with photos)", hdrOldest:"Oldest catches", hdrLongest:"Longest catches", hdrHeaviest:"Heaviest catches", hdrSpecies:"By species"});
+Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app …", installHelpHint:"Sla The Fishing Butler op als een app – voor snelle toegang en volledig scherm.", installIosT:"iPhone / iPad (Safari)", installIos:"Open in Safari → tik op Delen → „Zet op beginscherm“.", installAndroidT:"Android (Chrome)", installAndroid:"Menu (⋮) rechtsboven → „App installeren“ of „Toevoegen aan startscherm“.", installDesktopT:"Computer (Chrome / Edge)", installDesktop:"Klik op het installatie-icoon in de adresbalk – of Menu → „Installeren“.", feedbackHint:"Feedback, bug of idee? We zitten in de bèta en horen graag van je.", feedbackBtn:"Feedback sturen", feedbackSubject:"The Fishing Butler – bèta-feedback", legalTitle:"Juridisch", legalLink:"Bèta-info · Privacy · Colofon", hideUnconfirmed:"Onbevestigde vangsten verbergen", unconfirmedByHint:"Ingevoerd door {name} – nog niet bevestigd door de visser.", unconfirmedOtherHint:"Nog niet bevestigd door de visser.", photoLimitTitle:"Te veel foto's", photoLimitMsg:"Maximaal {n} foto's per vangst.", copy:"kopiëren", copied:"Code gekopieerd", confirmTitle:"Weet je het zeker?", yesDo:"Ja", confirmLogout:"Wil je echt uitloggen?", cancel:"Annuleren", fieldPrefHint:"Kies welke velden verschijnen bij het loggen. Geldt overal. Een vereniging/groep kan extra velden tonen of verplicht maken.", fieldsAdminTitle:"Vangstvelden · vereniging/groep", shareHintGlobal:"Geldt voor al je gebieden.", adminOnlyTitle:"Alleen beheerders", adminOnlyMsg:"Dit stelt de beheerder in. Kies je eigen velden in persoonlijke instellingen.", savedToast:"Opgeslagen", starReq:"altijd vereist", starAdmin:"verplicht door vereniging/groep", leaveClub:"Vereniging verlaten", leaveGroup:"Groep verlaten", deleteClub:"Vereniging verwijderen", deleteGroup:"Groep verwijderen", ctxNameTitle:"Naam", ctxNameHint:"Alleen beheerders kunnen naam en locatie wijzigen. Zichtbaar voor alle leden.", areaSection:"Gebied", logToArea:"Vastleggen in", ctxLocTitle:"Locatie", fieldsAdminShort:"Vangstvelden", inviteHint:"Nodig vissers uit voor dit gebied – deel link en code.", copyCode:"Code kopiëren", inviteShare:"Uitnodigen / Delen", inviteMsg:"Word lid van \"{name}\" op The Fishing Butler!\n{url}\nToetredingscode: {code}", feedbackTitle:"Feedback sturen", feedbackModalHint:"Bug, idee of opmerking? Laat het weten – bedankt voor het testen!", feedbackPh:"Je bericht …", feedbackEmpty:"Voer iets in.", feedbackSentTitle:"Bedankt!", feedbackSentBody:"Je feedback is ontvangen. Bedankt voor het testen!", feedbackInbox:"Feedback", feedbackInboxTitle:"Feedback-inbox", feedbackNone:"Geen feedback.", feedbackDone:"Klaar", appHelpSection:"App & Hulp", accountSection:"Account", shareTemplateIntro:"Pas de tekst aan die je verstuurt bij het delen van een vangst. Plaatshouders worden automatisch ingevuld; lege velden vervallen.", shareEditLabel:"Sjabloon", tasksTitle:"Taken", addClub:"Vereniging toevoegen", addGroup:"Groep toevoegen", noClubsYet:"Nog geen vereniging.", noGroupsYet:"Nog geen groep.", signOutAll:"Overal afmelden", signOutAllHint:"Meldt je overal af – handig als je op andermans apparaat bent ingelogd.", confirmLogoutAll:"Op alle apparaten afmelden? Andere sessies worden beëindigd.", requestCode:"Code aanvragen", codeLabel2:"Code uit de e-mail", codeSent:"We hebben een code naar {email} gestuurd. Voer die hier in. (Check ook spam.)", resendCode:"Code opnieuw sturen", changeEmail:"Andere e-mail", errCode:"Voer de code in.", errCodeWrong:"Code ongeldig of verlopen. Vraag een nieuwe aan.", exportTitle:"Exporteren", exportBtn:"Export", exportCsvBtn:"Als CSV", exportPdfBtn:"Als PDF (met foto's)", hdrOldest:"Oudste vangsten", hdrLongest:"Langste vangsten", hdrHeaviest:"Zwaarste vangsten", hdrSpecies:"Op soort"});
 Object.assign(I18N.de, {membersTitle:"Mitglieder", membersHint:"Verwalte Rollen (Mitglied, Admin, Kassenwart) und entferne Mitglieder.", membersHintMember:"Mitglieder und ihre Rollen in diesem Bereich.", manageMembers:"Mitglieder verwalten …", viewMembers:"Mitglieder ansehen", me:"ich", loggedByRow:"Erfasst von", unconfirmed:"Noch nicht bestätigt", unconfShort:"unbestätigt", loggedByHint:"Dieser Fang wurde von {name} für dich eingetragen. Bestätige ihn, wenn er stimmt.", unconfirmedHint:"Dieser Fang wartet auf Bestätigung.", confirmCatch:"Bestätigen", rejectCatch:"Ablehnen", confirmReject:"Diesen Fang ablehnen und löschen?", roleMember:"Mitglied", roleAdmin:"Admin", roleTreasurer:"Kassenwart", removeMember:"Entfernen", lastAdminHint:"Der/die letzte Admin kann nicht herabgestuft oder entfernt werden.", confirmRemove:"{name} aus diesem Bereich entfernen?", you:"du", openMailbox:"Postfach öffnen", openMailApp:"Mail-App öffnen"});
 Object.assign(I18N.en, {membersTitle:"Members", membersHint:"Manage roles (Member, Admin, Treasurer) and remove members.", membersHintMember:"Members and their roles in this area.", manageMembers:"Manage members …", viewMembers:"View members", me:"me", loggedByRow:"Logged by", unconfirmed:"Not confirmed yet", unconfShort:"unconfirmed", loggedByHint:"This catch was logged for you by {name}. Confirm it if it's correct.", unconfirmedHint:"This catch is awaiting confirmation.", confirmCatch:"Confirm", rejectCatch:"Reject", confirmReject:"Reject and delete this catch?", roleMember:"Member", roleAdmin:"Admin", roleTreasurer:"Treasurer", removeMember:"Remove", lastAdminHint:"The last admin can't be demoted or removed.", confirmRemove:"Remove {name} from this area?", you:"you", openMailbox:"Open mailbox", openMailApp:"Open Mail app"});
 Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen (Lid, Beheerder, Penningmeester) en verwijder leden.", membersHintMember:"Leden en hun rollen in dit gebied.", manageMembers:"Leden beheren …", viewMembers:"Leden bekijken", me:"ik", loggedByRow:"Ingevoerd door", unconfirmed:"Nog niet bevestigd", unconfShort:"onbevestigd", loggedByHint:"Deze vangst is voor jou ingevoerd door {name}. Bevestig als het klopt.", unconfirmedHint:"Deze vangst wacht op bevestiging.", confirmCatch:"Bevestigen", rejectCatch:"Afwijzen", confirmReject:"Deze vangst afwijzen en verwijderen?", roleMember:"Lid", roleAdmin:"Beheerder", roleTreasurer:"Penningmeester", removeMember:"Verwijderen", lastAdminHint:"De laatste beheerder kan niet worden gedegradeerd of verwijderd.", confirmRemove:"{name} uit dit gebied verwijderen?", you:"jij", openMailbox:"Postvak openen", openMailApp:"Mail-app openen"});
@@ -1346,6 +1361,7 @@ function go(name, isBack){
     if(_ROOT_SCREENS.includes(name)) _navStack=[]; else _navStack.push(_curScreen);
   }
   _curScreen=name;
+  { const _fb=document.getElementById('mainfab'); if(_fb) _fb.style.display=(name==='club'||name==='stats'||name==='list')?'':'none'; }
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('s-'+name).classList.add('active');
   const sc=document.querySelector('#s-'+name+' .scroll'); if(sc) sc.scrollTop=0;
@@ -1917,34 +1933,36 @@ function subscribeContextRealtime(ctxId){
       .subscribe();
   }catch(e){}
 }
-async function chooseClub(cl, kind){
+async function chooseClub(cl, kind, keepForm){
   state.club=cl; state.mode=kind||'club';
   state.user=state.me.name; state.userId=state.me.id; state.soloName=null; state.filter=emptyFilter();
-  document.getElementById('list-sub').textContent=`${state.club.name} · ${state.me.name}`;
+  document.getElementById('list-sub').textContent=state.club.name;
   document.getElementById('list-hdr').innerHTML=clubLogoHTML(state.club);
   if(state.auth==='supabase'){
-    go('list');
+    if(!keepForm) go('list');
     document.getElementById('catch-list').innerHTML=`<div class="empty"><p>${t('loading')}</p></div>`;
     document.getElementById('stats').innerHTML='';
     try{ state.catches = await loadContextCatches(state.club.id); }catch(e){ state.catches=[]; }
     renderList();
     subscribeContextRealtime(state.club.id);
+    if(keepForm){ try{ await loadCtxMembers(); }catch(e){} applyFieldConfig(); buildAnglerOptions(); }
   } else {
     state.catches=loadCatchesFor(state.mode, state.club.id); renderList(); go('list');
   }
 }
-async function startSolo(){
+async function startSolo(keepForm){
   unsubscribeRealtime();
   state.mode='solo'; state.club=null; state.soloName=state.me.name;
   state.user=state.me.name; state.userId=state.me.id; state.filter=emptyFilter();
-  document.getElementById('list-sub').textContent=`${t('solo')} · ${state.me.name}`;
+  document.getElementById('list-sub').textContent=t('solo');
   document.getElementById('list-hdr').innerHTML=userAvatarHTML();
   if(state.auth==='supabase'){
-    go('list');
+    if(!keepForm) go('list');
     document.getElementById('catch-list').innerHTML=`<div class="empty"><p>${t('loading')}</p></div>`;
     document.getElementById('stats').innerHTML='';
     try{ state.soloCatches = await loadSoloCatches(); }catch(e){ state.soloCatches=[]; }
     state.catches = state.soloCatches; renderList();
+    if(keepForm){ state.ctxMembers=[]; applyFieldConfig(); buildAnglerOptions(); }
   } else {
     state.catches=loadCatchesFor('solo'); renderList(); go('list');
   }
@@ -2181,7 +2199,7 @@ function renderList(){
   const list=document.getElementById('catch-list'); list.innerHTML='';
   const sorted=sortCatches(items);
   if(sorted.length===0){
-    list.innerHTML=`<div class="empty"><svg viewBox="0 0 120 120" style="width:52px; height:52px; fill:var(--border-2); margin:0 auto 6px; display:block;"><path d="M46 60 C58 45 78 45 90 60 C78 75 58 75 46 60 Z"/><path d="M48 60 L30 49 L35 60 L30 71 Z"/></svg><p>${cnt>0?t('emptyFilter'):t('emptyNone')}</p></div>`;
+    list.innerHTML=`<div class="empty"><div class="mascot-band mb-empty"><img src="/mascot.png" alt=""></div><p>${cnt>0?t('emptyFilter'):t('emptyNone')}</p></div>`;
     return;
   }
   sorted.forEach(c=>{
@@ -2245,7 +2263,7 @@ function renderStats(){
   const list=document.getElementById('stats-list'); list.innerHTML='';
   const sorted=sortCatches(items);
   if(sorted.length===0){
-    list.innerHTML=`<div class="empty"><svg viewBox="0 0 120 120" style="width:52px; height:52px; fill:var(--border-2); margin:0 auto 6px; display:block;"><path d="M46 60 C58 45 78 45 90 60 C78 75 58 75 46 60 Z"/><path d="M48 60 L30 49 L35 60 L30 71 Z"/></svg><p>${cnt>0?t('emptyFilter'):t('emptyNone')}</p></div>`;
+    list.innerHTML=`<div class="empty"><div class="mascot-band mb-empty"><img src="/mascot.png" alt=""></div><p>${cnt>0?t('emptyFilter'):t('emptyNone')}</p></div>`;
     return;
   }
   sorted.forEach(c=>{
@@ -2649,7 +2667,8 @@ function toast(msg){
 
 // ---------- form ----------
 function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
-function openForm(skipAuto){
+async function openForm(skipAuto){
+  if(_curScreen==='club' || _curScreen==='stats'){ try{ await startSolo(true); }catch(e){} }
   ['f-species','f-weight','f-length','f-location','f-notes','f-method','f-bait','f-rod','f-boat','f-watertemp','f-trolling','f-released'].forEach(id=>document.getElementById(id).value='');
   state.speciesKey=null; state.editId=null;
   fillMethodsDatalist(); applyFieldConfig();
@@ -2663,15 +2682,32 @@ function openForm(skipAuto){
   document.getElementById('form-err').style.display='none';
   state.formLat=null; state.formLon=null; state.formWeather=null;
   document.getElementById('f-weather-wrap').style.display='none';
-  clearPhoto(); closeSpecies(); go('form');
+  clearPhoto(); closeSpecies(); populateAreaSelect(); go('form');
   ensureFormMap(null,null);
   // no automatic geolocation on open — the browser prompt should only appear when the user taps "Mein Standort"
+}
+function populateAreaSelect(){
+  const sel=document.getElementById('f-area'); const wrap=document.getElementById('ff-area');
+  if(!sel) return;
+  if(state.editId){ if(wrap) wrap.style.display='none'; return; }
+  const ctxs=state.myContexts||[];
+  let h=`<option value="solo">${esc(t('solo'))}</option>`;
+  ctxs.filter(x=>x.type==='club').forEach(c=>{ h+=`<option value="${c.id}">${esc(c.name)}</option>`; });
+  ctxs.filter(x=>x.type==='group').forEach(g=>{ h+=`<option value="${g.id}">${esc(g.name)}</option>`; });
+  sel.innerHTML=h;
+  sel.value = (state.mode!=='solo' && state.club) ? state.club.id : 'solo';
+  if(wrap) wrap.style.display='';
+}
+async function onFormAreaChange(val){
+  if(val==='solo'){ await startSolo(true); }
+  else { const ctx=(state.myContexts||[]).find(x=>x.id===val); if(ctx){ await chooseClub(ctx, ctx.type==='group'?'group':'club', true); } }
 }
 function isoToLocalInput(iso){ const d=new Date(iso); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
 function openEdit(c){
   if(!c) return;
   openForm(true);
   state.editId=c.id;
+  { const _fa=document.getElementById('ff-area'); if(_fa) _fa.style.display='none'; }
   document.getElementById('f-title').textContent=t('editCatch');
   document.getElementById('f-sub').textContent=t('editSub');
   document.getElementById('f-species').value=trSpecies(c.species); state.speciesKey=c.species;
@@ -3014,7 +3050,7 @@ function openInstallHelp(){ const m=document.getElementById('install-modal'); if
 let _obStep=0; const OB_STEPS=4;
 function startOnboarding(){
   _obStep=0;
-  const lg=document.getElementById('ob-logo'); if(lg) lg.innerHTML='<img src="/logo.png" alt="">';
+  const lg=document.getElementById('ob-logo'); if(lg) lg.innerHTML='<img src="/mascot.png" alt="">';
   const ni=document.getElementById('ob-name-input'); if(ni) ni.value=(state.me&&state.me.name)||'';
   obRender();
   const ov=document.getElementById('onboarding-ov'); if(ov) ov.style.display='flex';
@@ -3286,7 +3322,9 @@ function openSettings(){
       document.getElementById('del-ctx-btn').textContent = isClub ? t('deleteClub') : t('deleteGroup'); }
     { const isAdm = ctxIsDb() && canEditCtxCfg();
       document.getElementById('name-admin').style.display = isAdm ? '' : 'none';
-      if(isAdm) document.getElementById('ctx-name-input').value = state.club.name||''; }
+      if(isAdm){ document.getElementById('ctx-name-input').value = state.club.name||''; document.getElementById('ctx-loc-input').value = state.club.location||''; }
+      document.getElementById('acc-area-info').style.display = isAdm ? '' : 'none';
+      openAcc(isAdm ? 'area-info' : 'area-members'); }
     if(state.club){
       document.getElementById('set-clubname').textContent=state.club.name;
       document.getElementById('set-logo').innerHTML=clubLogoHTML(state.club);
@@ -3296,7 +3334,7 @@ function openSettings(){
     ['copy-fields-btn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display = hideCopy ? 'none' : ''; });
   }
   openAcc('profil');
-  setSettingsTab('personal');
+  setSettingsTab(ctxIsDb() ? 'area' : 'personal');
   go('settings');
 }
 function closeSettings(){ go(state.settingsReturn || 'club'); }
@@ -3311,10 +3349,11 @@ function setSettingsTab(tab){
 function toggleAcc(id){
   const g=document.getElementById('acc-'+id); if(!g) return;
   const wasOpen=g.classList.contains('open');
-  document.querySelectorAll('#tab-personal .accgroup').forEach(x=>x.classList.remove('open'));
+  const scope=g.closest('#tab-personal, #tab-area') || document;
+  scope.querySelectorAll('.accgroup').forEach(x=>x.classList.remove('open'));
   if(!wasOpen) g.classList.add('open');
 }
-function openAcc(id){ document.querySelectorAll('#tab-personal .accgroup').forEach(x=>x.classList.remove('open')); const g=document.getElementById('acc-'+id); if(g) g.classList.add('open'); }
+function openAcc(id){ const g=document.getElementById('acc-'+id); if(!g) return; const scope=g.closest('#tab-personal, #tab-area')||document; scope.querySelectorAll('.accgroup').forEach(x=>x.classList.remove('open')); g.classList.add('open'); }
 let _nameSaveT=null;
 function onProfileName(v){
   if(!state.me) return;
@@ -3356,6 +3395,17 @@ function onUserAvatar(e){
   }); };
   r.readAsDataURL(f);
 }
+let _ctxLocSaveT=null;
+function onCtxLoc(v){
+  if(!ctxIsDb() || !canEditCtxCfg()) return;
+  const loc=(v||'').trim();
+  state.club.location=loc;
+  clearTimeout(_ctxLocSaveT);
+  _ctxLocSaveT=setTimeout(async ()=>{
+    try{ const { error } = await getSB().from('contexts').update({location: loc||null}).eq('id', state.club.id); if(error) throw error; toast(t('savedToast')); }
+    catch(e){ toast(t('errSave')); }
+  }, 700);
+}
 let _ctxNameSaveT=null;
 function onCtxName(v){
   if(!ctxIsDb() || !canEditCtxCfg()) return;
@@ -3363,7 +3413,7 @@ function onCtxName(v){
   state.club.name=name;
   const ss=document.getElementById('set-sub'); if(ss) ss.textContent = name;
   const sc=document.getElementById('set-clubname'); if(sc) sc.textContent=name;
-  const ls=document.getElementById('list-sub'); if(ls && state.mode!=='solo') ls.textContent = name+' · '+state.me.name;
+  const ls=document.getElementById('list-sub'); if(ls && state.mode!=='solo') ls.textContent = name;
   clearTimeout(_ctxNameSaveT);
   _ctxNameSaveT=setTimeout(async ()=>{
     try{ const { error } = await getSB().from('contexts').update({name}).eq('id', state.club.id); if(error) throw error; toast(t('savedToast')); }
@@ -3505,8 +3555,8 @@ loadPrefs();
 applyTheme();
 applyLang();
 if((navigator.maxTouchPoints||0)>0 && navigator.share){ document.getElementById('share-btn').style.display=''; }
-document.getElementById('club-logo').innerHTML=`<img src="/logo.png" alt="The Fishing Butler" />`;
-document.getElementById('login-logo').innerHTML=document.getElementById('club-logo').innerHTML;
+document.getElementById('club-logo').innerHTML=`<img src="/mascot.png" alt="The Fishing Butler" />`;
+document.getElementById('login-logo').innerHTML=`<video src="/mascot.mp4" poster="/mascot_poster.jpg" autoplay muted loop playsinline style="width:100%; height:100%; object-fit:contain;"></video>`;
 initAuth();
 _armBack();   // put one guard entry on the history stack so back/swipe is captured in-app
 </script>
