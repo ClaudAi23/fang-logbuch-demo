@@ -496,8 +496,8 @@
       <button class="iconbtn" onclick="leaveArea()" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div id="list-hdr" class="hdr-logo"></div>
       <div style="flex:1; min-width:0;">
-        <h1 data-i18n="catches">Fänge</h1>
-        <p class="sub" id="list-sub">—</p>
+        <h1 id="list-title" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">—</h1>
+        <p class="sub" id="list-sub" data-i18n="catches">Fänge</p>
       </div>
       <button class="iconbtn" data-i18n-title="ttFilter" title="Filter" aria-label="Filter" onclick="openFilter('list')" style="position:relative;">
         <svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16l-6 7v5l-4 2v-7z"/></svg>
@@ -1241,7 +1241,7 @@ const MONTHS = {
 };
 const I18N = {
   de:{
-    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", grpBasis:"Basis", grpCatch:"Der Fang", grpPhotos:"Fotos", grpWater:"Gewässer & Standort", grpConditions:"Bedingungen", grpGear:"Technik & Ausrüstung", grpNotes:"Notizen", logoInitials:"Kürzel anpassen", logoInitialsHint:"Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).", logoLight:"Heller Text", logoDark:"Dunkler Text", editImage:"Bild anpassen", editImageHint:"Ziehen zum Verschieben, Regler zum Zoomen.", cropApply:"Übernehmen", removeImage:"Bild entfernen", converting:"Konvertiere Foto …", logToAreaHint:"Mehrere Vereine/Gruppen möglich.", areaSearch:"Suchen…", areaDone:"Fertig", addArea:"Verein oder Gruppe", joinAnyHint:"Ein Code funktioniert für Verein und Gruppe.", createClub:"Verein erstellen", createGroup:"Gruppe erstellen", requestClub:"Verein anfragen", requestGroup:"Gruppe anfragen", logoFallbackNote:"Ohne Bild werden die Initialen angezeigt.", weatherManualPh:"z. B. sonnig, 18 °C, leichter Wind", weatherManualHint:"Automatisch geladen, wenn ein Standort gesetzt ist – manuell überschreibbar.", weatherPh:"z. B. Bewölkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch vorausgefüllt, wenn ein Standort gesetzt ist – frei editierbar.", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
+    appName:"The Fishing Butler", tagline:"Fangen. Protokollieren. Organisieren.", tapToChange:"Zum Ändern tippen", newCatches:"Neue Fänge", grpBasis:"Basis", grpCatch:"Der Fang", grpPhotos:"Fotos", grpWater:"Gewässer & Standort", grpConditions:"Bedingungen", grpGear:"Technik & Ausrüstung", grpNotes:"Notizen", logoInitials:"Kürzel anpassen", logoInitialsHint:"Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).", logoLight:"Heller Text", logoDark:"Dunkler Text", editImage:"Bild anpassen", editImageHint:"Ziehen zum Verschieben, Regler zum Zoomen.", cropApply:"Übernehmen", removeImage:"Bild entfernen", converting:"Konvertiere Foto …", logToAreaHint:"Mehrere Vereine/Gruppen möglich.", areaSearch:"Suchen…", areaDone:"Fertig", repositionHint:"Ziehen, um den Bildausschnitt anzupassen", addArea:"Verein oder Gruppe", joinAnyHint:"Ein Code funktioniert für Verein und Gruppe.", createClub:"Verein erstellen", createGroup:"Gruppe erstellen", requestClub:"Verein anfragen", requestGroup:"Gruppe anfragen", logoFallbackNote:"Ohne Bild werden die Initialen angezeigt.", weatherManualPh:"z. B. sonnig, 18 °C, leichter Wind", weatherManualHint:"Automatisch geladen, wenn ein Standort gesetzt ist – manuell überschreibbar.", weatherPh:"z. B. Bewölkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch vorausgefüllt, wenn ein Standort gesetzt ist – frei editierbar.", chooseArea:"Wähle deinen Bereich", notInClub:"Dein Verein ist nicht dabei? Bitte wende dich an deinen Vereinsadmin.",
     personal:"Persönlich", clubs:"Vereine", groups:"Gruppen", statsTile:"Meine Fänge", statsTileSub:"Alle Fänge, alle Bereiche", soloTile:"Solo", soloTileSub:"Eigenes Logbuch, privat",
     signIn:"Anmelden", email:"E-Mail", emailPh:"name@beispiel.de", password:"Passwort", loginHint:"Demo: beliebige E-Mail und beliebiges Passwort funktionieren. Konten werden vom Vereinsadmin angelegt.",
     solo:"Solo", withoutClub:"Ohne Verein", yourName:"Dein Name", namePh:"z. B. Johannes", next:"Weiter", errName:"Bitte gib deinen Namen ein.", soloHint:"Im Solo-Modus dokumentierst du deine Fänge privat — ohne Verein, ohne Login.",
@@ -1254,7 +1254,7 @@ const I18N = {
     clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit The Fishing Butler", shareNoMeasure:"ohne Maße"
   },
   en:{
-    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", grpBasis:"Basics", grpCatch:"The catch", grpPhotos:"Photos", grpWater:"Water & location", grpConditions:"Conditions", grpGear:"Technique & gear", grpNotes:"Notes", logoInitials:"Customize initials", logoInitialsHint:"Shown when no image is set (max. 3 characters).", logoLight:"Light text", logoDark:"Dark text", editImage:"Adjust image", editImageHint:"Drag to move, slider to zoom.", cropApply:"Apply", removeImage:"Remove image", converting:"Converting photo …", logToAreaHint:"You can pick multiple clubs/groups.", areaSearch:"Search…", areaDone:"Done", addArea:"Club or group", joinAnyHint:"A code works for both clubs and groups.", createClub:"Create club", createGroup:"Create group", requestClub:"Request club", requestGroup:"Request group", logoFallbackNote:"Without an image, the initials are shown.", weatherManualPh:"e.g. sunny, 18 °C, light wind", weatherManualHint:"Auto-filled when a location is set – you can override it.", weatherPh:"e.g. Cloudy · 18 °C · 12 km/h", weatherAutoHint:"Auto-filled when a location is set – fully editable.", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
+    appName:"The Fishing Butler", tagline:"Catch. Log. Organize.", tapToChange:"Tap to change", newCatches:"New catches", grpBasis:"Basics", grpCatch:"The catch", grpPhotos:"Photos", grpWater:"Water & location", grpConditions:"Conditions", grpGear:"Technique & gear", grpNotes:"Notes", logoInitials:"Customize initials", logoInitialsHint:"Shown when no image is set (max. 3 characters).", logoLight:"Light text", logoDark:"Dark text", editImage:"Adjust image", editImageHint:"Drag to move, slider to zoom.", cropApply:"Apply", removeImage:"Remove image", converting:"Converting photo …", logToAreaHint:"You can pick multiple clubs/groups.", areaSearch:"Search…", areaDone:"Done", repositionHint:"Drag to reframe the cover", addArea:"Club or group", joinAnyHint:"A code works for both clubs and groups.", createClub:"Create club", createGroup:"Create group", requestClub:"Request club", requestGroup:"Request group", logoFallbackNote:"Without an image, the initials are shown.", weatherManualPh:"e.g. sunny, 18 °C, light wind", weatherManualHint:"Auto-filled when a location is set – you can override it.", weatherPh:"e.g. Cloudy · 18 °C · 12 km/h", weatherAutoHint:"Auto-filled when a location is set – fully editable.", chooseArea:"Choose your area", notInClub:"Club not listed? Contact your club admin.",
     personal:"Personal", clubs:"Clubs", groups:"Groups", statsTile:"My catches", statsTileSub:"All catches, everywhere", soloTile:"Solo", soloTileSub:"Your own private log",
     signIn:"Sign in", email:"Email", emailPh:"name@example.com", password:"Password", loginHint:"Demo: any email and password work. Accounts are created by the club admin.",
     solo:"Solo", withoutClub:"Without a club", yourName:"Your name", namePh:"e.g. John", next:"Continue", errName:"Please enter your name.", soloHint:"In solo mode you log your catches privately — no club, no login.",
@@ -1267,7 +1267,7 @@ const I18N = {
     clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with The Fishing Butler", shareNoMeasure:"no measurements"
   },
   nl:{
-    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", grpBasis:"Basis", grpCatch:"De vangst", grpPhotos:"Foto's", grpWater:"Water & locatie", grpConditions:"Omstandigheden", grpGear:"Techniek & uitrusting", grpNotes:"Notities", logoInitials:"Initialen aanpassen", logoInitialsHint:"Wordt getoond als er geen afbeelding is (max. 3 tekens).", logoLight:"Lichte tekst", logoDark:"Donkere tekst", editImage:"Afbeelding aanpassen", editImageHint:"Sleep om te verplaatsen, schuif om te zoomen.", cropApply:"Toepassen", removeImage:"Afbeelding verwijderen", converting:"Foto converteren …", logToAreaHint:"Meerdere verenigingen/groepen mogelijk.", areaSearch:"Zoeken…", areaDone:"Klaar", addArea:"Vereniging of groep", joinAnyHint:"Een code werkt voor beide.", createClub:"Vereniging aanmaken", createGroup:"Groep aanmaken", requestClub:"Vereniging aanvragen", requestGroup:"Groep aanvragen", logoFallbackNote:"Zonder afbeelding worden de initialen getoond.", weatherManualPh:"bijv. zonnig, 18 °C, lichte wind", weatherManualHint:"Automatisch geladen als er een locatie is – handmatig te overschrijven.", weatherPh:"bijv. Bewolkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch ingevuld als er een locatie is – vrij bewerkbaar.", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
+    appName:"The Fishing Butler", tagline:"Vangen. Loggen. Organiseren.", tapToChange:"Tik om te wijzigen", newCatches:"Nieuwe vangsten", grpBasis:"Basis", grpCatch:"De vangst", grpPhotos:"Foto's", grpWater:"Water & locatie", grpConditions:"Omstandigheden", grpGear:"Techniek & uitrusting", grpNotes:"Notities", logoInitials:"Initialen aanpassen", logoInitialsHint:"Wordt getoond als er geen afbeelding is (max. 3 tekens).", logoLight:"Lichte tekst", logoDark:"Donkere tekst", editImage:"Afbeelding aanpassen", editImageHint:"Sleep om te verplaatsen, schuif om te zoomen.", cropApply:"Toepassen", removeImage:"Afbeelding verwijderen", converting:"Foto converteren …", logToAreaHint:"Meerdere verenigingen/groepen mogelijk.", areaSearch:"Zoeken…", areaDone:"Klaar", repositionHint:"Sleep om de uitsnede aan te passen", addArea:"Vereniging of groep", joinAnyHint:"Een code werkt voor beide.", createClub:"Vereniging aanmaken", createGroup:"Groep aanmaken", requestClub:"Vereniging aanvragen", requestGroup:"Groep aanvragen", logoFallbackNote:"Zonder afbeelding worden de initialen getoond.", weatherManualPh:"bijv. zonnig, 18 °C, lichte wind", weatherManualHint:"Automatisch geladen als er een locatie is – handmatig te overschrijven.", weatherPh:"bijv. Bewolkt · 18 °C · 12 km/h", weatherAutoHint:"Automatisch ingevuld als er een locatie is – vrij bewerkbaar.", chooseArea:"Kies je omgeving", notInClub:"Vereniging er niet bij? Neem contact op met je verenigingsbeheerder.",
     personal:"Persoonlijk", clubs:"Verenigingen", groups:"Groepen", statsTile:"Mijn vangsten", statsTileSub:"Alle vangsten, overal", soloTile:"Solo", soloTileSub:"Eigen logboek, privé",
     signIn:"Inloggen", email:"E-mail", emailPh:"naam@voorbeeld.nl", password:"Wachtwoord", loginHint:"Demo: elke e-mail en elk wachtwoord werken. Accounts worden aangemaakt door de verenigingsbeheerder.",
     solo:"Solo", withoutClub:"Zonder vereniging", yourName:"Je naam", namePh:"bijv. Jan", next:"Verder", errName:"Voer je naam in.", soloHint:"In solomodus leg je je vangsten privé vast — zonder vereniging, zonder inloggen.",
@@ -1974,7 +1974,7 @@ function dbRowToCatch(row, photoUrls){
     location: row.location||'', lat: row.lat!=null? Number(row.lat):null, lon: row.lon!=null? Number(row.lon):null,
     date: row.caught_at, notes: row.notes||'', moon: row.moon||null, weather: row.weather||null,
     angler: (state.me&&state.me.name)||'', userId: row.owner_id,
-    loggedBy: row.logged_by||null, loggedByName:null, confirmed: row.confirmed!==false, _db:true, _ctxId: row.context_id||null, _ctxIds: row.context_ids||null
+    loggedBy: row.logged_by||null, loggedByName:null, confirmed: row.confirmed!==false, _db:true, _ctxId: row.context_id||null, _ctxIds: row.context_ids||null, coverPos: row.cover_pos||null
   , photos: photoUrls||[], photo: (photoUrls&&photoUrls[0])||null };
 }
 // turn DB rows into catch objects with signed photo URLs (+ optional owner-name map for shared contexts)
@@ -2120,7 +2120,7 @@ async function chooseClub(cl, kind, keepForm){
   if(cl && cl.id) markSeen(cl.id);
   state.club=cl; state.mode=kind||'club';
   state.user=state.me.name; state.userId=state.me.id; state.soloName=null; state.filter=emptyFilter();
-  document.getElementById('list-sub').textContent=state.club.name;
+  document.getElementById('list-title').textContent=state.club.name;
   document.getElementById('list-hdr').innerHTML=clubLogoHTML(state.club);
   if(state.auth==='supabase'){
     if(!keepForm) go('list');
@@ -2139,7 +2139,7 @@ async function startSolo(keepForm){
   unsubscribeRealtime();
   state.mode='solo'; state.club=null; state.soloName=state.me.name;
   state.user=state.me.name; state.userId=state.me.id; state.filter=emptyFilter();
-  document.getElementById('list-sub').textContent=t('solo');
+  document.getElementById('list-title').textContent=t('solo');
   document.getElementById('list-hdr').innerHTML=userAvatarHTML();
   if(state.auth==='supabase'){
     if(!keepForm) go('list');
@@ -2389,7 +2389,7 @@ function renderList(){
   }
   sorted.forEach(c=>{
     const b=document.createElement('button'); b.className='catch';
-    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="" loading="lazy" decoding="async">` : `<span class="thumb">${FISH_IC}</span>`;
+    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="" loading="lazy" decoding="async" style="object-position:${c.coverPos||'50% 50%'}">` : `<span class="thumb">${FISH_IC}</span>`;
     b.innerHTML=`${thumb}
       <span style="flex:1; min-width:0;">
         <span class="top"><span class="sp">${trSpecies(c.species)}</span><span class="val">${primaryStr(c)}</span></span>
@@ -2454,7 +2454,7 @@ function renderStats(){
   }
   sorted.forEach(c=>{
     const b=document.createElement('button'); b.className='catch';
-    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="" loading="lazy" decoding="async">` : `<span class="thumb">${FISH_IC}</span>`;
+    const _cov=coverOf(c); const thumb = _cov ? `<img class="thumb" src="${_cov}" alt="" loading="lazy" decoding="async" style="object-position:${c.coverPos||'50% 50%'}">` : `<span class="thumb">${FISH_IC}</span>`;
     b.innerHTML=`${thumb}
       <span style="flex:1; min-width:0;">
         <span class="top"><span class="sp">${trSpecies(c.species)}</span><span class="val">${primaryStr(c)}</span></span>
@@ -3155,6 +3155,28 @@ function setHeroPhoto(el, i){
   Array.from(strip.children).forEach(c=>c.classList.remove('active')); el.classList.add('active');
 }
 let _lb={photos:[],idx:0,scale:1,tx:0,ty:0};
+function saveCoverPos(c, pos){
+  c.coverPos=pos;
+  try{ const i=(state.catches||[]).findIndex(x=>x.id===c.id); if(i>=0) state.catches[i].coverPos=pos; }catch(e){}
+  haptic(8);
+  if(c._db && getSB()){ getSB().from('catches').update({cover_pos:pos}).eq('id', c.id).then(()=>{}, ()=>{}); }
+  else { try{ saveCatches(); }catch(e){} }
+  toast(t('savedToast'));
+}
+function bindHeroRepos(c){
+  const img=document.getElementById('d-hero-img'); if(!img) return;
+  const isMine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
+  const openLb=()=>openLightbox(state.detailPhotos, state.detailIdx);
+  if(!isMine){ img.style.cursor='zoom-in'; img.onclick=openLb; return; }
+  img.style.cursor='grab'; img.title=t('repositionHint');
+  let sx=0,sy=0,startX=50,startY=50,drag=false,moved=false;
+  const parse=()=>{ const m=(img.style.objectPosition||'50% 50%').split(/\s+/); return [parseFloat(m[0])||50, parseFloat(m[1])||50]; };
+  const down=e=>{ const p=e.touches?e.touches[0]:e; sx=p.clientX; sy=p.clientY; const q=parse(); startX=q[0]; startY=q[1]; drag=true; moved=false; img.style.cursor='grabbing'; };
+  const move=e=>{ if(!drag) return; const p=e.touches?e.touches[0]:e; const dx=p.clientX-sx, dy=p.clientY-sy; if(Math.abs(dx)>4||Math.abs(dy)>4) moved=true; if(!moved) return; const nx=Math.max(0,Math.min(100,startX-(dx/(img.clientWidth||1))*100)); const ny=Math.max(0,Math.min(100,startY-(dy/(img.clientHeight||1))*100)); img.style.objectPosition=nx+'% '+ny+'%'; if(e.cancelable)e.preventDefault(); };
+  const up=()=>{ if(!drag) return; drag=false; img.style.cursor='grab'; if(!moved){ openLb(); } else { saveCoverPos(c, img.style.objectPosition); } };
+  img.ontouchstart=down; img.ontouchmove=move; img.ontouchend=up;
+  img.onmousedown=down; img.onmousemove=move; img.onmouseup=up; img.onmouseleave=()=>{ if(drag) up(); };
+}
 function openLightbox(photos, idx){
   if(!photos||!photos.length) return;
   _lb={photos:photos.slice(), idx:Math.max(0,Math.min(idx||0, photos.length-1)), scale:1, tx:0, ty:0};
@@ -3335,7 +3357,7 @@ function openDetailObj(c, from){
   const strip=document.getElementById('d-strip');
   const ps=photosOf(c);
   state.detailPhotos=ps; state.detailIdx=0;
-  if(ps.length){ hero.style.display='flex'; hero.innerHTML=`<img id="d-hero-img" src="${ps[0]}" alt="" style="cursor:zoom-in;" onclick="openLightbox(state.detailPhotos, state.detailIdx)">`; }
+  if(ps.length){ hero.style.display='flex'; hero.innerHTML=`<img id="d-hero-img" src="${ps[0]}" alt="" style="object-position:${c.coverPos||'50% 50%'};">`; bindHeroRepos(c); }
   else { hero.style.display='none'; hero.innerHTML=''; }
   if(ps.length>1){
     strip.style.display='flex';
@@ -3807,7 +3829,7 @@ function onCtxName(v){
   state.club.name=name;
   const ss=document.getElementById('set-sub'); if(ss) ss.textContent = name;
   const sc=document.getElementById('set-clubname'); if(sc) sc.textContent=name;
-  const ls=document.getElementById('list-sub'); if(ls && state.mode!=='solo') ls.textContent = name;
+  const ls=document.getElementById('list-title'); if(ls && state.mode!=='solo') ls.textContent = name;
   clearTimeout(_ctxNameSaveT);
   _ctxNameSaveT=setTimeout(async ()=>{
     try{ const { error } = await getSB().from('contexts').update({name}).eq('id', state.club.id); if(error) throw error; toast(t('savedToast')); }
