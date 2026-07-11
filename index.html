@@ -512,6 +512,13 @@
         <div id="f-area-chips" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
         <div class="hint" style="margin-top:6px;" data-i18n="logToAreaHint">Mehrere Vereine/Gruppen möglich.</div>
       </div>
+      <div class="fgroup" id="fg-photos" data-i18n="grpPhotos">Fotos</div>
+      <div class="field" id="ff-photos">
+        <label data-i18n="photos">Fotos</label>
+        <div id="photo-grid" class="photo-grid"></div>
+        <div class="photo-hint" id="photo-hint" data-i18n="photoHint">Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen.</div>
+        <input id="f-photo" type="file" accept="image/*" multiple style="display:none" onchange="onPhoto(event)" />
+      </div>
       <div class="fgroup" id="fg-basis" data-i18n="grpBasis">Basis</div>
       <div class="field">
         <label><span data-i18n="species">Fischart</span> <span class="req">*</span></label>
@@ -551,14 +558,6 @@
           <option value="kept" data-i18n="releasedKept">Entnommen</option>
           <option value="released" data-i18n="releasedReleased">Zurückgesetzt</option>
         </select>
-      </div>
-
-      <div class="fgroup" id="fg-photos" data-i18n="grpPhotos">Fotos</div>
-      <div class="field" id="ff-photos">
-        <label data-i18n="photos">Fotos</label>
-        <div id="photo-grid" class="photo-grid"></div>
-        <div class="photo-hint" id="photo-hint" data-i18n="photoHint">Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen.</div>
-        <input id="f-photo" type="file" accept="image/*" multiple style="display:none" onchange="onPhoto(event)" />
       </div>
 
       <div class="fgroup" id="fg-water" data-i18n="grpWater">Gewässer & Standort</div>
@@ -1934,7 +1933,7 @@ function dbRowToCatch(row, photoUrls){
     location: row.location||'', lat: row.lat!=null? Number(row.lat):null, lon: row.lon!=null? Number(row.lon):null,
     date: row.caught_at, notes: row.notes||'', moon: row.moon||null, weather: row.weather||null,
     angler: (state.me&&state.me.name)||'', userId: row.owner_id,
-    loggedBy: row.logged_by||null, loggedByName:null, confirmed: row.confirmed!==false, _db:true
+    loggedBy: row.logged_by||null, loggedByName:null, confirmed: row.confirmed!==false, _db:true, _ctxId: row.context_id||null, _ctxIds: row.context_ids||null
   , photos: photoUrls||[], photo: (photoUrls&&photoUrls[0])||null };
 }
 // turn DB rows into catch objects with signed photo URLs (+ optional owner-name map for shared contexts)
@@ -2667,8 +2666,8 @@ const DEFAULT_FIELD_CFG={length:'optional',weight:'optional',released:'optional'
 // Globale, additive Feld-Wünsche des Nutzers (an/aus). Admin-Config kann Felder zusätzlich anzeigen/Pflicht machen, nie verbieten.
 const DEFAULT_FIELD_PREF={length:true,weight:true,location:true,method:false,bait:false,rod:false,boat:false,watertemp:false,wxCond:true,wxTemp:true,wxWind:true,wxPress:true,wxMoon:false,trolling:false,released:true,mapPin:true,photos:true,notes:true};
 const FIELD_GROUPS=[
-  {i18n:'grpCatch',  keys:['length','weight','released']},
   {i18n:'grpPhotos', keys:['photos']},
+  {i18n:'grpCatch',  keys:['length','weight','released']},
   {i18n:'grpWater',  keys:['location','mapPin']},
   {i18n:'grpConditions', keys:['wxCond','wxTemp','wxWind','wxPress','wxMoon','watertemp']},
   {i18n:'grpGear',   keys:['method','bait','rod','boat','trolling']},
@@ -2884,7 +2883,9 @@ function openEdit(c){
   if(!c) return;
   openForm(true);
   state.editId=c.id;
-  { const _fa=document.getElementById('ff-area'); if(_fa) _fa.style.display='none'; }
+  { const _fa=document.getElementById('ff-area'); if(_fa) _fa.style.display=''; }
+  state.formTargets = (c._ctxIds && c._ctxIds.length) ? c._ctxIds.slice() : (c._ctxId!=null ? [c._ctxId] : (currentContextId()!=null?[currentContextId()]:[]));
+  try{ renderAreaChips(); }catch(e){}
   { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display=''; }
   { if(c.weather){ state.formWeather=c.weather; try{ renderWeatherInto(c.weather, c.date, 'f-weather','f-weather-wrap'); }catch(e){} } }
   document.getElementById('f-title').textContent=t('editCatch');
@@ -3049,7 +3050,7 @@ function saveCatch(){
     lat: state.formLat!=null?state.formLat:null, lon: state.formLon!=null?state.formLon:null,
     moon: moonPhaseKey(new Date(date)), weather: state.formWeather || null
   };
-  if(!state.editId) obj._targets = (state.formTargets||[]);
+  obj._targets = (state.formTargets||[]);
   if(isDbCatch()){
     const btn=document.querySelector('#s-form .btn[onclick="saveCatch()"]'); if(btn) btn.disabled=true;
     const wasEdit=!!state.editId;
