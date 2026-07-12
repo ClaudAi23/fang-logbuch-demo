@@ -65,6 +65,19 @@
   @keyframes scrIn{from{opacity:.35; transform:translateX(16px);} to{opacity:1; transform:none;}}
   @keyframes scrBack{from{opacity:.35; transform:translateX(-16px);} to{opacity:1; transform:none;}}
   :focus-visible{outline:2px solid var(--teal-bright); outline-offset:2px; border-radius:6px;}
+  #success-ov{position:fixed; inset:0; z-index:500; display:none; align-items:center; justify-content:center; background:rgba(6,10,14,.62); opacity:0; transition:opacity .22s; -webkit-tap-highlight-color:transparent;}
+  #success-ov.show{opacity:1;}
+  .success-card{background:var(--surface); border:1px solid var(--border-2); border-radius:24px; padding:24px 22px; width:min(78vw,264px); display:flex; flex-direction:column; align-items:center; gap:11px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.5); transform:scale(.9); transition:transform .26s cubic-bezier(.2,.8,.3,1.25);}
+  #success-ov.show .success-card{transform:scale(1);}
+  .su-mascot{width:104px; height:104px; object-fit:contain; filter:drop-shadow(0 0 12px rgba(95,205,225,.45));}
+  .success-card.big .su-mascot{width:142px; height:142px; filter:drop-shadow(0 0 22px var(--spark)) drop-shadow(0 6px 14px rgba(0,0,0,.4)); animation:lureflare 1.15s ease-in-out;}
+  .su-check{width:28px; height:28px; border-radius:50%; background:var(--spark); color:#0c2b33; display:flex; align-items:center; justify-content:center; margin-top:-4px;}
+  .su-badge{display:none; font-size:0.625rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#0c2b33; background:var(--spark); border-radius:999px; padding:3px 11px;}
+  .su-title{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.375rem; line-height:1.05; color:var(--text);}
+  .success-card.big .su-title{color:var(--teal-bright); font-size:1.625rem;}
+  .su-sub{font-size:0.8125rem; color:var(--muted); line-height:1.35;}
+  @keyframes lureflare{0%,100%{filter:drop-shadow(0 0 10px var(--spark));}50%{filter:drop-shadow(0 0 32px var(--spark)) brightness(1.14);}}
+  @media(prefers-reduced-motion:reduce){ #success-ov.show .success-card{transform:none;} .success-card.big .su-mascot{animation:none;} }
   .input-err{border-color:var(--danger)!important; box-shadow:0 0 0 1px var(--danger);}
   .skel{background:linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%); background-size:400% 100%; animation:shimmer 1.3s ease infinite; border-radius:8px;}
   @keyframes shimmer{from{background-position:100% 0;} to{background-position:0 0;}}
@@ -1101,6 +1114,15 @@
       <button type="button" class="btn" style="margin-top:12px;" onclick="closeModal('area-sheet')" data-i18n="areaDone">Fertig</button>
     </div>
   </div>
+  <div id="success-ov" onclick="hideSuccess()" style="display:none;">
+    <div class="success-card">
+      <span class="su-badge" data-i18n="msBadge">Meilenstein</span>
+      <img class="su-mascot" src="/mascot.png" alt="">
+      <span class="su-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+      <div class="su-title"></div>
+      <div class="su-sub"></div>
+    </div>
+  </div>
   <div id="lightbox" style="display:none; position:fixed; inset:0; z-index:400; background:#000; touch-action:none;">
     <div style="width:100%; height:100%; overflow:hidden; display:flex; align-items:center; justify-content:center;">
       <img id="lb-img" src="" alt="" style="max-width:100%; max-height:100%; object-fit:contain; will-change:transform;">
@@ -1347,7 +1369,7 @@ function curLang(){
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
   return (n==='de'||n==='nl') ? n : 'en';
 }
-try{ (function(){ var _P={ de:{offlineSaved:'Offline gespeichert \u2013 wird synchronisiert',pendingChip:'Ausstehend',pendingSyncMsg:'Wird synchronisiert, sobald du online bist',syncedToast:'F\u00e4nge synchronisiert',syncWaiting:'Warten auf Sync',discardTitle:'\u00c4nderungen verwerfen?',discardMsg:'Deine Eingaben gehen verloren.',discardBtn:'Verwerfen',settingsSub:'Profil & Bereiche'}, en:{offlineSaved:'Saved offline \u2013 will sync',pendingChip:'Pending',pendingSyncMsg:'Will sync once you are online',syncedToast:'Catches synced',syncWaiting:'Waiting to sync',discardTitle:'Discard changes?',discardMsg:'Your entries won\u2019t be saved.',discardBtn:'Discard',settingsSub:'Profile & areas'}, nl:{offlineSaved:'Offline opgeslagen \u2013 wordt gesynchroniseerd',pendingChip:'In wachtrij',pendingSyncMsg:'Wordt gesynchroniseerd zodra je online bent',syncedToast:'Vangsten gesynchroniseerd',syncWaiting:'Wachten op synchronisatie',discardTitle:'Wijzigingen negeren?',discardMsg:'Je invoer gaat verloren.',discardBtn:'Negeren',settingsSub:'Profiel & gebieden'} }; Object.keys(_P).forEach(function(l){ if(I18N[l]) Object.assign(I18N[l],_P[l]); }); })(); }catch(e){}
+try{ (function(){ var _P={ de:{offlineSaved:'Offline gespeichert \u2013 wird synchronisiert',pendingChip:'Ausstehend',pendingSyncMsg:'Wird synchronisiert, sobald du online bist',syncedToast:'F\u00e4nge synchronisiert',syncWaiting:'Warten auf Sync',discardTitle:'\u00c4nderungen verwerfen?',discardMsg:'Deine Eingaben gehen verloren.',discardBtn:'Verwerfen',settingsSub:'Profil & Bereiche',msSaved:'Fang eingetragen',msFirst:'Erster Fang!',msRecord:'Neuer Rekord!',msNewSpecies:'Neue Art!',msLongest:'l\u00e4ngster',msHeaviest:'schwerster',msWelcome:'Willkommen an Bord',msYourFirst:'Dein erster',msBadge:'Meilenstein'}, en:{offlineSaved:'Saved offline \u2013 will sync',pendingChip:'Pending',pendingSyncMsg:'Will sync once you are online',syncedToast:'Catches synced',syncWaiting:'Waiting to sync',discardTitle:'Discard changes?',discardMsg:'Your entries won\u2019t be saved.',discardBtn:'Discard',settingsSub:'Profile & areas',msSaved:'Catch logged',msFirst:'First catch!',msRecord:'New record!',msNewSpecies:'New species!',msLongest:'longest',msHeaviest:'heaviest',msWelcome:'Welcome aboard',msYourFirst:'Your first',msBadge:'Milestone'}, nl:{offlineSaved:'Offline opgeslagen \u2013 wordt gesynchroniseerd',pendingChip:'In wachtrij',pendingSyncMsg:'Wordt gesynchroniseerd zodra je online bent',syncedToast:'Vangsten gesynchroniseerd',syncWaiting:'Wachten op synchronisatie',discardTitle:'Wijzigingen negeren?',discardMsg:'Je invoer gaat verloren.',discardBtn:'Negeren',settingsSub:'Profiel & gebieden',msSaved:'Vangst opgeslagen',msFirst:'Eerste vangst!',msRecord:'Nieuw record!',msNewSpecies:'Nieuwe soort!',msLongest:'langste',msHeaviest:'zwaarste',msWelcome:'Welkom aan boord',msYourFirst:'Je eerste',msBadge:'Mijlpaal'} }; Object.keys(_P).forEach(function(l){ if(I18N[l]) Object.assign(I18N[l],_P[l]); }); })(); }catch(e){}
 function t(k){ const L=curLang(); return (I18N[L] && I18N[L][k]!=null) ? I18N[L][k] : (I18N.en[k]!=null ? I18N.en[k] : k); }
 function trSpecies(name){ const m=SPECIES_TR[name]; return m ? m[curLang()] : name; }
 const GROUPS = [
@@ -3258,6 +3280,31 @@ function bindFormReadiness(){
   const h=function(){ setTimeout(updateSaveReadiness,0); };
   f.addEventListener('input',h); f.addEventListener('change',h); f.addEventListener('click',h);
 }
+let _successT=null;
+function hideSuccess(){ const ov=document.getElementById('success-ov'); if(!ov) return; ov.classList.remove('show'); clearTimeout(_successT); setTimeout(function(){ ov.style.display='none'; },260); }
+function showSuccess(obj, ms){
+  try{
+    const ov=document.getElementById('success-ov'); if(!ov){ toast(t('savedToast')); return; }
+    ms=ms||[]; const big=ms.length>0; const card=ov.querySelector('.success-card');
+    const sp=trSpecies(obj.species); let title=t('msSaved'), sub='';
+    if(big){
+      if(ms.indexOf('first')>=0){ title=t('msFirst'); sub=t('msWelcome'); }
+      else if(ms.indexOf('longest')>=0){ title=t('msRecord'); sub=fmtLen(obj.length)+' \u00b7 '+t('msLongest')+' '+sp; }
+      else if(ms.indexOf('heaviest')>=0){ title=t('msRecord'); sub=fmtWeight(obj.weight)+' \u00b7 '+t('msHeaviest')+' '+sp; }
+      else { title=t('msNewSpecies'); sub=t('msYourFirst')+' '+sp; }
+    } else {
+      const sz=[obj.length!=null?fmtLen(obj.length):null, obj.weight!=null?fmtWeight(obj.weight):null].filter(Boolean).join(' \u00b7 ');
+      sub=sz ? (sp+' \u00b7 '+sz) : sp;
+    }
+    ov.querySelector('.su-title').textContent=title; ov.querySelector('.su-sub').textContent=sub;
+    ov.querySelector('.su-badge').style.display=big?'':'none';
+    ov.querySelector('.su-check').style.display=big?'none':'';
+    card.classList.toggle('big', big);
+    ov.style.display='flex'; void ov.offsetWidth; ov.classList.add('show');
+    try{ haptic(big?[12,40,18]:12); }catch(e){}
+    clearTimeout(_successT); _successT=setTimeout(hideSuccess, big?2200:1350);
+  }catch(e){ try{ toast(t('savedToast')); }catch(_e){} }
+}
 function saveCatch(){
   const species=(state.speciesKey!=null && state.speciesKey!=='') ? state.speciesKey : document.getElementById('f-species').value.trim();
   const date=document.getElementById('f-date').value;
@@ -3303,6 +3350,16 @@ function saveCatch(){
     moon: moonPhaseKey(new Date(date)), weather: state.formWeather || null
   };
   obj._targets = (state.formTargets||[]);
+  const _wasEdit = !!state.editId;
+  var _ms=[];
+  try{ if(!_wasEdit){
+    const _src=(state.myAllCatches&&state.myAllCatches.length)?state.myAllCatches:(state.catches||[]);
+    const _mine=_src.filter(function(c){ return c && (!c._db || (state.me && c.userId===state.me.id)); });
+    var _pl=0,_pw=0,_psp={};
+    _mine.forEach(function(c){ if(c.length>_pl)_pl=c.length; if(c.weight>_pw)_pw=c.weight; if(c.species)_psp[c.species]=1; });
+    if(_mine.length===0){ _ms.push('first'); }
+    else { if(obj.length!=null && obj.length>_pl)_ms.push('longest'); if(obj.weight!=null && obj.weight>_pw)_ms.push('heaviest'); if(!_psp[obj.species])_ms.push('species'); }
+  } }catch(e){ _ms=[]; }
   if(isDbCatch()){
     const btn=document.querySelector('#s-form .btn[onclick="saveCatch()"]'); if(btn) btn.disabled=true;
     const wasEdit=!!state.editId;
@@ -3314,7 +3371,7 @@ function saveCatch(){
         state.editId=null; renderList();
         const saved=state.catches.find(c=>c.id===cid);
         if(wasEdit && saved){ if(state.editReturn==='stats'){ try{ state.myAllCatches=await loadMyAllCatches(); }catch(_e){} renderStats(); openDetailObj(saved,'stats'); } else openDetailObj(saved,'list'); } else go('list');
-        haptic(12); toast(t('savedToast'));
+        haptic(12); try{ showSuccess(obj, wasEdit?[]:_ms); }catch(_e){ toast(t('savedToast')); }
       }catch(e){
         if(isOfflineErr(e)){ try{ await enqueueCatch(obj, state.editId, _primary); state.editId=null; renderList(); go('list'); haptic(12); toast(t('offlineSaved')); }catch(e2){ err.textContent=t('errSave'); err.style.display='block'; } }
         else { err.textContent=t('errSave'); err.style.display='block'; }
@@ -3328,9 +3385,9 @@ function saveCatch(){
     if(idx>=0){ obj.userId=state.catches[idx].userId;
       if(state.catches[idx].seed){ obj.seed=true; obj._userEdited=true; }   // keep edited seed catches from being overwritten by future pushes
       state.catches[idx]=obj; }
-    state.editId=null; saveCatches(); renderList(); openDetailObj(obj,'list');
+    state.editId=null; saveCatches(); renderList(); openDetailObj(obj,'list'); try{ showSuccess(obj, []); }catch(e){}
   } else {
-    state.catches.push(obj); saveCatches(); renderList(); go('list');
+    state.catches.push(obj); saveCatches(); renderList(); go('list'); try{ showSuccess(obj, _ms); }catch(e){}
     if(obj.lat!=null) enrichWeather(obj);
   }
 }
