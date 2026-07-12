@@ -773,7 +773,6 @@
           <div id="user-init-block">
             <div class="sectionlabel" style="margin:14px 0 6px;" data-i18n="logoInitials">Initialen</div>
             <input id="user-init" type="text" maxlength="3" oninput="onUserInit(this.value)" placeholder="JC" style="text-transform:uppercase; letter-spacing:.1em; max-width:150px;" />
-            <div id="user-swatches" style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 4px;"></div>
             <p class="hint" data-i18n="logoInitialsHint">Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).</p>
           </div>
         </div>
@@ -866,7 +865,6 @@
           <div id="logo-init-block">
             <div class="sectionlabel" style="margin:16px 0 6px;" data-i18n="logoInitials">Initialen</div>
             <input id="logo-init" type="text" maxlength="3" oninput="onLogoInit(this.value)" placeholder="ASV" style="text-transform:uppercase; letter-spacing:.1em; max-width:150px;" />
-            <div id="logo-swatches" style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 4px;"></div>
             <p class="hint" style="margin-top:8px;" data-i18n="logoInitialsHint">Wird angezeigt, wenn kein Bild gesetzt ist (max. 3 Zeichen).</p>
           </div>
           <label data-i18n="ctxLocTitle" style="display:block; margin-top:6px;">Standort</label>
@@ -1540,8 +1538,6 @@ function renderLogoEditor(){
   { const blk=document.getElementById('logo-init-block'); if(blk) blk.style.display=hasImg?'none':''; const note=document.getElementById('logo-fallback-note'); if(note) note.style.display=hasImg?'':'none'; }
   const ls=currentLogoStyle();
   const inp=document.getElementById('logo-init'); if(inp && document.activeElement!==inp) inp.value=ls.text;
-  const sw=document.getElementById('logo-swatches');
-  if(sw) sw.innerHTML=LOGO_SWATCHES.map(c=>`<button type="button" class="swatch${c.toLowerCase()===String(ls.bg).toLowerCase()?' on':''}" style="background:${c};" onclick="onLogoBg('${c}')" aria-label="${c}"></button>`).join('');
 }
 function onLogoInit(v){ const ls=currentLogoStyle(); ls.text=(v||'').toUpperCase().slice(0,3); applyLogoStyle(ls,false); }
 function onLogoBg(c){ const ls=currentLogoStyle(); ls.bg=c; applyLogoStyle(ls,true); }
@@ -1553,8 +1549,6 @@ function renderUserAvatarEditor(){
   const blk=document.getElementById('user-init-block'); if(blk) blk.style.display=hasImg?'none':'';
   const ls=currentUserStyle();
   const inp=document.getElementById('user-init'); if(inp && document.activeElement!==inp) inp.value=ls.text;
-  const sw=document.getElementById('user-swatches');
-  if(sw) sw.innerHTML=LOGO_SWATCHES.map(c=>`<button type="button" class="swatch${c.toLowerCase()===String(ls.bg).toLowerCase()?' on':''}" style="background:${c};" onclick="onUserBg('${c}')" aria-label="${c}"></button>`).join('');
 }
 function onUserInit(v){ const ls=currentUserStyle(); ls.text=(v||'').toUpperCase().slice(0,3); applyUserStyle(ls,false); }
 function onUserBg(c){ const ls=currentUserStyle(); ls.bg=c; applyUserStyle(ls,true); }
