@@ -4109,7 +4109,7 @@ function openSettings(){
     ['copy-fields-btn'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display = hideCopy ? 'none' : ''; });
   }
   openAcc('profil');
-  setSettingsTab(ctxIsDb() ? 'area' : 'personal');
+  setSettingsTab('personal');   // always default to Personal (left tab), never pre-select the group tab
   go('settings');
 }
 function closeSettings(){ go(state.settingsReturn || 'club'); }
