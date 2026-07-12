@@ -51,17 +51,18 @@
   .ic{width:22px; height:22px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; display:block;}
   .ic-sm{width:18px; height:18px;}
   #app{
-    width:100%; max-width:420px; height:100vh; height:100dvh; height:var(--app-vh, 100dvh); height:100%; background:var(--sand);
-    position:relative; overflow:hidden; box-shadow:var(--shadow);
+    position:fixed; top:0; right:0; bottom:0; left:0; margin:0 auto;
+    width:100%; max-width:420px; background:var(--sand);
+    overflow:hidden; box-shadow:var(--shadow);
     display:flex; flex-direction:column;
   }
   @media(min-width:460px){
     body{align-items:center; padding:24px 0; overflow:auto;}
-    #app{min-height:auto; height:840px; border-radius:32px; border:1px solid var(--border-2);}
+    #app{position:relative; top:auto; right:auto; bottom:auto; left:auto; min-height:auto; height:840px; border-radius:32px; border:1px solid var(--border-2);}
   }
   #app-loader{position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:var(--sand,#0f1417); transition:opacity .35s ease, visibility 0s linear .35s;}
   #app-loader.hide{opacity:0; visibility:hidden; pointer-events:none;}
-  #app-loader img{width:120px; height:120px; object-fit:contain; animation:loaderPulse 1.5s ease-in-out infinite;}
+  #app-loader img{width:180px; height:180px; object-fit:contain; animation:loaderPulse 1.5s ease-in-out infinite;}
   @keyframes loaderPulse{0%,100%{transform:scale(1); opacity:.8;} 50%{transform:scale(1.06); opacity:1;}}
   .screen{display:none; flex:1; flex-direction:column; min-height:0;}
   .screen.active{display:flex; animation:scrIn .24s cubic-bezier(.22,.61,.36,1);}
@@ -482,7 +483,7 @@
   <!-- ============ CLUB ============ -->
   <section id="s-club" class="screen active">
     <div class="topbar">
-      <div id="club-logo" class="mascot-free mf-sm" style="width:46px; height:46px; flex:0 0 auto;"></div>
+      <div id="club-logo" class="mascot-free mf-sm" style="width:46px; height:46px; flex:0 0 auto;" onclick="_dbgTap()"></div>
       <div style="flex:1; min-width:0;">
         <h1 class="brandname" style="font-size:1.25rem; margin:0; line-height:1.05; display:flex; align-items:center; gap:8px;"><span>Butler <span class="wm-fish">Fish</span></span><span class="beta-pill">Beta</span></h1>
         <p class="sub" style="margin:0;" data-i18n="tagline">Dein Fang, gut aufgehoben.</p>
@@ -1618,8 +1619,28 @@ function go(name, isBack){
   const sc=document.querySelector('#s-'+name+' .scroll'); if(sc) sc.scrollTop=0;
   try{ hideLoader(); }catch(e){}
 }
-function showLoader(){ const el=document.getElementById('app-loader'); if(el){ el.classList.remove('hide'); } }
-function hideLoader(){ const el=document.getElementById('app-loader'); if(el){ el.classList.add('hide'); } }
+// --- temporary diagnostics: tap the home header logo 4× to show viewport measurements ---
+let _dbgTaps=0, _dbgT=null;
+function _dbgTap(){ _dbgTaps++; clearTimeout(_dbgT); _dbgT=setTimeout(function(){ _dbgTaps=0; }, 1200); if(_dbgTaps>=4){ _dbgTaps=0; _showDebug(); } }
+function _safeInset(side){ try{ const d=document.createElement('div'); d.style.cssText='position:fixed;left:0;top:0;visibility:hidden;padding-'+side+':env(safe-area-inset-'+side+');'; document.body.appendChild(d); const k='padding'+side.charAt(0).toUpperCase()+side.slice(1); const v=getComputedStyle(d)[k]; d.remove(); return v; }catch(e){ return '?'; } }
+function _showDebug(){
+  const a=document.getElementById('app').getBoundingClientRect();
+  const txt='standalone: '+(('standalone' in navigator)? navigator.standalone : 'n/a')
+    +'\nscreen: '+screen.width+' x '+screen.height
+    +'\ninnerWH: '+window.innerWidth+' x '+window.innerHeight
+    +'\ndocEl.clientH: '+document.documentElement.clientHeight
+    +'\napp: '+Math.round(a.width)+' x '+Math.round(a.height)+'  bottom '+Math.round(a.bottom)
+    +'\nsafe-top: '+_safeInset('top')+'  safe-bottom: '+_safeInset('bottom')
+    +'\n--app-vh: '+getComputedStyle(document.documentElement).getPropertyValue('--app-vh').trim();
+  let el=document.getElementById('dbg-ov');
+  if(!el){ el=document.createElement('div'); el.id='dbg-ov'; el.style.cssText='position:fixed; left:8px; top:70px; z-index:100000; background:rgba(0,0,0,.88); color:#3f6; font:12px/1.5 monospace; padding:10px 12px; border-radius:8px; white-space:pre; max-width:86vw;'; el.onclick=function(){ el.remove(); }; document.body.appendChild(el); }
+  el.textContent=txt;
+}
+let _loaderShownAt = (typeof performance!=='undefined' && performance.now) ? performance.now() : Date.now();
+const LOADER_MIN_MS = 1500;
+function _now(){ return (typeof performance!=='undefined' && performance.now) ? performance.now() : Date.now(); }
+function showLoader(){ const el=document.getElementById('app-loader'); if(el){ el.classList.remove('hide'); _loaderShownAt=_now(); } }
+function hideLoader(){ const el=document.getElementById('app-loader'); if(!el) return; const elapsed=_now()-_loaderShownAt; if(elapsed>=LOADER_MIN_MS){ el.classList.add('hide'); } else { setTimeout(function(){ el.classList.add('hide'); }, LOADER_MIN_MS-elapsed); } }
 function updateFab(){
   // Plain "+" FAB everywhere (destination-named variant reverted per JC).
   var fb=document.getElementById('mainfab'); if(!fb) return; var lab=fb.querySelector('.fab-label');
