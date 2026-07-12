@@ -893,12 +893,12 @@
         </div>
       </div>
 
-      <div id="danger-area" style="display:none; margin-top:18px;">
-        <div class="sectionlabel" style="color:var(--danger);" data-i18n="dangerZone">Gefahrenzone</div>
-        <div class="card-box" style="border-color:var(--danger);">
-          <button type="button" id="leave-ctx-btn" class="btn secondary sm" style="color:var(--danger); border-color:var(--danger); font-weight:600;" onclick="leaveContext()">Verein/Gruppe verlassen</button>
-          <button type="button" id="del-ctx-btn" class="btn secondary sm" style="color:var(--danger); border-color:var(--danger); font-weight:600; margin-top:10px; display:none;" onclick="deleteContext()">Verein/Gruppe löschen</button>
-          <p class="hint" id="del-ctx-hint" style="display:none; margin-top:6px;" data-i18n="deleteContextHint">Löscht alles unwiderruflich: Mitgliedschaften, Fänge und Fotos.</p>
+      <div id="acc-danger-area" class="accgroup" style="display:none;">
+        <button type="button" class="acchead" onclick="toggleAcc('danger-area')"><span data-i18n="dangerZone" style="color:var(--danger);">Gefahrenzone</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="accbody">
+          <button type="button" id="leave-ctx-btn" class="btn secondary sm" style="width:100%; color:var(--danger); border-color:var(--danger); font-weight:600;" onclick="leaveContext()">Verein/Gruppe verlassen</button>
+          <button type="button" id="del-ctx-btn" class="btn secondary sm" style="width:100%; color:var(--danger); border-color:var(--danger); font-weight:600; margin-top:10px; display:none;" onclick="deleteContext()">Verein/Gruppe löschen</button>
+          <p class="hint" id="del-ctx-hint" style="display:none; margin-top:8px;" data-i18n="deleteContextHint">Löscht alles unwiderruflich: Mitgliedschaften, Fänge und Fotos.</p>
         </div>
       </div>
       </div><!-- /tab-area -->
@@ -4082,7 +4082,7 @@ function openSettings(){
       const ib=document.getElementById('invite-box');
       if(isAdm && state.club.join_code){ renderInviteBox(); } else { ib.style.display='none'; ib.innerHTML=''; }
     }
-    document.getElementById('danger-area').style.display = ctxIsDb() ? '' : 'none';
+    document.getElementById('acc-danger-area').style.display = ctxIsDb() ? '' : 'none';
     { const isAdm = ctxIsDb() && canEditCtxCfg(); document.getElementById('del-ctx-btn').style.display = isAdm ? '' : 'none'; document.getElementById('del-ctx-hint').style.display = isAdm ? '' : 'none'; }
     { const isClub = state.club && state.club.type==='club';
       document.getElementById('leave-ctx-btn').textContent = isClub ? t('leaveClub') : t('leaveGroup');
