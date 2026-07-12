@@ -841,16 +841,12 @@
           <button type="button" class="btn secondary sm" style="margin-top:6px;" onclick="signOut()" data-i18n="signOut">Abmelden</button>
           <button type="button" class="btn secondary sm" style="margin-top:10px;" onclick="signOutAll()" data-i18n="signOutAll">Von allen Geräten abmelden</button>
           <p class="hint" data-i18n="signOutAllHint">Meldet dich überall ab – nützlich, wenn du dich auf einem fremden Gerät angemeldet hast.</p>
-        </div>
-      </div>
-
-      <div id="acc-danger-personal" class="accgroup" style="display:none;">
-        <button type="button" class="acchead" onclick="toggleAcc('danger-personal')"><span data-i18n="dangerZone" style="color:var(--danger);">Gefahrenzone</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="accbody">
-          <div class="sectionlabel" style="margin:2px 0 8px;" data-i18n="membershipsTitle">Meine Mitgliedschaften</div>
-          <div id="memberships-list"></div>
-          <p class="hint" style="margin-top:16px; color:var(--danger);" data-i18n="deleteAccountHint">Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.</p>
-          <button type="button" class="btn secondary sm" style="color:var(--danger); border-color:var(--danger); font-weight:600;" onclick="deleteAccount()" data-i18n="deleteAccount">Konto löschen</button>
+          <div id="account-danger" style="display:none; margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+            <div class="sectionlabel" style="margin:0 0 8px;" data-i18n="membershipsTitle">Meine Mitgliedschaften</div>
+            <div id="memberships-list"></div>
+            <p class="hint" style="margin-top:16px; color:var(--danger);" data-i18n="deleteAccountHint">Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.</p>
+            <button type="button" class="btn secondary sm" style="color:var(--danger); border-color:var(--danger); font-weight:600;" onclick="deleteAccount()" data-i18n="deleteAccount">Konto löschen</button>
+          </div>
         </div>
       </div>
       </div><!-- /tab-personal -->
@@ -4108,7 +4104,7 @@ function openSettings(){
   syncLangSel();
   renderFieldPrefPanel();
   renderShareCfgPanel();
-  { const dp=document.getElementById('acc-danger-personal'); if(dp) dp.style.display=(state.auth==='supabase')?'':'none'; }
+  { const dp=document.getElementById('account-danger'); if(dp) dp.style.display=(state.auth==='supabase')?'':'none'; }
   try{ renderMembershipsList(); }catch(e){}
   // Bereich (nur in einem Verein/Gruppe)
   if(ctxIsDb()){
