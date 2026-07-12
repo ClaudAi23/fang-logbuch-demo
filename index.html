@@ -74,7 +74,8 @@
   @media (prefers-reduced-motion: reduce){ .screen.active, .screen.active.is-back, .skel, .modal-box{animation:none!important;} }
   .scroll{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;}
   .form-actions{flex:0 0 auto; padding:12px 16px calc(12px + env(safe-area-inset-bottom)); background:var(--surface); border-top:1px solid var(--border); box-shadow:0 -8px 22px rgba(0,0,0,.28);}
-  .form-actions .btn{margin:0;}
+  .form-actions .btn{margin:0; transition:filter .18s, opacity .18s, box-shadow .18s;}
+  .btn.not-ready{filter:saturate(.3) brightness(.92); opacity:.55; box-shadow:none;}
   .del-link{background:none; border:0; color:var(--danger); font-size:14px; font-weight:600; padding:10px 16px; cursor:pointer; opacity:.85; display:inline-flex; align-items:center; gap:7px; border-radius:8px;}
   .del-link:hover{opacity:1;} .del-link:active{opacity:.7;} .del-link svg{width:15px; height:15px;}
 
@@ -3046,6 +3047,7 @@ async function openForm(skipAuto){
   clearPhoto(); closeSpecies(); populateAreaSelect(); go('form');
   ensureFormMap(null,null);
   try{ state.formSnap=formSnapshot(); }catch(e){}
+  try{ bindFormReadiness(); updateSaveReadiness(); }catch(e){}
   // no automatic geolocation on open — the browser prompt should only appear when the user taps "Mein Standort"
 }
 function updateAreaSummary(){
@@ -3126,6 +3128,7 @@ function openEdit(c){
   CFG_FIELDS.forEach(f=>{ if(fieldHasValue(f.key)) force[f.key]=true; });
   applyFieldConfig(force);
   try{ state.formSnap=formSnapshot(); }catch(e){}
+  try{ bindFormReadiness(); updateSaveReadiness(); }catch(e){}
 }
 async function deleteCatch(id, from){
   if(!(await confirmDialog(t('confirmTitle'), t('delConfirm'), t('del'), true))) return;
@@ -3228,6 +3231,24 @@ function selectedAngler(){
 function haptic(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||10); }catch(e){} }
 function markInvalid(id){ const el=document.getElementById(id); if(!el) return null; el.classList.add('input-err'); el.addEventListener('input', ()=>el.classList.remove('input-err'), {once:true}); return el; }
 function skelRows(n){ let h=''; for(let i=0;i<(n||5);i++) h+='<div class="skel-row"><div class="skel skel-th"></div><div style="flex:1; min-width:0;"><div class="skel skel-l1"></div><div class="skel skel-l2"></div></div></div>'; return h; }
+function formReady(){
+  try{
+    const species=(state.speciesKey!=null && state.speciesKey!=='') ? state.speciesKey : document.getElementById('f-species').value.trim();
+    const date=document.getElementById('f-date').value;
+    const angler=selectedAngler();
+    if(!species||!date||!angler) return false;
+    if(new Date(date) > new Date()) return false;
+    const cfg=ctxAdminCfg();
+    if(CFG_FIELDS.some(f=>cfg[f.key]==='required' && f.key.indexOf('wx')!==0 && !fieldHasValue(f.key))) return false;
+    return true;
+  }catch(e){ return true; }
+}
+function updateSaveReadiness(){ try{ const b=document.querySelector('#s-form .form-actions .btn'); if(b) b.classList.toggle('not-ready', !formReady()); }catch(e){} }
+function bindFormReadiness(){
+  const f=document.getElementById('s-form'); if(!f||f._readyBound) return; f._readyBound=true;
+  const h=function(){ setTimeout(updateSaveReadiness,0); };
+  f.addEventListener('input',h); f.addEventListener('change',h); f.addEventListener('click',h);
+}
 function saveCatch(){
   const species=(state.speciesKey!=null && state.speciesKey!=='') ? state.speciesKey : document.getElementById('f-species').value.trim();
   const date=document.getElementById('f-date').value;
