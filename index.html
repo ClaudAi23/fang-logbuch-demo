@@ -45,18 +45,18 @@
   body{
     font-family:'Barlow',system-ui,sans-serif; color:var(--text);
     background:#DED7C7; line-height:1.5;
-    display:flex; justify-content:center; min-height:100vh;
+    display:flex; justify-content:center; min-height:100vh; min-height:100dvh; overflow:hidden;
   }
   h1,h2{font-family:'Barlow Condensed','Barlow',sans-serif; letter-spacing:0; font-weight:600;}
   .ic{width:22px; height:22px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; display:block;}
   .ic-sm{width:18px; height:18px;}
   #app{
-    width:100%; max-width:420px; min-height:100vh; min-height:100dvh; background:var(--sand);
+    width:100%; max-width:420px; height:100vh; height:100dvh; background:var(--sand);
     position:relative; overflow:hidden; box-shadow:var(--shadow);
     display:flex; flex-direction:column;
   }
   @media(min-width:460px){
-    body{align-items:center; padding:24px 0;}
+    body{align-items:center; padding:24px 0; overflow:auto;}
     #app{min-height:auto; height:840px; border-radius:32px; border:1px solid var(--border-2);}
   }
   .screen{display:none; flex:1; flex-direction:column; min-height:0;}
@@ -535,7 +535,7 @@
   <!-- ============ FORM ============ -->
   <section id="s-form" class="screen">
     <div class="topbar">
-      <button class="iconbtn" onclick="go('list')" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button class="iconbtn" onclick="formBack()" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div><h1 id="f-title" data-i18n="logCatch">Fang eintragen</h1><p class="sub" id="f-sub" data-i18n="newCatch">Neuer Fang</p></div>
     </div>
     <div class="scroll pad">
@@ -1342,7 +1342,7 @@ function curLang(){
   const n=(navigator.language||'en').slice(0,2).toLowerCase();
   return (n==='de'||n==='nl') ? n : 'en';
 }
-try{ (function(){ var _P={ de:{offlineSaved:'Offline gespeichert \u2013 wird synchronisiert',pendingChip:'Ausstehend',pendingSyncMsg:'Wird synchronisiert, sobald du online bist',syncedToast:'F\u00e4nge synchronisiert',syncWaiting:'Warten auf Sync'}, en:{offlineSaved:'Saved offline \u2013 will sync',pendingChip:'Pending',pendingSyncMsg:'Will sync once you are online',syncedToast:'Catches synced',syncWaiting:'Waiting to sync'}, nl:{offlineSaved:'Offline opgeslagen \u2013 wordt gesynchroniseerd',pendingChip:'In wachtrij',pendingSyncMsg:'Wordt gesynchroniseerd zodra je online bent',syncedToast:'Vangsten gesynchroniseerd',syncWaiting:'Wachten op synchronisatie'} }; Object.keys(_P).forEach(function(l){ if(I18N[l]) Object.assign(I18N[l],_P[l]); }); })(); }catch(e){}
+try{ (function(){ var _P={ de:{offlineSaved:'Offline gespeichert \u2013 wird synchronisiert',pendingChip:'Ausstehend',pendingSyncMsg:'Wird synchronisiert, sobald du online bist',syncedToast:'F\u00e4nge synchronisiert',syncWaiting:'Warten auf Sync',discardTitle:'\u00c4nderungen verwerfen?',discardMsg:'Deine Eingaben gehen verloren.',discardBtn:'Verwerfen'}, en:{offlineSaved:'Saved offline \u2013 will sync',pendingChip:'Pending',pendingSyncMsg:'Will sync once you are online',syncedToast:'Catches synced',syncWaiting:'Waiting to sync',discardTitle:'Discard changes?',discardMsg:'Your entries won\u2019t be saved.',discardBtn:'Discard'}, nl:{offlineSaved:'Offline opgeslagen \u2013 wordt gesynchroniseerd',pendingChip:'In wachtrij',pendingSyncMsg:'Wordt gesynchroniseerd zodra je online bent',syncedToast:'Vangsten gesynchroniseerd',syncWaiting:'Wachten op synchronisatie',discardTitle:'Wijzigingen negeren?',discardMsg:'Je invoer gaat verloren.',discardBtn:'Negeren'} }; Object.keys(_P).forEach(function(l){ if(I18N[l]) Object.assign(I18N[l],_P[l]); }); })(); }catch(e){}
 function t(k){ const L=curLang(); return (I18N[L] && I18N[L][k]!=null) ? I18N[L][k] : (I18N.en[k]!=null ? I18N.en[k] : k); }
 function trSpecies(name){ const m=SPECIES_TR[name]; return m ? m[curLang()] : name; }
 const GROUPS = [
@@ -1528,6 +1528,17 @@ function go(name, isBack){
   const sc=document.querySelector('#s-'+name+' .scroll'); if(sc) sc.scrollTop=0;
 }
 function _openModalEls(){ return Array.prototype.slice.call(document.querySelectorAll('.modal-ov')).filter(m=>{ const d=m.style.display; return d && d!=='none'; }); }
+function formSnapshot(){
+  try{
+    const f=document.getElementById('s-form');
+    const vals=[].slice.call(f.querySelectorAll('input,select,textarea')).map(function(el){return el.id+'='+(el.value||'');}).join('|');
+    const ph=(state.editPhotos||[]).map(function(p){return String(p).slice(0,40);}).join(',');
+    return vals+'||'+ph+'||'+JSON.stringify(state.formTargets||[])+'||'+state.formLat+','+state.formLon;
+  }catch(e){ return ''; }
+}
+function formIsDirty(){ return _curScreen==='form' && state.formSnap!=null && formSnapshot()!==state.formSnap; }
+function confirmDiscard(){ return confirmDialog(t('discardTitle'), t('discardMsg'), t('discardBtn'), true); }
+async function formBack(){ if(formIsDirty() && !(await confirmDiscard())) return; state.formSnap=null; go('list'); }
 // Called for every hardware/gesture "back" (Android back button, edge-swipe). Navigates WITHIN the app; never closes it.
 function appBack(){
   const _ob=document.getElementById('onboarding-ov');
@@ -1539,6 +1550,8 @@ function appBack(){
   // 2) open combobox dropdown → close it
   const cbo=document.querySelector('#combo-list.open, #method-list.open');
   if(cbo){ cbo.classList.remove('open'); return; }
+  // 2.5) leaving the catch form with unsaved edits → confirm discard first
+  if(_curScreen==='form' && formIsDirty()){ (async function(){ if(await confirmDiscard()){ state.formSnap=null; appBack(); } })(); return; }
   // 3) login code step → back to the email step
   if(_curScreen==='login' && state && state.pendingEmail){ changeLoginEmail(); return; }
   // 4) one screen back if we have in-app history
@@ -3032,6 +3045,7 @@ async function openForm(skipAuto){
   { const _wb=document.getElementById('f-weather'); if(_wb) _wb.innerHTML=''; const _ww=document.getElementById('f-weather-wrap'); if(_ww) _ww.style.display='none'; }
   clearPhoto(); closeSpecies(); populateAreaSelect(); go('form');
   ensureFormMap(null,null);
+  try{ state.formSnap=formSnapshot(); }catch(e){}
   // no automatic geolocation on open — the browser prompt should only appear when the user taps "Mein Standort"
 }
 function updateAreaSummary(){
@@ -3111,6 +3125,7 @@ function openEdit(c){
   const force={};
   CFG_FIELDS.forEach(f=>{ if(fieldHasValue(f.key)) force[f.key]=true; });
   applyFieldConfig(force);
+  try{ state.formSnap=formSnapshot(); }catch(e){}
 }
 async function deleteCatch(id, from){
   if(!(await confirmDialog(t('confirmTitle'), t('delConfirm'), t('del'), true))) return;
