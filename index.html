@@ -160,6 +160,10 @@
      (its intrinsic content width would otherwise make a filled field wider); a lone visible field still grows to full. */
   .row .field{flex:1 1 calc(50% - 6px); min-width:0;}
   .row .field input{width:100%; min-width:0;}
+  /* Two fields that must stay exactly equal even with an iOS date value (its intrinsic width otherwise wins over flex). */
+  .row-eq{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px;}
+  .row-eq .field{width:100%; min-width:0;}
+  .row-eq .field input{width:100%; min-width:0; box-sizing:border-box;}
   .hint{font-size:0.75rem; color:var(--muted); margin:6px 0 0;}
 
   .logo-badge{
@@ -178,6 +182,8 @@
   .av-edit-badge svg{width:13px; height:13px; stroke:currentColor; stroke-width:2; fill:none;}
   .av-remove{position:absolute; top:-6px; right:-6px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:#fff; font-size:1rem; line-height:19px; text-align:center; cursor:pointer; border:2px solid var(--sand); box-shadow:0 1px 3px rgba(0,0,0,.3); z-index:2;}
   .fgroup{font-family:'Barlow Condensed',sans-serif; font-size:0.8125rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:24px 0 12px; padding-bottom:7px; border-bottom:1px solid var(--border);}
+  /* Single-field sections (Fotos, Notizen): the field's own label doubles as the section header + divider — same rhythm as .fgroup, no repeated title. */
+  .field.secfield > label{font-family:'Barlow Condensed',sans-serif; font-size:0.8125rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); display:block; margin:24px 0 12px; padding-bottom:7px; border-bottom:1px solid var(--border);}
   .setgroup{font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:18px 0 8px;}
   .setgroup:first-child{margin-top:2px;}
   .swipe-wrap{position:relative; margin-bottom:12px; border-radius:10px; overflow:hidden;}
@@ -632,7 +638,7 @@
         </button>
         <div class="hint" style="margin-top:6px;" data-i18n="logToAreaHint">Mehrere Vereine/Gruppen möglich.</div>
       </div>
-      <div class="field" id="ff-photos" style="margin-top:8px;">
+      <div class="field secfield" id="ff-photos">
         <label data-i18n="grpPhotos">Fotos</label>
         <div id="photo-grid" class="photo-grid"></div>
         <div class="photo-hint" id="photo-hint" data-i18n="photoHint">Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen.</div>
@@ -735,7 +741,7 @@
         <input id="f-trolling" type="text" inputmode="decimal" autocomplete="off" placeholder="z. B. 3,2" data-i18n-ph="trollingPh" />
       </div>
 
-      <div class="field" id="ff-notes">
+      <div class="field secfield" id="ff-notes">
         <label data-i18n="grpNotes">Notizen</label>
         <textarea id="f-notes" placeholder="Köder, Wetter, Bemerkungen …" data-i18n-ph="notesPh"></textarea>
       </div>
@@ -1291,7 +1297,7 @@
     </div>
     <div class="scroll pad">
       <div class="sectionlabel" data-i18n="period">Zeitraum</div>
-      <div class="row">
+      <div class="row row-eq">
         <div class="field"><label data-i18n="from">Von</label><input id="flt-from" type="date" /></div>
         <div class="field"><label data-i18n="to">Bis</label><input id="flt-to" type="date" /></div>
       </div>
