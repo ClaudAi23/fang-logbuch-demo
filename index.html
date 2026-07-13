@@ -184,9 +184,10 @@
   .av-edit-badge{position:absolute; right:-3px; bottom:-3px; width:24px; height:24px; border-radius:50%; background:var(--teal); border:2px solid var(--sand); display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer;}
   .av-edit-badge svg{width:13px; height:13px; stroke:currentColor; stroke-width:2; fill:none;}
   .av-remove{position:absolute; top:-6px; right:-6px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:#fff; font-size:1rem; line-height:19px; text-align:center; cursor:pointer; border:2px solid var(--sand); box-shadow:0 1px 3px rgba(0,0,0,.3); z-index:2;}
-  .fgroup{font-family:'Barlow Condensed',sans-serif; font-size:0.8125rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:24px 0 12px; padding-bottom:7px; border-bottom:1px solid var(--border);}
+  .fgroup{display:flex; align-items:center; gap:8px; font-family:'Barlow Condensed',sans-serif; font-size:0.8125rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:24px 0 12px; padding-bottom:7px; border-bottom:1px solid var(--border);}
   /* Single-field sections (Fotos, Notizen): the field's own label doubles as the section header + divider — same rhythm as .fgroup, no repeated title. */
-  .field.secfield > label{font-family:'Barlow Condensed',sans-serif; font-size:0.8125rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); display:block; margin:24px 0 12px; padding-bottom:7px; border-bottom:1px solid var(--border);}
+  .field.secfield > label{display:flex; align-items:center; gap:8px; font-family:'Barlow Condensed',sans-serif; font-size:0.8125rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:24px 0 12px; padding-bottom:7px; border-bottom:1px solid var(--border);}
+  .fgroup > svg, .field.secfield > label > svg{width:16px; height:16px; flex:0 0 auto; stroke:var(--teal-bright); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
   .setgroup{font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:18px 0 8px;}
   .setgroup:first-child{margin-top:2px;}
   .swipe-wrap{position:relative; margin-bottom:12px; border-radius:10px; overflow:hidden;}
@@ -359,7 +360,13 @@
   .photo-add{display:flex; flex-direction:column; align-items:center; justify-content:center;
     aspect-ratio:1/1; border:1.5px dashed var(--border-2); border-radius:10px;
     background:var(--surface-2); color:var(--muted); cursor:pointer; gap:4px; font-size:0.75rem;}
-  .photo-add .ic{width:24px; height:24px;}
+  .photo-add .ic{width:24px; height:24px; stroke:var(--teal-bright);}
+  .photo-add:active{border-color:var(--teal);}
+  /* inviting full-width empty state */
+  .photo-add.empty{grid-column:1 / -1; aspect-ratio:auto; padding:26px 18px; gap:8px;}
+  .photo-add.empty .ic{width:30px; height:30px;}
+  .photo-add.empty span{font-size:0.9375rem; font-weight:600; color:var(--text);}
+  .photo-add.empty small{font-size:0.72rem; color:var(--muted); text-align:center; max-width:230px; line-height:1.35;}
   .photo-hint{font-size:0.75rem; color:var(--muted); margin-top:6px;}
   .detail-strip{display:flex; gap:8px; overflow-x:auto; padding:10px 18px 16px; -webkit-overflow-scrolling:touch;}
   .detail-strip img{width:64px; height:64px; object-fit:cover; border-radius:8px; flex:0 0 auto;
@@ -642,12 +649,12 @@
         <div class="hint" style="margin-top:6px;" data-i18n="logToAreaHint">Mehrere Vereine/Gruppen möglich.</div>
       </div>
       <div class="field secfield" id="ff-photos">
-        <label data-i18n="grpPhotos">Fotos</label>
+        <label><svg viewBox="0 0 24 24"><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2"/><path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/></svg><span data-i18n="grpPhotos">Fotos</span></label>
         <div id="photo-grid" class="photo-grid"></div>
         <div class="photo-hint" id="photo-hint" data-i18n="photoHint">Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen.</div>
         <input id="f-photo" type="file" accept="image/*" multiple style="display:none" onchange="onPhoto(event)" />
       </div>
-      <div class="fgroup" id="fg-basis" data-i18n="grpBasis">Basis</div>
+      <div class="fgroup" id="fg-basis"><svg viewBox="0 0 24 24"><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/><path d="M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2"/><path d="M9 12l.01 0"/><path d="M13 12l2 0"/><path d="M9 16l.01 0"/><path d="M13 16l2 0"/></svg><span data-i18n="grpBasis">Basis</span></div>
       <div class="field">
         <label><span data-i18n="species">Fischart</span> <span class="req">*</span></label>
         <div class="combo">
@@ -664,12 +671,13 @@
         </div>
         <div class="field">
           <label><span data-i18n="angler">Angler</span> <span class="req">*</span></label>
-          <select id="f-angler" onchange="onAnglerChange()"></select>
+          <select id="f-angler" onchange="onAnglerChange()" style="display:none;"></select>
+          <button type="button" class="selfield" onclick="openSelSheet('f-angler', t('angler'))"><span id="f-angler-lbl">—</span><svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg></button>
           <input id="f-angler-other" type="text" placeholder="Name eingeben" data-i18n-ph="anglerOtherPh" style="display:none; margin-top:8px;" />
         </div>
       </div>
 
-      <div class="fgroup" id="fg-catch" data-i18n="grpCatch">Der Fang</div>
+      <div class="fgroup" id="fg-catch"><svg viewBox="0 0 24 24"><path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571"/><path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504"/><path d="M18 11v.01"/><path d="M11.5 10.5c-.667 1 -.667 2 0 3"/></svg><span data-i18n="grpCatch">Der Fang</span></div>
       <div class="row">
         <div class="field" id="ff-length">
           <label data-i18n="lengthCm">Länge (cm)</label>
@@ -682,14 +690,15 @@
       </div>
       <div class="field" id="ff-released">
         <label data-i18n="releasedLabel">Entnahme</label>
-        <select id="f-released">
+        <select id="f-released" style="display:none;" onchange="syncSelfield('f-released')">
           <option value="" data-i18n="releasedNone">—</option>
           <option value="kept" data-i18n="releasedKept">Entnommen</option>
           <option value="released" data-i18n="releasedReleased">Zurückgesetzt</option>
         </select>
+        <button type="button" class="selfield" onclick="openSelSheet('f-released', t('releasedLabel'))"><span id="f-released-lbl">—</span><svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg></button>
       </div>
 
-      <div class="fgroup" id="fg-water" data-i18n="grpWater">Gewässer & Standort</div>
+      <div class="fgroup" id="fg-water"><svg viewBox="0 0 24 24"><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0"/></svg><span data-i18n="grpWater">Gewässer & Standort</span></div>
       <div class="field" id="ff-location">
         <label data-i18n="water">Gewässer / Platz</label>
         <input id="f-location" type="text" placeholder="z. B. Vereinsteich, Platz 4" data-i18n-ph="waterPh" />
@@ -703,7 +712,7 @@
         <span id="f-coord" class="coord" data-i18n="tapMap" style="display:block; margin-top:6px;">Tippe auf die Karte, um den Fangort zu setzen.</span>
       </div>
 
-      <div class="fgroup" id="fg-cond" data-i18n="grpConditions">Bedingungen</div>
+      <div class="fgroup" id="fg-cond"><svg viewBox="0 0 24 24"><path d="M6.657 18c-2.572 0 -4.657 -2.007 -4.657 -4.483c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-11.878"/></svg><span data-i18n="grpConditions">Bedingungen</span></div>
       <div id="f-weather-wrap" style="display:none; margin-bottom:16px;">
         <div class="sectionlabel" data-i18n="weather">Wetter</div>
         <div id="f-weather"></div>
@@ -713,7 +722,7 @@
         <input id="f-watertemp" type="text" inputmode="decimal" autocomplete="off" placeholder="z. B. 18" data-i18n-ph="watertempPh" />
       </div>
 
-      <div class="fgroup" id="fg-gear" data-i18n="grpGear">Technik & Ausrüstung</div>
+      <div class="fgroup" id="fg-gear"><svg viewBox="0 0 24 24"><path d="M7 10h3v-3l-3.5 -3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1 -3 3l-6 -6a6 6 0 0 1 -8 -8l3.5 3.5"/></svg><span data-i18n="grpGear">Technik & Ausrüstung</span></div>
       <div class="field" id="ff-method">
         <label data-i18n="method">Angelmethode</label>
         <div class="combo">
@@ -745,7 +754,7 @@
       </div>
 
       <div class="field secfield" id="ff-notes">
-        <label data-i18n="grpNotes">Notizen</label>
+        <label><svg viewBox="0 0 24 24"><path d="M13 20l7 -7"/><path d="M13 20v-6a1 1 0 0 1 1 -1h6v-7a2 2 0 0 0 -2 -2h-12a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7"/></svg><span data-i18n="grpNotes">Notizen</span></label>
         <textarea id="f-notes" placeholder="Köder, Wetter, Bemerkungen …" data-i18n-ph="notesPh"></textarea>
       </div>
 
@@ -1203,6 +1212,14 @@
       <button type="button" class="btn" style="margin-top:12px;" onclick="closeCtxFilterSheet()" data-i18n="areaDone">Fertig</button>
     </div>
   </div>
+  <div id="sel-sheet" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('sel-sheet')">
+    <div class="modal-box">
+      <h2 id="sel-sheet-title" style="font-size:1.25rem; margin:0 0 10px;">—</h2>
+      <input id="sel-search" type="text" data-i18n-ph="areaSearch" placeholder="Suchen…" oninput="renderSelSheet()" style="margin-bottom:8px; display:none;">
+      <div id="sel-sheet-list" style="max-height:56vh; overflow:auto; margin:0 -2px;"></div>
+      <button type="button" class="btn secondary" style="margin-top:12px;" onclick="closeModal('sel-sheet')" data-i18n="cancel">Abbrechen</button>
+    </div>
+  </div>
   <div id="success-ov" onclick="hideSuccess()" style="display:none;">
     <div class="success-card">
       <span class="su-badge" data-i18n="msBadge">Meilenstein</span>
@@ -1307,8 +1324,8 @@
       </div>
 
       <div class="sectionlabel" style="margin-top:14px;" data-i18n="fltCatch">Fang</div>
-      <div class="field"><label data-i18n="species">Fischart</label><select id="flt-species"></select></div>
-      <div class="field" id="flt-angler-field"><label data-i18n="angler">Angler</label><select id="flt-angler"></select></div>
+      <div class="field"><label data-i18n="species">Fischart</label><select id="flt-species" style="display:none;"></select><button type="button" class="selfield" onclick="openSelSheet('flt-species', t('species'))"><span id="flt-species-lbl">Alle</span><svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg></button></div>
+      <div class="field" id="flt-angler-field"><label data-i18n="angler">Angler</label><select id="flt-angler" style="display:none;"></select><button type="button" class="selfield" onclick="openSelSheet('flt-angler', t('angler'))"><span id="flt-angler-lbl">Alle</span><svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg></button></div>
       <div class="field" id="flt-ctx-field" style="display:none;"><label data-i18n="showCatchesFrom">Fänge aus</label><button type="button" class="selfield" onclick="openCtxFilterSheet()"><span id="flt-ctx-summary" data-i18n="all">Alle</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
       <div class="field"><label data-i18n="locationContains">Ort / Gewässer enthält</label><input id="flt-ort" type="text" list="flt-ort-dl" placeholder="z. B. Vereinsteich" data-i18n-ph="locationPh" /><datalist id="flt-ort-dl"></datalist></div>
       <label class="chkrow" style="margin:12px 4px 4px;"><input type="checkbox" id="flt-hideunconf"><span data-i18n="hideUnconfirmed">Unbestätigte Fänge ausblenden</span></label>
@@ -1581,6 +1598,8 @@ function applyLang(){
   fillMethodsDatalist(); renderFieldCfgPanel();
   if(document.getElementById('s-settings').classList.contains('active')) renderShareCfgPanel();
   if(typeof renderAuthMode==='function' && document.getElementById('login-primary')) renderAuthMode();
+  // custom-select labels mirror their (re-translated) hidden <select>
+  ['f-released','f-angler','flt-species','flt-angler'].forEach(id=>{ try{ syncSelfield(id); }catch(e){} });
   renderClubs();
 }
 function setLang(v){ state.lang=v; savePrefs(); applyLang(); syncUserLang();
@@ -1894,6 +1913,23 @@ async function goChooser(){
 // ---------- Phase 2e: join / create / request ----------
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function closeModal(id){ const el=document.getElementById(id); if(el) el.style.display='none'; }
+// ---- reusable single-select bottom sheet (replaces native <select> UI; the hidden <select> stays the source of truth) ----
+let _selSheetId=null;
+function openSelSheet(selectId, title){ _selSheetId=selectId; const s=document.getElementById('sel-search'); if(s) s.value=''; const tt=document.getElementById('sel-sheet-title'); if(tt) tt.textContent=title||''; renderSelSheet(); const sh=document.getElementById('sel-sheet'); if(sh) sh.style.display='flex'; }
+function renderSelSheet(){
+  const sel=document.getElementById(_selSheetId); if(!sel) return;
+  const box=document.getElementById('sel-sheet-list'); if(!box) return;
+  const opts=[...sel.options]; const sEl=document.getElementById('sel-search');
+  const long=opts.length>8; if(sEl) sEl.style.display=long?'':'none';
+  const q=(long&&sEl?sEl.value:'').toLowerCase().trim();
+  const CHK='<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>';
+  box.innerHTML=opts.filter(o=>!q||o.textContent.toLowerCase().indexOf(q)>=0).map(o=>{
+    const on=o.value===sel.value;
+    return `<button type="button" class="area-row${on?' on':''}" data-val="${esc(o.value)}" onclick="pickSel(this.dataset.val)"><span class="ar-name">${esc(o.textContent)}</span><span class="ar-check">${on?CHK:''}</span></button>`;
+  }).join('');
+}
+function pickSel(value){ const sel=document.getElementById(_selSheetId); if(!sel) return; sel.value=value; syncSelfield(_selSheetId); try{ sel.dispatchEvent(new Event('change')); }catch(e){} closeModal('sel-sheet'); }
+function syncSelfield(selectId){ const sel=document.getElementById(selectId); if(!sel) return; const lbl=document.getElementById(selectId+'-lbl'); if(!lbl) return; const opt=sel.selectedOptions&&sel.selectedOptions[0]; lbl.textContent=opt?opt.textContent:'—'; }
 function showInfo(title, body){ document.getElementById('info-title').textContent=title; document.getElementById('info-body').textContent=body; document.getElementById('info-modal').style.display='flex'; }
 let createType='club', requestType='club';
 function setCreateType(v){ createType=v; document.querySelectorAll('#create-type-seg button').forEach(b=>b.classList.toggle('on', b.dataset.ct===v)); }
@@ -3430,7 +3466,7 @@ async function openForm(skipAuto){
   document.getElementById('f-date').value=nowLocal();
   document.getElementById('f-date').max=nowLocal();
   state.formDateAuto=document.getElementById('f-date').value;   // remember the auto "now" so EXIF only overrides an untouched date
-  buildAnglerOptions();
+  buildAnglerOptions(); syncSelfield('f-released');
   if(ctxIsDb()){ const keep=state.editId; loadCtxMembers().then(()=>{ const sel=document.getElementById('f-angler'); if(state.editId===keep && sel && sel.value===`u:${state.me.id}`) buildAnglerOptions(); }); }
   document.getElementById('form-err').style.display='none';
   { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display='none'; }
@@ -3508,6 +3544,7 @@ function openEdit(c){
   if(ctxIsDb()){ sel.value=`u:${c.userId||state.me.id}`; if(!sel.value||sel.selectedIndex<0) sel.value=`u:${state.me.id}`; }
   else { sel.value=c.angler;
     if(sel.value!==c.angler){ sel.value='__other__'; const o=document.getElementById('f-angler-other'); o.style.display='block'; o.value=c.angler; } }
+  syncSelfield('f-angler');
   document.getElementById('f-method').value = c.method||'';
   document.getElementById('f-bait').value = c.bait||'';
   document.getElementById('f-rod').value = c.rod||'';
@@ -3515,6 +3552,7 @@ function openEdit(c){
   document.getElementById('f-watertemp').value = c.watertemp!=null? c.watertemp : '';
   document.getElementById('f-trolling').value = c.trolling!=null? c.trolling : '';
   document.getElementById('f-released').value = c.released===true?'released':(c.released===false?'kept':'');
+  syncSelfield('f-released');
   state.editPhotos = photosOf(c).slice(); renderFormPhotos();
   state.formLat = c.lat!=null?c.lat:null; state.formLon = c.lon!=null?c.lon:null;
   ensureFormMap(state.formLat, state.formLon);
@@ -3594,6 +3632,7 @@ function buildAnglerOptions(){
     mems.filter(m=>m.id!==meId).forEach(m=>{ opts+=`<option value="u:${m.id}">${esc(m.name)}</option>`; });
     sel.innerHTML=opts; sel.value=`u:${meId}`;
     o.style.display='none'; o.value='';
+    syncSelfield('f-angler');
     return;
   }
   const me=state.user||state.soloName||'';
@@ -3604,6 +3643,7 @@ function buildAnglerOptions(){
     + `<option value="__other__">${t('other')}</option>`;
   sel.value = me || (names[0]||'__other__');
   o.style.display='none'; o.value='';
+  syncSelfield('f-angler');
 }
 async function loadCtxMembers(){
   if(!ctxIsDb()){ state.ctxMembers=[]; return []; }
@@ -3938,9 +3978,11 @@ function renderFormPhotos(){
     </div>`;
   });
   if(ps.length<MAX_PHOTOS){
-    h+=`<div class="photo-add" onclick="document.getElementById('f-photo').click()">
-      <svg class="ic" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.3"/></svg>
+    const empty=ps.length===0;
+    h+=`<div class="photo-add${empty?' empty':''}" onclick="document.getElementById('f-photo').click()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2"/><path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/></svg>
       <span>${t('addPhoto')}</span>
+      ${empty?`<small>${t('photoHint')}</small>`:''}
     </div>`;
   }
   grid.innerHTML=h;
@@ -4724,6 +4766,7 @@ function fillSelect(id, pairs, val){
   const s=document.getElementById(id); s.innerHTML='';
   pairs.forEach(([v,t])=>{ const o=document.createElement('option'); o.value=v; o.textContent=t; s.appendChild(o); });
   s.value=val;
+  try{ syncSelfield(id); }catch(e){}
 }
 function applyFilter(){
   state.filter={
