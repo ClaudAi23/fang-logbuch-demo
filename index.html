@@ -4537,7 +4537,7 @@ function _fillAnglerFilter(data){
 }
 // #14 — context filter as an avatar picker (categories clearly separated from named clubs/groups)
 const _CATIC={
-  all:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  all:'<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>',
   groups:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><path d="M15 8.2a2.8 2.8 0 0 1 0 5.6"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 19a5.5 5.5 0 0 1 4.5-5.4"/></svg>',
   clubs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.2-3 7.4-7 8.4-4-1-7-4.2-7-8.4V6z"/></svg>'
 };
@@ -4562,14 +4562,13 @@ function renderCtxFilterSheet(){
   const all=myCatches();
   const CHK='<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>';
   const row=(key,label,logo)=>{ const on = key===''? _fltCtxSel.length===0 : _fltCtxSel.indexOf(key)>=0; return `<button type="button" class="area-row${on?' on':''}" data-key="${esc(''+key)}" onclick="toggleCtxFilterSel(this.dataset.key)"><span class="ar-logo">${logo||''}</span><span class="ar-name">${esc(label)}</span><span class="ar-check">${on?CHK:''}</span></button>`; };
-  const hasSolo=all.some(c=>c._ctxType==='solo');
   const namedInfo={}; all.forEach(c=>{ if(c._ctxType!=='solo' && c._ctx) namedInfo[c._ctx]=c._ctxType; });
   const ctxs=state.myContexts||[];
   const logoFor=n=>{ const ctx=ctxs.find(x=>x.name===n); return ctx?clubLogoHTML(ctx):_catLogo('clubs'); };
   const clubNames=Object.keys(namedInfo).filter(n=>namedInfo[n]==='club').sort();
   const groupNames=Object.keys(namedInfo).filter(n=>namedInfo[n]==='group').sort();
   let h=row('', t('all'), _catLogo('all'));
-  if(hasSolo) h+=row('__solo__', t('solo'), userAvatarHTML());
+  h+=row('__solo__', t('solo'), userAvatarHTML());
   if(clubNames.length){ h+=`<div class="area-grp">${esc(t('clubs'))}</div>`; clubNames.forEach(n=>{ h+=row(n, n, logoFor(n)); }); }
   if(groupNames.length){ h+=`<div class="area-grp">${esc(t('groups'))}</div>`; groupNames.forEach(n=>{ h+=row(n, n, logoFor(n)); }); }
   box.innerHTML=h;
