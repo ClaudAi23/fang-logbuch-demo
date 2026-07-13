@@ -185,7 +185,7 @@
   .swatch::before{content:""; position:absolute; inset:-5px;}
   .swatch.on{outline:2px solid var(--teal-bright); outline-offset:2px;}
   :focus-visible{outline:2px solid var(--teal-bright); outline-offset:2px;}
-  .catadd:focus-visible, .club:focus-visible, .area-row:focus-visible{outline:2px solid var(--teal-bright); outline-offset:-2px;}
+  .catadd-row:focus-visible, .club:focus-visible, .area-row:focus-visible, .mycatches:focus-visible{outline:2px solid var(--teal-bright); outline-offset:-2px;}
   .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--teal); color:#fff; padding:10px 18px; border-radius:999px; font-size:0.875rem; font-weight:600; z-index:9999; box-shadow:0 4px 16px rgba(0,0,0,.3); opacity:0; transition:opacity .2s; pointer-events:none;}
   .toast.show{opacity:1;}
   .mem-row{display:flex; align-items:center; gap:12px; padding:10px 2px; border-bottom:1px solid var(--border);}
@@ -204,17 +204,23 @@
   .accgroup.open .acc-chev{transform:rotate(180deg);}
   .accbody{display:none; padding:0 16px 16px;}
   .accgroup.open .accbody{display:block;}
-  .homecat{margin-bottom:26px;}
-  .cathead{display:flex; align-items:center; gap:6px; margin:0 2px 8px;}
-  .cattoggle{flex:1; display:flex; align-items:center; gap:8px; background:none; border:none; padding:6px 2px; cursor:pointer; color:var(--text); font-family:inherit; text-align:left;}
+  .homecat{margin-bottom:22px;}
+  .cattoggle{width:100%; display:flex; align-items:center; gap:8px; margin:0 0 8px; background:none; border:none; padding:6px 2px 8px; cursor:pointer; color:var(--text); font-family:inherit; text-align:left;}
   .cattoggle > span.catlabel{font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);}
-  .homecat .acc-chev{width:16px; height:16px; stroke:var(--muted); transition:transform .2s;}
+  .cattoggle .acc-chev{margin-left:auto;}
+  .homecat .acc-chev{width:18px; height:18px; stroke:var(--muted); transition:transform .2s; flex:0 0 auto;}
   .homecat.open .acc-chev{transform:rotate(180deg);}
   .catbody{display:none;}
   .homecat.open .catbody{display:block;}
   .cat-pill{display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 6px; border-radius:999px; background:var(--teal); color:#fff; font-size:0.6875rem; font-weight:700;}
-  .catadd{width:28px; height:28px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; border-radius:8px; border:none; background:none; color:var(--muted); cursor:pointer; font-size:1.375rem; line-height:1; opacity:.75;}
-  .catadd:hover,.catadd:active{color:var(--teal); opacity:1; background:var(--surface);}
+  .catadd-row{width:100%; display:flex; align-items:center; gap:9px; padding:11px 14px; margin:6px 0 2px; border:1px dashed var(--border-2); border-radius:12px; background:none; color:var(--muted); font-family:inherit; font-size:0.875rem; cursor:pointer;}
+  .catadd-row:hover,.catadd-row:active{color:var(--teal-bright); border-color:var(--teal);}
+  .catadd-row svg{width:18px; height:18px; flex:0 0 auto; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round;}
+  .mycatches{width:100%; display:flex; align-items:center; gap:14px; text-align:left; background:var(--teal-tint); border:1px solid var(--teal); border-radius:12px; padding:14px; margin-bottom:24px; cursor:pointer; font-family:inherit;}
+  .mycatches .av{width:46px; height:46px; border-radius:11px; background:var(--surface); color:var(--teal-bright); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .mycatches .nm{font-size:1rem; font-weight:600; color:var(--teal-bright);}
+  .mycatches .loc{font-size:0.8125rem; color:var(--teal-bright); opacity:.75;}
+  .mycatches svg{color:var(--teal-bright); stroke:var(--teal-bright);}
   .tagline{text-align:center; color:var(--teal-bright); font-size:0.8125rem; font-weight:600; letter-spacing:.04em; margin:0 0 6px;}
 
   .club{
@@ -359,9 +365,16 @@
   .detail-band .dt-row{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
   .detail-band .ds{margin:5px 0 0; font-size:0.9375rem; font-weight:500; color:var(--muted);}
   .pending-pill{display:inline-block; padding:2px 9px; border-radius:999px; font-size:0.625rem; font-weight:700; letter-spacing:.02em; line-height:1.4; background:var(--teal-tint); border:1px solid var(--teal); color:var(--teal-bright); white-space:nowrap; flex:0 0 auto;}
-  .drow{display:flex; justify-content:space-between; gap:16px; padding:13px 0; border-bottom:1px solid var(--border);}
-  .drow .k{color:var(--muted); font-size:0.875rem;}
-  .drow .v{font-weight:500; font-size:0.875rem; text-align:right;}
+  .dspecs{display:grid; grid-template-columns:1fr 1fr; gap:0 18px; grid-auto-flow:dense;}
+  .spec{display:flex; align-items:center; gap:11px; padding:12px 0; border-bottom:1px solid var(--border); min-width:0;}
+  .spec.wide{grid-column:1 / -1;}
+  .spec > svg{width:20px; height:20px; flex:0 0 auto; fill:none; stroke:var(--muted); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;}
+  .spec .kv{min-width:0; display:flex; flex-direction:column; gap:1px;}
+  .spec .k{color:var(--muted); font-size:0.6875rem; text-transform:uppercase; letter-spacing:.05em;}
+  .spec .v{font-weight:600; font-size:0.9375rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .spec.wide .v{white-space:normal;}
+  /* odd count: last half-width cell keeps its own border, but drop the divider that would visually double up */
+  .spec:nth-last-child(1):nth-child(odd){border-bottom:1px solid var(--border);}
 
   .seg{display:flex; background:var(--surface-2); border:1px solid var(--border-2); border-radius:8px; padding:4px; gap:4px;}
   .seg button{flex:1; border:none; background:transparent;
@@ -392,8 +405,10 @@
   .exportbtn:active{background:var(--teal); color:#fff; border-color:var(--teal);}
   .chkrow{display:flex; align-items:center; gap:12px; padding:8px 0; font-size:0.875rem; cursor:pointer;}
   .chiprow{display:flex; flex-wrap:wrap; gap:7px; margin:2px 0 6px;}
-  .fchip{font-size:0.8125rem; padding:6px 12px; border-radius:999px; border:1px solid var(--border-2); background:var(--surface-2); color:var(--muted); cursor:pointer; font-family:inherit;}
+  .fchip{display:inline-flex; align-items:center; gap:5px; font-size:0.8125rem; padding:6px 12px; border-radius:999px; border:1px solid var(--border-2); background:var(--surface-2); color:var(--muted); cursor:pointer; font-family:inherit;}
   .fchip.on{background:var(--teal-tint); border-color:var(--teal); color:var(--teal-bright);}
+  .fchip.locked{cursor:default; background:var(--surface); border-color:var(--border); color:var(--muted); opacity:.9;}
+  .fchip.locked svg{width:12px; height:12px; flex:0 0 auto; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
   .chkrow input{appearance:none; -webkit-appearance:none; width:22px; height:22px; flex:0 0 auto; margin:0;
     border:1.5px solid var(--border-2); border-radius:6px; background:var(--surface-2); position:relative; cursor:pointer;}
   .chkrow input:checked{background:var(--teal); border-color:var(--teal);}
@@ -614,8 +629,8 @@
         </button>
         <div class="hint" style="margin-top:6px;" data-i18n="logToAreaHint">Mehrere Vereine/Gruppen möglich.</div>
       </div>
-      <div class="fgroup" id="fg-photos" data-i18n="grpPhotos">Fotos</div>
-      <div class="field" id="ff-photos">
+      <div class="field" id="ff-photos" style="margin-top:8px;">
+        <label data-i18n="grpPhotos">Fotos</label>
         <div id="photo-grid" class="photo-grid"></div>
         <div class="photo-hint" id="photo-hint" data-i18n="photoHint">Bis zu 10 Fotos. Tippe ein Bild an, um es als Titelbild zu wählen.</div>
         <input id="f-photo" type="file" accept="image/*" multiple style="display:none" onchange="onPhoto(event)" />
@@ -717,8 +732,8 @@
         <input id="f-trolling" type="number" inputmode="decimal" step="0.1" placeholder="z. B. 3,2" data-i18n-ph="trollingPh" />
       </div>
 
-      <div class="fgroup" id="fg-notes" data-i18n="grpNotes">Notizen</div>
       <div class="field" id="ff-notes">
+        <label data-i18n="grpNotes">Notizen</label>
         <textarea id="f-notes" placeholder="Köder, Wetter, Bemerkungen …" data-i18n-ph="notesPh"></textarea>
       </div>
 
@@ -873,12 +888,18 @@
           <button type="button" class="btn secondary sm" style="margin-top:6px;" onclick="signOut()" data-i18n="signOut">Abmelden</button>
           <button type="button" class="btn secondary sm" style="margin-top:10px;" onclick="signOutAll()" data-i18n="signOutAll">Von allen Geräten abmelden</button>
           <p class="hint" data-i18n="signOutAllHint">Meldet dich überall ab – nützlich, wenn du dich auf einem fremden Gerät angemeldet hast.</p>
-          <div id="account-danger" style="display:none; margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+          <div id="account-memberships" style="display:none; margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
             <div class="sectionlabel" style="margin:0 0 8px;" data-i18n="membershipsTitle">Meine Mitgliedschaften</div>
             <div id="memberships-list"></div>
-            <p class="hint" style="margin-top:16px; color:var(--danger);" data-i18n="deleteAccountHint">Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.</p>
-            <button type="button" class="btn secondary sm" style="color:var(--danger); border-color:var(--danger); font-weight:600;" onclick="deleteAccount()" data-i18n="deleteAccount">Konto löschen</button>
           </div>
+        </div>
+      </div>
+
+      <div class="accgroup" id="acc-danger-personal" style="display:none;">
+        <button type="button" class="acchead" onclick="toggleAcc('danger-personal')"><span data-i18n="dangerZone" style="color:var(--danger);">Gefahrenzone</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="accbody">
+          <p class="hint" style="margin-top:6px; color:var(--danger);" data-i18n="deleteAccountHint">Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.</p>
+          <button type="button" class="btn secondary sm" style="width:100%; color:var(--danger); border-color:var(--danger); font-weight:600;" onclick="deleteAccount()" data-i18n="deleteAccount">Konto löschen</button>
         </div>
       </div>
       </div><!-- /tab-personal -->
@@ -1069,7 +1090,7 @@
       <div class="ob-body">
         <div class="ob-step" data-step="0">
           <div class="mascot-free mb-ob" id="ob-logo"></div>
-          <h2 class="ob-h" data-i18n="obWelcomeTitle">Willkommen bei Butler Fish</h2>
+          <h2 class="ob-h" data-i18n="obWelcomeTitle">Willkommen an Bord</h2>
           <p class="ob-p" data-i18n="obWelcomeText">Dein digitales Fang-Logbuch.</p>
         </div>
         <div class="ob-step" data-step="1" style="display:none;">
@@ -1164,6 +1185,7 @@
     <div class="modal-box">
       <h2 style="font-size:1.25rem; margin:0 0 4px;" data-i18n="showCatchesFrom">Fänge aus</h2>
       <p class="hint" style="margin:0 0 8px;" data-i18n="showCatchesFromHint">Mehrere möglich. Nichts ausgewählt = alle.</p>
+      <input id="ctxfilter-search" type="text" data-i18n-ph="areaSearch" placeholder="Suchen…" oninput="renderCtxFilterSheet()" style="margin-bottom:8px; display:none;">
       <div id="ctxfilter-list" style="max-height:56vh; overflow:auto; margin:0 -2px;"></div>
       <button type="button" class="btn" style="margin-top:12px;" onclick="closeCtxFilterSheet()" data-i18n="areaDone">Fertig</button>
     </div>
@@ -1271,11 +1293,14 @@
         <div class="field"><label data-i18n="to">Bis</label><input id="flt-to" type="date" /></div>
       </div>
 
-      <div class="sectionlabel" style="margin-top:6px;" data-i18n="properties">Eigenschaften</div>
+      <div class="sectionlabel" style="margin-top:14px;" data-i18n="fltCatch">Fang</div>
       <div class="field"><label data-i18n="species">Fischart</label><select id="flt-species"></select></div>
       <div class="field" id="flt-angler-field"><label data-i18n="angler">Angler</label><select id="flt-angler"></select></div>
       <div class="field" id="flt-ctx-field" style="display:none;"><label data-i18n="showCatchesFrom">Fänge aus</label><button type="button" class="selfield" onclick="openCtxFilterSheet()"><span id="flt-ctx-summary" data-i18n="all">Alle</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
       <div class="field"><label data-i18n="locationContains">Ort / Gewässer enthält</label><input id="flt-ort" type="text" list="flt-ort-dl" placeholder="z. B. Vereinsteich" data-i18n-ph="locationPh" /><datalist id="flt-ort-dl"></datalist></div>
+      <label class="chkrow" style="margin:12px 4px 4px;"><input type="checkbox" id="flt-hideunconf"><span data-i18n="hideUnconfirmed">Unbestätigte Fänge ausblenden</span></label>
+
+      <div class="sectionlabel" style="margin-top:20px;" data-i18n="fltSize">Maße</div>
       <div class="row">
         <div class="field"><label data-i18n="lengthFrom">Länge von (cm)</label><input id="flt-lmin" type="number" inputmode="numeric" placeholder="min" data-i18n-ph="minPh" /></div>
         <div class="field"><label data-i18n="lengthTo">Länge bis (cm)</label><input id="flt-lmax" type="number" inputmode="numeric" placeholder="max" data-i18n-ph="maxPh" /></div>
@@ -1284,7 +1309,6 @@
         <div class="field"><label data-i18n="weightFrom">Gewicht von (kg)</label><input id="flt-wmin" type="number" inputmode="decimal" placeholder="min" data-i18n-ph="minPh" /></div>
         <div class="field"><label data-i18n="weightTo">Gewicht bis (kg)</label><input id="flt-wmax" type="number" inputmode="decimal" placeholder="max" data-i18n-ph="maxPh" /></div>
       </div>
-      <label class="chkrow" style="margin:14px 4px 4px;"><input type="checkbox" id="flt-hideunconf"><span data-i18n="hideUnconfirmed">Unbestätigte Fänge ausblenden</span></label>
     </div>
     <div class="form-actions">
       <button class="btn" onclick="applyFilter()" data-i18n="applyFilter">Filter anwenden</button>
@@ -1351,7 +1375,7 @@ const I18N = {
     logCatch:"Fang eintragen", newCatch:"Neuer Fang", photo:"Foto", addPhoto:"Foto hinzufügen", species:"Fischart", speciesPh:"Art wählen oder eingeben", lengthCm:"Länge (cm)", weightKg:"Gewicht (kg)", lengthPh:"z. B. 38", weightPh:"z. B. 5,5", water:"Gewässer / Platz", waterPh:"z. B. Vereinsteich, Platz 4", datetime:"Datum & Zeit", angler:"Angler", anglerOtherPh:"Name eingeben", notes:"Notizen", notesPh:"z. B. Drill, Wetter, Stimmung …", saveCatch:"Fang speichern", errFields:"Bitte Fischart, Datum und Angler ausfüllen.", errFuture:"Das Datum darf nicht in der Zukunft liegen.", other:"Andere…", speciesNew:"neue Art hinzufügen",
     details:"Fang-Details", dAngler:"Angler", dWater:"Gewässer", dLength:"Länge", dWeight:"Gewicht", dDate:"Datum", noMeasures:"Keine Maße erfasst", ttShare:"Teilen",
     settings:"Einstellungen", display:"Darstellung", appearance:"Design", themeLight:"Hell", themeDark:"Dunkel", themeSystem:"System", themeHint:"„System\" folgt automatisch der Hell/Dunkel-Einstellung deines Geräts.", measureLabel:"Standard-Maß in Übersicht & Statistik", mLength:"Länge", mWeight:"Gewicht", measureHint:"Bestimmt, welches Maß in der Fangliste angezeigt wird und wonach der größte Fang berechnet wird.", language:"Sprache", clubLogoAdmin:"Logo", currentLogo:"Aktuelles Logo", uploadLogo:"Logo hochladen", logoHint:"Nur Admins können das Logo ändern. Es gilt für alle Mitglieder.", myImage:"Mein Bild", initialsDefault:"Standard: deine Initialen", uploadImage:"Bild hochladen",
-    filter:"Filter", narrow:"Fänge eingrenzen", ttReset:"Zurücksetzen", period:"Zeitraum", year:"Jahr", month:"Monat", from:"Von", to:"Bis", periodHint:"Entweder Jahr/Monat <em>oder</em> Von–Bis — sie schließen sich gegenseitig aus.", properties:"Eigenschaften", locationContains:"Ort / Gewässer enthält", locationPh:"z. B. Vereinsteich", lengthFrom:"Länge von (cm)", lengthTo:"Länge bis (cm)", weightFrom:"Gewicht von (kg)", weightTo:"Gewicht bis (kg)", minPh:"min", maxPh:"max", applyFilter:"Anwenden", reset:"Zurücksetzen", all:"Alle",
+    filter:"Filter", narrow:"Fänge eingrenzen", ttReset:"Zurücksetzen", period:"Zeitraum", year:"Jahr", month:"Monat", from:"Von", to:"Bis", periodHint:"Entweder Jahr/Monat <em>oder</em> Von–Bis — sie schließen sich gegenseitig aus.", properties:"Eigenschaften", fltCatch:"Fang", fltSize:"Maße", locationContains:"Ort / Gewässer enthält", locationPh:"z. B. Vereinsteich", lengthFrom:"Länge von (cm)", lengthTo:"Länge bis (cm)", weightFrom:"Gewicht von (kg)", weightTo:"Gewicht bis (kg)", minPh:"min", maxPh:"max", applyFilter:"Anwenden", reset:"Zurücksetzen", all:"Alle",
     myStats:"Meine Fänge", statsSub:"Alle Fänge zusammen", byContext:"Nach Verein / Solo", bySpecies:"Nach Fischart", longest:"Längster", heaviest:"Schwerster", noneYet:"Noch keine Fänge.", speciesCount:"Arten", thisYear:"Dieses Jahr", ctxFilter:"Verein / Gruppe",
     clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit Butler Fish", shareNoMeasure:"ohne Maße"
   },
@@ -1364,7 +1388,7 @@ const I18N = {
     logCatch:"Log a catch", newCatch:"New catch", photo:"Photo", addPhoto:"Add photo", species:"Species", speciesPh:"Choose or type a species", lengthCm:"Length (cm)", weightKg:"Weight (kg)", lengthPh:"e.g. 38", weightPh:"e.g. 5.5", water:"Water / spot", waterPh:"e.g. Club pond, peg 4", datetime:"Date & time", angler:"Angler", anglerOtherPh:"Enter name", notes:"Notes", notesPh:"e.g. the fight, weather, mood …", saveCatch:"Save catch", errFields:"Please fill in species, date and angler.", errFuture:"The date can't be in the future.", other:"Other…", speciesNew:"add new species",
     details:"Catch details", dAngler:"Angler", dWater:"Water", dLength:"Length", dWeight:"Weight", dDate:"Date", noMeasures:"No measurements", ttShare:"Share",
     settings:"Settings", display:"Display", appearance:"Theme", themeLight:"Light", themeDark:"Dark", themeSystem:"System", themeHint:"\"System\" follows your device's light/dark setting.", measureLabel:"Default measure in list & stats", mLength:"Length", mWeight:"Weight", measureHint:"Sets which measure shows in the catch list and how the biggest catch is determined.", language:"Language", clubLogoAdmin:"Logo", currentLogo:"Current logo", uploadLogo:"Upload logo", logoHint:"Only admins can change the logo. It applies to all members.", myImage:"My picture", initialsDefault:"Default: your initials", uploadImage:"Upload picture",
-    filter:"Filter", narrow:"Narrow down catches", ttReset:"Reset", period:"Period", year:"Year", month:"Month", from:"From", to:"To", periodHint:"Either year/month <em>or</em> from–to — they're mutually exclusive.", properties:"Properties", locationContains:"Location / water contains", locationPh:"e.g. Club pond", lengthFrom:"Length from (cm)", lengthTo:"Length to (cm)", weightFrom:"Weight from (kg)", weightTo:"Weight to (kg)", minPh:"min", maxPh:"max", applyFilter:"Apply", reset:"Reset", all:"All",
+    filter:"Filter", narrow:"Narrow down catches", ttReset:"Reset", period:"Period", year:"Year", month:"Month", from:"From", to:"To", periodHint:"Either year/month <em>or</em> from–to — they're mutually exclusive.", properties:"Properties", fltCatch:"Catch", fltSize:"Measurements", locationContains:"Location / water contains", locationPh:"e.g. Club pond", lengthFrom:"Length from (cm)", lengthTo:"Length to (cm)", weightFrom:"Weight from (kg)", weightTo:"Weight to (kg)", minPh:"min", maxPh:"max", applyFilter:"Apply", reset:"Reset", all:"All",
     myStats:"My catches", statsSub:"All catches combined", byContext:"By club / solo", bySpecies:"By species", longest:"Longest", heaviest:"Heaviest", noneYet:"No catches yet.", speciesCount:"Species", thisYear:"This year", ctxFilter:"Club / group",
     clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with Butler Fish", shareNoMeasure:"no measurements"
   },
@@ -1377,7 +1401,7 @@ const I18N = {
     logCatch:"Vangst toevoegen", newCatch:"Nieuwe vangst", photo:"Foto", addPhoto:"Foto toevoegen", species:"Vissoort", speciesPh:"Soort kiezen of typen", lengthCm:"Lengte (cm)", weightKg:"Gewicht (kg)", lengthPh:"bijv. 38", weightPh:"bijv. 5,5", water:"Water / plek", waterPh:"bijv. Verenigingsvijver, plek 4", datetime:"Datum & tijd", angler:"Visser", anglerOtherPh:"Naam invoeren", notes:"Notities", notesPh:"bijv. dril, weer, sfeer …", saveCatch:"Vangst opslaan", errFields:"Vul vissoort, datum en visser in.", errFuture:"De datum mag niet in de toekomst liggen.", other:"Andere…", speciesNew:"nieuwe soort toevoegen",
     details:"Vangstdetails", dAngler:"Visser", dWater:"Water", dLength:"Lengte", dWeight:"Gewicht", dDate:"Datum", noMeasures:"Geen maten", ttShare:"Delen",
     settings:"Instellingen", display:"Weergave", appearance:"Thema", themeLight:"Licht", themeDark:"Donker", themeSystem:"Systeem", themeHint:"\"Systeem\" volgt de licht/donker-instelling van je apparaat.", measureLabel:"Standaardmaat in lijst & statistiek", mLength:"Lengte", mWeight:"Gewicht", measureHint:"Bepaalt welke maat in de vangstlijst staat en hoe de grootste vangst wordt bepaald.", language:"Taal", clubLogoAdmin:"Logo", currentLogo:"Huidig logo", uploadLogo:"Logo uploaden", logoHint:"Alleen beheerders kunnen het logo wijzigen. Het geldt voor alle leden.", myImage:"Mijn foto", initialsDefault:"Standaard: je initialen", uploadImage:"Foto uploaden",
-    filter:"Filter", narrow:"Vangsten filteren", ttReset:"Resetten", period:"Periode", year:"Jaar", month:"Maand", from:"Van", to:"Tot", periodHint:"Of jaar/maand <em>of</em> van–tot — ze sluiten elkaar uit.", properties:"Eigenschappen", locationContains:"Plek / water bevat", locationPh:"bijv. Verenigingsvijver", lengthFrom:"Lengte van (cm)", lengthTo:"Lengte tot (cm)", weightFrom:"Gewicht van (kg)", weightTo:"Gewicht tot (kg)", minPh:"min", maxPh:"max", applyFilter:"Toepassen", reset:"Resetten", all:"Alle",
+    filter:"Filter", narrow:"Vangsten filteren", ttReset:"Resetten", period:"Periode", year:"Jaar", month:"Maand", from:"Van", to:"Tot", periodHint:"Of jaar/maand <em>of</em> van–tot — ze sluiten elkaar uit.", properties:"Eigenschappen", fltCatch:"Vangst", fltSize:"Maten", locationContains:"Plek / water bevat", locationPh:"bijv. Verenigingsvijver", lengthFrom:"Lengte van (cm)", lengthTo:"Lengte tot (cm)", weightFrom:"Gewicht van (kg)", weightTo:"Gewicht tot (kg)", minPh:"min", maxPh:"max", applyFilter:"Toepassen", reset:"Resetten", all:"Alle",
     myStats:"Mijn vangsten", statsSub:"Alle vangsten samen", byContext:"Per vereniging / solo", bySpecies:"Per vissoort", longest:"Langste", heaviest:"Zwaarste", noneYet:"Nog geen vangsten.", speciesCount:"Soorten", thisYear:"Dit jaar", ctxFilter:"Vereniging / groep",
     clock:" uur", petri:"🎣 Petri heil!", shareWater:"Water:", loggedWith:"— vastgelegd met Butler Fish", shareNoMeasure:"zonder maten"
   }
@@ -1415,9 +1439,9 @@ Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app
 Object.assign(I18N.de, {membersTitle:"Mitglieder", membersHint:"Verwalte Rollen und entferne Mitglieder.", membersHintMember:"Mitglieder und ihre Rollen.", manageMembers:"Mitglieder verwalten …", viewMembers:"Mitglieder ansehen", me:"ich", loggedByRow:"Erfasst von", unconfirmed:"Noch nicht bestätigt", unconfShort:"unbestätigt", loggedByHint:"Dieser Fang wurde von {name} für dich eingetragen. Bestätige ihn, wenn er stimmt.", unconfirmedHint:"Dieser Fang wartet auf Bestätigung.", confirmCatch:"Bestätigen", rejectCatch:"Ablehnen", confirmReject:"Diesen Fang ablehnen und löschen?", roleMember:"Mitglied", roleAdmin:"Admin", roleTreasurer:"Kassenwart", removeMember:"Entfernen", lastAdminHint:"Der/die letzte Admin kann nicht herabgestuft oder entfernt werden.", confirmRemove:"{name} aus diesem Verein/dieser Gruppe entfernen?", you:"du", roleTapHint:"Tippe eine Rolle an, um sie zu ändern.", openMailbox:"Postfach öffnen", openMailApp:"Mail-App öffnen"});
 Object.assign(I18N.en, {membersTitle:"Members", membersHint:"Manage roles and remove members.", membersHintMember:"Members and their roles.", manageMembers:"Manage members …", viewMembers:"View members", me:"me", loggedByRow:"Logged by", unconfirmed:"Not confirmed yet", unconfShort:"unconfirmed", loggedByHint:"This catch was logged for you by {name}. Confirm it if it's correct.", unconfirmedHint:"This catch is awaiting confirmation.", confirmCatch:"Confirm", rejectCatch:"Reject", confirmReject:"Reject and delete this catch?", roleMember:"Member", roleAdmin:"Admin", roleTreasurer:"Treasurer", removeMember:"Remove", lastAdminHint:"The last admin can't be demoted or removed.", confirmRemove:"Remove {name} from this club/group?", you:"you", roleTapHint:"Tap a role to change it.", openMailbox:"Open mailbox", openMailApp:"Open Mail app"});
 Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen en verwijder leden.", membersHintMember:"Leden en hun rollen.", manageMembers:"Leden beheren …", viewMembers:"Leden bekijken", me:"ik", loggedByRow:"Ingevoerd door", unconfirmed:"Nog niet bevestigd", unconfShort:"onbevestigd", loggedByHint:"Deze vangst is voor jou ingevoerd door {name}. Bevestig als het klopt.", unconfirmedHint:"Deze vangst wacht op bevestiging.", confirmCatch:"Bevestigen", rejectCatch:"Afwijzen", confirmReject:"Deze vangst afwijzen en verwijderen?", roleMember:"Lid", roleAdmin:"Beheerder", roleTreasurer:"Penningmeester", removeMember:"Verwijderen", lastAdminHint:"De laatste beheerder kan niet worden gedegradeerd of verwijderd.", confirmRemove:"{name} uit deze vereniging/groep verwijderen?", you:"jij", roleTapHint:"Tik op een rol om die te wijzigen.", openMailbox:"Postvak openen", openMailApp:"Mail-app openen"});
-Object.assign(I18N.de, {dangerZone:"Gefahrenzone", deleteAccount:"Konto löschen", deleteAccountHint:"Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.", confirmDeleteAccount:"Konto wirklich löschen? Alle deine Daten werden unwiderruflich gelöscht.", confirmDeleteAccount2:"Letzte Warnung: Das kann nicht rückgängig gemacht werden. Fortfahren?", accountDeletedTitle:"Konto gelöscht", accountDeletedBody:"Dein Konto und deine Daten wurden gelöscht.", leaveAreaBtn:"Verein/Gruppe verlassen", deleteContext:"Verein/Gruppe löschen", deleteContextHint:"Löscht alles unwiderruflich: Mitgliedschaften, Fänge und Fotos.", confirmDeleteContext:"„{name}“ wirklich löschen? Alle Mitgliedschaften, Fänge und Fotos werden unwiderruflich gelöscht.", confirmLeave:"„{name}“ verlassen?", soleAdminLeave:"Du bist der/die einzige Admin. Mach zuerst jemanden zum Admin oder lösche den Verein/die Gruppe."});
-Object.assign(I18N.en, {dangerZone:"Danger zone", deleteAccount:"Delete account", deleteAccountHint:"Permanently deletes your account and all your data (catches, photos, memberships).", confirmDeleteAccount:"Really delete your account? All your data will be permanently deleted.", confirmDeleteAccount2:"Last warning: this cannot be undone. Continue?", accountDeletedTitle:"Account deleted", accountDeletedBody:"Your account and data have been deleted.", leaveAreaBtn:"Leave club/group", deleteContext:"Delete club/group", deleteContextHint:"Permanently deletes everything: memberships, catches and photos.", confirmDeleteContext:"Really delete \"{name}\"? All memberships, catches and photos will be permanently deleted.", confirmLeave:"Leave \"{name}\"?", soleAdminLeave:"You are the only admin. Make someone else an admin first, or delete the club/group."});
-Object.assign(I18N.nl, {dangerZone:"Gevarenzone", deleteAccount:"Account verwijderen", deleteAccountHint:"Verwijdert je account en al je gegevens (vangsten, foto's, lidmaatschappen) definitief.", confirmDeleteAccount:"Account echt verwijderen? Al je gegevens worden definitief verwijderd.", confirmDeleteAccount2:"Laatste waarschuwing: dit kan niet ongedaan worden gemaakt. Doorgaan?", accountDeletedTitle:"Account verwijderd", accountDeletedBody:"Je account en gegevens zijn verwijderd.", leaveAreaBtn:"Vereniging/groep verlaten", deleteContext:"Vereniging/groep verwijderen", deleteContextHint:"Verwijdert alles definitief: lidmaatschappen, vangsten en foto's.", confirmDeleteContext:"\"{name}\" echt verwijderen? Alle lidmaatschappen, vangsten en foto's worden definitief verwijderd.", confirmLeave:"\"{name}\" verlaten?", soleAdminLeave:"Je bent de enige beheerder. Maak eerst iemand anders beheerder of verwijder de vereniging/groep."});
+Object.assign(I18N.de, {fldLockedHint:"Immer dabei – kann nicht abgewählt werden.", dangerZone:"Gefahrenzone", deleteAccount:"Konto löschen", deleteAccountHint:"Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.", confirmDeleteAccount:"Konto wirklich löschen? Alle deine Daten werden unwiderruflich gelöscht.", confirmDeleteAccount2:"Letzte Warnung: Das kann nicht rückgängig gemacht werden. Fortfahren?", accountDeletedTitle:"Konto gelöscht", accountDeletedBody:"Dein Konto und deine Daten wurden gelöscht.", leaveAreaBtn:"Verein/Gruppe verlassen", deleteContext:"Verein/Gruppe löschen", deleteContextHint:"Löscht alles unwiderruflich: Mitgliedschaften, Fänge und Fotos.", confirmDeleteContext:"„{name}“ wirklich löschen? Alle Mitgliedschaften, Fänge und Fotos werden unwiderruflich gelöscht.", confirmLeave:"„{name}“ verlassen?", soleAdminLeave:"Du bist der/die einzige Admin. Mach zuerst jemanden zum Admin oder lösche den Verein/die Gruppe."});
+Object.assign(I18N.en, {fldLockedHint:"Always included – can't be turned off.", dangerZone:"Danger zone", deleteAccount:"Delete account", deleteAccountHint:"Permanently deletes your account and all your data (catches, photos, memberships).", confirmDeleteAccount:"Really delete your account? All your data will be permanently deleted.", confirmDeleteAccount2:"Last warning: this cannot be undone. Continue?", accountDeletedTitle:"Account deleted", accountDeletedBody:"Your account and data have been deleted.", leaveAreaBtn:"Leave club/group", deleteContext:"Delete club/group", deleteContextHint:"Permanently deletes everything: memberships, catches and photos.", confirmDeleteContext:"Really delete \"{name}\"? All memberships, catches and photos will be permanently deleted.", confirmLeave:"Leave \"{name}\"?", soleAdminLeave:"You are the only admin. Make someone else an admin first, or delete the club/group."});
+Object.assign(I18N.nl, {fldLockedHint:"Altijd inbegrepen – kan niet worden uitgezet.", dangerZone:"Gevarenzone", deleteAccount:"Account verwijderen", deleteAccountHint:"Verwijdert je account en al je gegevens (vangsten, foto's, lidmaatschappen) definitief.", confirmDeleteAccount:"Account echt verwijderen? Al je gegevens worden definitief verwijderd.", confirmDeleteAccount2:"Laatste waarschuwing: dit kan niet ongedaan worden gemaakt. Doorgaan?", accountDeletedTitle:"Account verwijderd", accountDeletedBody:"Je account en gegevens zijn verwijderd.", leaveAreaBtn:"Vereniging/groep verlaten", deleteContext:"Vereniging/groep verwijderen", deleteContextHint:"Verwijdert alles definitief: lidmaatschappen, vangsten en foto's.", confirmDeleteContext:"\"{name}\" echt verwijderen? Alle lidmaatschappen, vangsten en foto's worden definitief verwijderd.", confirmLeave:"\"{name}\" verlaten?", soleAdminLeave:"Je bent de enige beheerder. Maak eerst iemand anders beheerder of verwijder de vereniging/groep."});
 Object.assign(I18N.de, {betaReqTitle:"Beta-Zugang anfragen", betaReqHint:"Die App ist gerade in einer geschlossenen Beta. Frag Zugang an — der Team-Admin schaltet dich frei.", betaReqSentTitle:"Anfrage gesendet", betaReqSentBody:"Danke! Der Team-Admin prüft deine Anfrage und schaltet dich frei.", betaReqInbox:"Beta-Anfragen", betaReqInboxTitle:"Beta-Zugangs-Anfragen"});
 Object.assign(I18N.en, {betaReqTitle:"Request beta access", betaReqHint:"The app is currently in a closed beta. Request access — the team admin will approve you.", betaReqSentTitle:"Request sent", betaReqSentBody:"Thanks! The team admin will review and approve you.", betaReqInbox:"Beta requests", betaReqInboxTitle:"Beta access requests"});
 Object.assign(I18N.nl, {betaReqTitle:"Bètatoegang aanvragen", betaReqHint:"De app is momenteel in een gesloten bèta. Vraag toegang aan — de teambeheerder geeft je vrij.", betaReqSentTitle:"Aanvraag verzonden", betaReqSentBody:"Bedankt! De teambeheerder bekijkt en geeft je vrij.", betaReqInbox:"Bèta-aanvragen", betaReqInboxTitle:"Bèta-toegangsaanvragen"});
@@ -1775,14 +1799,16 @@ function makeSortable(container, kind){
 function mkCat(id, title, opts){
   opts=opts||{};
   const wrap=document.createElement('div'); wrap.className='homecat'+(opts.defaultOpen!==false?' open':''); wrap.id='cat-'+id;
-  const head=document.createElement('div'); head.className='cathead';
   const tog=document.createElement('button'); tog.type='button'; tog.className='cattoggle'; tog.onclick=()=>toggleCat(id);
-  tog.innerHTML=`<svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg><span class="catlabel">${esc(title)}</span>${(opts.pill!=null)?`<span class="cat-pill">${opts.pill}</span>`:''}`;
-  head.appendChild(tog);
-  if(opts.addFn){ const a=document.createElement('button'); a.type='button'; a.className='catadd'; a.setAttribute('aria-label', opts.addTitle||'+'); a.title=opts.addTitle||''; a.textContent='+'; a.onclick=opts.addFn; head.appendChild(a); }
-  wrap.appendChild(head);
+  tog.innerHTML=`<span class="catlabel">${esc(title)}</span>${(opts.pill!=null)?`<span class="cat-pill">${opts.pill}</span>`:''}<svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg>`;
+  wrap.appendChild(tog);
   const body=document.createElement('div'); body.className='catbody'; wrap.appendChild(body);
   return { wrap, body };
+}
+function catAddRow(fn, label){
+  const a=document.createElement('button'); a.type='button'; a.className='catadd-row'; a.onclick=fn;
+  a.innerHTML=`<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>${esc(label)}</span>`;
+  return a;
 }
 function renderClubs(){
   const c=document.getElementById('club-list'); c.innerHTML='';
@@ -1804,25 +1830,23 @@ function renderClubs(){
       c.appendChild(cat.wrap);
     }
   }
-  // Persönlich
-  const pc=mkCat('personal', t('personal'), {defaultOpen:true});
-  pc.body.appendChild(tile(STATS_IC, t('statsTile'), t('statsTileSub'), openStats));
-  c.appendChild(pc.wrap);
+  // Meine Fänge — eigene, hervorgehobene Karte (kein „Persönlich"-Kategorie-Wrapper)
+  const myCard=document.createElement('button'); myCard.className='mycatches'; myCard.onclick=openStats;
+  myCard.innerHTML=`<span class="av">${STATS_IC}</span><span style="flex:1; min-width:0;"><span class="nm">${esc(t('statsTile'))}</span><br><span class="loc">${esc(t('statsTileSub'))}</span></span>${CHEV_IC}`;
+  c.appendChild(myCard);
 
   const clubs = applyCtxOrder(supa ? (state.myContexts||[]).filter(x=>x.type==='club') : CLUBS, 'club');
   const groups = applyCtxOrder(supa ? (state.myContexts||[]).filter(x=>x.type==='group') : GROUPS, 'group');
   // Vereine
-  const vc=mkCat('clubs', t('clubs'), {defaultOpen:true, addFn: supa?()=>openCtxAdd('club'):null, addTitle:t('addClub')});
-  if(clubs.length) clubs.forEach(x=>vc.body.appendChild(ctxTile(x,'club')));
-  else vc.body.appendChild(emptyHint(t('noClubsYet')));
+  const vc=mkCat('clubs', t('clubs'), {defaultOpen:true});
+  if(clubs.length){ clubs.forEach(x=>vc.body.appendChild(ctxTile(x,'club'))); if(clubs.length>1) makeSortable(vc.body,'club'); }
+  if(supa) vc.body.appendChild(catAddRow(()=>openCtxAdd('club'), t('addClub')));
   c.appendChild(vc.wrap);
-  if(clubs.length>1) makeSortable(vc.body,'club');
   // Gruppen
-  const gc=mkCat('groups', t('groups'), {defaultOpen:true, addFn: supa?()=>openCtxAdd('group'):null, addTitle:t('addGroup')});
-  if(groups.length) groups.forEach(x=>gc.body.appendChild(ctxTile(x,'group')));
-  else gc.body.appendChild(emptyHint(t('noGroupsYet')));
+  const gc=mkCat('groups', t('groups'), {defaultOpen:true});
+  if(groups.length){ groups.forEach(x=>gc.body.appendChild(ctxTile(x,'group'))); if(groups.length>1) makeSortable(gc.body,'group'); }
+  if(supa) gc.body.appendChild(catAddRow(()=>openCtxAdd('group'), t('addGroup')));
   c.appendChild(gc.wrap);
-  if(groups.length>1) makeSortable(gc.body,'group');
 
   if(supa && !(state.me && state.me.isAppAdmin)){
     const note=document.createElement('p'); note.className='hint'; note.style.textAlign='center'; note.style.margin='14px 4px 0';
@@ -2870,15 +2894,22 @@ function renderStats(){
   const _f=state.filter||{};
   const hasDateFilter = !!(_f.from || _f.to);
   const yearCount = items.filter(c=>new Date(c.date).getFullYear()===yr).length;
-  const kpi=(label,val,rust)=>`<div style="background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 12px;">
-    <div style="font-size:0.625rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);">${label}</div>
-    <div style="font-family:'Barlow Condensed',sans-serif; font-size:1.625rem; font-weight:700; line-height:1.1;${rust?' color:var(--teal);':''}">${val}</div></div>`;
+  const _kl='font-size:0.625rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);';
+  const _kv="font-family:'Barlow Condensed',sans-serif; font-size:1.625rem; font-weight:700; line-height:1.1;";
+  const _kcard='background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 12px; min-height:60px; box-sizing:border-box;';
+  const kpi=(label,val,rust)=>`<div style="${_kcard}">
+    <div style="${_kl}">${label}</div>
+    <div style="${_kv}${rust?' color:var(--teal);':''}">${val}</div></div>`;
+  // Total tile carries the year count as a compact secondary on the right, so the grid stays a clean 2×2 (no uneven 5th tile) and tiles keep uniform height.
+  const totalCard=`<div style="${_kcard} display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+    <div><div style="${_kl}">${t('total')}</div><div style="${_kv}">${items.length}</div></div>
+    ${hasDateFilter?'':`<div style="text-align:right;"><div style="${_kl}">${yr}</div><div style="${_kv} font-size:1.125rem; color:var(--muted);">${yearCount}</div></div>`}
+  </div>`;
   document.getElementById('stats-cards').innerHTML =
-    kpi(t('total'), items.length) +
+    totalCard +
     (bigLen ? kpi(t('longest'), fmtLen(bigLen.length), true) : '') +
     (bigWt ? kpi(t('heaviest'), fmtWeight(bigWt.weight), true) : '') +
-    kpi(t('speciesCount'), speciesCount) +
-    (hasDateFilter ? '' : kpi(String(yr), yearCount));
+    kpi(t('speciesCount'), speciesCount);
   { const sc=document.getElementById('stats-count'); if(sc) sc.textContent=items.length+' '+t('catches'); }
   document.getElementById('sort-stats').innerHTML=sortOptionsHtml();
   const list=document.getElementById('stats-list'); list.innerHTML='';
@@ -3159,10 +3190,14 @@ async function setUserFieldPref(pref){
   if(state.me) state.me.fieldPref=pref;
   if(state.auth==='supabase' && getSB() && state.me){ try{ await getSB().from('profiles').update({field_pref:pref}).eq('id', state.me.id); }catch(e){} }
 }
+const LOCK_IC='<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 function renderFieldPrefPanel(){
   const box=document.getElementById('field-pref-list'); if(!box) return;
   const pref=getUserFieldPref();
-  box.innerHTML=FIELD_GROUPS.map(g=>`<div class="setgroup">${t(g.i18n)}</div><div class="chiprow">`+g.keys.map(key=>`<button type="button" class="fchip${pref[key]?' on':''}" onclick="toggleFieldChip('${key}', this)">${t(cfgFieldI18n(key))}</button>`).join('')+`</div>`).join('');
+  // Locked core fields always appear — shown first so the panel reads as the complete picture.
+  const lockedChips=['species','datetime','angler'].map(key=>`<span class="fchip locked on">${LOCK_IC}${t(key)}</span>`).join('');
+  const lockedHTML=`<div class="setgroup">${t('grpBasis')}</div><div class="chiprow">${lockedChips}</div><p class="hint" style="margin:0 0 6px;">${t('fldLockedHint')}</p>`;
+  box.innerHTML=lockedHTML+FIELD_GROUPS.map(g=>`<div class="setgroup">${t(g.i18n)}</div><div class="chiprow">`+g.keys.map(key=>`<button type="button" class="fchip${pref[key]?' on':''}" onclick="toggleFieldChip('${key}', this)">${t(cfgFieldI18n(key))}</button>`).join('')+`</div>`).join('');
 }
 function toggleFieldChip(key, el){ const on=!el.classList.contains('on'); el.classList.toggle('on', on); setFieldPref(key, on); }
 function setFieldPref(key, on){ const pref=getUserFieldPref(); pref[key]=!!on; setUserFieldPref(pref); }
@@ -3234,7 +3269,7 @@ function applyFieldConfig(force){
   syncFormGroups();
 }
 function syncFormGroups(){
-  const groups=[['fg-catch',['ff-length','ff-weight','ff-released']],['fg-photos',['ff-photos']],['fg-water',['ff-location','ff-mapPin']],['fg-cond',['ff-watertemp']],['fg-gear',['ff-method','ff-bait','ff-rod','ff-boat','ff-trolling']],['fg-notes',['ff-notes']]];
+  const groups=[['fg-catch',['ff-length','ff-weight','ff-released']],['fg-water',['ff-location','ff-mapPin']],['fg-cond',['ff-watertemp']],['fg-gear',['ff-method','ff-bait','ff-rod','ff-boat','ff-trolling']]];
   groups.forEach(([hid,ids])=>{ const h=document.getElementById(hid); if(!h) return; let vis=ids.some(id=>{ const el=document.getElementById(id); return el && el.style.display!=='none'; }); if(hid==='fg-cond'){ const w=document.getElementById('f-weather-wrap'); if(w && w.style.display!=='none') vis=true; } h.style.display = vis ? '' : 'none'; });
 }
 
@@ -3376,8 +3411,12 @@ function updateAreaSummary(){
 function openAreaSheet(){ const s=document.getElementById('area-search'); if(s) s.value=''; const sh=document.getElementById('area-sheet'); if(sh) sh.style.display='flex'; renderAreaSheet(); }
 function renderAreaSheet(){
   const box=document.getElementById('area-sheet-list'); if(!box) return;
-  const q=(document.getElementById('area-search').value||'').toLowerCase().trim();
   const ctxs=state.myContexts||[]; const tg=state.formTargets||[]; const solo=tg.length===0;
+  // Auto-search when the list is long (>6 named contexts), matching the filter sheet.
+  const sEl=document.getElementById('area-search');
+  const showSearch = ctxs.length>6;
+  if(sEl) sEl.style.display = showSearch ? '' : 'none';
+  const q=(showSearch && sEl ? sEl.value : '').toLowerCase().trim();
   const CHK='<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>';
   const row=(key,label,logo,on)=>`<button type="button" class="area-row${on?' on':''}" onclick="toggleArea('${key}')"><span class="ar-logo">${logo||''}</span><span class="ar-name">${esc(label)}</span><span class="ar-check">${on?CHK:''}</span></button>`;
   const match=nm=>!q || nm.toLowerCase().indexOf(q)>=0;
@@ -3950,6 +3989,22 @@ function _detailScroll(){
   const show = band.getBoundingClientRect().bottom <= sc.getBoundingClientRect().top + 4;
   h.style.opacity = show ? '1' : '0';
 }
+const D_SPEC_IC={
+  angler:'<circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/>',
+  water:'<path d="M12 21s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21z"/><circle cx="12" cy="10" r="2.3"/>',
+  length:'<rect x="3" y="8" width="18" height="8" rx="1.5"/><path d="M7.5 8v3M12 8v4M16.5 8v3"/>',
+  weight:'<path d="M7 21h10l-1.4-8.5H8.4z"/><path d="M9 12a3 3 0 1 1 6 0"/>',
+  method:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.6"/>',
+  bait:'<path d="M12 3s6 6.2 6 9.5a6 6 0 1 1-12 0C6 9.2 12 3 12 3z"/>',
+  rod:'<path d="M4 20L18 6"/><path d="M18 6l2-2"/><path d="M13 9c2.2 0 3.5 1.3 3.5 3.5"/>',
+  boat:'<path d="M3.5 14h17l-2.2 5H5.7z"/><path d="M12 14V4l6.5 6.5"/>',
+  watertemp:'<path d="M10 13.2V5.5a2 2 0 1 1 4 0v7.7a4 4 0 1 1-4 0z"/>',
+  trolling:'<path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l4.5-3"/>',
+  released:'<path d="M3 12c4-5 12-5 17 0-5 5-13 5-17 0z"/><circle cx="15.5" cy="12" r="0.7"/>',
+  date:'<rect x="4" y="5" width="16" height="16" rx="2.2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/>',
+  loggedBy:'<path d="M4 20l4-1L20 7l-3-3L5 16z"/><path d="M14.5 6.5l3 3"/>'
+};
+function dSpecIcon(tok){ const p=D_SPEC_IC[tok]||D_SPEC_IC.method; return `<svg viewBox="0 0 24 24">${p}</svg>`; }
 function openDetailObj(c, from){
   state.current=c; state.detailFrom=from||'list';
   const hero=document.getElementById('d-hero');
@@ -3972,16 +4027,17 @@ function openDetailObj(c, from){
     const hs=document.getElementById('d-h1sub'); if(hs) hs.textContent=[size, fmtDate(c.date)].filter(Boolean).join(' · ');
     const wrap=document.getElementById('d-htitle'); if(wrap) wrap.style.opacity='0';
     const sc=document.querySelector('#s-detail .scroll'); if(sc){ sc.scrollTop=0; sc.onscroll=_detailScroll; setTimeout(_detailScroll,0); } }
-  const rows=[[t('dAngler'),c.angler],[t('dWater'),c.location||'—'],[t('dLength'),fmtLen(c.length)],[t('dWeight'),fmtWeight(c.weight)]];
-  if(c.method) rows.push([t('method'), c.method]);
-  if(c.bait) rows.push([t('bait'), c.bait]);
-  if(c.rod) rows.push([t('rod'), c.rod]);
-  if(c.boat) rows.push([t('boat'), c.boat]);
-  if(c.watertemp!=null) rows.push([t('watertemp'), fmtTemp(c.watertemp)]);
-  if(c.trolling!=null) rows.push([t('trolling'), String(c.trolling).replace('.',',')+' km/h']);
-  if(c.released!=null) rows.push([t('releasedLabel'), c.released?t('releasedReleased'):t('releasedKept')]);
-  rows.push([t('dDate'),fmtDateLong(c.date)]);
-  if(c._db && c.loggedByName) rows.push([t('loggedByRow'), c.loggedByName]);
+  // Spec-sheet rows: [iconToken, label, value, forceWide]
+  const rows=[['angler',t('dAngler'),c.angler,false],['water',t('dWater'),c.location||'—',true],['length',t('dLength'),fmtLen(c.length),false],['weight',t('dWeight'),fmtWeight(c.weight),false]];
+  if(c.method) rows.push(['method',t('method'), c.method,false]);
+  if(c.bait) rows.push(['bait',t('bait'), c.bait,false]);
+  if(c.rod) rows.push(['rod',t('rod'), c.rod,false]);
+  if(c.boat) rows.push(['boat',t('boat'), c.boat,false]);
+  if(c.watertemp!=null) rows.push(['watertemp',t('watertemp'), fmtTemp(c.watertemp),false]);
+  if(c.trolling!=null) rows.push(['trolling',t('trolling'), String(c.trolling).replace('.',',')+' km/h',false]);
+  if(c.released!=null) rows.push(['released',t('releasedLabel'), c.released?t('releasedReleased'):t('releasedKept'),false]);
+  rows.push(['date',t('dDate'),fmtDateLong(c.date),true]);
+  if(c._db && c.loggedByName) rows.push(['loggedBy',t('loggedByRow'), c.loggedByName,true]);
   let banner='';
   if(c._db && c.confirmed===false){
     const iAmOwner = state.me && c.userId===state.me.id;
@@ -3994,7 +4050,8 @@ function openDetailObj(c, from){
       ${iAmOwner ? `<div style="display:flex; gap:8px; flex-wrap:wrap;"><button type="button" class="btn sm" onclick="confirmCatch('${c.id}')">${esc(t('confirmCatch'))}</button><button type="button" class="btn secondary sm" onclick="rejectCatch('${c.id}')">${esc(t('rejectCatch'))}</button></div>` : ''}
     </div>`;
   }
-  document.getElementById('d-rows').innerHTML=rows.map(r=>`<div class="drow"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('')+banner;
+  const specHTML=rows.map(r=>{ const wide=r[3] || (''+r[2]).length>18; return `<div class="spec${wide?' wide':''}">${dSpecIcon(r[0])}<span class="kv"><span class="k">${r[1]}</span><span class="v">${esc(''+r[2])}</span></span></div>`; }).join('');
+  document.getElementById('d-rows').innerHTML=`<div class="dspecs">${specHTML}</div>`+banner;
   const nw=document.getElementById('d-notes-wrap');
   if(c.notes){ nw.style.display='block'; document.getElementById('d-notes').textContent=c.notes; } else nw.style.display='none';
   const isMine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
@@ -4300,7 +4357,9 @@ function openSettings(){
   syncLangSel();
   renderFieldPrefPanel();
   renderShareCfgPanel();
-  { const dp=document.getElementById('account-danger'); if(dp) dp.style.display=(state.auth==='supabase')?'':'none'; }
+  { const supa=(state.auth==='supabase');
+    const dm=document.getElementById('account-memberships'); if(dm) dm.style.display=supa?'':'none';
+    const dp=document.getElementById('acc-danger-personal'); if(dp) dp.style.display=supa?'':'none'; }
   try{ renderMembershipsList(); }catch(e){}
   // Bereich (nur in einem Verein/Gruppe)
   if(ctxIsDb()){
@@ -4555,7 +4614,7 @@ function _updateCtxSummary(){
   else if(_fltCtxSel.length===1){ const k=_fltCtxSel[0]; el.textContent = k==='__solo__'? t('solo') : k; }
   else { el.textContent = _fltCtxSel.length+' '+t('selectedN'); }
 }
-function openCtxFilterSheet(){ renderCtxFilterSheet(); const m=document.getElementById('ctxfilter-sheet'); if(m) m.style.display='flex'; }
+function openCtxFilterSheet(){ const s=document.getElementById('ctxfilter-search'); if(s) s.value=''; renderCtxFilterSheet(); const m=document.getElementById('ctxfilter-sheet'); if(m) m.style.display='flex'; }
 function closeCtxFilterSheet(){ const m=document.getElementById('ctxfilter-sheet'); if(m) m.style.display='none'; _updateCtxSummary(); }
 function toggleCtxFilterSel(key){
   if(key===''){ _fltCtxSel=[]; }
@@ -4572,10 +4631,17 @@ function renderCtxFilterSheet(){
   const logoFor=n=>{ const ctx=ctxs.find(x=>x.name===n); return ctx?clubLogoHTML(ctx):_catLogo('clubs'); };
   const clubNames=Object.keys(namedInfo).filter(n=>namedInfo[n]==='club').sort();
   const groupNames=Object.keys(namedInfo).filter(n=>namedInfo[n]==='group').sort();
+  // Auto-search when the list is long (>6 named contexts), matching the log-to sheet.
+  const total=clubNames.length+groupNames.length;
+  const sEl=document.getElementById('ctxfilter-search');
+  if(sEl) sEl.style.display = total>6 ? '' : 'none';
+  const q=(total>6 && sEl ? sEl.value : '').toLowerCase().trim();
+  const match=nm=>!q || nm.toLowerCase().indexOf(q)>=0;
+  const clubsF=clubNames.filter(match), groupsF=groupNames.filter(match);
   let h=row('', t('all'), _catLogo('all'));
-  h+=row('__solo__', t('solo'), userAvatarHTML());
-  if(clubNames.length){ h+=`<div class="area-grp">${esc(t('clubs'))}</div>`; clubNames.forEach(n=>{ h+=row(n, n, logoFor(n)); }); }
-  if(groupNames.length){ h+=`<div class="area-grp">${esc(t('groups'))}</div>`; groupNames.forEach(n=>{ h+=row(n, n, logoFor(n)); }); }
+  if(match(t('solo'))) h+=row('__solo__', t('solo'), userAvatarHTML());
+  if(clubsF.length){ h+=`<div class="area-grp">${esc(t('clubs'))}</div>`; clubsF.forEach(n=>{ h+=row(n, n, logoFor(n)); }); }
+  if(groupsF.length){ h+=`<div class="area-grp">${esc(t('groups'))}</div>`; groupsF.forEach(n=>{ h+=row(n, n, logoFor(n)); }); }
   box.innerHTML=h;
 }
 function openFilter(target){
