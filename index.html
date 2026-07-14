@@ -99,13 +99,6 @@
   .su-confetti i{position:absolute; top:-14px; width:8px; height:8px; border-radius:2px; opacity:0; animation:confettiFall linear forwards;}
   @keyframes confettiFall{0%{opacity:0; transform:translateY(-10px) rotate(0);} 12%{opacity:1;} 100%{opacity:0; transform:translateY(60vh) rotate(560deg);}}
   @media(prefers-reduced-motion:reduce){ #success-ov.show .success-card{transform:none;} .success-card.big .su-mascot{animation:none;} .su-confetti{display:none;} }
-  /* Keyboard-accessory edit bar (prototype) */
-  #keybar{position:fixed; left:0; right:0; bottom:0; z-index:600; display:flex; align-items:center; gap:12px; background:var(--surface); border-top:1px solid var(--border-2); padding:10px 14px; box-shadow:0 -6px 18px rgba(0,0,0,.12);}
-  #keybar svg{width:20px; height:20px; stroke:var(--teal-bright); fill:none; stroke-width:2; flex:0 0 auto;}
-  #keybar .kb-mid{min-width:0; flex:1;}
-  #keybar .kb-lab{font-size:0.66rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
-  #keybar .kb-val{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.4rem; line-height:1.15; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  #keybar .kb-next{margin-left:auto; flex:0 0 auto; background:var(--teal); color:#F4EFE2; border:none; border-radius:9px; padding:9px 14px; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.02em; font-size:0.82rem;}
   .input-err{border-color:var(--danger)!important; box-shadow:0 0 0 1px var(--danger);}
   .skel{background:linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%); background-size:400% 100%; animation:shimmer 1.3s ease infinite; border-radius:8px;}
   @keyframes shimmer{from{background-position:100% 0;} to{background-position:0 0;}}
@@ -573,6 +566,8 @@
   .selfield{width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface-2); border:1px solid var(--border-2); border-radius:10px; padding:11px 12px; color:var(--text); font-family:inherit; font-size:0.9375rem; cursor:pointer; text-align:left;}
   .selfield span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .selfield .acc-chev{width:18px; height:18px; stroke:var(--muted); flex:0 0 auto;}
+  .selfield-sm{width:auto; padding:6px 10px; font-size:0.8125rem; gap:6px; border-radius:8px;}
+  .selfield-sm .acc-chev{width:16px; height:16px;}
   .toast{position:fixed; left:50%; bottom:calc(84px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(10px);
     background:var(--teal-dark); color:#fff; padding:10px 16px; border-radius:10px; font-size:0.875rem; font-weight:500;
     box-shadow:0 4px 16px rgba(0,0,0,.3); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:300; max-width:88%; text-align:center;}
@@ -681,7 +676,8 @@
         <span class="sectionlabel" id="list-label" style="margin:0;">Neueste Fänge</span>
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" class="exportbtn" onclick="openExportMenu('list')" data-i18n-title="exportTitle" title="Exportieren" aria-label="Exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg></button>
-          <select id="sort-list" onchange="setSort(this.value)" style="width:auto; padding:6px 10px; font-size:0.8125rem; border-radius:8px;"></select>
+          <select id="sort-list" onchange="setSort(this.value)" style="display:none;"></select>
+          <button type="button" class="selfield selfield-sm" onclick="openSelSheet('sort-list', t('sortTitle'))"><span id="sort-list-lbl">—</span><svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg></button>
         </div>
       </div>
       <div id="catch-list"></div>
@@ -908,12 +904,13 @@
         <button type="button" class="acchead" onclick="toggleAcc('display')"><span data-i18n="display">Darstellung</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="accbody">
           <label style="margin:6px 0 8px;" data-i18n="language">Sprache</label>
-          <select id="lang-sel" onchange="setLang(this.value)">
+          <select id="lang-sel" onchange="setLang(this.value)" style="display:none;">
             <option value="system">System</option>
             <option value="de">Deutsch</option>
             <option value="en">English</option>
             <option value="nl">Nederlands</option>
           </select>
+          <button type="button" class="selfield" onclick="openSelSheet('lang-sel', t('language'))"><span id="lang-sel-lbl">—</span><svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg></button>
           <label style="margin:18px 0 8px;" data-i18n="appearance">Design</label>
           <div class="seg" id="theme-seg">
             <button data-t="light" onclick="setTheme('light')" data-i18n="themeLight">Hell</button>
@@ -1300,12 +1297,6 @@
       <div class="su-sub"></div>
     </div>
   </div>
-  <!-- Keyboard-accessory edit bar (prototype, flag-gated) -->
-  <div id="keybar" style="display:none;">
-    <svg id="keybar-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4l-14 14l-4 -4l14 -14"/><path d="M16 7l-1.5 -1.5"/></svg>
-    <div class="kb-mid"><div class="kb-lab" id="keybar-lab"></div><div class="kb-val" id="keybar-val"></div></div>
-    <button type="button" class="kb-next" id="keybar-next" onclick="keybarNext()">Weiter ›</button>
-  </div>
   <div id="lightbox" style="display:none; position:fixed; inset:0; z-index:400; background:#000; touch-action:none;">
     <div style="width:100%; height:100%; overflow:hidden; display:flex; align-items:center; justify-content:center;">
       <img id="lb-img" src="" alt="" style="max-width:100%; max-height:100%; object-fit:contain; will-change:transform;">
@@ -1445,7 +1436,8 @@
       <div class="listtoolbar">
         <span class="listtoolbar-title" id="stats-count"></span>
         <div style="display:flex; align-items:center; gap:8px;">
-          <select id="sort-stats" onchange="setSort(this.value)" style="width:auto; padding:6px 30px 6px 12px; font-size:0.8125rem; border-radius:8px;"></select>
+          <select id="sort-stats" onchange="setSort(this.value)" style="display:none;"></select>
+          <button type="button" class="selfield selfield-sm" onclick="openSelSheet('sort-stats', t('sortTitle'))"><span id="sort-stats-lbl">—</span><svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg></button>
           <button type="button" class="exportbtn" onclick="openExportMenu('stats')" data-i18n-title="exportTitle" title="Exportieren" aria-label="Exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg></button>
         </div>
       </div>
@@ -1547,9 +1539,9 @@ Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app
 Object.assign(I18N.de, {membersTitle:"Mitglieder", membersHint:"Verwalte Rollen und entferne Mitglieder.", membersHintMember:"Mitglieder und ihre Rollen.", manageMembers:"Mitglieder verwalten …", viewMembers:"Mitglieder ansehen", me:"ich", loggedByRow:"Erfasst von", unconfirmed:"Noch nicht bestätigt", unconfShort:"unbestätigt", loggedByHint:"Dieser Fang wurde von {name} für dich eingetragen. Bestätige ihn, wenn er stimmt.", unconfirmedHint:"Dieser Fang wartet auf Bestätigung.", confirmCatch:"Bestätigen", rejectCatch:"Ablehnen", confirmReject:"Diesen Fang ablehnen und löschen?", roleMember:"Mitglied", roleAdmin:"Admin", roleTreasurer:"Kassenwart", removeMember:"Entfernen", lastAdminHint:"Der/die letzte Admin kann nicht herabgestuft oder entfernt werden.", confirmRemove:"{name} aus diesem Verein/dieser Gruppe entfernen?", you:"du", roleTapHint:"Tippe eine Rolle an, um sie zu ändern.", openMailbox:"Postfach öffnen", openMailApp:"Mail-App öffnen"});
 Object.assign(I18N.en, {membersTitle:"Members", membersHint:"Manage roles and remove members.", membersHintMember:"Members and their roles.", manageMembers:"Manage members …", viewMembers:"View members", me:"me", loggedByRow:"Logged by", unconfirmed:"Not confirmed yet", unconfShort:"unconfirmed", loggedByHint:"This catch was logged for you by {name}. Confirm it if it's correct.", unconfirmedHint:"This catch is awaiting confirmation.", confirmCatch:"Confirm", rejectCatch:"Reject", confirmReject:"Reject and delete this catch?", roleMember:"Member", roleAdmin:"Admin", roleTreasurer:"Treasurer", removeMember:"Remove", lastAdminHint:"The last admin can't be demoted or removed.", confirmRemove:"Remove {name} from this club/group?", you:"you", roleTapHint:"Tap a role to change it.", openMailbox:"Open mailbox", openMailApp:"Open Mail app"});
 Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen en verwijder leden.", membersHintMember:"Leden en hun rollen.", manageMembers:"Leden beheren …", viewMembers:"Leden bekijken", me:"ik", loggedByRow:"Ingevoerd door", unconfirmed:"Nog niet bevestigd", unconfShort:"onbevestigd", loggedByHint:"Deze vangst is voor jou ingevoerd door {name}. Bevestig als het klopt.", unconfirmedHint:"Deze vangst wacht op bevestiging.", confirmCatch:"Bevestigen", rejectCatch:"Afwijzen", confirmReject:"Deze vangst afwijzen en verwijderen?", roleMember:"Lid", roleAdmin:"Beheerder", roleTreasurer:"Penningmeester", removeMember:"Verwijderen", lastAdminHint:"De laatste beheerder kan niet worden gedegradeerd of verwijderd.", confirmRemove:"{name} uit deze vereniging/groep verwijderen?", you:"jij", roleTapHint:"Tik op een rol om die te wijzigen.", openMailbox:"Postvak openen", openMailApp:"Mail-app openen"});
-Object.assign(I18N.de,{welcomeSpecies:"Phantom-Fisch", welcomeLoc:"In deinen Träumen", welcomeNote:"Willkommen! Das ist nur mein Muster-Fang zum Zeigen — er zählt natürlich nicht und verschwindet, sobald du deinen ersten echten Fang einträgst. — Dein Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Nur zur Demonstration", welcomeHint:"Dein erster echter Fang lässt den Phantom-Fisch verschwinden.", welcomeRemove:"Phantom-Fisch entfernen", pbRecord:"Persönlicher Rekord", recordsShelfTitle:"Deine Rekorde", clubRecord:"Vereinsrekord", groupRecord:"Gruppenrekord", recordsSettingTitle:"Rekorde & Podium", recordMetricLabel:"Podium-Wertung", recordsEnabledLabel:"Rekorde anzeigen", recordsSettingHint:"Bestimmt, ob im Verein/der Gruppe ein Podium (Gold/Silber/Bronze je Art) angezeigt wird und ob nach Länge oder Gewicht gewertet wird. Nur Admins.", joinedTitle:"Beigetreten!", joinedBody:"Willkommen! Du bist dem Verein bzw. der Gruppe beigetreten."});
-Object.assign(I18N.en,{welcomeSpecies:"Phantom Fish", welcomeLoc:"In your dreams", welcomeNote:"Welcome! This is just my sample catch to show you around — it doesn't count, and it vanishes the moment you log your first real catch. — Your Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"For demonstration only", welcomeHint:"Your first real catch sends the Phantom Fish away.", welcomeRemove:"Remove Phantom Fish", pbRecord:"Personal best", recordsShelfTitle:"Your records", clubRecord:"Club record", groupRecord:"Group record", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium ranking", recordsEnabledLabel:"Show records", recordsSettingHint:"Controls whether the club/group shows a podium (gold/silver/bronze per species) and whether it ranks by length or weight. Admins only.", joinedTitle:"You're in!", joinedBody:"Welcome! You've joined the club or group."});
-Object.assign(I18N.nl,{welcomeSpecies:"Fantoomvis", welcomeLoc:"In je dromen", welcomeNote:"Welkom! Dit is alleen mijn voorbeeldvangst om je op weg te helpen — hij telt niet mee en verdwijnt zodra je je eerste echte vangst vastlegt. — Je Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Alleen ter demonstratie", welcomeHint:"Je eerste echte vangst laat de Fantoomvis verdwijnen.", welcomeRemove:"Fantoomvis verwijderen", pbRecord:"Persoonlijk record", recordsShelfTitle:"Je records", clubRecord:"Verenigingsrecord", groupRecord:"Groepsrecord", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium-waardering", recordsEnabledLabel:"Records tonen", recordsSettingHint:"Bepaalt of de vereniging/groep een podium toont (goud/zilver/brons per soort) en of er op lengte of gewicht wordt gerangschikt. Alleen beheerders.", joinedTitle:"Je bent lid!", joinedBody:"Welkom! Je bent lid geworden van de vereniging of groep."});
+Object.assign(I18N.de,{welcomeSpecies:"Phantom-Fisch", welcomeLoc:"In deinen Träumen", welcomeNote:"Willkommen! Das ist nur mein Muster-Fang zum Zeigen — er zählt natürlich nicht und verschwindet, sobald du deinen ersten echten Fang einträgst. — Dein Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Nur zur Demonstration", welcomeHint:"Dein erster echter Fang lässt den Phantom-Fisch verschwinden.", welcomeRemove:"Phantom-Fisch entfernen", pbRecord:"Persönlicher Rekord", recordsShelfTitle:"Deine Rekorde", clubRecord:"Vereinsrekord", groupRecord:"Gruppenrekord", recordsSettingTitle:"Rekorde & Podium", recordMetricLabel:"Podium-Wertung", recordsEnabledLabel:"Rekorde anzeigen", recordsSettingHint:"Bestimmt, ob im Verein/der Gruppe ein Podium (Gold/Silber/Bronze je Art) angezeigt wird und ob nach Länge oder Gewicht gewertet wird. Nur Admins.", joinedTitle:"Beigetreten!", joinedBody:"Willkommen! Du bist dem Verein bzw. der Gruppe beigetreten.", sortTitle:"Sortieren nach"});
+Object.assign(I18N.en,{welcomeSpecies:"Phantom Fish", welcomeLoc:"In your dreams", welcomeNote:"Welcome! This is just my sample catch to show you around — it doesn't count, and it vanishes the moment you log your first real catch. — Your Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"For demonstration only", welcomeHint:"Your first real catch sends the Phantom Fish away.", welcomeRemove:"Remove Phantom Fish", pbRecord:"Personal best", recordsShelfTitle:"Your records", clubRecord:"Club record", groupRecord:"Group record", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium ranking", recordsEnabledLabel:"Show records", recordsSettingHint:"Controls whether the club/group shows a podium (gold/silver/bronze per species) and whether it ranks by length or weight. Admins only.", joinedTitle:"You're in!", joinedBody:"Welcome! You've joined the club or group.", sortTitle:"Sort by"});
+Object.assign(I18N.nl,{welcomeSpecies:"Fantoomvis", welcomeLoc:"In je dromen", welcomeNote:"Welkom! Dit is alleen mijn voorbeeldvangst om je op weg te helpen — hij telt niet mee en verdwijnt zodra je je eerste echte vangst vastlegt. — Je Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Alleen ter demonstratie", welcomeHint:"Je eerste echte vangst laat de Fantoomvis verdwijnen.", welcomeRemove:"Fantoomvis verwijderen", pbRecord:"Persoonlijk record", recordsShelfTitle:"Je records", clubRecord:"Verenigingsrecord", groupRecord:"Groepsrecord", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium-waardering", recordsEnabledLabel:"Records tonen", recordsSettingHint:"Bepaalt of de vereniging/groep een podium toont (goud/zilver/brons per soort) en of er op lengte of gewicht wordt gerangschikt. Alleen beheerders.", joinedTitle:"Je bent lid!", joinedBody:"Welkom! Je bent lid geworden van de vereniging of groep.", sortTitle:"Sorteren op"});
 Object.assign(I18N.de, {fldLockedHint:"Immer dabei – kann nicht abgewählt werden.", dangerZone:"Gefahrenzone", deleteAccount:"Konto löschen", deleteAccountHint:"Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.", confirmDeleteAccount:"Konto wirklich löschen? Alle deine Daten werden unwiderruflich gelöscht.", confirmDeleteAccount2:"Letzte Warnung: Das kann nicht rückgängig gemacht werden. Fortfahren?", accountDeletedTitle:"Konto gelöscht", accountDeletedBody:"Dein Konto und deine Daten wurden gelöscht.", leaveAreaBtn:"Verein/Gruppe verlassen", deleteContext:"Verein/Gruppe löschen", deleteContextHint:"Löscht alles unwiderruflich: Mitgliedschaften, Fänge und Fotos.", confirmDeleteContext:"„{name}“ wirklich löschen? Alle Mitgliedschaften, Fänge und Fotos werden unwiderruflich gelöscht.", confirmLeave:"„{name}“ verlassen?", soleAdminLeave:"Du bist der/die einzige Admin. Mach zuerst jemanden zum Admin oder lösche den Verein/die Gruppe."});
 Object.assign(I18N.en, {fldLockedHint:"Always included – can't be turned off.", dangerZone:"Danger zone", deleteAccount:"Delete account", deleteAccountHint:"Permanently deletes your account and all your data (catches, photos, memberships).", confirmDeleteAccount:"Really delete your account? All your data will be permanently deleted.", confirmDeleteAccount2:"Last warning: this cannot be undone. Continue?", accountDeletedTitle:"Account deleted", accountDeletedBody:"Your account and data have been deleted.", leaveAreaBtn:"Leave club/group", deleteContext:"Delete club/group", deleteContextHint:"Permanently deletes everything: memberships, catches and photos.", confirmDeleteContext:"Really delete \"{name}\"? All memberships, catches and photos will be permanently deleted.", confirmLeave:"Leave \"{name}\"?", soleAdminLeave:"You are the only admin. Make someone else an admin first, or delete the club/group."});
 Object.assign(I18N.nl, {fldLockedHint:"Altijd inbegrepen – kan niet worden uitgezet.", dangerZone:"Gevarenzone", deleteAccount:"Account verwijderen", deleteAccountHint:"Verwijdert je account en al je gegevens (vangsten, foto's, lidmaatschappen) definitief.", confirmDeleteAccount:"Account echt verwijderen? Al je gegevens worden definitief verwijderd.", confirmDeleteAccount2:"Laatste waarschuwing: dit kan niet ongedaan worden gemaakt. Doorgaan?", accountDeletedTitle:"Account verwijderd", accountDeletedBody:"Je account en gegevens zijn verwijderd.", leaveAreaBtn:"Vereniging/groep verlaten", deleteContext:"Vereniging/groep verwijderen", deleteContextHint:"Verwijdert alles definitief: lidmaatschappen, vangsten en foto's.", confirmDeleteContext:"\"{name}\" echt verwijderen? Alle lidmaatschappen, vangsten en foto's worden definitief verwijderd.", confirmLeave:"\"{name}\" verlaten?", soleAdminLeave:"Je bent de enige beheerder. Maak eerst iemand anders beheerder of verwijder de vereniging/groep."});
@@ -1680,7 +1672,7 @@ function applyLang(){
   if(document.getElementById('s-settings').classList.contains('active')) renderShareCfgPanel();
   if(typeof renderAuthMode==='function' && document.getElementById('login-primary')) renderAuthMode();
   // custom-select labels mirror their (re-translated) hidden <select>
-  ['f-released','f-angler','flt-species','flt-angler'].forEach(id=>{ try{ syncSelfield(id); }catch(e){} });
+  ['f-released','f-angler','flt-species','flt-angler','sort-list','sort-stats','lang-sel'].forEach(id=>{ try{ syncSelfield(id); }catch(e){} });
   renderClubs();
 }
 function setLang(v){ state.lang=v; savePrefs(); applyLang(); syncUserLang();
@@ -1691,7 +1683,7 @@ function setLang(v){ state.lang=v; savePrefs(); applyLang(); syncUserLang();
   if(state.mode && state.catches){ try{ renderList(); }catch(e){} } }
 // Sprache in die Auth-Metadaten schreiben, damit die E-Mail-Vorlagen sie lesen können ({{ .Data.lang }})
 function syncUserLang(){ if(state.auth==='supabase' && getSB()){ try{ getSB().auth.updateUser({ data:{ lang: curLang() } }); }catch(e){} } }
-function syncLangSel(){ const s=document.getElementById('lang-sel'); if(s) s.value=state.lang; }
+function syncLangSel(){ const s=document.getElementById('lang-sel'); if(s) s.value=state.lang; try{ syncSelfield('lang-sel'); }catch(e){} }
 function syncThemeSeg(){
   document.querySelectorAll('#theme-seg button').forEach(b=>b.classList.toggle('on', b.dataset.t===state.theme));
 }
@@ -2365,55 +2357,13 @@ function startDemo(){
 // Invite deep-link: capture ?join=CODE at boot, store it, strip it from the URL, apply after auth.
 function capturePendingJoin(){
   try{
-    const usp=new URLSearchParams(location.search); let changed=false;
+    const usp=new URLSearchParams(location.search);
     const jc=usp.get('join');
-    if(jc){ localStorage.setItem('bf_pending_join', jc); usp.delete('join'); changed=true; }
-    // Feature flag: keyboard-accessory edit bar prototype (?keybar=1 / ?keybar=0)
-    const kb=usp.get('keybar');
-    if(kb!=null){ try{ localStorage.setItem('bf_keybar', kb==='1'?'1':'0'); }catch(e){} usp.delete('keybar'); changed=true; }
-    if(changed){ const q=usp.toString(); history.replaceState(null, '', location.pathname + (q?('?'+q):'') + location.hash); }
+    if(jc){ localStorage.setItem('bf_pending_join', jc); usp.delete('join');
+      const q=usp.toString(); history.replaceState(null, '', location.pathname + (q?('?'+q):'') + location.hash);
+    }
   }catch(e){}
 }
-function keybarOn(){
-  // explicit per-device override wins; otherwise on for the tester account (JC) so the PWA works without a URL
-  try{ const v=localStorage.getItem('bf_keybar'); if(v==='1') return true; if(v==='0') return false; }catch(e){}
-  try{ return !!(state.me && (state.me.id==='e84b11f7-2c96-48ac-85c2-df6adeabf9d0' || state.me.email==='johannesclaudi@googlemail.com')); }catch(e){}
-  return false;
-}
-// ---- Keyboard-accessory edit bar (prototype, flag-gated) ----
-const KEYBAR_FIELDS=['f-length','f-weight','f-watertemp','f-trolling'];
-const KEYBAR_META={
-  'f-length':{lab:'Länge',unit:'cm',ic:'<path d="M17 3l4 4l-14 14l-4 -4l14 -14"/><path d="M16 7l-1.5 -1.5"/>'},
-  'f-weight':{lab:'Gewicht',unit:'kg',ic:'<path d="M9 6a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M6.8 9h10.4a1 1 0 0 1 .98 .82l1.64 9a1 1 0 0 1 -.99 1.18h-13.6a1 1 0 0 1 -.99 -1.18l1.64 -9a1 1 0 0 1 .98 -.82"/>'},
-  'f-watertemp':{lab:'Wassertemp.',unit:'°C',ic:'<path d="M10 13.5a4 4 0 1 0 4 0v-8.5a2 2 0 0 0 -4 0v8.5"/><path d="M10 9h4"/>'},
-  'f-trolling':{lab:'Schleppgeschw.',unit:'km/h',ic:'<path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 12l4 -3"/>'}
-};
-let _keybarCur=null, _keybarInited=false;
-function initKeybar(){
-  if(_keybarInited || !keybarOn()) return; _keybarInited=true;
-  KEYBAR_FIELDS.forEach(function(id){ const el=document.getElementById(id); if(!el) return;
-    el.addEventListener('focus', function(){ keybarShow(id); });
-    el.addEventListener('input', keybarSync);
-    el.addEventListener('blur', function(){ setTimeout(keybarMaybeHide, 120); });
-  });
-  if(window.visualViewport){ window.visualViewport.addEventListener('resize', keybarPosition); window.visualViewport.addEventListener('scroll', keybarPosition); }
-}
-function keybarShow(id){
-  _keybarCur=id; const meta=KEYBAR_META[id]||{lab:'',unit:'',ic:''};
-  document.getElementById('keybar-lab').textContent=meta.lab||'';
-  const ic=document.getElementById('keybar-ic'); if(ic) ic.innerHTML=meta.ic||'';
-  const bar=document.getElementById('keybar'); bar.style.display='flex';
-  keybarSync(); keybarPosition();
-  // the keyboard animates in over ~300ms — re-position a couple of times to land above it
-  setTimeout(keybarPosition, 150); setTimeout(keybarPosition, 350); setTimeout(keybarPosition, 600);
-}
-function keybarSync(){ if(!_keybarCur) return; const el=document.getElementById(_keybarCur); if(!el) return; const meta=KEYBAR_META[_keybarCur]||{};
-  document.getElementById('keybar-val').innerHTML = esc(el.value||'—')+' <span style="color:var(--muted);font-size:0.85rem;font-weight:600;">'+esc(meta.unit||'')+'</span>'; }
-function keybarPosition(){ const bar=document.getElementById('keybar'); if(!bar||bar.style.display==='none') return;
-  let kb=0; try{ if(window.visualViewport){ kb=Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop); } }catch(e){}
-  bar.style.bottom = kb+'px'; }   // lift the fixed bar above the keyboard (more reliable on iOS than transform)
-function keybarMaybeHide(){ const a=document.activeElement; if(a && KEYBAR_FIELDS.indexOf(a.id)>=0) return; const bar=document.getElementById('keybar'); if(bar) bar.style.display='none'; _keybarCur=null; }
-function keybarNext(){ const i=KEYBAR_FIELDS.indexOf(_keybarCur); for(let k=1;k<=KEYBAR_FIELDS.length;k++){ const nid=KEYBAR_FIELDS[(i+k)%KEYBAR_FIELDS.length]; const el=document.getElementById(nid); if(el){ el.focus(); return; } } }
 async function maybeApplyPendingJoin(){
   let code=null; try{ code=localStorage.getItem('bf_pending_join'); }catch(e){}
   if(!code || state.auth!=='supabase' || !state.me) return;
@@ -3111,7 +3061,7 @@ function renderList(){
     (bigLen ? scard(t('longestStat'), fmtLen(bigLen.length), true) : '') +
     (bigWt ? scard(t('heaviestStat'), fmtWeight(bigWt.weight), true) : '');
 
-  document.getElementById('sort-list').innerHTML=sortOptionsHtml();
+  document.getElementById('sort-list').innerHTML=sortOptionsHtml(); try{ syncSelfield('sort-list'); }catch(e){}
   const list=document.getElementById('catch-list'); list.innerHTML=''; _openSwipe=null;
   const sorted=sortCatches(items);
   if(sorted.length===0){
@@ -3224,7 +3174,7 @@ function renderStats(){
     (showMeasures ? kpi(t('heaviest'), bigWt?fmtWeight(bigWt.weight):'—', true) : '');
   try{ renderRecordsShelf(items); }catch(e){}
   { const sc=document.getElementById('stats-count'); if(sc) sc.textContent=items.length+' '+t('catches'); }
-  document.getElementById('sort-stats').innerHTML=sortOptionsHtml();
+  document.getElementById('sort-stats').innerHTML=sortOptionsHtml(); try{ syncSelfield('sort-stats'); }catch(e){}
   const list=document.getElementById('stats-list'); list.innerHTML='';
   const sorted=sortCatches(items);
   if(sorted.length===0){
@@ -3737,7 +3687,6 @@ function toast(msg){
 // ---------- form ----------
 function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
 async function openForm(skipAuto){
-  try{ initKeybar(); }catch(e){}
   if(_curScreen==='club' || _curScreen==='stats'){ try{ await startSolo(true); }catch(e){} }
   ['f-species','f-weight','f-length','f-location','f-notes','f-method','f-bait','f-rod','f-boat','f-watertemp','f-trolling','f-released'].forEach(id=>document.getElementById(id).value='');
   state.speciesKey=null; state.editId=null; state.editReturn=null;
