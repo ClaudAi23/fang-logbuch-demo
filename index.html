@@ -423,6 +423,10 @@
   @keyframes efPulse{0%,100%{box-shadow:0 0 0 0 rgba(224,165,63,0);}30%{box-shadow:0 0 0 4px rgba(224,165,63,.35);}}
   .spec.ef.ef-hint .v.editable{border-radius:4px; animation:efPulse 1.1s ease-in-out 2;}
   @media(prefers-reduced-motion:reduce){ .spec.ef.ef-hint .v.editable{animation:none;} }
+  .v.empty{color:var(--teal-bright); font-weight:500;}
+  #d-notes.ef-notes{cursor:pointer;}
+  #d-notes.empty{color:var(--teal-bright); font-weight:500;}
+  .ef-textarea{width:100%; min-height:80px; font-family:inherit; font-size:0.95rem; color:var(--text); background:var(--surface); border:1.5px solid var(--accent); border-radius:9px; padding:9px 10px; outline:none; box-shadow:0 0 0 3px rgba(224,165,63,.15); resize:vertical;}
   /* "Deine Rekorde" shelf (Stats) */
   .rec-head{display:flex; align-items:center; gap:8px; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:0.78rem; color:var(--muted); margin:0 0 10px;}
   .rec-head svg{width:16px; height:16px; stroke:var(--accent); fill:none; stroke-width:2;}
@@ -4404,7 +4408,7 @@ function _taRow(o, q, cur){
 function renderTA(){
   const box=document.getElementById('ta-list'); if(!box||!_taCfg) return;
   const raw=document.getElementById('ta-search').value||''; const q=raw.toLowerCase().trim();
-  const cur=(document.getElementById(_taInput)||{}).value||'';
+  const cur=_taCfg.curVal ? _taCfg.curVal() : ((document.getElementById(_taInput)||{}).value||'');
   box.innerHTML='';
   const all=_taCfg.opts()||[];
   if(!q){
@@ -4418,12 +4422,20 @@ function renderTA(){
   }
   const matches=all.filter(o=>(''+(o.v||'')).toLowerCase().includes(q));
   matches.forEach(o=>box.appendChild(_taRow(o,q,cur)));
-  if(!all.some(o=>(''+(o.v||'')).toLowerCase()===q)){
+  if(_taCfg.allowNew!==false && !all.some(o=>(''+(o.v||'')).toLowerCase()===q)){
     const d=document.createElement('div'); d.className='ta-add';
     d.innerHTML='<span class="ta-plus"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14"/></svg></span><span>'+esc(raw.trim())+' — '+esc(t('addNewOpt'))+'</span>';
     d.onclick=function(){ taPick(raw.trim(), raw.trim()); };
     box.appendChild(d);
   }
+}
+function openTypeaheadCfg(cfg){
+  _taInput=null; _taCfg=cfg;
+  const tt=document.getElementById('ta-title'); if(tt) tt.textContent=cfg.title||'';
+  const s=document.getElementById('ta-search'); if(s){ s.value=''; s.placeholder=t('taSearchPh'); }
+  renderTA();
+  const sh=document.getElementById('ta-sheet'); if(sh) sh.style.display='flex';
+  setTimeout(function(){ try{ s.focus(); }catch(e){} }, 60);
 }
 function taPick(v, key){ if(_taCfg) _taCfg.onPick(v, key); closeModal('ta-sheet'); }
 function taEnter(){ const q=(document.getElementById('ta-search').value||'').trim(); if(!q||!_taCfg) return; const all=_taCfg.opts()||[]; const ex=all.find(o=>(''+(o.v||'')).toLowerCase()===q.toLowerCase()); if(ex) taPick(ex.v, (ex.key!=null?ex.key:null)); else taPick(q, q); }
@@ -4499,6 +4511,50 @@ async function commitInlineEdit(rowEl, key, box, inp, vspan){
     try{ haptic(8); }catch(e){}
   }catch(e){ try{ toast(t('errSave')); }catch(_e){} }
 }
+async function saveDetailField(c, col, field, value, opts){
+  opts=opts||{}; c[field]=value;
+  [state.catches, state.myAllCatches].forEach(arr=>{ const it=(arr||[]).find(x=>x&&x.id===c.id); if(it) it[field]=value; });
+  try{
+    if(c._db){ const { error }=await getSB().from('catches').update({[col]:value}).eq('id', c.id); if(error) throw error;
+      if(opts.pb){ try{ await recomputePb(c.userId||(state.me&&state.me.id), c.species); }catch(e){} } }
+    else { const idx=(state.catches||[]).findIndex(x=>x&&x.id===c.id); if(idx>=0){ state.catches[idx][field]=value; saveCatches(); } }
+    try{ haptic(8); }catch(e){}
+  }catch(e){ try{ toast(t('errSave')); }catch(_e){} }
+}
+function startFieldEdit(rowEl, key){
+  if(INLINE_EF[key]) return startInlineEdit(rowEl, key);
+  const c=state.current; if(!c) return;
+  if(key==='date') return editDateField(c);
+  if(key==='released') return editReleasedField(c);
+  if({method:1,bait:1,rod:1,boat:1}[key]) return editTypeaheadField(c, key);
+}
+function editTypeaheadField(c, field){
+  const map={method:'f-method',bait:'f-bait',rod:'f-rod',boat:'f-boat'}; const base=TA_CFG[map[field]]; if(!base) return;
+  openTypeaheadCfg({ title:base.title(), opts:base.opts, recent:base.recent, allowNew:true, curVal:()=>c[field]||'',
+    onPick:async(v)=>{ const val=(v||'').trim()||null; await saveDetailField(c, field, field, val, {}); if(val){ try{ rememberSuggest({[field]:val}); }catch(e){} } openDetailObj(c, state.detailFrom); } });
+}
+function editReleasedField(c){
+  openTypeaheadCfg({ title:t('releasedLabel'), allowNew:false, recent:()=>[],
+    opts:()=>[{v:t('releasedNone'),key:null},{v:t('releasedKept'),key:false},{v:t('releasedReleased'),key:true}],
+    curVal:()=> c.released===true?t('releasedReleased'):(c.released===false?t('releasedKept'):t('releasedNone')),
+    onPick:async(v,key)=>{ await saveDetailField(c, 'released', 'released', (key===true?true:(key===false?false:null)), {}); openDetailObj(c, state.detailFrom); } });
+}
+function editDateField(c){
+  let inp=document.getElementById('d-date-edit');
+  if(!inp){ inp=document.createElement('input'); inp.type='datetime-local'; inp.id='d-date-edit'; inp.style.position='fixed'; inp.style.left='-9999px'; inp.style.opacity='0'; document.body.appendChild(inp); }
+  try{ inp.value=isoToLocalInput(c.date); inp.max=nowLocal(); }catch(e){}
+  inp.onchange=async()=>{ if(!inp.value) return; let iso; try{ iso=new Date(inp.value).toISOString(); }catch(e){ return; } await saveDetailField(c,'caught_at','date',iso,{}); openDetailObj(c, state.detailFrom); };
+  try{ if(inp.showPicker) inp.showPicker(); else { inp.focus(); inp.click(); } }catch(e){ try{ inp.focus(); }catch(_e){} }
+}
+function startNotesEdit(){
+  const dn=document.getElementById('d-notes'); const c=state.current; if(!dn||!c||dn.querySelector('textarea')) return;
+  const ta=document.createElement('textarea'); ta.className='ef-textarea'; ta.value=c.notes||''; ta.rows=3;
+  dn.textContent=''; dn.appendChild(ta); setTimeout(()=>{ try{ ta.focus(); }catch(e){} },0);
+  let done=false; const fin=async()=>{ if(done) return; done=true; const nv=(ta.value||'').trim()||null;
+    if(nv!==(c.notes||null)) await saveDetailField(c,'notes','notes',nv,{});
+    if(nv){ dn.textContent=nv; dn.classList.remove('empty'); } else { dn.textContent='＋ '+t('addField'); dn.classList.add('empty'); } };
+  ta.addEventListener('blur', fin);
+}
 function openDetailObj(c, from){
   state.current=c; state.detailFrom=from||'list';
   const hero=document.getElementById('d-hero');
@@ -4558,10 +4614,11 @@ function openDetailObj(c, from){
   }
   const _isMine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
   const _editable = (state.detailFrom==='list' || state.detailFrom==='stats') && _isMine && !c._welcome;
+  const EDITABLE_FIELDS={length:1,weight:1,trolling:1,water:1,method:1,bait:1,rod:1,boat:1,released:1,date:1};
   const specHTML=rows.map(r=>{ const wide=r[3] || (''+r[2]).length>18;
-    const ef=_editable && INLINE_EF[r[0]];
+    const ef=_editable && EDITABLE_FIELDS[r[0]];
     const cls='spec'+(wide?' wide':'')+(ef?' ef':'');
-    const onc=ef?` onclick="startInlineEdit(this,'${r[0]}')"`:'';
+    const onc=ef?` onclick="startFieldEdit(this,'${r[0]}')"`:'';
     // editable values get a quiet always-on affordance (.v.editable → dotted underline), no per-row icon
     return `<div class="${cls}"${onc}>${dSpecIcon(r[0])}<span class="kv"><span class="k">${r[1]}</span><span class="v${ef?' editable':''}">${esc(''+r[2])}</span></span></div>`; }).join('');
   let pbBanner='';
@@ -4580,8 +4637,11 @@ function openDetailObj(c, from){
   // first time on an editable catch: pulse the editable values once so users learn they're tappable
   try{ if(_editable && !localStorage.getItem('bf_edit_hint')){ localStorage.setItem('bf_edit_hint','1');
     setTimeout(()=>{ document.querySelectorAll('#d-rows .spec.ef').forEach(el=>el.classList.add('ef-hint')); }, 350); } }catch(e){}
-  const nw=document.getElementById('d-notes-wrap');
-  if(c.notes){ nw.style.display='block'; document.getElementById('d-notes').textContent=c.notes; } else nw.style.display='none';
+  const nw=document.getElementById('d-notes-wrap'); const dn=document.getElementById('d-notes');
+  if(c.notes){ nw.style.display='block'; dn.textContent=c.notes; dn.classList.remove('empty'); }
+  else if(_editable){ nw.style.display='block'; dn.textContent='＋ '+t('addField'); dn.classList.add('empty'); }
+  else nw.style.display='none';
+  if(_editable){ dn.classList.add('ef-notes'); dn.onclick=startNotesEdit; } else { dn.classList.remove('ef-notes'); dn.onclick=null; }
   const isMine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
   const editable = (state.detailFrom==='list' || state.detailFrom==='stats') && isMine;
   document.getElementById('edit-btn').style.display = editable ? '' : 'none';
