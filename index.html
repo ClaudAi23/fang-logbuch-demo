@@ -3552,10 +3552,16 @@ function openEdit(c){
   document.getElementById('f-notes').value = c.notes||'';
   document.getElementById('f-date').value = isoToLocalInput(c.date);
   const sel=document.getElementById('f-angler');
-  if(ctxIsDb()){ sel.value=`u:${c.userId||state.me.id}`; if(!sel.value||sel.selectedIndex<0) sel.value=`u:${state.me.id}`; }
+  if(ctxIsDb()){
+    // Ensure the member list is built BEFORE selecting the angler — otherwise a catch
+    // logged for another member can't be reselected (options only contain "me") on edit.
+    const setAngler=()=>{ buildAnglerOptions(); sel.value=`u:${c.userId||state.me.id}`; if(!sel.value||sel.selectedIndex<0) sel.value=`u:${state.me.id}`; syncSelfield('f-angler'); };
+    if((state.ctxMembers||[]).length){ setAngler(); }
+    else { loadCtxMembers().then(setAngler); }
+  }
   else { sel.value=c.angler;
-    if(sel.value!==c.angler){ sel.value='__other__'; const o=document.getElementById('f-angler-other'); o.style.display='block'; o.value=c.angler; } }
-  syncSelfield('f-angler');
+    if(sel.value!==c.angler){ sel.value='__other__'; const o=document.getElementById('f-angler-other'); o.style.display='block'; o.value=c.angler; }
+    syncSelfield('f-angler'); }
   document.getElementById('f-method').value = c.method||'';
   document.getElementById('f-bait').value = c.bait||'';
   document.getElementById('f-rod').value = c.rod||'';
