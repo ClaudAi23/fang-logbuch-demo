@@ -471,7 +471,7 @@
   .spec.efm .v.efm-pick.empty{color:var(--teal-bright); border-bottom-color:rgba(30,116,135,.5);}
   .efm-chev{width:15px; height:15px; stroke:var(--muted); stroke-width:2; fill:none; flex:0 0 auto;}
   .dedit-more{width:100%; margin-top:18px;}
-  .dgroup-edit{margin-top:22px;}
+  .dgroup-edit{margin:0 0 10px;}
   .dgroup-edit .spec.dgroup-pick{border-bottom:none; padding-top:6px; cursor:pointer;}
   .dgroup-edit .spec.dgroup-pick > svg{width:20px; height:20px; margin-top:2px; flex:0 0 auto; fill:none; stroke:var(--muted); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;}
   /* odd count: last half-width cell keeps its own border, but drop the divider that would visually double up */
@@ -883,6 +883,7 @@
         <p id="d-sub" class="ds">—</p>
       </div>
       <div class="pad">
+        <div id="d-group-top" style="display:none;"></div>
         <div id="d-photo-edit" style="display:none; margin-bottom:20px;">
           <div class="sectionlabel" data-i18n="grpPhotos" style="margin-top:2px;">Fotos</div>
           <div id="d-photo-grid" class="photo-grid pgrid"></div>
@@ -4628,7 +4629,15 @@ function commitEfmInput(inp){
   saveDetailField(c, cfg.col, cfg.field, nv, {pb:cfg.pb});
 }
 function efmNext(inp){ const all=[].slice.call(document.querySelectorAll('#d-rows .efm-in')); const i=all.indexOf(inp); if(i>=0 && i+1<all.length){ all[i+1].focus(); } else { inp.blur(); } }
-function sizeEfm(inp){ if(!inp||inp.classList.contains('efm-date')) return; const n=Math.max((inp.value||'').length, (inp.placeholder||'').length, 2); inp.style.width=(n+1)+'ch'; }
+let _efmMeasure=null;
+function sizeEfm(inp){
+  if(!inp||inp.classList.contains('efm-date')) return;
+  if(!_efmMeasure){ _efmMeasure=document.createElement('span'); _efmMeasure.setAttribute('aria-hidden','true'); _efmMeasure.style.cssText='position:absolute; visibility:hidden; white-space:pre; left:-9999px; top:-9999px;'; document.body.appendChild(_efmMeasure); }
+  const cs=getComputedStyle(inp);
+  _efmMeasure.style.fontFamily=cs.fontFamily; _efmMeasure.style.fontSize=cs.fontSize; _efmMeasure.style.fontWeight=cs.fontWeight; _efmMeasure.style.letterSpacing=cs.letterSpacing;
+  _efmMeasure.textContent = inp.value || inp.placeholder || '0';
+  inp.style.width = (_efmMeasure.offsetWidth + 3) + 'px';   // +3px only for the caret
+}
 function commitEfmDate(inp){ const c=state.current; if(!c||!inp.value) return; let iso; try{ iso=new Date(inp.value).toISOString(); }catch(e){ return; } saveDetailField(c,'caught_at','date',iso,{}); }
 function editWaterField(c){
   openTypeaheadCfg({ title:t('dWater'), allowNew:true, curVal:()=>c.location||'',
@@ -4817,8 +4826,9 @@ function openDetailObj(c, from, keepEdit){
     medBanner = `<div class="pb-banner medal-banner medal-${cls}">${MEDAL_IC}<span>${lead}${ord}${esc(mlText)} ${esc(trSpecies(c.species))}${ctxName?' · '+esc(ctxName):''}</span></div>`;
   }
   const canGroup = c._db && (state.myContexts||[]).length>0;
-  const groupRow = (editing && canGroup) ? `<div class="dgroup-edit"><div class="sectionlabel" data-i18n="logToArea">Eintragen in</div><div class="spec efm dgroup-pick" onclick="openDetailAreaSheet()"><svg viewBox="0 0 24 24"><path d="M9 7a3 3 0 1 0 0 6a3 3 0 0 0 0 -6M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg><span class="kv"><span class="efm-pickrow"><span class="v efm-pick">${esc(detailAreaSummary(c))}</span><svg class="efm-chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6l-6 6"/></svg></span></span></div></div>` : '';
-  document.getElementById('d-rows').innerHTML=pbBanner+medBanner+`<div class="dspecs">${specHTML}</div>`+banner+groupRow;
+  const groupRow = (editing && canGroup) ? `<div class="dgroup-edit"><div class="sectionlabel">${esc(t('logToArea'))}</div><div class="spec efm dgroup-pick" onclick="openDetailAreaSheet()"><svg viewBox="0 0 24 24"><path d="M9 7a3 3 0 1 0 0 6a3 3 0 0 0 0 -6M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg><span class="kv"><span class="efm-pickrow"><span class="v efm-pick">${esc(detailAreaSummary(c))}</span><svg class="efm-chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6l-6 6"/></svg></span></span></div></div>` : '';
+  { const gt=document.getElementById('d-group-top'); if(gt){ gt.innerHTML=groupRow; gt.style.display=groupRow?'block':'none'; } }
+  document.getElementById('d-rows').innerHTML=pbBanner+medBanner+`<div class="dspecs">${specHTML}</div>`+banner;
   if(editing){ document.querySelectorAll('#d-rows .efm-in:not(.efm-date)').forEach(sizeEfm); }
   const nw=document.getElementById('d-notes-wrap'); const dn=document.getElementById('d-notes'); dn.onclick=null; dn.classList.remove('ef-notes','empty');
   if(editing){ nw.style.display='block'; dn.textContent=''; const ta=document.createElement('textarea'); ta.className='ef-textarea'; ta.value=c.notes||''; ta.placeholder=t('notesPh'); ta.rows=3;
