@@ -1,8 +1,8 @@
-/* The Fishing Butler — service worker (offline app shell) */
-const CACHE = 'fb-shell-v6';
+/* ButlerFish — service worker (offline app shell) */
+const CACHE = 'fb-shell-v7';
 const SHELL = [
-  '/', '/index.html', '/manifest.webmanifest',
-  '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/favicon.png',
+  '/', '/index.html', '/site.webmanifest',
+  '/icon-192.png', '/icon-512.png', '/apple-touch-icon-180.png', '/favicon.ico',
   '/logo.png', '/mascot.png'
 ];
 
