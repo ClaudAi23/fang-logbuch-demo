@@ -99,6 +99,13 @@
   .su-confetti i{position:absolute; top:-14px; width:8px; height:8px; border-radius:2px; opacity:0; animation:confettiFall linear forwards;}
   @keyframes confettiFall{0%{opacity:0; transform:translateY(-10px) rotate(0);} 12%{opacity:1;} 100%{opacity:0; transform:translateY(60vh) rotate(560deg);}}
   @media(prefers-reduced-motion:reduce){ #success-ov.show .success-card{transform:none;} .success-card.big .su-mascot{animation:none;} .su-confetti{display:none;} }
+  /* Keyboard-accessory edit bar (prototype) */
+  #keybar{position:fixed; left:0; right:0; bottom:0; z-index:600; display:flex; align-items:center; gap:12px; background:var(--surface); border-top:1px solid var(--border-2); padding:10px 14px; box-shadow:0 -6px 18px rgba(0,0,0,.12);}
+  #keybar svg{width:20px; height:20px; stroke:var(--teal-bright); fill:none; stroke-width:2; flex:0 0 auto;}
+  #keybar .kb-mid{min-width:0; flex:1;}
+  #keybar .kb-lab{font-size:0.66rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
+  #keybar .kb-val{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.4rem; line-height:1.15; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  #keybar .kb-next{margin-left:auto; flex:0 0 auto; background:var(--teal); color:#F4EFE2; border:none; border-radius:9px; padding:9px 14px; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.02em; font-size:0.82rem;}
   .input-err{border-color:var(--danger)!important; box-shadow:0 0 0 1px var(--danger);}
   .skel{background:linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%); background-size:400% 100%; animation:shimmer 1.3s ease infinite; border-radius:8px;}
   @keyframes shimmer{from{background-position:100% 0;} to{background-position:0 0;}}
@@ -1293,6 +1300,12 @@
       <div class="su-sub"></div>
     </div>
   </div>
+  <!-- Keyboard-accessory edit bar (prototype, flag-gated) -->
+  <div id="keybar" style="display:none;">
+    <svg id="keybar-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4l-14 14l-4 -4l14 -14"/><path d="M16 7l-1.5 -1.5"/></svg>
+    <div class="kb-mid"><div class="kb-lab" id="keybar-lab"></div><div class="kb-val" id="keybar-val"></div></div>
+    <button type="button" class="kb-next" id="keybar-next" onclick="keybarNext()">Weiter ›</button>
+  </div>
   <div id="lightbox" style="display:none; position:fixed; inset:0; z-index:400; background:#000; touch-action:none;">
     <div style="width:100%; height:100%; overflow:hidden; display:flex; align-items:center; justify-content:center;">
       <img id="lb-img" src="" alt="" style="max-width:100%; max-height:100%; object-fit:contain; will-change:transform;">
@@ -2352,13 +2365,48 @@ function startDemo(){
 // Invite deep-link: capture ?join=CODE at boot, store it, strip it from the URL, apply after auth.
 function capturePendingJoin(){
   try{
-    const usp=new URLSearchParams(location.search); const jc=usp.get('join');
-    if(jc){ localStorage.setItem('bf_pending_join', jc);
-      usp.delete('join'); const q=usp.toString();
-      history.replaceState(null, '', location.pathname + (q?('?'+q):'') + location.hash);
-    }
+    const usp=new URLSearchParams(location.search); let changed=false;
+    const jc=usp.get('join');
+    if(jc){ localStorage.setItem('bf_pending_join', jc); usp.delete('join'); changed=true; }
+    // Feature flag: keyboard-accessory edit bar prototype (?keybar=1 / ?keybar=0)
+    const kb=usp.get('keybar');
+    if(kb!=null){ try{ localStorage.setItem('bf_keybar', kb==='1'?'1':'0'); }catch(e){} usp.delete('keybar'); changed=true; }
+    if(changed){ const q=usp.toString(); history.replaceState(null, '', location.pathname + (q?('?'+q):'') + location.hash); }
   }catch(e){}
 }
+function keybarOn(){ try{ return localStorage.getItem('bf_keybar')==='1'; }catch(e){ return false; } }
+// ---- Keyboard-accessory edit bar (prototype, flag-gated) ----
+const KEYBAR_FIELDS=['f-length','f-weight','f-watertemp','f-trolling'];
+const KEYBAR_META={
+  'f-length':{lab:'Länge',unit:'cm',ic:'<path d="M17 3l4 4l-14 14l-4 -4l14 -14"/><path d="M16 7l-1.5 -1.5"/>'},
+  'f-weight':{lab:'Gewicht',unit:'kg',ic:'<path d="M9 6a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M6.8 9h10.4a1 1 0 0 1 .98 .82l1.64 9a1 1 0 0 1 -.99 1.18h-13.6a1 1 0 0 1 -.99 -1.18l1.64 -9a1 1 0 0 1 .98 -.82"/>'},
+  'f-watertemp':{lab:'Wassertemp.',unit:'°C',ic:'<path d="M10 13.5a4 4 0 1 0 4 0v-8.5a2 2 0 0 0 -4 0v8.5"/><path d="M10 9h4"/>'},
+  'f-trolling':{lab:'Schleppgeschw.',unit:'km/h',ic:'<path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 12l4 -3"/>'}
+};
+let _keybarCur=null, _keybarInited=false;
+function initKeybar(){
+  if(_keybarInited || !keybarOn()) return; _keybarInited=true;
+  KEYBAR_FIELDS.forEach(function(id){ const el=document.getElementById(id); if(!el) return;
+    el.addEventListener('focus', function(){ keybarShow(id); });
+    el.addEventListener('input', keybarSync);
+    el.addEventListener('blur', function(){ setTimeout(keybarMaybeHide, 120); });
+  });
+  if(window.visualViewport){ window.visualViewport.addEventListener('resize', keybarPosition); window.visualViewport.addEventListener('scroll', keybarPosition); }
+}
+function keybarShow(id){
+  _keybarCur=id; const meta=KEYBAR_META[id]||{lab:'',unit:'',ic:''};
+  document.getElementById('keybar-lab').textContent=meta.lab||'';
+  const ic=document.getElementById('keybar-ic'); if(ic) ic.innerHTML=meta.ic||'';
+  const bar=document.getElementById('keybar'); bar.style.display='flex';
+  keybarSync(); keybarPosition();
+}
+function keybarSync(){ if(!_keybarCur) return; const el=document.getElementById(_keybarCur); if(!el) return; const meta=KEYBAR_META[_keybarCur]||{};
+  document.getElementById('keybar-val').innerHTML = esc(el.value||'—')+' <span style="color:var(--muted);font-size:0.85rem;font-weight:600;">'+esc(meta.unit||'')+'</span>'; }
+function keybarPosition(){ const bar=document.getElementById('keybar'); if(!bar||bar.style.display==='none') return;
+  let kb=0; try{ if(window.visualViewport){ kb=Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop); } }catch(e){}
+  bar.style.transform = kb>0 ? ('translateY('+(-kb)+'px)') : 'none'; }
+function keybarMaybeHide(){ const a=document.activeElement; if(a && KEYBAR_FIELDS.indexOf(a.id)>=0) return; const bar=document.getElementById('keybar'); if(bar) bar.style.display='none'; _keybarCur=null; }
+function keybarNext(){ const i=KEYBAR_FIELDS.indexOf(_keybarCur); for(let k=1;k<=KEYBAR_FIELDS.length;k++){ const nid=KEYBAR_FIELDS[(i+k)%KEYBAR_FIELDS.length]; const el=document.getElementById(nid); if(el){ el.focus(); return; } } }
 async function maybeApplyPendingJoin(){
   let code=null; try{ code=localStorage.getItem('bf_pending_join'); }catch(e){}
   if(!code || state.auth!=='supabase' || !state.me) return;
@@ -3682,6 +3730,7 @@ function toast(msg){
 // ---------- form ----------
 function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
 async function openForm(skipAuto){
+  try{ initKeybar(); }catch(e){}
   if(_curScreen==='club' || _curScreen==='stats'){ try{ await startSolo(true); }catch(e){} }
   ['f-species','f-weight','f-length','f-location','f-notes','f-method','f-bait','f-rod','f-boat','f-watertemp','f-trolling','f-released'].forEach(id=>document.getElementById(id).value='');
   state.speciesKey=null; state.editId=null; state.editReturn=null;
