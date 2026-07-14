@@ -1019,6 +1019,21 @@
         </div>
       </div>
 
+      <div class="accgroup" id="acc-area-records">
+        <button type="button" class="acchead" onclick="toggleAcc('area-records')"><span data-i18n="recordsSettingTitle">Rekorde &amp; Podium</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="accbody">
+          <label class="chkrow" style="justify-content:space-between;"><span data-i18n="recordsEnabledLabel">Rekorde anzeigen</span><input type="checkbox" id="rec-enabled" onchange="setCtxRecordsEnabled(this.checked)"></label>
+          <div style="margin-top:12px;">
+            <div style="font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:6px;" data-i18n="recordMetricLabel">Podium-Wertung</div>
+            <div class="seg" id="rec-metric-seg">
+              <button type="button" data-m="length" onclick="setCtxRecordMetric('length')" data-i18n="mLength">Länge</button>
+              <button type="button" data-m="weight" onclick="setCtxRecordMetric('weight')" data-i18n="mWeight">Gewicht</button>
+            </div>
+          </div>
+          <p class="hint" style="margin-top:10px;" data-i18n="recordsSettingHint">Bestimmt, ob ein Podium angezeigt wird und ob nach Länge oder Gewicht gewertet wird. Nur Admins.</p>
+        </div>
+      </div>
+
       <div id="acc-danger-area" class="accgroup" style="display:none;">
         <button type="button" class="acchead" onclick="toggleAcc('danger-area')"><span data-i18n="dangerZone" style="color:var(--danger);">Gefahrenzone</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="accbody">
@@ -3454,7 +3469,32 @@ async function setFieldCfg(c){
   try{ localStorage.setItem(fieldCfgKey(), JSON.stringify(c)); }catch(e){}
 }
 function setFieldState(key,st){ if(ctxIsDb() && !canEditCtxCfg()){ showInfo(t('adminOnlyTitle'), t('adminOnlyMsg')); return; } const c=getFieldCfg(); c[key]=st; setFieldCfg(c); renderFieldCfgPanel(); }
+// ----- Admin: club/group records & podium settings -----
+function syncCtxRecordsPanel(){
+  const acc=document.getElementById('acc-area-records'); if(!acc) return;
+  if(!ctxIsDb()){ acc.style.display='none'; return; }
+  acc.style.display='';
+  const canEdit=canEditCtxCfg();
+  const en=document.getElementById('rec-enabled'); if(en){ en.checked=!(state.club&&state.club.records_enabled===false); en.disabled=!canEdit; }
+  const m=ctxRecordMetric();
+  document.querySelectorAll('#rec-metric-seg button').forEach(b=>{ b.classList.toggle('on', b.dataset.m===m); b.style.opacity=canEdit?'':'0.6'; });
+}
+async function setCtxRecordsEnabled(v){
+  if(!ctxIsDb()) return;
+  if(!canEditCtxCfg()){ syncCtxRecordsPanel(); showInfo(t('adminOnlyTitle'), t('adminOnlyMsg')); return; }
+  state.club.records_enabled=v;
+  try{ await getSB().from('contexts').update({records_enabled:v}).eq('id', state.club.id); }catch(e){}
+  syncCtxRecordsPanel(); try{ renderList(); }catch(e){} try{ toast(t('savedToast')); }catch(e){}
+}
+async function setCtxRecordMetric(mm){
+  if(!ctxIsDb()) return;
+  if(!canEditCtxCfg()){ syncCtxRecordsPanel(); showInfo(t('adminOnlyTitle'), t('adminOnlyMsg')); return; }
+  const m=(mm==='weight'?'weight':'length'); state.club.record_metric=m;
+  try{ await getSB().from('contexts').update({record_metric:m}).eq('id', state.club.id); }catch(e){}
+  syncCtxRecordsPanel(); try{ renderList(); }catch(e){} try{ toast(t('savedToast')); }catch(e){}
+}
 function renderFieldCfgPanel(){
+  try{ syncCtxRecordsPanel(); }catch(e){}
   const box=document.getElementById('fields-cfg-list'); if(!box) return;
   const c=getFieldCfg();
   const ro = ctxIsDb() && !canEditCtxCfg();
