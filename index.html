@@ -455,6 +455,17 @@
   .spec .v{font-weight:600; font-size:0.9375rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .spec.wide .v{white-space:normal;}
   .spec .tr{font-size:0.72rem; color:var(--teal-bright); margin-top:2px; white-space:nowrap;}
+  /* Edit-mode fields: same clean spec look, only a quiet accent underline signals editable */
+  .spec.efm{cursor:default;}
+  .spec.efm .efm-field{display:flex; align-items:center; gap:5px; min-width:0;}
+  .spec.efm .efm-in{width:100%; min-width:0; border:none; background:transparent; font-family:inherit; font-weight:600; font-size:0.9375rem; color:var(--text); padding:2px 0; outline:none; border-bottom:1.5px solid rgba(224,165,63,.5);}
+  .spec.efm .efm-in:focus{border-bottom-color:var(--accent); box-shadow:0 1px 0 0 var(--accent);}
+  .spec.efm .efm-in::placeholder{color:var(--muted); font-weight:500;}
+  .spec.efm .efm-unit{color:var(--muted); font-size:0.85rem; flex:0 0 auto;}
+  .spec.efm .v.efm-pick{display:inline-flex; align-items:center; gap:4px; border-bottom:1.5px solid rgba(224,165,63,.5); padding-bottom:1px; cursor:pointer; overflow:visible;}
+  .spec.efm .v.efm-pick.empty{color:var(--teal-bright); border-bottom-color:rgba(30,116,135,.5);}
+  .efm-chev{width:15px; height:15px; stroke:var(--muted); stroke-width:2; fill:none; flex:0 0 auto;}
+  .dedit-more{width:100%; margin-top:18px;}
   /* odd count: last half-width cell keeps its own border, but drop the divider that would visually double up */
   .spec:nth-last-child(1):nth-child(odd){border-bottom:1px solid var(--border);}
 
@@ -852,7 +863,8 @@
     <div class="topbar">
       <button class="iconbtn" onclick="detailBack()" aria-label="Zurück"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div id="d-htitle" style="flex:1; min-width:0; opacity:0; transition:opacity .15s;"><h1 id="d-h1" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">—</h1><p class="sub" id="d-h1sub" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:0;">—</p></div>
-      <button id="edit-btn" class="iconbtn" onclick="editCurrentCatch()" data-i18n-title="ttEdit" title="Bearbeiten" aria-label="Bearbeiten" style="display:none;"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+      <button id="edit-btn" class="iconbtn" onclick="toggleDetailEdit()" data-i18n-title="ttEdit" title="Bearbeiten" aria-label="Bearbeiten" style="display:none;"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+      <button id="edit-done-btn" class="iconbtn" onclick="toggleDetailEdit()" title="Fertig" aria-label="Fertig" style="display:none;"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></button>
       <button id="share-btn" class="iconbtn" onclick="shareCatch()" data-i18n-title="ttShare" title="Teilen" aria-label="Teilen" style="display:none;"><svg class="ic" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
     </div>
     <div class="scroll">
@@ -1506,7 +1518,7 @@ const I18N = {
     signIn:"Anmelden", email:"E-Mail", emailPh:"name@beispiel.de", password:"Passwort", loginHint:"Demo: beliebige E-Mail und beliebiges Passwort funktionieren. Konten werden vom Vereinsadmin angelegt.",
     solo:"Solo", withoutClub:"Ohne Verein", yourName:"Dein Name", namePh:"z. B. Johannes", next:"Weiter", errName:"Bitte gib deinen Namen ein.", soloHint:"Im Solo-Modus dokumentierst du deine Fänge privat — ohne Verein, ohne Login.",
     catches:"Fänge", ttFilter:"Filter", ttSettings:"Einstellungen", ttLogout:"Abmelden", addCatch:"Fang eintragen", recent:"Neueste Fänge", filtered:"Gefilterte Fänge", total:"Fänge gesamt", hits:"Treffer", longestStat:"Längster Fang", heaviestStat:"Schwerster Fang", emptyNone:"Noch keine Fänge.<br>Trag deinen ersten Fang ein!", emptyFilter:"Keine Fänge für diesen Filter.",
-    logCatch:"Fang eintragen", newCatch:"Neuer Fang", photo:"Foto", addPhoto:"Foto hinzufügen", species:"Fischart", speciesPh:"Art wählen oder eingeben", lengthCm:"Länge (cm)", weightKg:"Gewicht (kg)", lengthPh:"z. B. 38", weightPh:"z. B. 5,5", water:"Gewässer / Platz", waterPh:"z. B. Vereinsteich, Platz 4", datetime:"Datum & Zeit", angler:"Angler", anglerOtherPh:"Name eingeben", notes:"Notizen", notesPh:"z. B. Drill, Wetter, Stimmung …", saveCatch:"Fang speichern", errFields:"Bitte Fischart, Datum und Angler ausfüllen.", errFuture:"Das Datum darf nicht in der Zukunft liegen.", other:"Andere…", speciesNew:"neue Art hinzufügen",
+    logCatch:"Fang eintragen", newCatch:"Neuer Fang", photo:"Foto", addPhoto:"Foto hinzufügen", species:"Fischart", speciesPh:"Art wählen oder eingeben", lengthCm:"Länge (cm)", weightKg:"Gewicht (kg)", lengthPh:"z. B. 38", weightPh:"z. B. 5,5", water:"Gewässer / Platz", waterPh:"z. B. Vereinsteich, Platz 4", datetime:"Datum & Zeit", angler:"Angler", anglerOtherPh:"Name eingeben", notes:"Notizen", notesPh:"z. B. Drill, Wetter, Stimmung …", saveCatch:"Fang speichern", errFields:"Bitte Fischart, Datum und Angler ausfüllen.", errFuture:"Das Datum darf nicht in der Zukunft liegen.", other:"Andere…", speciesNew:"neue Art hinzufügen", editMoreFields:"Fotos, Karte & Bereich bearbeiten",
     details:"Fang-Details", dAngler:"Angler", dWater:"Gewässer", dLength:"Länge", dWeight:"Gewicht", dDate:"Datum", noMeasures:"Keine Maße erfasst", ttShare:"Teilen",
     settings:"Einstellungen", display:"Darstellung", appearance:"Design", themeLight:"Hell", themeDark:"Dunkel", themeSystem:"System", themeHint:"„System\" folgt automatisch der Hell/Dunkel-Einstellung deines Geräts.", measureLabel:"Standard-Maß in Übersicht & Statistik", mLength:"Länge", mWeight:"Gewicht", measureHint:"Bestimmt, welches Maß in der Fangliste angezeigt wird, wonach der größte Fang berechnet wird und welcher Fang deinen persönlichen Rekord (Krone) hält.", language:"Sprache", clubLogoAdmin:"Logo", currentLogo:"Aktuelles Logo", uploadLogo:"Logo hochladen", logoHint:"Nur Admins können das Logo ändern. Es gilt für alle Mitglieder.", myImage:"Mein Bild", initialsDefault:"Standard: deine Initialen", uploadImage:"Bild hochladen",
     filter:"Filter", narrow:"Fänge eingrenzen", ttReset:"Zurücksetzen", period:"Zeitraum", year:"Jahr", month:"Monat", from:"Von", to:"Bis", periodHint:"Entweder Jahr/Monat <em>oder</em> Von–Bis — sie schließen sich gegenseitig aus.", properties:"Eigenschaften", fltCatch:"Fang", fltSize:"Maße", locationContains:"Ort / Gewässer enthält", locationPh:"z. B. Vereinsteich", lengthFrom:"Länge von (cm)", lengthTo:"Länge bis (cm)", weightFrom:"Gewicht von (kg)", weightTo:"Gewicht bis (kg)", minPh:"min", maxPh:"max", applyFilter:"Anwenden", reset:"Zurücksetzen", all:"Alle",
@@ -1519,7 +1531,7 @@ const I18N = {
     signIn:"Sign in", email:"Email", emailPh:"name@example.com", password:"Password", loginHint:"Demo: any email and password work. Accounts are created by the club admin.",
     solo:"Solo", withoutClub:"Without a club", yourName:"Your name", namePh:"e.g. John", next:"Continue", errName:"Please enter your name.", soloHint:"In solo mode you log your catches privately — no club, no login.",
     catches:"Catches", ttFilter:"Filter", ttSettings:"Settings", ttLogout:"Sign out", addCatch:"Log a catch", recent:"Latest catches", filtered:"Filtered catches", total:"Total catches", hits:"Matches", longestStat:"Longest catch", heaviestStat:"Heaviest catch", emptyNone:"No catches yet.<br>Log your first catch!", emptyFilter:"No catches for this filter.",
-    logCatch:"Log a catch", newCatch:"New catch", photo:"Photo", addPhoto:"Add photo", species:"Species", speciesPh:"Choose or type a species", lengthCm:"Length (cm)", weightKg:"Weight (kg)", lengthPh:"e.g. 38", weightPh:"e.g. 5.5", water:"Water / spot", waterPh:"e.g. Club pond, peg 4", datetime:"Date & time", angler:"Angler", anglerOtherPh:"Enter name", notes:"Notes", notesPh:"e.g. the fight, weather, mood …", saveCatch:"Save catch", errFields:"Please fill in species, date and angler.", errFuture:"The date can't be in the future.", other:"Other…", speciesNew:"add new species",
+    logCatch:"Log a catch", newCatch:"New catch", photo:"Photo", addPhoto:"Add photo", species:"Species", speciesPh:"Choose or type a species", lengthCm:"Length (cm)", weightKg:"Weight (kg)", lengthPh:"e.g. 38", weightPh:"e.g. 5.5", water:"Water / spot", waterPh:"e.g. Club pond, peg 4", datetime:"Date & time", angler:"Angler", anglerOtherPh:"Enter name", notes:"Notes", notesPh:"e.g. the fight, weather, mood …", saveCatch:"Save catch", errFields:"Please fill in species, date and angler.", errFuture:"The date can't be in the future.", other:"Other…", speciesNew:"add new species", editMoreFields:"Edit photos, map & group",
     details:"Catch details", dAngler:"Angler", dWater:"Water", dLength:"Length", dWeight:"Weight", dDate:"Date", noMeasures:"No measurements", ttShare:"Share",
     settings:"Settings", display:"Display", appearance:"Theme", themeLight:"Light", themeDark:"Dark", themeSystem:"System", themeHint:"\"System\" follows your device's light/dark setting.", measureLabel:"Default measure in list & stats", mLength:"Length", mWeight:"Weight", measureHint:"Sets which measure shows in the catch list, how the biggest catch is determined, and which catch holds your personal best (crown).", language:"Language", clubLogoAdmin:"Logo", currentLogo:"Current logo", uploadLogo:"Upload logo", logoHint:"Only admins can change the logo. It applies to all members.", myImage:"My picture", initialsDefault:"Default: your initials", uploadImage:"Upload picture",
     filter:"Filter", narrow:"Narrow down catches", ttReset:"Reset", period:"Period", year:"Year", month:"Month", from:"From", to:"To", periodHint:"Either year/month <em>or</em> from–to — they're mutually exclusive.", properties:"Properties", fltCatch:"Catch", fltSize:"Measurements", locationContains:"Location / water contains", locationPh:"e.g. Club pond", lengthFrom:"Length from (cm)", lengthTo:"Length to (cm)", weightFrom:"Weight from (kg)", weightTo:"Weight to (kg)", minPh:"min", maxPh:"max", applyFilter:"Apply", reset:"Reset", all:"All",
@@ -1532,7 +1544,7 @@ const I18N = {
     signIn:"Inloggen", email:"E-mail", emailPh:"naam@voorbeeld.nl", password:"Wachtwoord", loginHint:"Demo: elke e-mail en elk wachtwoord werken. Accounts worden aangemaakt door de verenigingsbeheerder.",
     solo:"Solo", withoutClub:"Zonder vereniging", yourName:"Je naam", namePh:"bijv. Jan", next:"Verder", errName:"Voer je naam in.", soloHint:"In solomodus leg je je vangsten privé vast — zonder vereniging, zonder inloggen.",
     catches:"Vangsten", ttFilter:"Filter", ttSettings:"Instellingen", ttLogout:"Uitloggen", addCatch:"Vangst toevoegen", recent:"Laatste vangsten", filtered:"Gefilterde vangsten", total:"Totaal vangsten", hits:"Treffers", longestStat:"Langste vangst", heaviestStat:"Zwaarste vangst", emptyNone:"Nog geen vangsten.<br>Voeg je eerste vangst toe!", emptyFilter:"Geen vangsten voor dit filter.",
-    logCatch:"Vangst toevoegen", newCatch:"Nieuwe vangst", photo:"Foto", addPhoto:"Foto toevoegen", species:"Vissoort", speciesPh:"Soort kiezen of typen", lengthCm:"Lengte (cm)", weightKg:"Gewicht (kg)", lengthPh:"bijv. 38", weightPh:"bijv. 5,5", water:"Water / plek", waterPh:"bijv. Verenigingsvijver, plek 4", datetime:"Datum & tijd", angler:"Visser", anglerOtherPh:"Naam invoeren", notes:"Notities", notesPh:"bijv. dril, weer, sfeer …", saveCatch:"Vangst opslaan", errFields:"Vul vissoort, datum en visser in.", errFuture:"De datum mag niet in de toekomst liggen.", other:"Andere…", speciesNew:"nieuwe soort toevoegen",
+    logCatch:"Vangst toevoegen", newCatch:"Nieuwe vangst", photo:"Foto", addPhoto:"Foto toevoegen", species:"Vissoort", speciesPh:"Soort kiezen of typen", lengthCm:"Lengte (cm)", weightKg:"Gewicht (kg)", lengthPh:"bijv. 38", weightPh:"bijv. 5,5", water:"Water / plek", waterPh:"bijv. Verenigingsvijver, plek 4", datetime:"Datum & tijd", angler:"Visser", anglerOtherPh:"Naam invoeren", notes:"Notities", notesPh:"bijv. dril, weer, sfeer …", saveCatch:"Vangst opslaan", errFields:"Vul vissoort, datum en visser in.", errFuture:"De datum mag niet in de toekomst liggen.", other:"Andere…", speciesNew:"nieuwe soort toevoegen", editMoreFields:"Foto's, kaart & groep bewerken",
     details:"Vangstdetails", dAngler:"Visser", dWater:"Water", dLength:"Lengte", dWeight:"Gewicht", dDate:"Datum", noMeasures:"Geen maten", ttShare:"Delen",
     settings:"Instellingen", display:"Weergave", appearance:"Thema", themeLight:"Licht", themeDark:"Donker", themeSystem:"Systeem", themeHint:"\"Systeem\" volgt de licht/donker-instelling van je apparaat.", measureLabel:"Standaardmaat in lijst & statistiek", mLength:"Lengte", mWeight:"Gewicht", measureHint:"Bepaalt welke maat in de vangstlijst staat, hoe de grootste vangst wordt bepaald en welke vangst je persoonlijk record (kroon) heeft.", language:"Taal", clubLogoAdmin:"Logo", currentLogo:"Huidig logo", uploadLogo:"Logo uploaden", logoHint:"Alleen beheerders kunnen het logo wijzigen. Het geldt voor alle leden.", myImage:"Mijn foto", initialsDefault:"Standaard: je initialen", uploadImage:"Foto uploaden",
     filter:"Filter", narrow:"Vangsten filteren", ttReset:"Resetten", period:"Periode", year:"Jaar", month:"Maand", from:"Van", to:"Tot", periodHint:"Of jaar/maand <em>of</em> van–tot — ze sluiten elkaar uit.", properties:"Eigenschappen", fltCatch:"Vangst", fltSize:"Maten", locationContains:"Plek / water bevat", locationPh:"bijv. Verenigingsvijver", lengthFrom:"Lengte van (cm)", lengthTo:"Lengte tot (cm)", weightFrom:"Gewicht van (kg)", weightTo:"Gewicht tot (kg)", minPh:"min", maxPh:"max", applyFilter:"Toepassen", reset:"Resetten", all:"Alle",
@@ -4511,6 +4523,17 @@ async function commitInlineEdit(rowEl, key, box, inp, vspan){
     try{ haptic(8); }catch(e){}
   }catch(e){ try{ toast(t('errSave')); }catch(_e){} }
 }
+// ---- Detail edit-mode (pencil ↔ Fertig): read-only stays clean; editing unlocks inline inputs + map/photos/group ----
+let _detailEdit=false;
+function toggleDetailEdit(){ _detailEdit=!_detailEdit; if(state.current) openDetailObj(state.current, state.detailFrom, true); if(!_detailEdit){ try{ reloadCurrentDb(); }catch(e){} } }
+function escAttr(s){ return String(s==null?'':s).replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function commitEfmInput(inp){
+  const key=inp.getAttribute('data-key'); const cfg=INLINE_EF[key]; const c=state.current; if(!cfg||!c) return;
+  const nv=cfg.parse(inp.value); const ov=(c[cfg.field]!=null?c[cfg.field]:null);
+  if(nv===ov || (nv==null&&ov==null)) return;
+  saveDetailField(c, cfg.col, cfg.field, nv, {pb:cfg.pb});
+}
+function efmNext(inp){ const all=[].slice.call(document.querySelectorAll('#d-rows .efm-in')); const i=all.indexOf(inp); if(i>=0 && i+1<all.length){ all[i+1].focus(); } else { inp.blur(); } }
 async function saveDetailField(c, col, field, value, opts){
   opts=opts||{}; c[field]=value;
   [state.catches, state.myAllCatches].forEach(arr=>{ const it=(arr||[]).find(x=>x&&x.id===c.id); if(it) it[field]=value; });
@@ -4558,25 +4581,25 @@ async function reassignAngler(c, newOwnerId, newName){
     if(newOwnerId!==oldOwner){ try{ await recomputePb(newOwnerId, c.species); }catch(e){} }
     try{ await reloadCurrentDb(); }catch(e){}
     try{ haptic(8); }catch(e){}
-    openDetailObj(c, state.detailFrom);
+    openDetailObj(c, state.detailFrom, true);
   }catch(e){ try{ toast(t('errSave')); }catch(_e){} }
 }
 function editTypeaheadField(c, field){
   const map={method:'f-method',bait:'f-bait',rod:'f-rod',boat:'f-boat'}; const base=TA_CFG[map[field]]; if(!base) return;
   openTypeaheadCfg({ title:base.title(), opts:base.opts, recent:base.recent, allowNew:true, curVal:()=>c[field]||'',
-    onPick:async(v)=>{ const val=(v||'').trim()||null; await saveDetailField(c, field, field, val, {}); if(val){ try{ rememberSuggest({[field]:val}); }catch(e){} } openDetailObj(c, state.detailFrom); } });
+    onPick:async(v)=>{ const val=(v||'').trim()||null; await saveDetailField(c, field, field, val, {}); if(val){ try{ rememberSuggest({[field]:val}); }catch(e){} } openDetailObj(c, state.detailFrom, true); } });
 }
 function editReleasedField(c){
   openTypeaheadCfg({ title:t('releasedLabel'), allowNew:false, recent:()=>[],
     opts:()=>[{v:t('releasedNone'),key:null},{v:t('releasedKept'),key:false},{v:t('releasedReleased'),key:true}],
     curVal:()=> c.released===true?t('releasedReleased'):(c.released===false?t('releasedKept'):t('releasedNone')),
-    onPick:async(v,key)=>{ await saveDetailField(c, 'released', 'released', (key===true?true:(key===false?false:null)), {}); openDetailObj(c, state.detailFrom); } });
+    onPick:async(v,key)=>{ await saveDetailField(c, 'released', 'released', (key===true?true:(key===false?false:null)), {}); openDetailObj(c, state.detailFrom, true); } });
 }
 function editDateField(c){
   let inp=document.getElementById('d-date-edit');
   if(!inp){ inp=document.createElement('input'); inp.type='datetime-local'; inp.id='d-date-edit'; inp.style.position='fixed'; inp.style.left='-9999px'; inp.style.opacity='0'; document.body.appendChild(inp); }
   try{ inp.value=isoToLocalInput(c.date); inp.max=nowLocal(); }catch(e){}
-  inp.onchange=async()=>{ if(!inp.value) return; let iso; try{ iso=new Date(inp.value).toISOString(); }catch(e){ return; } await saveDetailField(c,'caught_at','date',iso,{}); openDetailObj(c, state.detailFrom); };
+  inp.onchange=async()=>{ if(!inp.value) return; let iso; try{ iso=new Date(inp.value).toISOString(); }catch(e){ return; } await saveDetailField(c,'caught_at','date',iso,{}); openDetailObj(c, state.detailFrom, true); };
   try{ if(inp.showPicker) inp.showPicker(); else { inp.focus(); inp.click(); } }catch(e){ try{ inp.focus(); }catch(_e){} }
 }
 function startNotesEdit(){
@@ -4588,8 +4611,9 @@ function startNotesEdit(){
     if(nv){ dn.textContent=nv; dn.classList.remove('empty'); } else { dn.textContent='＋ '+t('addField'); dn.classList.add('empty'); } };
   ta.addEventListener('blur', fin);
 }
-function openDetailObj(c, from){
+function openDetailObj(c, from, keepEdit){
   state.current=c; state.detailFrom=from||'list';
+  if(!keepEdit) _detailEdit=false;
   const hero=document.getElementById('d-hero');
   const strip=document.getElementById('d-strip');
   const ps=photosOf(c);
@@ -4647,19 +4671,24 @@ function openDetailObj(c, from){
   }
   const _isMine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
   const _editable = (state.detailFrom==='list' || state.detailFrom==='stats') && _isMine && !c._welcome;
-  // In edit-capable view, surface enabled-but-empty fields as "＋ hinzufügen" so you can add them inline.
-  if(_editable){
+  const editing = _detailEdit && _editable;
+  // Only in edit mode: surface enabled-but-empty fields as add-rows.
+  if(editing){
     const present=new Set(rows.map(r=>r[0]));
     [['length',t('dLength'),'length',false],['weight',t('dWeight'),'weight',false],['released',t('releasedLabel'),'released',false],['method',t('method'),'method',false],['boat',t('boat'),'boat',false],['trolling',t('trolling'),'trolling',false],['rod',t('rod'),'rod',true],['bait',t('bait'),'bait',true],['water',t('dWater'),'location',true]]
       .forEach(a=>{ try{ if(!present.has(a[0]) && wxOn(a[2])) rows.push([a[0], a[1], '＋ '+t('addField'), a[3], true]); }catch(e){} });
   }
   const EDITABLE_FIELDS={length:1,weight:1,trolling:1,water:1,method:1,bait:1,rod:1,boat:1,released:1,date:1};
-  const specHTML=rows.map(r=>{ const wide=r[3] || (''+r[2]).length>18; const empty=r[4];
-    const ef=_editable && (r[0]==='angler' ? (c._db&&c._ctxId) : EDITABLE_FIELDS[r[0]]);
-    const cls='spec'+(wide?' wide':'')+(ef?' ef':'');
-    const onc=ef?` onclick="startFieldEdit(this,'${r[0]}')"`:'';
-    // editable values: quiet dotted affordance; empty add-rows use the teal "＋" style instead
-    return `<div class="${cls}"${onc}>${dSpecIcon(r[0])}<span class="kv"><span class="k">${r[1]}</span><span class="v${(ef&&!empty)?' editable':''}${empty?' empty':''}">${esc(''+r[2])}</span></span></div>`; }).join('');
+  const specHTML=rows.map(r=>{ const key=r[0]; const wide=r[3] || (''+r[2]).length>18; const empty=r[4];
+    const canEdit=_editable && (key==='angler' ? (c._db&&c._ctxId) : EDITABLE_FIELDS[key]);
+    if(editing && canEdit && INLINE_EF[key]){
+      const cfg=INLINE_EF[key]; const raw=c[cfg.field]; const val=(cfg.mode==='text')?(raw||''):(raw!=null&&raw!==''?String(raw).replace('.',','):'');
+      return `<div class="spec efm${wide?' wide':''}">${dSpecIcon(key)}<span class="kv"><span class="k">${r[1]}</span><span class="efm-field"><input class="efm-in" inputmode="${cfg.mode==='text'?'text':cfg.mode}" data-key="${key}" value="${escAttr(val)}" placeholder="—" onblur="commitEfmInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();efmNext(this);}">${cfg.unit?'<span class="efm-unit">'+esc(cfg.unit)+'</span>':''}</span></span></div>`;
+    }
+    if(editing && canEdit){ // choice / date / angler → tap opens sheet/picker
+      return `<div class="spec efm${wide?' wide':''}" onclick="startFieldEdit(this,'${key}')">${dSpecIcon(key)}<span class="kv"><span class="k">${r[1]}</span><span class="v efm-pick${empty?' empty':''}">${esc(''+r[2])}<svg class="efm-chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6l-6 6"/></svg></span></span></div>`;
+    }
+    return `<div class="spec${wide?' wide':''}">${dSpecIcon(key)}<span class="kv"><span class="k">${r[1]}</span><span class="v">${esc(''+r[2])}</span></span></div>`; }).join('');
   let pbBanner='';
   if(isPb(c)){ const ml = pbMetric()==='weight'? t('msHeaviest') : t('msLongest'); pbBanner = `<div class="pb-banner">${CROWN_IC}<span>${esc(t('pbRecord'))} · ${esc(ml)} ${esc(trSpecies(c.species))}</span></div>`; }
   let medBanner='';
@@ -4672,18 +4701,15 @@ function openDetailObj(c, from){
     const cls = _pr===1?'g':(_pr===2?'s':'b');
     medBanner = `<div class="pb-banner medal-banner medal-${cls}">${MEDAL_IC}<span>${lead}${ord}${esc(mlText)} ${esc(trSpecies(c.species))}${ctxName?' · '+esc(ctxName):''}</span></div>`;
   }
-  document.getElementById('d-rows').innerHTML=pbBanner+medBanner+`<div class="dspecs">${specHTML}</div>`+banner;
-  // first time on an editable catch: pulse the editable values once so users learn they're tappable
-  try{ if(_editable && !localStorage.getItem('bf_edit_hint')){ localStorage.setItem('bf_edit_hint','1');
-    setTimeout(()=>{ document.querySelectorAll('#d-rows .spec.ef').forEach(el=>el.classList.add('ef-hint')); }, 350); } }catch(e){}
-  const nw=document.getElementById('d-notes-wrap'); const dn=document.getElementById('d-notes');
-  if(c.notes){ nw.style.display='block'; dn.textContent=c.notes; dn.classList.remove('empty'); }
-  else if(_editable){ nw.style.display='block'; dn.textContent='＋ '+t('addField'); dn.classList.add('empty'); }
+  const moreBtn = editing ? `<button type="button" class="btn secondary sm dedit-more" onclick="editCurrentCatch()">${esc(t('editMoreFields'))}</button>` : '';
+  document.getElementById('d-rows').innerHTML=pbBanner+medBanner+`<div class="dspecs">${specHTML}</div>`+banner+moreBtn;
+  const nw=document.getElementById('d-notes-wrap'); const dn=document.getElementById('d-notes'); dn.onclick=null; dn.classList.remove('ef-notes','empty');
+  if(editing){ nw.style.display='block'; dn.textContent=''; const ta=document.createElement('textarea'); ta.className='ef-textarea'; ta.value=c.notes||''; ta.placeholder=t('notesPh'); ta.rows=3;
+    ta.addEventListener('blur', function(){ const nv=(ta.value||'').trim()||null; if(nv!==(c.notes||null)) saveDetailField(c,'notes','notes',nv,{}); }); dn.appendChild(ta); }
+  else if(c.notes){ nw.style.display='block'; dn.textContent=c.notes; }
   else nw.style.display='none';
-  if(_editable){ dn.classList.add('ef-notes'); dn.onclick=startNotesEdit; } else { dn.classList.remove('ef-notes'); dn.onclick=null; }
-  const isMine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
-  const editable = (state.detailFrom==='list' || state.detailFrom==='stats') && isMine;
-  document.getElementById('edit-btn').style.display = editable ? '' : 'none';
+  document.getElementById('edit-btn').style.display = (_editable && !_detailEdit) ? '' : 'none';
+  { const _db2=document.getElementById('edit-done-btn'); if(_db2) _db2.style.display = (_editable && _detailEdit) ? '' : 'none'; }
   const mw=document.getElementById('d-map-wrap');
   mw.style.display = c.lat!=null ? 'block' : 'none';
   renderWeather(c); // handles API weather, text-only, and water-temp-only (shows/hides the section itself)
