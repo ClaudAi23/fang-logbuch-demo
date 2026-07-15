@@ -635,7 +635,9 @@
 .lockup-word{display:flex; align-items:center; justify-content:center; font-family:'Barlow',system-ui,sans-serif; font-weight:700; letter-spacing:-.015em; text-transform:lowercase; white-space:nowrap;}
 .lockup-word .lw-butler{color:#F4EFE2;}
 .lockup-word .lw-fish{color:var(--accent);}
-.lockup-word .lw-dot{width:.72em; height:.72em; object-fit:contain; margin:0 .04em; position:relative; top:.06em; flex:0 0 auto;}
+/* The puffer IS the separator dot. Its spines need air or they touch the "r" and the "f" —
+   .04em looked tight at 40px and worse at small sizes, so the gap scales with the wordmark. */
+.lockup-word .lw-dot{width:.72em; height:.72em; object-fit:contain; margin:0 .11em; position:relative; top:.06em; flex:0 0 auto;}
 /* launch choreography — lantern glints, spotlight blooms, puffer settles. Total ≤900ms. */
 .lockup.anim .lockup-fish > img{animation:lkFish .5s cubic-bezier(.2,.8,.2,1) both;}
 .lockup.anim .lockup-glow{animation:lkGlow .6s cubic-bezier(.2,.8,.2,1) both;}
