@@ -627,6 +627,29 @@
   .mascot-band::before{content:""; position:absolute; inset:0; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><polygon points='0,0 32,0 0,32' fill='%23ffffff' opacity='0.05'/><polygon points='64,64 32,64 64,32' fill='%23000000' opacity='0.06'/></svg>"); background-size:64px 64px; mix-blend-mode:overlay;}
   .mascot-band img{position:relative; z-index:1; max-width:86%; max-height:86%; width:auto; height:auto; display:block; filter:drop-shadow(0 6px 14px rgba(0,0,0,.30));}
   .mascot-free{position:relative; display:flex; align-items:center; justify-content:center; background:none; box-shadow:none; overflow:visible;}
+/* ---- Hero lockup: anglerfish + live Barlow wordmark, the puffer IS the "·" in butler·fish.
+   Built once, used on the splash and the login — so the splash→login handoff needs no transition:
+   the mark simply stops animating. Everything scales from the container's font-size. ---- */
+.lockup{display:flex; flex-direction:column; align-items:center; gap:.18em; line-height:1;}
+.lockup-fish{position:relative; width:3.5em; height:3.5em; display:flex; align-items:center; justify-content:center;}
+.lockup-fish > img{position:relative; z-index:1; width:100%; height:100%; object-fit:contain;}
+/* the lure light pooling around the mascot — puffer orange #EB9E18 reads as light, not as paint */
+.lockup-glow{position:absolute; left:50%; top:56%; width:4.2em; height:4.2em; border-radius:50%; z-index:0; pointer-events:none;
+  transform:translate(-50%,-50%); background:radial-gradient(circle, rgba(235,158,24,.50), rgba(235,158,24,.12) 45%, rgba(235,158,24,0) 68%); filter:blur(3px);}
+.lockup-word{display:flex; align-items:center; justify-content:center; font-family:'Barlow',system-ui,sans-serif; font-weight:700; letter-spacing:-.015em; text-transform:lowercase; white-space:nowrap;}
+.lockup-word .lw-butler{color:#F4EFE2;}
+.lockup-word .lw-fish{color:var(--accent);}
+.lockup-word .lw-dot{width:.72em; height:.72em; object-fit:contain; margin:0 .04em; position:relative; top:.06em; flex:0 0 auto;}
+/* launch choreography — lantern glints, spotlight blooms, puffer settles. Total ≤900ms. */
+.lockup.anim .lockup-fish > img{animation:lkFish .5s cubic-bezier(.2,.8,.2,1) both;}
+.lockup.anim .lockup-glow{animation:lkGlow .6s cubic-bezier(.2,.8,.2,1) both;}
+.lockup.anim .lockup-word{animation:lkWord .45s cubic-bezier(.2,.8,.2,1) .22s both;}
+.lockup.anim .lw-dot{animation:lkDot .5s cubic-bezier(.2,.8,.2,1) .4s both;}
+@keyframes lkFish{from{opacity:0; transform:translateY(7px) scale(.95);} to{opacity:1; transform:none;}}
+@keyframes lkGlow{0%{opacity:0; transform:translate(-50%,-50%) scale(.7);} 65%{opacity:1; transform:translate(-50%,-50%) scale(1.12);} 100%{opacity:.9; transform:translate(-50%,-50%) scale(1);}}
+@keyframes lkWord{from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:none;}}
+@keyframes lkDot{0%{opacity:0; transform:scale(.2) rotate(-20deg);} 70%{opacity:1; transform:scale(1.16) rotate(5deg);} 100%{opacity:1; transform:scale(1) rotate(0);}}
+@media(prefers-reduced-motion:reduce){ .lockup.anim .lockup-fish > img, .lockup.anim .lockup-glow, .lockup.anim .lockup-word, .lockup.anim .lw-dot{animation:none;} }
   .mascot-free::before{content:""; position:absolute; inset:-8%; z-index:0; pointer-events:none; border-radius:50%; background:radial-gradient(circle at 50% 46%, rgba(92,206,226,.30), rgba(92,206,226,.08) 46%, transparent 66%);}
   .mascot-free img{position:relative; z-index:1; max-width:99%; max-height:99%; width:auto; height:auto; display:block; filter:drop-shadow(0 0 13px rgba(95,205,225,.5)) drop-shadow(0 8px 18px rgba(0,0,0,.42));}
   .mascot-free.mf-sm::before{inset:-9%; background:radial-gradient(circle at 50% 46%, rgba(96,210,230,.34), rgba(96,210,230,.11) 45%, transparent 67%);}
@@ -686,7 +709,10 @@
 </style>
 </head>
 <body>
-<div id="app-loader"><img src="/mascot.png" alt="ButlerFish"></div>
+<div id="app-loader"><div class="lockup anim" style="font-size:2.5rem;">
+  <div class="lockup-fish"><div class="lockup-glow"></div><img src="/mascot.png" alt=""></div>
+  <div class="lockup-word"><span class="lw-butler">butler</span><img class="lw-dot" src="/puffer.png?v=3" alt="·"><span class="lw-fish">fish</span></div>
+</div></div>
 <div id="app">
   <span id="demo-tag" class="demo-tag" style="display:none;">DEMO</span>
 
@@ -714,8 +740,10 @@
   <section id="s-login" class="screen">
     <div class="scroll pad">
       <div style="height:44px"></div>
-      <div id="login-logo" class="mascot-free" style="width:150px; height:150px; margin:0 auto 20px;"></div>
-      <h1 class="brandname" style="text-align:center; font-size:1.9375rem; margin:0; line-height:1.04;" >Butler<span class="wm-fish">Fish</span></h1>
+      <h1 id="login-logo" class="lockup anim" style="font-size:2.1rem; margin:0 auto;">
+        <div class="lockup-fish"><div class="lockup-glow"></div><img src="/mascot.png" alt=""></div>
+        <div class="lockup-word"><span class="lw-butler">butler</span><img class="lw-dot" src="/puffer.png?v=3" alt="·"><span class="lw-fish">fish</span></div>
+      </h1>
       <p style="text-align:center; margin:9px 0 0;"><span class="beta-pill">Beta</span></p>
       <p class="tagline" style="text-align:center; color:var(--teal-bright); font-weight:500; font-size:1rem; margin:11px 0 30px;" data-i18n="tagline">Fangen · Protokollieren · Organisieren</p>
       <p id="login-intro2" style="text-align:center; color:var(--muted); margin:0 0 22px;" data-i18n="loginIntro2">Gib deine E-Mail ein — wir schicken dir einen Code. Kein Passwort nötig.</p>
@@ -5752,7 +5780,7 @@ applyTheme();
 applyLang();
 if((navigator.maxTouchPoints||0)>0 && navigator.share){ document.getElementById('share-btn').style.display=''; }
 document.getElementById('club-logo').innerHTML=`<img src="/mascot.png" alt="ButlerFish" />`;
-document.getElementById('login-logo').innerHTML=`<img src="/mascot.png" alt="ButlerFish" />`;
+// #login-logo is the hero lockup now (markup lives in the HTML) — don't overwrite it with the bare mascot.
 initAuth();
 _armBack();   // put one guard entry on the history stack so back/swipe is captured in-app
 </script>
