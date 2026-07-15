@@ -460,7 +460,10 @@
   .pb-banner{display:flex; align-items:center; gap:9px; margin-top:10px; padding:9px 12px; border-radius:12px; background:var(--accent); color:#fff; font-weight:600; font-size:0.9rem;}
   .pb-banner svg{width:20px; height:20px; flex:0 0 auto;}
   /* Personal PB shown inline: ochre crown badge to the right of the species name */
-  .d-crown{display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff; vertical-align:middle; margin-left:10px;}
+  .d-crown{position:relative; display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff; vertical-align:middle; margin-left:10px;}
+  /* × badge: makes it visible that the record can be removed (same language as the photo cells) */
+  .d-crown .d-crown-x{position:absolute; top:-5px; right:-5px; width:16px; height:16px; border-radius:50%; background:var(--danger); color:#fff; display:flex; align-items:center; justify-content:center; border:1.5px solid var(--bg);}
+  .d-crown .d-crown-x svg{width:9px; height:9px;}
   .d-crown svg{width:15px; height:15px;}
   .d-crown.ghost{background:transparent; border:1.5px solid var(--accent); color:var(--accent);}
   .d-crown.tap{cursor:pointer;}
@@ -1668,9 +1671,9 @@ Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app
 Object.assign(I18N.de, {membersTitle:"Mitglieder", membersHint:"Verwalte Rollen und entferne Mitglieder.", membersHintMember:"Mitglieder und ihre Rollen.", manageMembers:"Mitglieder verwalten …", viewMembers:"Mitglieder ansehen", me:"ich", loggedByRow:"Erfasst von", unconfirmed:"Noch nicht bestätigt", unconfShort:"unbestätigt", loggedByHint:"Dieser Fang wurde von {name} für dich eingetragen. Bestätige ihn, wenn er stimmt.", unconfirmedHint:"Dieser Fang wartet auf Bestätigung.", confirmCatch:"Bestätigen", rejectCatch:"Ablehnen", confirmReject:"Diesen Fang ablehnen und löschen?", roleMember:"Mitglied", roleAdmin:"Admin", roleTreasurer:"Kassenwart", removeMember:"Entfernen", lastAdminHint:"Der/die letzte Admin kann nicht herabgestuft oder entfernt werden.", confirmRemove:"{name} aus diesem Verein/dieser Gruppe entfernen?", you:"du", roleTapHint:"Tippe eine Rolle an, um sie zu ändern.", openMailbox:"Postfach öffnen", openMailApp:"Mail-App öffnen"});
 Object.assign(I18N.en, {membersTitle:"Members", membersHint:"Manage roles and remove members.", membersHintMember:"Members and their roles.", manageMembers:"Manage members …", viewMembers:"View members", me:"me", loggedByRow:"Logged by", unconfirmed:"Not confirmed yet", unconfShort:"unconfirmed", loggedByHint:"This catch was logged for you by {name}. Confirm it if it's correct.", unconfirmedHint:"This catch is awaiting confirmation.", confirmCatch:"Confirm", rejectCatch:"Reject", confirmReject:"Reject and delete this catch?", roleMember:"Member", roleAdmin:"Admin", roleTreasurer:"Treasurer", removeMember:"Remove", lastAdminHint:"The last admin can't be demoted or removed.", confirmRemove:"Remove {name} from this club/group?", you:"you", roleTapHint:"Tap a role to change it.", openMailbox:"Open mailbox", openMailApp:"Open Mail app"});
 Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen en verwijder leden.", membersHintMember:"Leden en hun rollen.", manageMembers:"Leden beheren …", viewMembers:"Leden bekijken", me:"ik", loggedByRow:"Ingevoerd door", unconfirmed:"Nog niet bevestigd", unconfShort:"onbevestigd", loggedByHint:"Deze vangst is voor jou ingevoerd door {name}. Bevestig als het klopt.", unconfirmedHint:"Deze vangst wacht op bevestiging.", confirmCatch:"Bevestigen", rejectCatch:"Afwijzen", confirmReject:"Deze vangst afwijzen en verwijderen?", roleMember:"Lid", roleAdmin:"Beheerder", roleTreasurer:"Penningmeester", removeMember:"Verwijderen", lastAdminHint:"De laatste beheerder kan niet worden gedegradeerd of verwijderd.", confirmRemove:"{name} uit deze vereniging/groep verwijderen?", you:"jij", roleTapHint:"Tik op een rol om die te wijzigen.", openMailbox:"Postvak openen", openMailApp:"Mail-app openen"});
-Object.assign(I18N.de,{welcomeSpecies:"Phantom-Fisch", welcomeLoc:"In deinen Träumen", welcomeNote:"Willkommen! Das ist nur mein Muster-Fang zum Zeigen — er zählt natürlich nicht und verschwindet, sobald du deinen ersten echten Fang einträgst. — Dein Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Nur zur Demonstration", welcomeHint:"Dein erster echter Fang lässt den Phantom-Fisch verschwinden.", welcomeRemove:"Phantom-Fisch entfernen", pbRecord:"Persönlicher Rekord", pbRemove:"Nicht mein Rekord", pbMark:"Als Rekord markieren", pbNotRecord:"Dieser Fang ist nicht der Rekord", recordsShelfTitle:"Deine Rekorde", clubRecord:"Vereinsrekord", groupRecord:"Gruppenrekord", recordsSettingTitle:"Rekorde & Podium", recordMetricLabel:"Podium-Wertung", recordsEnabledLabel:"Rekorde anzeigen", recordsSettingHint:"Bestimmt, ob im Verein/der Gruppe ein Podium (Gold/Silber/Bronze je Art) angezeigt wird und ob nach Länge oder Gewicht gewertet wird. Nur Admins.", joinedTitle:"Beigetreten!", joinedBody:"Willkommen! Du bist dem Verein bzw. der Gruppe beigetreten.", sortTitle:"Sortieren nach", taSearchPh:"Suchen oder neu eingeben …", recentLabel:"Zuletzt verwendet", allLabel:"Alle", addNewOpt:"neu hinzufügen", addField:"hinzufügen"});
-Object.assign(I18N.en,{welcomeSpecies:"Phantom Fish", welcomeLoc:"In your dreams", welcomeNote:"Welcome! This is just my sample catch to show you around — it doesn't count, and it vanishes the moment you log your first real catch. — Your Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"For demonstration only", welcomeHint:"Your first real catch sends the Phantom Fish away.", welcomeRemove:"Remove Phantom Fish", pbRecord:"Personal best", pbRemove:"Not my record", pbMark:"Mark as record", pbNotRecord:"This catch isn't the record", recordsShelfTitle:"Your records", clubRecord:"Club record", groupRecord:"Group record", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium ranking", recordsEnabledLabel:"Show records", recordsSettingHint:"Controls whether the club/group shows a podium (gold/silver/bronze per species) and whether it ranks by length or weight. Admins only.", joinedTitle:"You're in!", joinedBody:"Welcome! You've joined the club or group.", sortTitle:"Sort by", taSearchPh:"Search or type new …", recentLabel:"Recently used", allLabel:"All", addNewOpt:"add new", addField:"add"});
-Object.assign(I18N.nl,{welcomeSpecies:"Fantoomvis", welcomeLoc:"In je dromen", welcomeNote:"Welkom! Dit is alleen mijn voorbeeldvangst om je op weg te helpen — hij telt niet mee en verdwijnt zodra je je eerste echte vangst vastlegt. — Je Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Alleen ter demonstratie", welcomeHint:"Je eerste echte vangst laat de Fantoomvis verdwijnen.", welcomeRemove:"Fantoomvis verwijderen", pbRecord:"Persoonlijk record", pbRemove:"Niet mijn record", pbMark:"Als record markeren", pbNotRecord:"Deze vangst is niet het record", recordsShelfTitle:"Je records", clubRecord:"Verenigingsrecord", groupRecord:"Groepsrecord", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium-waardering", recordsEnabledLabel:"Records tonen", recordsSettingHint:"Bepaalt of de vereniging/groep een podium toont (goud/zilver/brons per soort) en of er op lengte of gewicht wordt gerangschikt. Alleen beheerders.", joinedTitle:"Je bent lid!", joinedBody:"Welkom! Je bent lid geworden van de vereniging of groep.", sortTitle:"Sorteren op", taSearchPh:"Zoeken of nieuw invoeren …", recentLabel:"Recent gebruikt", allLabel:"Alle", addNewOpt:"nieuw toevoegen", addField:"toevoegen"});
+Object.assign(I18N.de,{welcomeSpecies:"Phantom-Fisch", welcomeLoc:"In deinen Träumen", welcomeNote:"Willkommen! Das ist nur mein Muster-Fang zum Zeigen — er zählt natürlich nicht und verschwindet, sobald du deinen ersten echten Fang einträgst. — Dein Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Nur zur Demonstration", welcomeHint:"Dein erster echter Fang lässt den Phantom-Fisch verschwinden.", welcomeRemove:"Phantom-Fisch entfernen", pbRecord:"Persönlicher Rekord", pbRemove:"Nicht mein Rekord", pbRemovedToast:"Rekord entfernt", pbMarkedToast:"Als Rekord markiert", pbMark:"Als Rekord markieren", pbNotRecord:"Dieser Fang ist nicht der Rekord", recordsShelfTitle:"Deine Rekorde", clubRecord:"Vereinsrekord", groupRecord:"Gruppenrekord", recordsSettingTitle:"Rekorde & Podium", recordMetricLabel:"Podium-Wertung", recordsEnabledLabel:"Rekorde anzeigen", recordsSettingHint:"Bestimmt, ob im Verein/der Gruppe ein Podium (Gold/Silber/Bronze je Art) angezeigt wird und ob nach Länge oder Gewicht gewertet wird. Nur Admins.", joinedTitle:"Beigetreten!", joinedBody:"Willkommen! Du bist dem Verein bzw. der Gruppe beigetreten.", sortTitle:"Sortieren nach", taSearchPh:"Suchen oder neu eingeben …", recentLabel:"Zuletzt verwendet", allLabel:"Alle", addNewOpt:"neu hinzufügen", addField:"hinzufügen"});
+Object.assign(I18N.en,{welcomeSpecies:"Phantom Fish", welcomeLoc:"In your dreams", welcomeNote:"Welcome! This is just my sample catch to show you around — it doesn't count, and it vanishes the moment you log your first real catch. — Your Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"For demonstration only", welcomeHint:"Your first real catch sends the Phantom Fish away.", welcomeRemove:"Remove Phantom Fish", pbRecord:"Personal best", pbRemove:"Not my record", pbRemovedToast:"Record removed", pbMarkedToast:"Marked as record", pbMark:"Mark as record", pbNotRecord:"This catch isn't the record", recordsShelfTitle:"Your records", clubRecord:"Club record", groupRecord:"Group record", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium ranking", recordsEnabledLabel:"Show records", recordsSettingHint:"Controls whether the club/group shows a podium (gold/silver/bronze per species) and whether it ranks by length or weight. Admins only.", joinedTitle:"You're in!", joinedBody:"Welcome! You've joined the club or group.", sortTitle:"Sort by", taSearchPh:"Search or type new …", recentLabel:"Recently used", allLabel:"All", addNewOpt:"add new", addField:"add"});
+Object.assign(I18N.nl,{welcomeSpecies:"Fantoomvis", welcomeLoc:"In je dromen", welcomeNote:"Welkom! Dit is alleen mijn voorbeeldvangst om je op weg te helpen — hij telt niet mee en verdwijnt zodra je je eerste echte vangst vastlegt. — Je Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Alleen ter demonstratie", welcomeHint:"Je eerste echte vangst laat de Fantoomvis verdwijnen.", welcomeRemove:"Fantoomvis verwijderen", pbRecord:"Persoonlijk record", pbRemove:"Niet mijn record", pbRemovedToast:"Record verwijderd", pbMarkedToast:"Als record gemarkeerd", pbMark:"Als record markeren", pbNotRecord:"Deze vangst is niet het record", recordsShelfTitle:"Je records", clubRecord:"Verenigingsrecord", groupRecord:"Groepsrecord", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium-waardering", recordsEnabledLabel:"Records tonen", recordsSettingHint:"Bepaalt of de vereniging/groep een podium toont (goud/zilver/brons per soort) en of er op lengte of gewicht wordt gerangschikt. Alleen beheerders.", joinedTitle:"Je bent lid!", joinedBody:"Welkom! Je bent lid geworden van de vereniging of groep.", sortTitle:"Sorteren op", taSearchPh:"Zoeken of nieuw invoeren …", recentLabel:"Recent gebruikt", allLabel:"Alle", addNewOpt:"nieuw toevoegen", addField:"toevoegen"});
 Object.assign(I18N.de, {fldLockedHint:"Immer dabei – kann nicht abgewählt werden.", dangerZone:"Gefahrenzone", deleteAccount:"Konto löschen", deleteAccountHint:"Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.", confirmDeleteAccount:"Konto wirklich löschen? Alle deine Daten werden unwiderruflich gelöscht.", confirmDeleteAccount2:"Letzte Warnung: Das kann nicht rückgängig gemacht werden. Fortfahren?", accountDeletedTitle:"Konto gelöscht", accountDeletedBody:"Dein Konto und deine Daten wurden gelöscht.", leaveAreaBtn:"Verein/Gruppe verlassen", deleteContext:"Verein/Gruppe löschen", deleteContextHint:"Löscht alles unwiderruflich: Mitgliedschaften, Fänge und Fotos.", confirmDeleteContext:"„{name}“ wirklich löschen? Alle Mitgliedschaften, Fänge und Fotos werden unwiderruflich gelöscht.", confirmLeave:"„{name}“ verlassen?", soleAdminLeave:"Du bist der/die einzige Admin. Mach zuerst jemanden zum Admin oder lösche den Verein/die Gruppe."});
 Object.assign(I18N.en, {fldLockedHint:"Always included – can't be turned off.", dangerZone:"Danger zone", deleteAccount:"Delete account", deleteAccountHint:"Permanently deletes your account and all your data (catches, photos, memberships).", confirmDeleteAccount:"Really delete your account? All your data will be permanently deleted.", confirmDeleteAccount2:"Last warning: this cannot be undone. Continue?", accountDeletedTitle:"Account deleted", accountDeletedBody:"Your account and data have been deleted.", leaveAreaBtn:"Leave club/group", deleteContext:"Delete club/group", deleteContextHint:"Permanently deletes everything: memberships, catches and photos.", confirmDeleteContext:"Really delete \"{name}\"? All memberships, catches and photos will be permanently deleted.", confirmLeave:"Leave \"{name}\"?", soleAdminLeave:"You are the only admin. Make someone else an admin first, or delete the club/group."});
 Object.assign(I18N.nl, {fldLockedHint:"Altijd inbegrepen – kan niet worden uitgezet.", dangerZone:"Gevarenzone", deleteAccount:"Account verwijderen", deleteAccountHint:"Verwijdert je account en al je gegevens (vangsten, foto's, lidmaatschappen) definitief.", confirmDeleteAccount:"Account echt verwijderen? Al je gegevens worden definitief verwijderd.", confirmDeleteAccount2:"Laatste waarschuwing: dit kan niet ongedaan worden gemaakt. Doorgaan?", accountDeletedTitle:"Account verwijderd", accountDeletedBody:"Je account en gegevens zijn verwijderd.", leaveAreaBtn:"Vereniging/groep verlaten", deleteContext:"Vereniging/groep verwijderen", deleteContextHint:"Verwijdert alles definitief: lidmaatschappen, vangsten en foto's.", confirmDeleteContext:"\"{name}\" echt verwijderen? Alle lidmaatschappen, vangsten en foto's worden definitief verwijderd.", confirmLeave:"\"{name}\" verlaten?", soleAdminLeave:"Je bent de enige beheerder. Maak eerst iemand anders beheerder of verwijder de vereniging/groep."});
@@ -2561,7 +2564,7 @@ function dbRowToCatch(row, photoUrls, thumbUrls){
     date: row.caught_at, notes: row.notes||'', moon: row.moon||null, weather: row.weather||null,
     angler: (state.me&&state.me.name)||'', userId: row.owner_id,
     loggedBy: row.logged_by||null, loggedByName:null, confirmed: row.confirmed!==false, _db:true, _ctxId: row.context_id||null, _ctxIds: row.context_ids||null, coverPos: row.cover_pos||null,
-    pbLen: row.pb_length===true, pbWt: row.pb_weight===true
+    pbLen: row.pb_length===true, pbWt: row.pb_weight===true, pbOptout: row.pb_optout===true
   , photos: photoUrls||[], photo: (photoUrls&&photoUrls[0])||null, thumbs: (thumbUrls&&thumbUrls.length)?thumbUrls:(photoUrls||[]) };
 }
 // cache signed photo URLs by path so reloads reuse the SAME url (browser cache hit → no re-download flash)
@@ -3536,15 +3539,17 @@ const WX_IC={
 };
 function wxIcon(t){ return `<svg viewBox="0 0 24 24">${WX_IC[t]||''}</svg>`; }
 // Phase-accurate mono moon icons (replacing the old emoji): outline disc + the lit part filled.
+// Lit part = outer semicircle + a terminator ellipse. The second arc's sweep flag decides crescent vs gibbous:
+// same direction as the semicircle → the terminator cuts in (crescent); opposite → it bulges out (gibbous).
 const MOON_IC={
   m_new: '',
-  m_wc:  '<path d="M12 3 A 9 9 0 0 1 12 21 A 5 9 0 0 1 12 3 Z" fill="currentColor" stroke="none"/>',
+  m_wc:  '<path d="M12 3 A 9 9 0 0 1 12 21 A 5 9 0 0 0 12 3 Z" fill="currentColor" stroke="none"/>',
   m_fq:  '<path d="M12 3 A 9 9 0 0 1 12 21 Z" fill="currentColor" stroke="none"/>',
-  m_wg:  '<path d="M12 3 A 9 9 0 0 1 12 21 A 5 9 0 0 0 12 3 Z" fill="currentColor" stroke="none"/>',
+  m_wg:  '<path d="M12 3 A 9 9 0 0 1 12 21 A 5 9 0 0 1 12 3 Z" fill="currentColor" stroke="none"/>',
   m_full:'<circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/>',
-  m_ng:  '<path d="M12 3 A 9 9 0 0 0 12 21 A 5 9 0 0 1 12 3 Z" fill="currentColor" stroke="none"/>',
+  m_ng:  '<path d="M12 3 A 9 9 0 0 0 12 21 A 5 9 0 0 0 12 3 Z" fill="currentColor" stroke="none"/>',
   m_lq:  '<path d="M12 3 A 9 9 0 0 0 12 21 Z" fill="currentColor" stroke="none"/>',
-  m_nc:  '<path d="M12 3 A 9 9 0 0 0 12 21 A 5 9 0 0 0 12 3 Z" fill="currentColor" stroke="none"/>'
+  m_nc:  '<path d="M12 3 A 9 9 0 0 0 12 21 A 5 9 0 0 1 12 3 Z" fill="currentColor" stroke="none"/>'
 };
 function moonIcon(key){ return `<svg viewBox="0 0 24 24" class="moon-ic"><circle cx="12" cy="12" r="9"/>${MOON_IC[key]||''}</svg>`; }
 function renderWeatherInto(weather, date, boxId, wrapId, watertemp){
@@ -3586,8 +3591,12 @@ function renderWeatherInto(weather, date, boxId, wrapId, watertemp){
   if(watertemp!=null) cells.push(card('droplet',t('wWaterTemp'), num(watertemp,1)+' °C', false));
   if(wxOn('wxWind')) cells.push(card('wind',t('wWind'), num(cur.wind,0)+' km/h', false, wChip));
   if(wxOn('wxPress')) cells.push(card('gauge',t('wPressure'), num(cur.pressure,0)+' hPa', false, pChip));
-  // Phase-accurate icon + the phase name — no trend chip: the name already carries waxing/waning (JC).
-  if(wxOn('wxMoon')) cells.push(card(moonIcon(moonKey), t('moon'), esc(t(moonKey)), false));
+  // Phase-accurate icon + the phase name — no trend chip: the name already carries waxing/waning.
+  // Exception (JC): the two quarters look identical apart from the mirroring, so they get a bare + / −.
+  if(wxOn('wxMoon')){
+    const qd = moonKey==='m_fq' ? {txt:'+', dir:'up'} : (moonKey==='m_lq' ? {txt:'−', dir:'down'} : null);
+    cells.push(card(moonIcon(moonKey), t('moon'), esc(t(moonKey)), false, qd));
+  }
   if(!cells.length){ if(showEl) showEl.style.display='none'; return; }
   if(showEl) showEl.style.display='block';
   let html='<div class="wx-grid">'+cells.join('')+'</div>';
@@ -4693,19 +4702,20 @@ function speciesHasRecord(c){
   const arr=((state.myAllCatches&&state.myAllCatches.length)?state.myAllCatches:state.catches)||[];
   return arr.some(x=> x && x.id!==c.id && x.species===c.species && isPb(x));
 }
-function openPbMenu(ev){
-  if(ev){ try{ ev.stopPropagation(); }catch(e){} }
+// No menu: every state has exactly one action, so the affordance IS the action.
+// Crown with an × → remove it. Ghost crown → make this the record (mark, or take it back after an opt-out).
+// Reversible either way, so a toast beats a confirm dialog.
+async function pbRemoveCrown(ev){
+  if(ev){ try{ ev.stopPropagation(); ev.preventDefault(); }catch(e){} }
   const c=state.current; if(!c||!pbCtlOn(c)) return;
-  const mine=isPb(c);
-  if(!mine && speciesHasRecord(c)) return;   // (a): nothing to offer here — the crown lives on the record
-  const opts=[];
-  if(mine) opts.push({v:t('pbRemove'), key:'__remove'});
-  else opts.push({v:t('pbMark'), key:'__mark'});
-  openTypeaheadCfg({ title:t('pbRecord'), allowNew:false, curVal:()=>'', recent:()=>[], opts:()=>opts,
-    onPick:async(v,key)=>{
-      if(key==='__remove') return pbSetFlag(c, {pb_optout:true, pb_manual:false});
-      if(key==='__mark')   return pbSetFlag(c, {pb_manual:true, pb_optout:false});
-    } });
+  await pbSetFlag(c, {pb_optout:true, pb_manual:false});
+  try{ toast(t('pbRemovedToast')); }catch(e){}
+}
+async function pbMarkCrown(ev){
+  if(ev){ try{ ev.stopPropagation(); ev.preventDefault(); }catch(e){} }
+  const c=state.current; if(!c||!pbCtlOn(c)) return;
+  await pbSetFlag(c, {pb_manual:true, pb_optout:false});
+  try{ toast(t('pbMarkedToast')); }catch(e){}
 }
 async function pbSetFlag(c, patch){
   try{
@@ -4924,13 +4934,14 @@ function openDetailObj(c, from, keepEdit){
   const _heroCrown = isPb(c) ? (c._db
     ? `<span class="d-hero-crown withtx" title="${esc(t('pbRecord'))}" aria-label="${esc(t('pbRecord'))}">${CROWN_IC}<span>PB</span></span>`
     : `<span class="d-hero-crown" title="${esc(t('pbRecord'))}" aria-label="${esc(t('pbRecord'))}">${CROWN_IC}</span>`) : '';
-  // Band crown (edit mode / no-photo): in edit mode it's the entry point for the manual PB control.
-  // Option (a): the ghost crown only appears when marking is actually possible (no record for this species yet).
-  // If another catch holds the record there is nothing to do here → no crown, no dead-end menu.
+  // Band crown (edit mode / no-photo) = the manual PB control.
+  // Record → crown carries an × (visibly removable). Not the record → ghost crown only when a tap does something:
+  // either nothing holds the record yet (mark), or this one was opted out (take it back). Otherwise no crown.
   const _pbTap = _detailEdit && pbCtlOn(c);
+  const _pbGhost = _pbTap && !isPb(c) && (c.pbOptout===true || !speciesHasRecord(c));
   const _bandCrown = isPb(c)
-    ? `<span class="d-crown${_pbTap?' tap':''}"${_pbTap?' onclick="openPbMenu(event)" role="button" tabindex="0"':''} title="${esc(t('pbRecord'))}" aria-label="${esc(t('pbRecord'))}">${CROWN_IC}</span>`
-    : ((_pbTap && !speciesHasRecord(c)) ? `<span class="d-crown ghost tap" onclick="openPbMenu(event)" role="button" tabindex="0" title="${esc(t('pbMark'))}" aria-label="${esc(t('pbMark'))}">${CROWN_IC}</span>` : '');
+    ? `<span class="d-crown${_pbTap?' tap':''}"${_pbTap?' onclick="pbRemoveCrown(event)" role="button" tabindex="0"':''} title="${esc(_pbTap?t('pbRemove'):t('pbRecord'))}" aria-label="${esc(_pbTap?t('pbRemove'):t('pbRecord'))}">${CROWN_IC}${_pbTap?`<span class="d-crown-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></span>`:''}</span>`
+    : (_pbGhost ? `<span class="d-crown ghost tap" onclick="pbMarkCrown(event)" role="button" tabindex="0" title="${esc(t('pbMark'))}" aria-label="${esc(t('pbMark'))}">${CROWN_IC}</span>` : '');
   const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
   if(_detailEdit){
     // EDIT MODE (unchanged): editable photo grid, plain band with species, no byline
