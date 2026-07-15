@@ -1,8 +1,11 @@
 /* ButlerFish — service worker (offline app shell) */
-const CACHE = 'fb-shell-v7';
+/* v8: puffer icon set — the old shell cached the anglerfish icons, so this bump is what
+   actually makes installed PWAs pick the new icon up (the ?v= query alone can't evict them). */
+const CACHE = 'fb-shell-v8';
 const SHELL = [
   '/', '/index.html', '/site.webmanifest',
-  '/icon-192.png', '/icon-512.png', '/apple-touch-icon-180.png', '/favicon.ico',
+  '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/apple-touch-icon-180.png',
+  '/favicon.ico', '/favicon.svg',
   '/logo.png', '/mascot.png'
 ];
 
