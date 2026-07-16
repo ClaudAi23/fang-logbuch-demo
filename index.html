@@ -5064,7 +5064,15 @@ function taEnter(){ const q=(document.getElementById('ta-search').value||'').tri
 
 // ---------- detail ----------
 function openDetail(id){ const c=state.catches.find(x=>x.id===id); if(c) openDetailObj(c,'list'); }
-function detailBack(){ if(_detailEdit){ _detailEdit=false; persistDetailPhotos().catch(function(){}); } go(state.detailFrom||'list'); }
+function detailBack(){
+  if(_detailEdit){ _detailEdit=false; persistDetailPhotos().catch(function(){}); }
+  const to=state.detailFrom||'list';
+  /* The thumbnails are rendered HTML, not bound to state. Re-cropping the hero updated the catch
+     object but left the list DOM exactly as it was, so going back showed the old crop until the app
+     was reloaded. Re-render the screen we are returning to. */
+  try{ if(to==='list') renderList(); else if(to==='stats') renderStats(); }catch(e){}
+  go(to);
+}
 function _detailScroll(){
   const sc=document.querySelector('#s-detail .scroll'); const h=document.getElementById('d-htitle'); if(!sc||!h) return;
   const hero=document.getElementById('d-hero');
