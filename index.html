@@ -481,8 +481,10 @@
      instead of pushing the badge off the edge. */
   .d-byline{display:grid; grid-template-columns:26px minmax(0,1fr) auto; gap:2px 9px; align-items:center;
     padding:12px 18px; border-bottom:1px solid var(--border);}
-  .d-byline .dt{grid-column:2 / span 2; grid-row:2; font-size:0.8rem; color:var(--muted);}
-  .d-rel{grid-column:3; grid-row:1; justify-self:end; display:inline-flex; align-items:center; gap:5px;
+  .d-byline .dt{grid-column:2; grid-row:2; font-size:0.8rem; color:var(--muted);}
+  /* The badge belongs to the whole entry, not to the name -> it spans both rows and sits centred,
+     on one axis with the avatar. dt must stay in column 2 only, or it would slide under the badge. */
+  .d-rel{grid-column:3; grid-row:1 / span 2; align-self:center; justify-self:end; display:inline-flex; align-items:center; gap:5px;
     font-size:.72rem; font-weight:600; padding:3px 9px; border-radius:999px; white-space:nowrap;}
   .d-rel svg{width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
   /* Released is the statement anglers are proud of -> teal. Kept is neutral, NOT red: keeping a
@@ -4991,7 +4993,9 @@ function _anglerByline(c){
   return `<span class="av">${av}</span><span class="nm">${esc(nm)}</span>${rel}<span class="dt">${esc(fmtDateLong(c.date))}</span>`;
 }
 const REL_IC='<svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
-const KEPT_IC='<svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>';
+/* Only "released" gets an icon, and the asymmetry is the point: releasing is the statement, keeping
+   is the neutral default. The previous plus sign meant "add" and said nothing about the fish. */
+const KEPT_IC='';
 const D_SPEC_IC={
   angler:'<path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>',
   water:'<path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0"/>',
