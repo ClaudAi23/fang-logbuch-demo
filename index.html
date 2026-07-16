@@ -5946,7 +5946,11 @@ function openDetailObj(c, from, keepEdit){
       mine.forEach(r=>used.add(r[0]));
       if(!mine.length) return '';
       // The how-block carries its own field labels (J3), so it gets no section heading above it.
-      if(lab==='gTilesHow' && !editing){ const b=_howBlock(mine); if(b) return b; }
+      /* The how-block gets its heading back (JC): it was the only section without one, and my reason
+         for dropping it has expired. I removed it when the method still sat there in big Condensed
+         caps — a title over a title. The method is a plain 15px value now, so the shape is exactly the
+         weather's: WETTER → BEDINGUNGEN → bewölkt, WIE GEFANGEN → METHODE → Trolling. */
+      if(lab==='gTilesHow' && !editing){ const b=_howBlock(mine); if(b) return `<div class="sectionlabel dmh-out">${esc(t(lab))}</div>`+b; }
       const inner = editing ? `<div class="dspecs">${mine.map(_specOne).join('')}</div>`
                             : `<div class="wx-grid">${mine.map(_specOne).join('')}</div>`;
       return `<div class="sectionlabel dmh-out">${esc(t(lab))}</div>${inner}`;
