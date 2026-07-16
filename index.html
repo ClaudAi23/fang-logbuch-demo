@@ -378,8 +378,11 @@
   .wtr.tr-flat{color:var(--muted);}
   .wtrend-note{font-size:0.6875rem; color:var(--muted); margin:10px 0 2px;}
   .wspark-cap{font-size:0.6875rem; color:var(--muted); text-align:center; margin-top:4px;}
-  .wsrc{margin-top:8px; text-align:right;}
-  .wsrc a{color:var(--muted); font-size:0.75rem; text-decoration:none;}
+  /* The source line is the sibling of the trend note, not a footer: same size, same left edge,
+     directly beneath it. It was 0.75rem and right-aligned — two small differences that made the
+     two lines look like they came from different places. margin-top 8 -> 2 closes the gap. */
+  .wsrc{margin-top:2px; text-align:left;}
+  .wsrc a{color:var(--muted); font-size:0.6875rem; text-decoration:none;}
   .wsrc a:hover{text-decoration:underline;}
 
   .sectionlabel{font-size:0.75rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:4px 4px 10px;}
