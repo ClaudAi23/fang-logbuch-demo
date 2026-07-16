@@ -4028,7 +4028,10 @@ function renderWeatherInto(weather, date, boxId, wrapId, watertemp){
      Its own label key: t('moon') still reads "Mondphase" in the share text, where no heading helps. */
   if(wxOn('wxMoon')){
     const qd = moonKey==='m_fq' ? {txt:'+', dir:'up'} : (moonKey==='m_lq' ? {txt:'−', dir:'down'} : null);
-    cells.push(`<div class="wx-card"><span class="k">${esc(t('wMoon'))}</span><span class="v moon-v">${moonIcon(moonKey)}${esc(t(moonKey))}${qd?`<span class="tr ${qd.dir}">${esc(qd.txt)}</span>`:''}</span></div>`);
+    /* Two moons, two jobs (JC): the label keeps a static crescent like every other label here — it marks
+       the CATEGORY, same as the thermometer on "Luft". The value carries the phase-accurate disc, which
+       is the DATA. A crescent reads as "moon" and cannot be mistaken for a phase reading. */
+    cells.push(`<div class="wx-card"><span class="k">${wxIcon('moon')}${esc(t('wMoon'))}</span><span class="v moon-v">${moonIcon(moonKey)}${esc(t(moonKey))}${qd?`<span class="tr ${qd.dir}">${esc(qd.txt)}</span>`:''}</span></div>`);
   }
   if(!cells.length){ if(showEl) showEl.style.display='none'; return; }
   if(showEl) showEl.style.display='block';
