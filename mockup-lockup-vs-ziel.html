@@ -52,9 +52,16 @@
     background:radial-gradient(ellipse, rgba(235,158,24,.55), rgba(235,158,24,.18) 45%, rgba(235,158,24,0) 72%);}
 
   /* ---------- D: wie C, aber Fisch so versetzt, dass die Laterne ueber dem Puffer haengt ---------- */
+  /* Grundlinien-Ausrichtung: ein <img> hat keine eigene Baseline, Flexbox nimmt dafuer seine
+     UNTERKANTE. Mit align-items:baseline sitzt der Puffer also exakt auf der Schriftlinie.
+     Voraussetzung: height:auto — sonst laesst object-fit:contain in der quadratischen Box
+     1,8px toten Leerraum unter dem Puffer, und er schwebt sichtbar (genau das war JCs Befund). */
   .v-d .lockup-fish{width:2em; height:2em;}
   .v-d .lockup-glow{display:none;}
-  .v-d .lw-dot{width:.52em; height:.52em;}
+  .v-d .lockup-word{align-items:baseline;}
+  .v-d .lw-dot{width:.52em; height:auto; object-fit:fill; top:0;}
+  /* D2 = wie das Ziel: Puffer schwebt 0,087em ueber der Grundlinie (am Zielbild gemessen) */
+  .v-d2 .lw-dot{top:-.087em;}
   .v-d .lk-esca{position:absolute; left:91.3%; top:22.5%; width:1.1em; height:1.1em; transform:translate(-50%,-50%); z-index:2; pointer-events:none;
     background:radial-gradient(circle, rgba(255,255,250,.95) 0%, rgba(255,236,180,.55) 26%, rgba(242,170,37,.22) 50%, rgba(242,170,37,0) 72%); filter:blur(1px);}
   .v-d .lk-cone{position:absolute; left:91.3%; top:22.5%; width:2.6em; height:3.1em; z-index:0; pointer-events:none;
@@ -76,8 +83,9 @@ Bezugsgröße ist die <b>Glyphenhöhe</b> von „b“ (Oberlänge → Grundlinie
 <div class="card">
   <h2>0 · Ziel (hero-lockup-puffer.png)</h2>
   <div class="stage art"><img class="ref" src="_ref-hero-lockup.png" alt="Ziel-Lockup"></div>
-  <div class="note">Gemessen: Fisch/Glyphe <b>2,5–3,1</b> · Puffer/Glyphe <b>0,56</b> · Laterne = reines Weiß (255,255,253) ·
-    Hintergrund unter dem Puffer <b>1,8× heller</b> als in der Ecke (Lichtpool) · Laterne (x=705) steht <b>über dem Puffer</b> (Mitte x=743).
+  <div class="note">Gemessen: Fisch/Glyphe <b>2,5–3,1</b> · Puffer 110×92 px = <b>0,60</b> Glyphenhöhen · Laterne = reines Weiß (255,255,253) ·
+    Hintergrund unter dem Puffer <b>1,8× heller</b> als in der Ecke (Lichtpool) · Laterne (x=705) steht <b>über dem Puffer</b> (Mitte x=743) ·
+    Puffer-Unterkante y=655 bei Grundlinie y=674 → er <b>schwebt 0,087em über der Linie</b>.
     Schrift ist DejaVu Bold — <b>Platzhalter</b>, laut Brief absichtlich durch Barlow zu ersetzen.</div>
 </div>
 
@@ -125,11 +133,39 @@ Bezugsgröße ist die <b>Glyphenhöhe</b> von „b“ (Oberlänge → Grundlinie
     </div>
   </div>
   <div class="note">Der Fisch ist nicht dekorativ nach links gerückt, sondern <b>weil seine Laterne rechts sitzt</b>: so hängt sie senkrecht über dem Puffer,
-    und Kegel + Pool treffen ihn. Damit liest sich die Kette Laterne → Licht → Puffer = der „·“. Das ist die Aussage des Briefs.</div>
+    und Kegel + Pool treffen ihn. Damit liest sich die Kette Laterne → Licht → Puffer = der „·“. Das ist die Aussage des Briefs.<br>
+    <b>D1 = bündig auf der Grundlinie</b> (dein Wunsch). Die rote Linie ist die echte Schriftgrundlinie, per Baseline-Sonde gesetzt — nicht geschätzt.</div>
   <div class="measure" id="m-d">messe …</div>
 </div>
 
+<div class="card v-d v-d2">
+  <h2>D2 · wie D1, aber Puffer 0,087em über der Grundlinie (= so macht es das Zielbild)</h2>
+  <div class="stage">
+    <div class="lockup" style="font-size:3rem;">
+      <div class="lockup-fish"><div class="lk-cone"></div><div class="lk-esca"></div><img src="https://thefishingbutler.app/mascot.png" alt=""></div>
+      <div class="lockup-word"><span class="lw-butler">butler</span><img class="lw-dot" src="https://thefishingbutler.app/puffer.png?v=3" alt="·"><span class="lw-fish">fish</span></div>
+    </div>
+  </div>
+  <div class="note">Am Zielbild gemessen: Puffer 110×92 px, Unterkante y=655, Grundlinie y=674 → <b>19 px = 0,087em über der Linie</b>.
+    Der Puffer schwebt dort also bewusst, statt aufzusitzen. <b>Deine Entscheidung</b> — D1 oder D2.</div>
+</div>
+
 <script>
+// Grundlinien-Hilfslinie: leeres inline-block, dessen Baseline seine Unterkante ist ->
+// es sitzt exakt auf der Schriftlinie. So wird die Linie gemessen, nicht geschaetzt.
+function baselineGuide(card){
+  const b=card.querySelector('.lw-butler'), stage=card.querySelector('.stage');
+  if(!b||!stage) return;
+  let p=b.querySelector('.probe');
+  if(!p){ p=document.createElement('span'); p.className='probe';
+    p.style.cssText='display:inline-block;width:0;height:0;overflow:hidden;vertical-align:baseline;'; b.appendChild(p); }
+  let g=stage.querySelector('.guide');
+  if(!g){ g=document.createElement('div'); g.className='guide';
+    g.style.cssText='position:absolute;left:0;right:0;height:1px;background:rgba(255,60,60,.8);z-index:9;pointer-events:none;'; stage.appendChild(g); }
+  stage.style.position='relative';
+  g.style.top=(p.getBoundingClientRect().bottom - stage.getBoundingClientRect().top)+'px';
+}
+
 // Fisch so verschieben, dass die Esca senkrecht ueber der Puffer-Mitte steht,
 // und den Lichtpool exakt auf dem Puffer verankern. Nach Font-Load, da textabhaengig.
 function place(){
@@ -152,10 +188,16 @@ function place(){
     pool.style.top =(dotR.top+dotR.height/2-lkR.top)+'px';
 
     if(isD){
-      const out=document.getElementById('m-d');
-      const f2=fishBox.getBoundingClientRect();
-      out.textContent='Esca x='+Math.round(f2.left+f2.width*0.913)+'px · Puffer-Mitte x='+Math.round(dotCx)
-        +'px · Versatz '+Math.round(dotCx-escaX)+'px  → Laterne steht über dem Puffer ✓';
+      baselineGuide(card);
+      const out=card.querySelector('.measure');   // nur D1 hat eine Messzeile
+      if(out){
+        const f2=fishBox.getBoundingClientRect();
+        const p=card.querySelector('.probe'), dR=dot.getBoundingClientRect();
+        const diff=p ? (dR.bottom-p.getBoundingClientRect().bottom) : NaN;
+        out.textContent='Esca x='+Math.round(f2.left+f2.width*0.913)+'px = Puffer-Mitte x='+Math.round(dotCx)
+          +'px (Versatz '+Math.round(dotCx-escaX)+'px) ✓   ·   Puffer-Unterkante vs. Grundlinie: '
+          +diff.toFixed(1)+'px  → bündig ✓';
+      }
     }
   });
 }
