@@ -6,6 +6,55 @@ Stand: 12. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt)
 
 > **Prozess-Regel (JC):** Bei **Diskussions-/Entscheidungspunkten** legt Claude Optionen vor und **wartet auf JC's Entscheidung** — keine Alleingänge, außer JC sagt ausdrücklich „bau es".
 
+## 🔧 Fotos lassen sich nicht umsortieren (JC, 16. Juli)
+Im Fotoeditor gibt es **nur „Titelbild setzen"** (`setFormCover`) — das schiebt ein Bild auf Platz 1.
+Eine echte Umsortierung (Bild 3 vor Bild 2) ist nicht baubar, die Reihenfolge ergibt sich allein daraus,
+in welcher Folge man Titelbilder setzt. JC hat die Reihenfolge nur über diesen Umweg ändern können.
+Die Daten können es längst: `catch_photos.sort` ist eine eigene Spalte, und `saveSoloPhotos` schreibt
+sie aus der Reihenfolge von `state.editPhotos`. Es fehlt **nur die Bedienung** — Ziehen im Raster oder
+Pfeile. Vorschlag steht aus, nichts entschieden.
+
+## 🔧 Test-Log-Knopf sitzt falsch — muss weg (JC, 16. Juli)
+Der Knopf **„Test-Log an/aus"** steht **ganz oben in Einstellungen → Persönlich**, direkt über „Profil" —
+also an prominentester Stelle in einem Tab, den jeder Nutzer sieht. Er war nur für den Zuschnitt-Test
+am Gerät gedacht. Erster Versuch war die Gefahrenzone; die hängt am Verein/Gruppe-Tab und war für JC
+gar nicht erreichbar, deshalb der Umzug nach oben — schnell, nicht richtig.
+
+**Nach dem Test ersatzlos entfernen** (nicht verschieben): den Knopf, `dbgToggle()`, `dbgCopy()`,
+`dlog()`, die `.dbg-*`-CSS-Regeln, den `bf_dbg`-Eintrag in localStorage und die `dlog`-Aufrufe in
+`saveCoverPos`, `rowsToCatches` und `saveSoloPhotos`.
+**Eine Sache aus dem Log aber behalten:** `saveCoverPos` hat Datenbankfehler vorher mit
+`.then(()=>{}, ()=>{})` stillschweigend verschluckt. Das Melden bleibt — nur eben nicht ins Test-Panel.
+
+## 🔧 Gewässername aus dem Pin **vorschlagen** (JC, 16. Juli — Ansatz steht, Details offen)
+**Entschieden (JC): vorschlagen, nicht setzen.** Beim Setzen eines Pins auf ein **leeres** Namensfeld
+schlägt die App einen Namen vor, den JC antippen oder ignorieren kann. **Nie überschreiben, nie
+automatisch** — sonst kostet ein verschobener Pin den handgetippten Namen („Hausstrecke").
+
+Recherchiert (16. Juli), damit es nicht später auffällt:
+- **Nominatim-Richtlinie:** max. **1 Anfrage/Sekunde**, **eigener User-Agent** Pflicht (Standard-Header
+  der HTTP-Bibliotheken reichen ausdrücklich nicht), **systematische Abfragen verboten**. Einzelne
+  Pin-Setzungen sind unkritisch; **einmal über alle Altfänge laufen wäre genau der verbotene Fall.**
+- **Der harte Teil ist inhaltlich:** Reverse Geocoding liefert eine **Adresse**, keinen Gewässernamen.
+  Ein Pin auf dem Kleinen Brombachsee ergibt „Absberg, Weißenburg-Gunzenhausen, Bayern". Für den See
+  bräuchte es eine gezielte Suche nach `natural=water` in der Umgebung — und ein Pin am Ufer trifft
+  womöglich eine Wiese. Dazu: OSM-Namen sind oft nicht das, was Angler sagen.
+- Offen: Welcher Dienst? Vorschlag nur bei leerem Feld oder auch als „passt das noch?" nach dem
+  Verschieben? Was bei mehreren Wasserflächen in Reichweite?
+
+## 💬 Fußnoten, Kartenquelle, „In Karten öffnen" (JC, 16. Juli — zu diskutieren)
+JC ist mit den Notizen unter dem Wetter unzufrieden. Idee: **Sternchen** an den Wert, Erklärung
+gesammelt **unten auf der Seite**. Dazu gehört die Kartenquelle (siehe unten) und die Frage, ob der
+Knopf oben rechts auf der Karte als „In Karten öffnen" erkennbar ist — JC: „still not clear".
+
+## 🐛 Vorschläge in Textfeldern sind nach jedem App-Neustart weg (JC, 16. Juli)
+Gemeldet am Gerät: die gemerkten Eingaben für Köder/Rute/Rolle/Boot/Methode überleben einen Reload nicht.
+Gespeichert wird unter `localStorage['bf_suggest']` (`rememberSuggest` / `_suggestGet`), gefüllt per
+`fillSuggestLists()` in die `<datalist>`. Noch **nicht untersucht** — drei plausible Spuren, keine bestätigt:
+Wird beim Start überhaupt gelesen (Aufrufzeitpunkt von `fillSuggestLists`)? Wird beim Speichern
+tatsächlich geschrieben? Oder räumt iOS den Storage der installierten PWA weg — die hat einen eigenen
+Container, getrennt von Safari. **Vor dem Fix messen, nicht raten.**
+
 ## 🧪 GETESTET & BESTÄTIGT (JC, Gerät — 13. Juli, alles ✅)
 Gesamter Gerätetest-Backlog bestätigt & abgehakt: Standalone-Vollbild · #12 Footer · #19 Avatar · Chooser schneller · E-Mail read-only · Verein/Gruppe-Tab · **Fotos/Thumbnails** · Tagline · Login-Umbruch (app-weit) · Maskottchen-Loader (nur Kaltstart, größer, 1,5 s) · Statusleisten-Flash gefixt · #15 Toolbar + Pfeil-Fix · „Dieses Jahr"-Kachel (Jahr / bei Zeitfilter ausgeblendet) · #14 „Fänge aus" Multiselect-Sheet (+ Solo immer, Layers-Icon) · Angler-Filter aus Mitgliedern · Filter sticky Apply · #13 Sticky-Kopf (Art + Maß + Datum, Fade beim Scrollen) · #17 Chips · #16 Teilen-Vorschau.
 
@@ -42,7 +91,9 @@ Gesamter Gerätetest-Backlog bestätigt & abgehakt: Standalone-Vollbild · #12 F
 - **🔧 (5) Trend-Fußnote zu technisch + unpräzise:** „Pfeile: Veränderung über die letzten 7 Tage (lineare Tendenz, Tageswerte)" — bei einem Fang vom 28. Jan sind es nicht „die letzten 7 Tage", sondern die **7 Tage vor dem Fang**. Kurz + korrekt formulieren.
 - **🔧 (6) Mond-Icon zu klein (13px):** ausgerechnet das einzige Icon, das echte Information trägt. → in der **Wertzeile ~20px** zeigen statt als Mini-Label-Icon.
 - **🔧 (7) Karten-Pin ist ein schlichter Punkt** — echter Marker (Tropfenform, Teal) wäre ein billiger, sichtbarer Gewinn.
-- **🔧 (8) Angler-Byline steht sehr einsam** in hoher Zeile mit Trennlinie — enger anlegen, Fang-Block rückt näher ans Foto.
+- ✅ **(alt 8) Angler-Byline steht sehr einsam** — erledigt 16. Juli (Byline trägt jetzt Name · Badge · Datum).
+- **🐛 (8) Nicht ausgefüllte Felder werden angezeigt (JC, 16. Juli):** Im Wetterblock entscheidet **`wxOn(key)` — die Voreinstellung — ob eine Kachel erscheint, nicht ob ein Wert da ist** (Zeilen 3969–3973). Bedingungen rendert bei fehlendem Wert ausdrücklich `'—'`. Ein eingeschaltetes, aber leeres Feld belegt damit Platz und sagt nichts. Die Fangfelder im Lesemodus machen es richtig (`if(c.method) …`). **Noch nicht entschieden:** Gilt „leer = weg" auch, wenn der Verein das Feld auf `required` stellt? Dann wäre die Lücke ja die Aussage.
+- **🐛 (9) Wassertemperatur lässt sich auf der Detailseite gar nicht eintragen (JC, 16. Juli):** Kein Anzeigefehler — das Feld **fehlt im Detail-Editor komplett**: nicht in den Edit-Zeilen (5610–5624), nicht in der Nachtragsliste für leere Felder (5669), nicht in `EDITABLE_FIELDS` (5674), kein `INLINE_EF`-Eintrag. Es existiert nur im alten Log-Formular (`f-watertemp`). **Belegt:** JCs Profil hat `watertemp: true`, trotzdem ist `water_temp_c` bei **allen 10 Fängen null** — das Feld war eingeschaltet und wurde nie angeboten. Anzeige und DB-Weg sind in Ordnung (Zeile 2908 liest, 3971 zeigt `if(watertemp!=null)`). **Fix:** watertemp in die vier Listen aufnehmen, `INLINE_EF` mit `unit:'°C'`, `col:'water_temp_c'`, `mode:'decimal'`.
 
 ## 🐛 OFFENE BUGS
 - ✅ **Text-Felder leerbar (15. Juli — GEFIXT & live verifiziert):** „Feld leeren"-Zeile (`__clear`) im Typeahead-Sheet für Köder/Rute/Boot/Methode + Gewässer, nur wenn ein Wert gesetzt ist; speichert `null` → Feld zeigt „—". i18n de/en/nl. Live-Smoke: Köder → `null`. *Kleine Politur offen: beim Gewässer steht die Zeile nach dem „zuletzt"-Eintrag (Vorschläge + recent kommen beide aus `_ortSuggest`) — sollte ganz oben stehen.*
