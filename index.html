@@ -5748,7 +5748,13 @@ function openDetailObj(c, from, keepEdit){
     if(band) band.style.display='none';
     if(ps.length>1){ strip.style.display='flex'; strip.innerHTML=ps.map((src,i)=>`<img src="${esc(src)}" class="${i===0?'active':''}" onclick="setHeroPhoto(this,'${i}')" data-src="${i}" alt="">`).join(''); strip._photos=ps; }
     else { strip.style.display='none'; strip.innerHTML=''; }
-    if(byl){ byl.style.display='grid'; byl.innerHTML=_anglerByline(c); }
+    if(byl){ byl.style.display='grid'; byl.innerHTML=_anglerByline(c);
+      /* Tap the face to see it full size (JC). Bound here rather than via an inline onclick, because
+         avatars are data: URLs — a whole base64 image inside an HTML attribute. Only when there is a
+         picture: initials have nothing to enlarge. */
+      const _av=byl.querySelector('.av img');
+      if(_av){ _av.style.cursor='zoom-in'; _av.onclick=()=>openLightbox([_av.src],0); }
+    }
   }
   // Sticky header (species + measurement · date) fades in once the hero band is scrolled out of view.
   { const h=document.getElementById('d-h1'); if(h) h.textContent=trSpecies(c.species);
