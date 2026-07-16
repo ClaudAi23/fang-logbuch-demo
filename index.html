@@ -577,6 +577,8 @@
   /* #9: the catch fields use the weather's own card + grid, so there is no second container class
      here — only the rhythm between the stacked sections. */
   .sectionlabel.dmh-out{margin-top:18px;}
+  /* Air between the water card and the map — they sit under one heading, but they are two things. */
+  #d-loc:not(:empty){margin-bottom:10px;}
   .sectionlabel.dmh-out:first-child{margin-top:2px;}
   .wx-card .k svg{width:13px; height:13px; flex:0 0 auto; margin-right:5px; stroke:var(--muted); fill:none; stroke-width:2;}
   .spec{display:flex; align-items:flex-start; gap:11px; padding:12px 0; border-bottom:1px solid var(--border); min-width:0;}
@@ -5354,6 +5356,19 @@ function openDetailObj(c, from, keepEdit){
   /* #9 experiment (?tiles=1): the same rows, only bundled by meaning into modules — JC's T3.
      Deliberately a switch, not a rewrite: the rows are untouched, so this can be judged on real
      data and thrown away in one line. Off by default, so no beta user sees an experiment. */
+  /* "Ort" is its own section BELOW the weather: heading, the water card, then the map. The water row
+     therefore leaves #d-rows and renders into #d-loc.
+     This MUST run before the groups are built — filtering afterwards leaves water in the group pass,
+     where it falls into the leftovers bucket and gets drawn a second time. It did exactly that.
+     The section also can't hang on c.lat alone: a catch with a water name but no pin would lose it. */
+  { const locEl=document.getElementById('d-loc');
+    if(locEl){ const locRows=rows.filter(r=>r[0]==='water');
+      locEl.innerHTML = locRows.length
+        ? (editing ? `<div class="dspecs">${locRows.map(_specOne).join('')}</div>`
+                   : `<div class="wx-grid">${locRows.map(_specOne).join('')}</div>`)
+        : '';
+      rows = rows.filter(r=>r[0]!=='water');
+    } }
   const _TILE_GROUPS=[
     ['gTilesCatch', ['date','released','method']],
     ['gTilesGear',  ['bait','rod','reel']],
@@ -5392,17 +5407,6 @@ function openDetailObj(c, from, keepEdit){
   const canGroup = c._db && (state.myContexts||[]).length>0;
   const groupRow = (editing && canGroup) ? `<div class="dgroup-edit"><div class="sectionlabel">${esc(t('logToArea'))}</div><div class="spec efm dgroup-pick" onclick="openDetailAreaSheet()"><svg viewBox="0 0 24 24"><path d="M9 7a3 3 0 1 0 0 6a3 3 0 0 0 0 -6M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg><span class="kv"><span class="efm-pickrow"><span class="v efm-pick">${esc(detailAreaSummary(c))}</span><svg class="efm-chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6l-6 6"/></svg></span></span></div></div>` : '';
   { const gt=document.getElementById('d-group-top'); if(gt){ gt.innerHTML=groupRow; gt.style.display=groupRow?'block':'none'; } }
-  /* "Ort" is its own section BELOW the weather: heading, the water card, then the map. The water row
-     therefore leaves #d-rows and is rendered into #d-loc. Note the section can no longer hang on
-     c.lat alone — a catch with a water name but no pin would silently lose the field. */
-  { const locEl=document.getElementById('d-loc');
-    if(locEl){ const locRows=rows.filter(r=>r[0]==='water');
-      locEl.innerHTML = locRows.length
-        ? (editing ? `<div class="dspecs">${locRows.map(_specOne).join('')}</div>`
-                   : `<div class="wx-grid">${locRows.map(_specOne).join('')}</div>`)
-        : '';
-      rows = rows.filter(r=>r[0]!=='water');
-    } }
   // In module mode each module carries its own heading, so the page-level "Fang" label would say it twice.
   { const rl=document.getElementById('d-rows-label'); if(rl) rl.style.display=_TILES?'none':''; }
   document.getElementById('d-rows').innerHTML=pbBanner+medBanner+(_TILES?specHTML:`<div class="dspecs">${specHTML}</div>`)+banner;
