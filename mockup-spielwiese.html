@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spielwiese — Detailseite umbauen</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --sand:#021B28; --surface:#03354B; --surface-2:#0D5164; --text:#F4EFE2; --muted:#93a3a5;
+         --border:#123643; --border-2:#1b4453; --teal:#51A6A0; --teal-bright:#63c0b8; --accent:#F2AA25; }
+  *{box-sizing:border-box;}
+  body{margin:0; background:#0f1417; color:var(--text); font-family:'Barlow',system-ui,sans-serif; padding:22px 18px 60px;
+       -webkit-user-select:none; user-select:none;}
+  h1{font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.04em; font-size:1.4rem; margin:0 0 4px;}
+  .sub{color:#93a3a5; margin:0 0 14px; max-width:70ch; line-height:1.5; font-size:.86rem;}
+  .sub b{color:var(--accent); font-weight:600;}
+  .wrap{display:flex; gap:22px; align-items:flex-start; flex-wrap:wrap;}
+
+  .phone{background:var(--sand); border:1px solid #223; border-radius:20px; padding:14px; width:392px; flex:0 0 auto;}
+  .bar{display:flex; gap:8px; flex-wrap:wrap; margin:0 0 12px;}
+  button{font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.05em; font-size:.76rem;
+    background:var(--surface); color:var(--text); border:1px solid var(--border-2); border-radius:8px; padding:6px 12px; cursor:pointer;}
+  button:hover{background:var(--surface-2);}
+  button.on{background:var(--teal); color:#021B28; border-color:var(--teal);}
+
+  .hero{background:var(--surface-2); border-radius:12px; padding:26px 14px 12px; margin:0 0 8px;}
+  .hero .sp{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.7rem; line-height:1;}
+  .hero .chips{display:flex; gap:6px; margin-top:7px;}
+  .hero .chips span{background:rgba(255,255,255,.14); border-radius:6px; padding:2px 8px; font-size:.8rem; font-weight:600;}
+
+  .sectionlabel{font-size:0.75rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+    margin:16px 4px 8px; display:flex; align-items:center; gap:6px; cursor:grab;}
+  .sectionlabel::before{content:"⠿"; color:var(--border-2); font-size:.9rem;}
+  .wx-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .wx-card{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:8px 10px; min-width:0;
+    cursor:grab; touch-action:none;}
+  .wx-card.wide{grid-column:1 / -1;}
+  .wx-card .k{font-size:0.5875rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
+  .wx-card .v{font-weight:600; font-size:0.9375rem; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .wx-card.wide .v{white-space:normal;}
+  .wx-card.drag{opacity:.45; border-color:var(--accent); cursor:grabbing;}
+  .sect.drag{opacity:.45;}
+  .note-box{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:9px 11px;
+    font-size:.9rem; line-height:1.45; cursor:grab; touch-action:none;}
+  .map{background:var(--surface); border:1px solid var(--border); border-radius:10px; height:100px;
+    display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:.8rem; cursor:grab; touch-action:none;}
+
+  .out{flex:1 1 340px; min-width:320px;}
+  .out h2{font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.05em; font-size:.9rem; color:#cfe; margin:0 0 8px;}
+  pre{background:#12181c; border:1px solid #223; border-radius:10px; padding:12px; font-size:.72rem; line-height:1.6;
+      color:#9fe1cb; overflow:auto; margin:0 0 10px; white-space:pre-wrap; -webkit-user-select:text; user-select:text;}
+  .hint{font-size:.78rem; color:#93a3a5; line-height:1.5;}
+  .hint b{color:var(--accent); font-weight:600;}
+</style>
+</head>
+<body>
+
+<h1>Spielwiese — Detailseite umbauen</h1>
+<p class="sub"><b>Karten ziehen</b> = Reihenfolge ändern, auch über Gruppen hinweg. <b>Auf eine Karte tippen</b> = zwischen halb und
+voll umschalten. <b>Überschrift ziehen</b> = ganze Gruppe verschieben. Rechts steht laufend die Anordnung — schick sie mir, dann baue ich sie.</p>
+
+<div class="wrap">
+  <div class="phone">
+    <div class="bar">
+      <button onclick="reset()">↺ Zurücksetzen</button>
+      <button id="btn-halb" onclick="allHalf()">alle halb</button>
+      <button id="btn-voll" onclick="allWide()">alle voll</button>
+    </div>
+    <div class="hero"><div class="sp">Hecht</div><div class="chips"><span>78 cm</span><span>4,2 kg</span></div></div>
+    <div id="page"></div>
+  </div>
+
+  <div class="out">
+    <h2>Deine Anordnung</h2>
+    <pre id="dump">…</pre>
+    <p class="hint">Diese Ausgabe ist der <b>Bauplan</b>: Gruppenreihenfolge, Feldreihenfolge und ob ein Feld halb oder voll läuft.
+      Schick sie mir als Text oder Screenshot — ich setze sie 1:1 um. Was du hier verschiebst, ändert nichts an der App.</p>
+    <p class="hint" style="margin-top:10px;">Achtung, ehrlich: <b>Karten mit langen Werten auf „halb" zu stellen schneidet sie ab</b>
+      (Rute, Köder). Die App entscheidet das heute automatisch ab 18 Zeichen. Wenn du hier etwas abgeschnitten siehst, ist das echt
+      und kein Mockup-Fehler.</p>
+  </div>
+</div>
+
+<script>
+/* Reihenfolge und Breite kommen aus DATEN, nicht aus Markup — sonst kann man den Zustand nicht
+   auslesen, und genau der ist ja das Ergebnis dieser Seite. */
+const START = [
+  { id:'fang', label:'Fang', items:[
+      { id:'date',   k:'Datum',        v:'16. Juli 2026, 13:38 Uhr', wide:true },
+      { id:'rel',    k:'Entnahme',     v:'Zurückgesetzt',            wide:false },
+      { id:'method', k:'Angelmethode', v:'Spinnfischen',             wide:false } ]},
+  { id:'gear', label:'Ausrüstung', items:[
+      { id:'bait', k:'Köder', v:'Savage Gear 4Play Herring 19cm',        wide:true },
+      { id:'rod',  k:'Rute',  v:'Shimano Beastmaster BX Spinning 270 MH', wide:true },
+      { id:'reel', k:'Rolle', v:'Daiwa Ninja LT 3000-C',                  wide:true } ]},
+  { id:'cond', label:'Bedingungen', items:[
+      { id:'boat',  k:'Boot',        v:'Ja',                   wide:false },
+      { id:'wtemp', k:'Wassertemp.', v:'14,5 °C',              wide:false },
+      { id:'water', k:'Gewässer',    v:'Kleiner Brombachsee',  wide:true } ]},
+  { id:'wx', label:'Wetter', items:[
+      { id:'air',   k:'Luft',   v:'17 °C',                 wide:false },
+      { id:'wwat',  k:'Wasser', v:'14,5 °C',               wide:false },
+      { id:'wind',  k:'Wind',   v:'12 km/h',               wide:false },
+      { id:'press', k:'Druck',  v:'1013 hPa',              wide:false },
+      { id:'moon',  k:'Mond',   v:'Zunehmender Halbmond',  wide:true } ]},
+  { id:'notes', label:'Notizen', items:[
+      { id:'note', k:'', v:'Biss kam kurz vor Sonnenuntergang direkt an der Kante. Zweiter Wurf, nichts mehr.', wide:true, note:true } ]},
+  { id:'map', label:'Karte', items:[
+      { id:'mapbox', k:'', v:'Karte', wide:true, map:true } ]}
+];
+let model = JSON.parse(JSON.stringify(START));
+
+function render(){
+  const p=document.getElementById('page');
+  p.innerHTML = model.map(g=>`
+    <div class="sect" data-g="${g.id}">
+      <div class="sectionlabel" data-drag="sect">${g.label}</div>
+      <div class="wx-grid" data-grid="${g.id}">
+        ${g.items.map(i=>{
+          if(i.map)  return `<div class="wx-card wide map" data-i="${i.id}" data-drag="card">${i.v}</div>`;
+          if(i.note) return `<div class="wx-card wide note-box" data-i="${i.id}" data-drag="card">${i.v}</div>`;
+          return `<div class="wx-card${i.wide?' wide':''}" data-i="${i.id}" data-drag="card"><div class="k">${i.k}</div><div class="v">${i.v}</div></div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+  dump();
+}
+function dump(){
+  document.getElementById('dump').textContent = model.map(g=>{
+    const it=g.items.map(i=>i.k? (i.k+(i.wide?' [voll]':' [halb]')) : '('+g.label.toLowerCase()+')');
+    return g.label.toUpperCase()+'\n   '+it.join('\n   ');
+  }).join('\n\n');
+}
+function reset(){ model=JSON.parse(JSON.stringify(START)); render(); }
+function allHalf(){ model.forEach(g=>g.items.forEach(i=>{ if(!i.note&&!i.map) i.wide=false; })); render(); }
+function allWide(){ model.forEach(g=>g.items.forEach(i=>i.wide=true)); render(); }
+
+/* Pointer-Events statt HTML5-Drag: die Drag-API gibt es auf Touch-Geraeten nicht.
+   Live umsortieren waehrend der Bewegung — kein Klon, kein Geisterbild. */
+let drag=null, moved=false, startXY=null;
+document.addEventListener('pointerdown', e=>{
+  const card=e.target.closest('[data-drag="card"]');
+  const sect=e.target.closest('[data-drag="sect"]');
+  const el=card||sect; if(!el) return;
+  drag={el, kind:card?'card':'sect', node:card||sect.closest('.sect')};
+  startXY={x:e.clientX,y:e.clientY}; moved=false;
+  el.setPointerCapture&&el.setPointerCapture(e.pointerId);
+});
+document.addEventListener('pointermove', e=>{
+  if(!drag) return;
+  if(!moved){
+    if(Math.hypot(e.clientX-startXY.x, e.clientY-startXY.y) < 6) return;   // Tippen != Ziehen
+    moved=true; drag.node.classList.add('drag');
+  }
+  const under=document.elementFromPoint(e.clientX,e.clientY); if(!under) return;
+  if(drag.kind==='card'){
+    const t=under.closest('[data-drag="card"]');
+    if(!t || t===drag.node) return;
+    const r=t.getBoundingClientRect();
+    const after = (e.clientY - r.top) > r.height/2;
+    t.parentNode.insertBefore(drag.node, after ? t.nextSibling : t);
+  } else {
+    const t=under.closest('.sect');
+    if(!t || t===drag.node) return;
+    const r=t.getBoundingClientRect();
+    const after = (e.clientY - r.top) > r.height/2;
+    t.parentNode.insertBefore(drag.node, after ? t.nextSibling : t);
+  }
+});
+document.addEventListener('pointerup', e=>{
+  if(!drag) return;
+  const d=drag; drag=null;
+  d.node.classList.remove('drag');
+  if(!moved && d.kind==='card'){            // Tippen ohne Ziehen = Breite umschalten
+    const it=find(d.node.dataset.i);
+    if(it && !it.note && !it.map){ it.wide=!it.wide; render(); }
+    return;
+  }
+  if(moved) readBack();                     // DOM ist die Wahrheit -> zurueck ins Modell
+});
+function find(id){ for(const g of model) for(const i of g.items) if(i.id===id) return i; return null; }
+function readBack(){
+  const groups=[...document.querySelectorAll('.sect')];
+  model = groups.map(gEl=>{
+    const g=model.find(x=>x.id===gEl.dataset.g);
+    const items=[...gEl.querySelectorAll('[data-drag="card"]')].map(cEl=>find(cEl.dataset.i)).filter(Boolean);
+    return {...g, items};
+  });
+  render();
+}
+render();
+</script>
+</body>
+</html>
