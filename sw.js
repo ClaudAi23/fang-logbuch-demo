@@ -1,13 +1,27 @@
 /* ButlerFish — service worker (offline app shell) */
-/* v9: puffer resized 86% -> 70% of the tile (iOS motifs sit at 60-72%; ours was cramped against
-   the squircle corners). The ?v= query alone can't evict an installed PWA's cached shell — only
-   this bump does, which is why it moves with every icon change. */
-const CACHE = 'fb-shell-v9';
+/* v10: self-hosted Barlow joins the shell. The ?v= query alone can't evict an installed PWA's
+   cached shell — only this bump does, which is why it moves with every asset change. */
+const CACHE = 'fb-shell-v10';
 const SHELL = [
   '/', '/index.html', '/site.webmanifest',
   '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/apple-touch-icon-180.png',
   '/favicon.ico', '/favicon.svg',
-  '/logo.png', '/mascot.png'
+  '/logo.png', '/mascot.png', '/puffer.png',
+  /* The fonts are part of the shell now that we host them: without this they'd be missing offline,
+     and the app would silently fall back to system-ui — which is exactly the bug you don't notice
+     until someone is standing at a lake with no signal. */
+  '/fonts/barlow-400-latin.woff2',
+  '/fonts/barlow-400-latin-ext.woff2',
+  '/fonts/barlow-500-latin.woff2',
+  '/fonts/barlow-500-latin-ext.woff2',
+  '/fonts/barlow-600-latin.woff2',
+  '/fonts/barlow-600-latin-ext.woff2',
+  '/fonts/barlow-700-latin.woff2',
+  '/fonts/barlow-700-latin-ext.woff2',
+  '/fonts/barlow-condensed-600-latin.woff2',
+  '/fonts/barlow-condensed-600-latin-ext.woff2',
+  '/fonts/barlow-condensed-700-latin.woff2',
+  '/fonts/barlow-condensed-700-latin-ext.woff2',
 ];
 
 self.addEventListener('install', (e) => {
