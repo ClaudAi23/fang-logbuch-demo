@@ -140,7 +140,7 @@
   .su-mascot{width:104px; height:104px; object-fit:contain; filter:drop-shadow(0 0 12px rgba(95,205,225,.45));}
   .success-card.big .su-mascot{width:142px; height:142px; filter:drop-shadow(0 0 22px var(--spark)) drop-shadow(0 6px 14px rgba(0,0,0,.4)); animation:lureflare 1.15s ease-in-out;}
   .su-check{width:28px; height:28px; border-radius:50%; background:var(--spark); color:#0c2b33; display:flex; align-items:center; justify-content:center; margin-top:-4px;}
-  .su-badge{display:none; font-size:0.625rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#0c2b33; background:var(--spark); border-radius:999px; padding:3px 11px;}
+  .su-badge{display:none; font-size:0.625rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#0c2b33; background:var(--spark); border-radius:999px; padding:3px 11px;}
   .su-title{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.375rem; line-height:1.05; color:var(--text);}
   .success-card.big .su-title{color:var(--teal-bright); font-size:1.625rem;}
   .su-sub{font-size:0.8125rem; color:var(--muted); line-height:1.35;}
@@ -556,7 +556,7 @@
   /* Group/club podium medals (gold/silver/bronze) */
   .medal{display:inline-flex; align-items:center; justify-content:center; position:relative; width:20px; height:20px; border-radius:50%; color:#fff; flex:0 0 auto;}
   .medal svg{width:12px; height:12px; stroke:#fff;}
-  .medal i{position:absolute; bottom:-3px; right:-3px; font-style:normal; font-size:0.55rem; font-weight:800; background:#fff; color:#2a2a2a; min-width:12px; height:12px; padding:0 2px; border-radius:999px; display:flex; align-items:center; justify-content:center; line-height:1;}
+  .medal i{position:absolute; bottom:-3px; right:-3px; font-style:normal; font-size:0.55rem; font-weight:700; background:#fff; color:#2a2a2a; min-width:12px; height:12px; padding:0 2px; border-radius:999px; display:flex; align-items:center; justify-content:center; line-height:1;}
   .medal-g{background:#D4AF37;} .medal-s{background:#AEB4BC;} .medal-b{background:#B5793B;}
   .rec-word{display:inline-block; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:0.6rem; color:#8a6a17; background:rgba(212,175,55,.18); border:1px solid #D4AF37; border-radius:999px; padding:1px 7px; flex:0 0 auto;}
   .medal-banner.medal-g{background:#C79A1E;} .medal-banner.medal-s{background:#8f959d;} .medal-banner.medal-b{background:#a76c34;}
@@ -814,8 +814,16 @@
      by the same lamp everywhere. Soft, not neon — the brief is explicit about that. */
   .mascot-free::before{content:""; position:absolute; inset:-8%; z-index:0; pointer-events:none; border-radius:50%; background:radial-gradient(circle at 50% 46%, rgba(235,158,24,.30), rgba(235,158,24,.08) 46%, transparent 66%);}
   .mascot-free img{position:relative; z-index:1; max-width:99%; max-height:99%; width:auto; height:auto; display:block; filter:drop-shadow(0 0 13px rgba(235,158,24,.42)) drop-shadow(0 8px 18px rgba(0,0,0,.42));}
-  .mascot-free.mf-sm::before{inset:-9%; background:radial-gradient(circle at 50% 46%, rgba(235,158,24,.34), rgba(235,158,24,.11) 45%, transparent 67%);}
-  .mascot-free.mf-sm img{max-width:100%; max-height:100%; filter:drop-shadow(0 0 9px rgba(235,158,24,.58)) drop-shadow(0 2px 6px rgba(0,0,0,.45));}
+  /* Home-screen topbar (46px): NO halo. At this size a glow around the whole fish stops being light
+     and becomes blur — it eats the silhouette it was meant to lift. The halo is a leftover from when
+     the mascot was big. Only the lantern burns, at the same measured esca position as the lockup
+     (91,3% / 22,5%), so the brand stays lit without smearing the fish. Size in %, so it follows if
+     the 46px ever change. */
+  .mascot-free.mf-sm::before{display:none;}
+  .mascot-free.mf-sm img{max-width:100%; max-height:100%; filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));}
+  .mascot-free.mf-sm::after{content:""; position:absolute; left:91.3%; top:22.5%; width:43%; height:43%; z-index:2;
+    transform:translate(-50%,-50%); pointer-events:none;
+    background:radial-gradient(circle, rgba(255,255,250,.9) 0%, rgba(255,236,180,.5) 28%, rgba(242,170,37,.2) 52%, rgba(242,170,37,0) 72%);}
   .mb-empty{width:100%; max-width:340px; height:190px; margin:2px auto 12px;}
   .mb-home{width:150px; height:150px; margin:0 auto;}
   .mb-ob{width:150px; height:150px;}

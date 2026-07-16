@@ -107,6 +107,25 @@ Gesamter Gerätetest-Backlog bestätigt & abgehakt: Standalone-Vollbild · #12 F
 
 *(Gefixt & deployed 12. Juli: Mitglieder-Hinweis gekürzt · Reset als Icon-Overlay + Sichtbarkeit (auch Chip-Insert) · Backward-Compat-Token entfernt · Rollen-Badge ohne Chevron · **Profil #16 komplett** (Initialen-Editor über Standort, „Kürzel anpassen"→„Initialen", Tap-Avatar=Farbe wechseln).)*
 
+## ⏳ VERTAGT — Erfolgs-Karte: glüht cyan (JC, 16. Juli: „diskutieren wir nochmal")
+
+**Wo:** `#success-ov` / `.success-card` — erscheint nach dem Speichern eines Fangs. Normal mit Häkchen;
+als `.big` beim **Rekord-Moment** (erster Fang · längster · schwerster · neue Art) mit Konfetti, größerem
+Maskottchen und einer pulsierenden Animation namens **`lureflare`** — *Köderlicht*.
+
+**Der Befund:** Genau dieses Köderlicht ist `rgba(95,205,225)` — **cyan**, hartcodiert, kein Token.
+Rest aus der Zeit vor dem Rebrand. Überall sonst (Lockup, Splash, Topbar) ist die Laterne inzwischen warm
+`#EB9E18`. Im auffälligsten Moment der App glüht der Anglerfisch also kalt. `.su-check`, `.su-badge` und
+`.success-card.big .su-title` hängen zusätzlich an `--spark` (Aqua).
+
+**Die eigentliche Frage** (deshalb vertagt, nicht gebaut): Ist Aqua die **Farbe des Feierns** — dann ist es
+eine Entscheidung und gehört als Token sauber benannt, statt als hartcodierter Rest herumzuliegen. Oder ist
+es ein Versehen — dann zieht die ganze Karte auf warm nach (Maskottchen, Häkchen, Badge, Titel), sonst bleibt
+sie halb aqua und die Farbe sieht nach Zufall aus.
+
+**Optionen:** (a) alles warm · (b) nur das Maskottchen warm, Rest aqua · (c) bewusst kalt lassen, aber als
+Token statt hartcodiert. Mockup mit allen Zuständen: `mockup-glow.html`, Abschnitt ①.
+
 ## ⏳ VERTAGT — Login: gleiche Szene wie der Splash? (JC, 16. Juli)
 
 **Der Login zeigt dasselbe Lockup und damit dieselbe 3,3-s-Choreografie** (Fisch schwimmt ein → Laterne → Licht sinkt → Puffer).
