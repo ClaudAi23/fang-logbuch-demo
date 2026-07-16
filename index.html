@@ -397,11 +397,12 @@
      with "(lineare Tendenz, Tageswerte)" it needed 455px of 358 and would have wrapped under the source. */
   /* Only the credit lives here now (the trend note is gone), so the source keeps its right edge via
      margin-left:auto — space-between would have thrown it to the left the moment it was alone. */
-  /* The (i) sits on the heading's baseline. Explicit color: a <button> takes `buttontext` from the UA
-     sheet, which BEATS inheritance — that is how the species names once turned iOS-blue. */
-  .sectionlabel.wx-head{display:flex; align-items:center; gap:6px;}
-  .wx-info{padding:0; border:none; background:none; line-height:0; cursor:pointer; color:var(--muted); flex:0 0 auto;}
-  .wx-info svg{width:14px; height:14px; display:block; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  /* The (i) stands where the arrow footnote stood (JC): bottom left of the block, source on the right.
+     Explicit color: a <button> takes `buttontext` from the UA sheet, which BEATS inheritance — that is
+     how the species names once turned iOS-blue. */
+  .wx-info{display:inline-flex; align-items:center; gap:4px; padding:0; border:none; background:none;
+    cursor:pointer; color:var(--muted); font-family:inherit; font-size:0.6875rem; line-height:1.5;}
+  .wx-info svg{width:12px; height:12px; flex:0 0 auto; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
   .wx-info:hover,.wx-info:active{color:var(--teal-bright);}
   #info-body b{color:var(--text); font-weight:600;}
   .wfoot{display:flex; align-items:baseline; gap:12px; margin:12px 4px 0;}
@@ -1304,7 +1305,7 @@
         
         
         <div id="d-weather-wrap" style="display:none; margin-top:22px;">
-          <div class="sectionlabel wx-head"><span data-i18n="weather">Wetter</span><button type="button" class="wx-info" onclick="showWxInfo()" data-i18n-title="wxInfoTitle" title="Was bedeuten die Werte?" aria-label="Was bedeuten die Werte?"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg></button></div>
+          <div class="sectionlabel" data-i18n="weather">Wetter</div>
           <div id="d-weather"></div>
         </div>
         <!-- "Am Wasser" (JC): what the angler SAW, between what was fetched (Wetter) and where (Ort).
@@ -2023,7 +2024,7 @@ Object.assign(I18N.de, {gTilesMethod:"Methode", gTilesHow:"Wie gefangen", gTiles
 Object.assign(I18N.en, {gTilesMethod:"Method", gTilesHow:"How it was caught", gTilesBait:"Lure & gear", sAtWater:"At the water", sWaterTemp:"Temperature", gTilesLoc:"Location", gTilesCatch:"Catch", gTilesGear:"Gear", gTilesCond:"Conditions", gTilesMisc:"Other", editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species", switchArea:"Switch club/group", toStart:"To start", profile:"Profile", signOut:"Sign out", loginIntro:"Sign in once. Then freely pick Solo, groups and clubs.", name:"Name", nameHint:"Used on your catches and for your initials."});
 Object.assign(I18N.nl, {gTilesMethod:"Methode", gTilesHow:"Hoe gevangen", gTilesBait:"Aas & uitrusting", sAtWater:"Aan het water", sWaterTemp:"Temperatuur", gTilesLoc:"Locatie", gTilesCatch:"Vangst", gTilesGear:"Uitrusting", gTilesCond:"Omstandigheden", gTilesMisc:"Overig", editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort", switchArea:"Vereniging/groep wisselen", toStart:"Naar start", profile:"Profiel", signOut:"Uitloggen", loginIntro:"Log één keer in. Daarna kies je vrij tussen Solo, groepen en verenigingen.", name:"Naam", nameHint:"Wordt gebruikt bij je vangsten en als initialen."});
 Object.assign(I18N.de, {mapPin:"Standort auf Karte", myLocation:"Mein Standort", tapMap:"Tippe auf die Karte, um den Fangort zu setzen.", openInMaps:"In Karten öffnen", weather:"Wetter", moon:"Mondphase", wTemp:"Luft", wWind:"Wind", wPressure:"Druck", wMoon:"Mond", wCond:"Bedingungen", wWaterTemp:"Wassertemp.", trend3:"3-Tage-Trend", trend7:"7-Tage-Trend", wLoading:"Wetter wird geladen …", noCoords:"Kein Kartenstandort gesetzt.", moonWax:"zunehmend", moonWane:"abnehmend", wSource:"Quelle", wSourceFields:"Luft, Wind, Druck", windFrom:"aus {d}", compass8:"N,NO,O,SO,S,SW,W,NW", trendNote:"Pfeile: Veränderung in den {n} Tagen vor dem Fang.",
-  wxInfoTitle:"Was bedeuten die Werte?",
+  wxInfoLink:"Was bedeuten die Pfeile?", wxInfoTitle:"Was bedeuten die Werte?",
   wxInfoBody:"Alle Werte gelten für <b>deinen Fangort zur Fangzeit</b>, nicht für heute.<br><br>"
     +"<b>Luft</b> — Temperatur im Moment des Fangs. Der Pfeil vergleicht mit <b>derselben Stunde am Vortag</b>.<br><br>"
     +"<b>Wind</b> — die Richtung, aus der er kam. Der Pfeil zeigt, <b>wohin</b> er wehte. Daneben die Stärke.<br><br>"
@@ -2034,7 +2035,7 @@ Object.assign(I18N.de, {mapPin:"Standort auf Karte", myLocation:"Mein Standort",
   m_new:"Neumond", m_wc:"zunehmende Sichel", m_fq:"erstes Viertel", m_wg:"zunehmender Mond", m_full:"Vollmond", m_ng:"abnehmender Mond", m_lq:"letztes Viertel", m_nc:"abnehmende Sichel",
   wc_clear:"klar", wc_partly:"leicht bewölkt", wc_cloudy:"bewölkt", wc_fog:"Nebel", wc_drizzle:"Niesel", wc_rain:"Regen", wc_snow:"Schnee", wc_thunder:"Gewitter"});
 Object.assign(I18N.en, {mapPin:"Location on map", myLocation:"My location", tapMap:"Tap the map to set the spot.", openInMaps:"Open in Maps", weather:"Weather", moon:"Moon phase", wTemp:"Air", wWind:"Wind", wPressure:"Pressure", wMoon:"Moon", wCond:"Conditions", wWaterTemp:"Water temp.", trend3:"3-day trend", trend7:"7-day trend", wLoading:"Loading weather …", noCoords:"No map location set.", moonWax:"waxing", moonWane:"waning", wSource:"Source", wSourceFields:"Air, wind, pressure", windFrom:"from {d}", compass8:"N,NE,E,SE,S,SW,W,NW", trendNote:"Arrows: change over the {n} days before the catch.",
-  wxInfoTitle:"What do these mean?",
+  wxInfoLink:"What do the arrows mean?", wxInfoTitle:"What do these mean?",
   wxInfoBody:"Everything here is for <b>your spot at the time of the catch</b>, not for today.<br><br>"
     +"<b>Air</b> — temperature at the moment of the catch. The arrow compares it to <b>the same hour yesterday</b>.<br><br>"
     +"<b>Wind</b> — the direction it came from. The arrow points <b>where it was blowing to</b>. The speed sits beside it.<br><br>"
@@ -2045,7 +2046,7 @@ Object.assign(I18N.en, {mapPin:"Location on map", myLocation:"My location", tapM
   m_new:"New moon", m_wc:"Waxing crescent", m_fq:"First quarter", m_wg:"Waxing gibbous", m_full:"Full moon", m_ng:"Waning gibbous", m_lq:"Last quarter", m_nc:"Waning crescent",
   wc_clear:"Clear", wc_partly:"Partly cloudy", wc_cloudy:"Cloudy", wc_fog:"Fog", wc_drizzle:"Drizzle", wc_rain:"Rain", wc_snow:"Snow", wc_thunder:"Thunderstorm"});
 Object.assign(I18N.nl, {mapPin:"Locatie op kaart", myLocation:"Mijn locatie", tapMap:"Tik op de kaart om de plek te zetten.", openInMaps:"Openen in Kaarten", weather:"Weer", moon:"Maanfase", wTemp:"Lucht", wWind:"Wind", wPressure:"Druk", wMoon:"Maan", wCond:"Omstandigheden", wWaterTemp:"Watertemp.", trend3:"3-daagse trend", trend7:"7-daagse trend", wLoading:"Weer laden …", noCoords:"Geen kaartlocatie ingesteld.", moonWax:"wassend", moonWane:"afnemend", wSource:"Bron", wSourceFields:"Lucht, wind, druk", windFrom:"uit {d}", compass8:"N,NO,O,ZO,Z,ZW,W,NW", trendNote:"Pijlen: verandering in de {n} dagen vóór de vangst.",
-  wxInfoTitle:"Wat betekenen deze waarden?",
+  wxInfoLink:"Wat betekenen de pijlen?", wxInfoTitle:"Wat betekenen deze waarden?",
   wxInfoBody:"Alles hier geldt voor <b>jouw stek op het moment van de vangst</b>, niet voor vandaag.<br><br>"
     +"<b>Lucht</b> — temperatuur op het moment van de vangst. De pijl vergelijkt met <b>hetzelfde uur gisteren</b>.<br><br>"
     +"<b>Wind</b> — de richting waar hij vandaan kwam. De pijl wijst <b>waarheen</b> hij woei. Daarnaast de snelheid.<br><br>"
@@ -2549,6 +2550,7 @@ function syncSelfield(selectId){ const sel=document.getElementById(selectId); if
    way and never said enough. Own function because showInfo() sets textContent — deliberately, since it
    is called with data elsewhere — and this needs structure. The body is a literal from I18N, never
    user data, which is why innerHTML is safe here and would not be there. */
+const INFO_IC='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg>';
 function showWxInfo(){
   document.getElementById('info-title').textContent=t('wxInfoTitle');
   document.getElementById('info-body').innerHTML=t('wxInfoBody');
@@ -3973,6 +3975,14 @@ async function fetchWeather(lat, lon, date){
     return {cur, daily};
   }catch(e){ return null; }
 }
+/* A stored weather object from before the chips changed: it has `daily`, but none of the hourly fields
+   the chips now need. Absent (undefined) is the tell — the new code writes null when the API has no
+   value, so null means "asked, nothing there" and must NOT trigger a re-fetch loop. */
+function wxNeedsRefresh(c){
+  const cur = c && c.weather && c.weather.cur;
+  if(!cur) return false;
+  return cur.press3h===undefined || cur.temp24h===undefined || cur.windDir===undefined;
+}
 async function enrichWeather(c){
   if(!c || c.lat==null || c.weather) return;
   const w=await fetchWeather(c.lat, c.lon, c.date);
@@ -4138,8 +4148,10 @@ function renderWeatherInto(weather, date, boxId, wrapId, watertemp){
      so a footnote explaining the arrows would only repeat what is already there — and the version we
      had never got its wording right anyway (it said "vor dem Fang" while the window included the
      catch day). */
+  /* The (i) sits where the arrow footnote used to be (JC) — same place, same job, just on demand. */
   const _src = vonApi>0 ? `<div class="wsrc"><a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer">${t('wSource')}: Open-Meteo</a></div>` : '';
-  html += _src ? `<div class="wfoot">${_src}</div>` : '';
+  const _inf = vonApi>0 ? `<button type="button" class="wx-info" onclick="showWxInfo()">${INFO_IC}<span>${esc(t('wxInfoLink'))}</span></button>` : '';
+  html += (_src||_inf) ? `<div class="wfoot">${_inf}${_src}</div>` : '';
   box.innerHTML=html;
 }
 function autoLocate(){
@@ -5996,7 +6008,15 @@ function openDetailObj(c, from, keepEdit){
     { const mapBox=mw.querySelector('.map-wrap'); if(mapBox) mapBox.style.display = c.lat!=null ? '' : 'none'; }
     if(mEditBar) mEditBar.style.display='none'; if(mFab) mFab.style.display=''; if(mLabel) mLabel.style.display=hasLoc?'':'none'; }
   renderWeather(c); // handles API weather, text-only, and water-temp-only (shows/hides the section itself)
-  if(!c.weather && c.lat!=null) enrichWeather(c);
+  /* No weather yet -> fetch it. Weather from before the chips changed -> fetch it AGAIN, or every
+     existing catch would silently lose its arrows for good: enrichWeather() bails out the moment a
+     catch has any weather at all, so nothing would ever upgrade it. refreshWeatherFor() is the one
+     that also writes the result back to Supabase — enrichWeather only saves locally, which for a DB
+     catch would mean re-fetching on every single open. */
+  if(c.lat!=null){
+    if(!c.weather) enrichWeather(c);
+    else if(wxNeedsRefresh(c)) refreshWeatherFor(c);
+  }
   go('detail');
   /* MUST run after go('detail'), not after the innerHTML above: until the screen is shown the block is
      display:none, every rect is 0, and syncHowLines() bails out with nothing ever calling it again. */
