@@ -397,6 +397,13 @@
      with "(lineare Tendenz, Tageswerte)" it needed 455px of 358 and would have wrapped under the source. */
   /* Only the credit lives here now (the trend note is gone), so the source keeps its right edge via
      margin-left:auto — space-between would have thrown it to the left the moment it was alone. */
+  /* The (i) sits on the heading's baseline. Explicit color: a <button> takes `buttontext` from the UA
+     sheet, which BEATS inheritance — that is how the species names once turned iOS-blue. */
+  .sectionlabel.wx-head{display:flex; align-items:center; gap:6px;}
+  .wx-info{padding:0; border:none; background:none; line-height:0; cursor:pointer; color:var(--muted); flex:0 0 auto;}
+  .wx-info svg{width:14px; height:14px; display:block; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  .wx-info:hover,.wx-info:active{color:var(--teal-bright);}
+  #info-body b{color:var(--text); font-weight:600;}
   .wfoot{display:flex; align-items:baseline; gap:12px; margin:12px 4px 0;}
   /* Three ranks, three sizes: action 13px (.map-open), explanation 11px, credit 10px. The note is
      content, not fine print — the credit is.
@@ -1297,7 +1304,7 @@
         
         
         <div id="d-weather-wrap" style="display:none; margin-top:22px;">
-          <div class="sectionlabel" data-i18n="weather">Wetter</div>
+          <div class="sectionlabel wx-head"><span data-i18n="weather">Wetter</span><button type="button" class="wx-info" onclick="showWxInfo()" data-i18n-title="wxInfoTitle" title="Was bedeuten die Werte?" aria-label="Was bedeuten die Werte?"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg></button></div>
           <div id="d-weather"></div>
         </div>
         <!-- "Am Wasser" (JC): what the angler SAW, between what was fetched (Wetter) and where (Ort).
@@ -2015,13 +2022,37 @@ const I18N = {
 Object.assign(I18N.de, {gTilesMethod:"Methode", gTilesHow:"Wie gefangen", gTilesBait:"Köder & Gerät", sAtWater:"Am Wasser", sWaterTemp:"Temperatur", gTilesLoc:"Ort", gTilesCatch:"Fang", gTilesGear:"Ausrüstung", gTilesCond:"Bedingungen", gTilesMisc:"Sonstiges", editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart", switchArea:"Verein/Gruppe wechseln", toStart:"Zum Start", profile:"Profil", signOut:"Abmelden", loginIntro:"Melde dich einmal an. Danach wählst du frei zwischen Solo, Gruppen und Vereinen.", name:"Name", nameHint:"Wird bei deinen Fängen und als Initialen genutzt."});
 Object.assign(I18N.en, {gTilesMethod:"Method", gTilesHow:"How it was caught", gTilesBait:"Lure & gear", sAtWater:"At the water", sWaterTemp:"Temperature", gTilesLoc:"Location", gTilesCatch:"Catch", gTilesGear:"Gear", gTilesCond:"Conditions", gTilesMisc:"Other", editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species", switchArea:"Switch club/group", toStart:"To start", profile:"Profile", signOut:"Sign out", loginIntro:"Sign in once. Then freely pick Solo, groups and clubs.", name:"Name", nameHint:"Used on your catches and for your initials."});
 Object.assign(I18N.nl, {gTilesMethod:"Methode", gTilesHow:"Hoe gevangen", gTilesBait:"Aas & uitrusting", sAtWater:"Aan het water", sWaterTemp:"Temperatuur", gTilesLoc:"Locatie", gTilesCatch:"Vangst", gTilesGear:"Uitrusting", gTilesCond:"Omstandigheden", gTilesMisc:"Overig", editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort", switchArea:"Vereniging/groep wisselen", toStart:"Naar start", profile:"Profiel", signOut:"Uitloggen", loginIntro:"Log één keer in. Daarna kies je vrij tussen Solo, groepen en verenigingen.", name:"Naam", nameHint:"Wordt gebruikt bij je vangsten en als initialen."});
-Object.assign(I18N.de, {mapPin:"Standort auf Karte", myLocation:"Mein Standort", tapMap:"Tippe auf die Karte, um den Fangort zu setzen.", openInMaps:"In Karten öffnen", weather:"Wetter", moon:"Mondphase", wTemp:"Luft", wWind:"Wind", wPressure:"Druck", wMoon:"Mond", wCond:"Bedingungen", wWaterTemp:"Wassertemp.", trend3:"3-Tage-Trend", trend7:"7-Tage-Trend", wLoading:"Wetter wird geladen …", noCoords:"Kein Kartenstandort gesetzt.", moonWax:"zunehmend", moonWane:"abnehmend", wSource:"Quelle", wSourceFields:"Luft, Wind, Druck", windFrom:"aus {d}", compass8:"N,NO,O,SO,S,SW,W,NW", trendNote:"Pfeile: Veränderung in den {n} Tagen vor dem Fang.", sparkCap:"Tagesmittel-Temperatur, letzte {n} Tage",
+Object.assign(I18N.de, {mapPin:"Standort auf Karte", myLocation:"Mein Standort", tapMap:"Tippe auf die Karte, um den Fangort zu setzen.", openInMaps:"In Karten öffnen", weather:"Wetter", moon:"Mondphase", wTemp:"Luft", wWind:"Wind", wPressure:"Druck", wMoon:"Mond", wCond:"Bedingungen", wWaterTemp:"Wassertemp.", trend3:"3-Tage-Trend", trend7:"7-Tage-Trend", wLoading:"Wetter wird geladen …", noCoords:"Kein Kartenstandort gesetzt.", moonWax:"zunehmend", moonWane:"abnehmend", wSource:"Quelle", wSourceFields:"Luft, Wind, Druck", windFrom:"aus {d}", compass8:"N,NO,O,SO,S,SW,W,NW", trendNote:"Pfeile: Veränderung in den {n} Tagen vor dem Fang.",
+  wxInfoTitle:"Was bedeuten die Werte?",
+  wxInfoBody:"Alle Werte gelten für <b>deinen Fangort zur Fangzeit</b>, nicht für heute.<br><br>"
+    +"<b>Luft</b> — Temperatur im Moment des Fangs. Der Pfeil vergleicht mit <b>derselben Stunde am Vortag</b>.<br><br>"
+    +"<b>Wind</b> — die Richtung, aus der er kam. Der Pfeil zeigt, <b>wohin</b> er wehte. Daneben die Stärke.<br><br>"
+    +"<b>Druck</b> — Luftdruck im Moment des Fangs. Der Pfeil zeigt die Änderung über die <b>letzten 3 Stunden</b> — so wird die Drucktendenz üblicherweise angegeben, und fallender Druck ist das, worauf Angler achten.<br><br>"
+    +"<b>Mond</b> — die Phase am Fangtag.<br><br>"
+    +"<b>±0</b> heißt: Die Änderung war zu klein, um sie zu melden.<br><br>"
+    +"Quelle: Open-Meteo. Die <b>Wassertemperatur</b> steht unter „Am Wasser“ — die trägst du selbst ein, sie kommt nicht von dort.", sparkCap:"Tagesmittel-Temperatur, letzte {n} Tage",
   m_new:"Neumond", m_wc:"zunehmende Sichel", m_fq:"erstes Viertel", m_wg:"zunehmender Mond", m_full:"Vollmond", m_ng:"abnehmender Mond", m_lq:"letztes Viertel", m_nc:"abnehmende Sichel",
   wc_clear:"klar", wc_partly:"leicht bewölkt", wc_cloudy:"bewölkt", wc_fog:"Nebel", wc_drizzle:"Niesel", wc_rain:"Regen", wc_snow:"Schnee", wc_thunder:"Gewitter"});
-Object.assign(I18N.en, {mapPin:"Location on map", myLocation:"My location", tapMap:"Tap the map to set the spot.", openInMaps:"Open in Maps", weather:"Weather", moon:"Moon phase", wTemp:"Air", wWind:"Wind", wPressure:"Pressure", wMoon:"Moon", wCond:"Conditions", wWaterTemp:"Water temp.", trend3:"3-day trend", trend7:"7-day trend", wLoading:"Loading weather …", noCoords:"No map location set.", moonWax:"waxing", moonWane:"waning", wSource:"Source", wSourceFields:"Air, wind, pressure", windFrom:"from {d}", compass8:"N,NE,E,SE,S,SW,W,NW", trendNote:"Arrows: change over the {n} days before the catch.", sparkCap:"Daily mean temperature, last {n} days",
+Object.assign(I18N.en, {mapPin:"Location on map", myLocation:"My location", tapMap:"Tap the map to set the spot.", openInMaps:"Open in Maps", weather:"Weather", moon:"Moon phase", wTemp:"Air", wWind:"Wind", wPressure:"Pressure", wMoon:"Moon", wCond:"Conditions", wWaterTemp:"Water temp.", trend3:"3-day trend", trend7:"7-day trend", wLoading:"Loading weather …", noCoords:"No map location set.", moonWax:"waxing", moonWane:"waning", wSource:"Source", wSourceFields:"Air, wind, pressure", windFrom:"from {d}", compass8:"N,NE,E,SE,S,SW,W,NW", trendNote:"Arrows: change over the {n} days before the catch.",
+  wxInfoTitle:"What do these mean?",
+  wxInfoBody:"Everything here is for <b>your spot at the time of the catch</b>, not for today.<br><br>"
+    +"<b>Air</b> — temperature at the moment of the catch. The arrow compares it to <b>the same hour yesterday</b>.<br><br>"
+    +"<b>Wind</b> — the direction it came from. The arrow points <b>where it was blowing to</b>. The speed sits beside it.<br><br>"
+    +"<b>Pressure</b> — at the moment of the catch. The arrow shows the change over the <b>last 3 hours</b> — the usual way a pressure tendency is given, and falling pressure is what anglers watch for.<br><br>"
+    +"<b>Moon</b> — the phase on the day of the catch.<br><br>"
+    +"<b>±0</b> means the change was too small to report.<br><br>"
+    +"Source: Open-Meteo. <b>Water temperature</b> lives under “At the water” — you enter that yourself, it does not come from them.", sparkCap:"Daily mean temperature, last {n} days",
   m_new:"New moon", m_wc:"Waxing crescent", m_fq:"First quarter", m_wg:"Waxing gibbous", m_full:"Full moon", m_ng:"Waning gibbous", m_lq:"Last quarter", m_nc:"Waning crescent",
   wc_clear:"Clear", wc_partly:"Partly cloudy", wc_cloudy:"Cloudy", wc_fog:"Fog", wc_drizzle:"Drizzle", wc_rain:"Rain", wc_snow:"Snow", wc_thunder:"Thunderstorm"});
-Object.assign(I18N.nl, {mapPin:"Locatie op kaart", myLocation:"Mijn locatie", tapMap:"Tik op de kaart om de plek te zetten.", openInMaps:"Openen in Kaarten", weather:"Weer", moon:"Maanfase", wTemp:"Lucht", wWind:"Wind", wPressure:"Druk", wMoon:"Maan", wCond:"Omstandigheden", wWaterTemp:"Watertemp.", trend3:"3-daagse trend", trend7:"7-daagse trend", wLoading:"Weer laden …", noCoords:"Geen kaartlocatie ingesteld.", moonWax:"wassend", moonWane:"afnemend", wSource:"Bron", wSourceFields:"Lucht, wind, druk", windFrom:"uit {d}", compass8:"N,NO,O,ZO,Z,ZW,W,NW", trendNote:"Pijlen: verandering in de {n} dagen vóór de vangst.", sparkCap:"Daggemiddelde temperatuur, laatste {n} dagen",
+Object.assign(I18N.nl, {mapPin:"Locatie op kaart", myLocation:"Mijn locatie", tapMap:"Tik op de kaart om de plek te zetten.", openInMaps:"Openen in Kaarten", weather:"Weer", moon:"Maanfase", wTemp:"Lucht", wWind:"Wind", wPressure:"Druk", wMoon:"Maan", wCond:"Omstandigheden", wWaterTemp:"Watertemp.", trend3:"3-daagse trend", trend7:"7-daagse trend", wLoading:"Weer laden …", noCoords:"Geen kaartlocatie ingesteld.", moonWax:"wassend", moonWane:"afnemend", wSource:"Bron", wSourceFields:"Lucht, wind, druk", windFrom:"uit {d}", compass8:"N,NO,O,ZO,Z,ZW,W,NW", trendNote:"Pijlen: verandering in de {n} dagen vóór de vangst.",
+  wxInfoTitle:"Wat betekenen deze waarden?",
+  wxInfoBody:"Alles hier geldt voor <b>jouw stek op het moment van de vangst</b>, niet voor vandaag.<br><br>"
+    +"<b>Lucht</b> — temperatuur op het moment van de vangst. De pijl vergelijkt met <b>hetzelfde uur gisteren</b>.<br><br>"
+    +"<b>Wind</b> — de richting waar hij vandaan kwam. De pijl wijst <b>waarheen</b> hij woei. Daarnaast de snelheid.<br><br>"
+    +"<b>Druk</b> — luchtdruk op het moment van de vangst. De pijl toont de verandering over de <b>laatste 3 uur</b> — zo wordt de luchtdruktendens gebruikelijk gegeven, en dalende druk is waar vissers op letten.<br><br>"
+    +"<b>Maan</b> — de fase op de dag van de vangst.<br><br>"
+    +"<b>±0</b> betekent: de verandering was te klein om te melden.<br><br>"
+    +"Bron: Open-Meteo. De <b>watertemperatuur</b> staat onder „Aan het water“ — die vul je zelf in, die komt daar niet vandaan.", sparkCap:"Daggemiddelde temperatuur, laatste {n} dagen",
   m_new:"Nieuwe maan", m_wc:"Wassende sikkel", m_fq:"Eerste kwartier", m_wg:"Wassende maan", m_full:"Volle maan", m_ng:"Afnemende maan", m_lq:"Laatste kwartier", m_nc:"Afnemende sikkel",
   wc_clear:"Helder", wc_partly:"Licht bewolkt", wc_cloudy:"Bewolkt", wc_fog:"Mist", wc_drizzle:"Motregen", wc_rain:"Regen", wc_snow:"Sneeuw", wc_thunder:"Onweer"});
 Object.assign(I18N.de, {demoHint:"Demo: Felder sind schon ausgefüllt — einfach auf „Anmelden\" tippen.", photos:"Fotos", cover:"Titelbild", setCover:"Als Titelbild", photoHint:"Bis zu 10 Fotos. Tippe bei mehreren auf den Stern ☆, um das Titelbild festzulegen."});
@@ -2514,6 +2545,15 @@ function renderSelSheet(){
 }
 function pickSel(value){ const sel=document.getElementById(_selSheetId); if(!sel) return; sel.value=value; syncSelfield(_selSheetId); try{ sel.dispatchEvent(new Event('change')); }catch(e){} closeModal('sel-sheet'); }
 function syncSelfield(selectId){ const sel=document.getElementById(selectId); if(!sel) return; const lbl=document.getElementById(selectId+'-lbl'); if(!lbl) return; const opt=sel.selectedOptions&&sel.selectedOptions[0]; lbl.textContent=opt?opt.textContent:'—'; }
+/* The weather explanation lives here rather than under the cards (JC): the footnote was always in the
+   way and never said enough. Own function because showInfo() sets textContent — deliberately, since it
+   is called with data elsewhere — and this needs structure. The body is a literal from I18N, never
+   user data, which is why innerHTML is safe here and would not be there. */
+function showWxInfo(){
+  document.getElementById('info-title').textContent=t('wxInfoTitle');
+  document.getElementById('info-body').innerHTML=t('wxInfoBody');
+  document.getElementById('info-modal').style.display='flex';
+}
 function showInfo(title, body){ document.getElementById('info-title').textContent=title; document.getElementById('info-body').textContent=body; document.getElementById('info-modal').style.display='flex'; }
 let createType='club', requestType='club';
 function setCreateType(v){ createType=v; document.querySelectorAll('#create-type-seg button').forEach(b=>b.classList.toggle('on', b.dataset.ct===v)); }
