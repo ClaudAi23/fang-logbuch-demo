@@ -634,7 +634,9 @@
      here — only the rhythm between the stacked sections. */
   .sectionlabel.dmh-out{margin-top:18px;}
   /* Air between the water card and the map — they sit under one heading, but they are two things. */
-  #d-loc:not(:empty){margin-bottom:10px;}
+  /* The water field sits BELOW the map now (JC), so the air belongs above it. This rule still said
+     margin-bottom from the days when it sat on top — it was padding the wrong side. */
+  #d-loc:not(:empty){margin-top:14px;}
   .sectionlabel.dmh-out:first-child{margin-top:2px;}
   .wx-card .k svg{width:13px; height:13px; flex:0 0 auto; margin-right:5px; stroke:var(--muted); fill:none; stroke-width:2;}
   .spec{display:flex; align-items:flex-start; gap:11px; padding:12px 0; border-bottom:1px solid var(--border); min-width:0;}
