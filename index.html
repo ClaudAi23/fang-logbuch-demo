@@ -628,28 +628,56 @@
 /* ---- Hero lockup: anglerfish + live Barlow wordmark, the puffer IS the "·" in butler·fish.
    Built once, used on the splash and the login — so the splash→login handoff needs no transition:
    the mark simply stops animating. Everything scales from the container's font-size. ---- */
-.lockup{display:flex; flex-direction:column; align-items:center; gap:.18em; line-height:1;}
-.lockup-fish{position:relative; width:3.5em; height:3.5em; display:flex; align-items:center; justify-content:center;}
+/* Every number below is measured against logo/hero-lockup-puffer.png, not eyeballed.
+   Fish 2em: the target reads 2,5–3,1 glyph heights; the old 3.5em was nearly double, which made
+     the fish the hero and the wordmark the sidekick.
+   Baseline: an <img> has no baseline of its own, so flexbox synthesises one from its BOTTOM edge
+     -> align-items:baseline drops the puffer onto the type baseline. height:auto is mandatory:
+     with a square box, object-fit:contain leaves 1,8px of dead space under the puffer and it floats.
+   Gaps: equal margins do NOT give equal optical gaps — "f" carries a 0,026em side bearing, "r"
+     essentially none. Hence 0,031em less on the right. Optical gap: 0,040em each side.
+   margin-top:-.10em: the target puts the fish 2px (0,009em) above the type — it practically
+     touches. Negative isn't possible with flex "gap", so the word carries a negative margin. */
+.lockup{display:flex; flex-direction:column; align-items:center; gap:0; line-height:1; position:relative;}
+.lockup-fish{position:relative; width:2em; height:2em; display:flex; align-items:center; justify-content:center;}
 .lockup-fish > img{position:relative; z-index:1; width:100%; height:100%; object-fit:contain;}
-/* the lure light pooling around the mascot — puffer orange #EB9E18 reads as light, not as paint */
-.lockup-glow{position:absolute; left:50%; top:56%; width:4.2em; height:4.2em; border-radius:50%; z-index:0; pointer-events:none;
-  transform:translate(-50%,-50%); background:radial-gradient(circle, rgba(235,158,24,.50), rgba(235,158,24,.12) 45%, rgba(235,158,24,0) 68%); filter:blur(3px);}
-.lockup-word{display:flex; align-items:center; justify-content:center; font-family:'Barlow',system-ui,sans-serif; font-weight:700; letter-spacing:-.015em; text-transform:lowercase; white-space:nowrap;}
+.lockup-word{display:flex; align-items:baseline; justify-content:center; font-family:'Barlow',system-ui,sans-serif; font-weight:700; letter-spacing:-.015em; text-transform:lowercase; white-space:nowrap; position:relative; z-index:1; margin-top:-.10em;}
 .lockup-word .lw-butler{color:#F4EFE2;}
 .lockup-word .lw-fish{color:var(--accent);}
-/* The puffer IS the separator dot. Its spines need air or they touch the "r" and the "f" —
-   .04em looked tight at 40px and worse at small sizes, so the gap scales with the wordmark. */
-.lockup-word .lw-dot{width:.72em; height:.72em; object-fit:contain; margin:0 .11em; position:relative; top:.06em; flex:0 0 auto;}
-/* launch choreography — lantern glints, spotlight blooms, puffer settles. Total ≤900ms. */
+.lockup-word .lw-dot{width:.52em; height:auto; object-fit:fill; flex:0 0 auto; margin-left:.045em; margin-right:.014em;}
+/* The lantern (esca). Position measured off mascot.png: 91,3% x / 22,5% y of the image. */
+.lk-esca{position:absolute; left:91.3%; top:22.5%; width:1.1em; height:1.1em; transform:translate(-50%,-50%); z-index:2; pointer-events:none;
+  background:radial-gradient(circle, rgba(255,255,250,.95) 0%, rgba(255,236,180,.55) 26%, rgba(242,170,37,.22) 50%, rgba(242,170,37,0) 72%);}
+/* The light. Five stacked ellipses widening downward: the cone shape comes from the STAGGER, not
+   from a clip — so there is no box edge anywhere to be cut off and blurred back into softness.
+   (Every earlier attempt had one: a background is hard-clipped at the box edge; blur only fuzzes it.)
+   No hard beam: the esca is bioluminescent, a lamp would be the wrong animal. Height is set in JS. */
+.lk-sh{position:absolute; left:91.3%; top:22.5%; z-index:0; pointer-events:none; transform:translateX(-50%);
+  width:2.6em; filter:blur(7px);
+  background:
+    radial-gradient(ellipse 13% 8%  at 50% 6%,  rgba(255,242,205,.46),  transparent 74%),
+    radial-gradient(ellipse 22% 10% at 50% 26%, rgba(255,242,205,.345), transparent 76%),
+    radial-gradient(ellipse 33% 12% at 50% 50%, rgba(255,242,205,.253), transparent 78%),
+    radial-gradient(ellipse 45% 13% at 50% 74%, rgba(255,242,205,.184), transparent 80%),
+    radial-gradient(ellipse 56% 14% at 50% 94%, rgba(255,242,205,.127), transparent 82%);}
+/* The lit puffer. Puffer orange #EB9E18, not the wordmark gold — per UPDATE-02 this is the "light" hue. */
+.lk-pool{position:absolute; width:3.2em; height:1.5em; border-radius:50%; z-index:0; pointer-events:none;
+  transform:translate(-50%,-50%); filter:blur(5px);
+  background:radial-gradient(ellipse, rgba(235,158,24,.55), rgba(235,158,24,.18) 45%, rgba(235,158,24,0) 72%);}
+/* launch choreography — lantern glints, light falls, puffer settles. Total ≤900ms. */
 .lockup.anim .lockup-fish > img{animation:lkFish .5s cubic-bezier(.2,.8,.2,1) both;}
-.lockup.anim .lockup-glow{animation:lkGlow .6s cubic-bezier(.2,.8,.2,1) both;}
+.lockup.anim .lk-esca{animation:lkEsca .6s cubic-bezier(.2,.8,.2,1) both;}
+.lockup.anim .lk-sh{animation:lkBeam .55s cubic-bezier(.2,.8,.2,1) .25s both;}
 .lockup.anim .lockup-word{animation:lkWord .45s cubic-bezier(.2,.8,.2,1) .22s both;}
+.lockup.anim .lk-pool{animation:lkPool .45s cubic-bezier(.2,.8,.2,1) .42s both;}
 .lockup.anim .lw-dot{animation:lkDot .5s cubic-bezier(.2,.8,.2,1) .4s both;}
 @keyframes lkFish{from{opacity:0; transform:translateY(7px) scale(.95);} to{opacity:1; transform:none;}}
-@keyframes lkGlow{0%{opacity:0; transform:translate(-50%,-50%) scale(.7);} 65%{opacity:1; transform:translate(-50%,-50%) scale(1.12);} 100%{opacity:.9; transform:translate(-50%,-50%) scale(1);}}
+@keyframes lkEsca{0%{opacity:0; transform:translate(-50%,-50%) scale(.6);} 65%{opacity:1; transform:translate(-50%,-50%) scale(1.14);} 100%{opacity:1; transform:translate(-50%,-50%) scale(1);}}
+@keyframes lkBeam{from{opacity:0;} to{opacity:1;}}
 @keyframes lkWord{from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:none;}}
+@keyframes lkPool{from{opacity:0;} to{opacity:1;}}
 @keyframes lkDot{0%{opacity:0; transform:scale(.2) rotate(-20deg);} 70%{opacity:1; transform:scale(1.16) rotate(5deg);} 100%{opacity:1; transform:scale(1) rotate(0);}}
-@media(prefers-reduced-motion:reduce){ .lockup.anim .lockup-fish > img, .lockup.anim .lockup-glow, .lockup.anim .lockup-word, .lockup.anim .lw-dot{animation:none;} }
+@media(prefers-reduced-motion:reduce){ .lockup.anim .lockup-fish > img, .lockup.anim .lk-esca, .lockup.anim .lk-sh, .lockup.anim .lockup-word, .lockup.anim .lk-pool, .lockup.anim .lw-dot{animation:none;} }
   .mascot-free::before{content:""; position:absolute; inset:-8%; z-index:0; pointer-events:none; border-radius:50%; background:radial-gradient(circle at 50% 46%, rgba(92,206,226,.30), rgba(92,206,226,.08) 46%, transparent 66%);}
   .mascot-free img{position:relative; z-index:1; max-width:99%; max-height:99%; width:auto; height:auto; display:block; filter:drop-shadow(0 0 13px rgba(95,205,225,.5)) drop-shadow(0 8px 18px rgba(0,0,0,.42));}
   .mascot-free.mf-sm::before{inset:-9%; background:radial-gradient(circle at 50% 46%, rgba(96,210,230,.34), rgba(96,210,230,.11) 45%, transparent 67%);}
@@ -710,7 +738,7 @@
 </head>
 <body>
 <div id="app-loader"><div class="lockup anim" style="font-size:2.5rem;">
-  <div class="lockup-fish"><div class="lockup-glow"></div><img src="/mascot.png" alt=""></div>
+  <div class="lockup-fish"><div class="lk-sh"></div><div class="lk-esca"></div><img src="/mascot.png" alt=""></div>
   <div class="lockup-word"><span class="lw-butler">butler</span><img class="lw-dot" src="/puffer.png?v=3" alt="·"><span class="lw-fish">fish</span></div>
 </div></div>
 <div id="app">
@@ -741,7 +769,7 @@
     <div class="scroll pad">
       <div style="height:44px"></div>
       <h1 id="login-logo" class="lockup anim" style="font-size:2.1rem; margin:0 auto;">
-        <div class="lockup-fish"><div class="lockup-glow"></div><img src="/mascot.png" alt=""></div>
+        <div class="lockup-fish"><div class="lk-sh"></div><div class="lk-esca"></div><img src="/mascot.png" alt=""></div>
         <div class="lockup-word"><span class="lw-butler">butler</span><img class="lw-dot" src="/puffer.png?v=3" alt="·"><span class="lw-fish">fish</span></div>
       </h1>
       <p style="text-align:center; margin:9px 0 0;"><span class="beta-pill">Beta</span></p>
@@ -1938,6 +1966,9 @@ function go(name, isBack){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active','is-back'));
   { const _sc=document.getElementById('s-'+name); _sc.classList.add('active'); _sc.classList.toggle('is-back', !!isBack); }
   if(name==='login'){ try{ changeLoginEmail(); const _lc=document.getElementById('login-code'); if(_lc) _lc.value=''; }catch(e){} }
+  // The login lockup lives on a hidden screen, so it has no box to measure until now — place it
+  // once it's actually laid out, otherwise the lantern never finds the puffer.
+  try{ placeLockups(); }catch(e){}
   const sc=document.querySelector('#s-'+name+' .scroll'); if(sc) sc.scrollTop=0;
   try{ hideLoader(); }catch(e){}
 }
@@ -4861,6 +4892,38 @@ function sizeEfm(inp){
   inp.style.width = Math.ceil(w + 2) + 'px';   // exact glyph width + 2px for the caret
 }
 function _resizeAllEfm(){ document.querySelectorAll('#d-rows .efm-in:not(.efm-date)').forEach(sizeEfm); }
+
+/* Hero lockup: the two things that can't be expressed in CSS, because both depend on where the
+   text actually lands (and therefore on Barlow having loaded).
+   1) The fish sits LEFT because its lantern sits right (91,3% of the image). Shifting it so the
+      lantern hangs vertically over the puffer is what makes the mark read: lantern → light → prey.
+      That's the whole idea of the mark, so it must not be a guessed pixel value.
+   2) The cone reaches from the lantern down INTO the pool (x1,18 = slight overshoot, so the two
+      light shapes merge instead of merely touching) — at any font-size.
+   Runs on load, after fonts, and on resize: before Barlow lands the wordmark has different metrics. */
+function placeLockups(){
+  document.querySelectorAll('.lockup').forEach(lk=>{
+    const fish=lk.querySelector('.lockup-fish'), dot=lk.querySelector('.lw-dot'), sh=lk.querySelector('.lk-sh');
+    if(!fish || !dot) return;
+    fish.style.transform='';                                   // reset before measuring, else we shift a shifted box
+    const d=dot.getBoundingClientRect(), f=fish.getBoundingClientRect();
+    if(!d.width || !f.width) return;                           // not laid out yet (hidden screen)
+    const escaX = f.left + f.width*0.913, escaY = f.top + f.height*0.225;
+    const dotCx = d.left + d.width/2, poolY = d.top + d.height/2;
+    fish.style.transform = `translateX(${(dotCx-escaX).toFixed(1)}px)`;
+
+    let pool=lk.querySelector('.lk-pool');
+    if(!pool){ pool=document.createElement('div'); pool.className='lk-pool'; lk.appendChild(pool); }
+    const r=lk.getBoundingClientRect();
+    pool.style.left=(dotCx-r.left)+'px';
+    pool.style.top =(poolY-r.top)+'px';
+
+    if(sh) sh.style.height=((poolY-escaY)*1.18).toFixed(1)+'px';
+  });
+}
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(placeLockups);
+window.addEventListener('resize', placeLockups);
+window.addEventListener('load', placeLockups);
 async function commitEfmDate(inp){ const c=state.current; if(!c||!inp.value) return; let iso; try{ iso=new Date(inp.value).toISOString(); }catch(e){ return; }
   await saveDetailField(c,'caught_at','date',iso,{});
   refreshWeatherFor(c);   // weather belongs to the new date
