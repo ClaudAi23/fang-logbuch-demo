@@ -77,7 +77,7 @@
      It only positions the hero lockup — the lockup owns its own sizing, glow, choreography
      and reduced-motion rule. (A former "#app-loader img{width:200px}" here was an ID
      selector and beat the lockup's class rules, blowing the puffer dot up to 200px.) */
-  #app-loader{position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:#0D5164; transition:opacity .5s ease, visibility 0s linear .5s;}
+  #app-loader{position:fixed; inset:0; z-index:9999; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#0D5164; transition:opacity .5s ease, visibility 0s linear .5s;}
   #app-loader.hide{opacity:0; visibility:hidden; pointer-events:none;}
   .screen{display:none; flex:1; flex-direction:column; min-height:0;}
   .screen.active{display:flex; animation:scrIn .24s cubic-bezier(.22,.61,.36,1);}
@@ -639,7 +639,11 @@
    margin-top:-.10em: the target puts the fish 2px (0,009em) above the type — it practically
      touches. Negative isn't possible with flex "gap", so the word carries a negative margin. */
 .lockup{display:flex; flex-direction:column; align-items:center; gap:0; line-height:1; position:relative;}
-.lockup-fish{position:relative; width:2em; height:2em; display:flex; align-items:center; justify-content:center;}
+/* The offset lives in a VARIABLE, not in a finished transform: the swim animation animates
+   transform too, and whichever is written last would wipe the other out — the lantern would lose
+   the puffer. This way the keyframes can carry the offset along. */
+.lockup-fish{position:relative; width:2em; height:2em; display:flex; align-items:center; justify-content:center;
+  transform:translateX(var(--lk-shift,0px));}
 .lockup-fish > img{position:relative; z-index:1; width:100%; height:100%; object-fit:contain;}
 .lockup-word{display:flex; align-items:baseline; justify-content:center; font-family:'Barlow',system-ui,sans-serif; font-weight:700; letter-spacing:-.015em; text-transform:lowercase; white-space:nowrap; position:relative; z-index:1; margin-top:-.10em;}
 .lockup-word .lw-butler{color:#F4EFE2;}
@@ -664,20 +668,82 @@
 .lk-pool{position:absolute; width:3.2em; height:1.5em; border-radius:50%; z-index:0; pointer-events:none;
   transform:translate(-50%,-50%); filter:blur(5px);
   background:radial-gradient(ellipse, rgba(235,158,24,.55), rgba(235,158,24,.18) 45%, rgba(235,158,24,0) 72%);}
-/* launch choreography — lantern glints, light falls, puffer settles. Total ≤900ms. */
-.lockup.anim .lockup-fish > img{animation:lkFish .5s cubic-bezier(.2,.8,.2,1) both;}
-.lockup.anim .lk-esca{animation:lkEsca .6s cubic-bezier(.2,.8,.2,1) both;}
-.lockup.anim .lk-sh{animation:lkBeam .55s cubic-bezier(.2,.8,.2,1) .25s both;}
-.lockup.anim .lockup-word{animation:lkWord .45s cubic-bezier(.2,.8,.2,1) .22s both;}
-.lockup.anim .lk-pool{animation:lkPool .45s cubic-bezier(.2,.8,.2,1) .42s both;}
-.lockup.anim .lw-dot{animation:lkDot .5s cubic-bezier(.2,.8,.2,1) .4s both;}
-@keyframes lkFish{from{opacity:0; transform:translateY(7px) scale(.95);} to{opacity:1; transform:none;}}
-@keyframes lkEsca{0%{opacity:0; transform:translate(-50%,-50%) scale(.6);} 65%{opacity:1; transform:translate(-50%,-50%) scale(1.14);} 100%{opacity:1; transform:translate(-50%,-50%) scale(1);}}
-@keyframes lkBeam{from{opacity:0;} to{opacity:1;}}
-@keyframes lkWord{from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:none;}}
-@keyframes lkPool{from{opacity:0;} to{opacity:1;}}
+/* Launch choreography, in the order the mark tells its story: the wordmark stands as "butler fish"
+   with a gap → the anglerfish swims in from the left, DARK → it stops → the lantern comes on →
+   the puffer appears with beam and pool and drops into the gap as the "·".
+   Total ~2,3s, which is why LOADER_MIN_MS is 3000. The brief's ≤900ms was written for a fade-in;
+   this is a scene, and the splash is where a brand is allowed to take a breath. */
+.lockup.anim .lockup-word{animation:lkWord .4s ease-out both;}
+.lockup.anim .lockup-fish{animation:lkSwim 1.4s linear .25s both;}
+.lockup.anim .lockup-fish > img{animation:lkFade .35s ease-out .25s both;}
+.lockup.anim .lk-esca{animation:lkEsca .34s cubic-bezier(.2,.8,.2,1) 1.7s both;}
+.lockup.anim .lk-sh{animation:lkFade .4s ease-out 2s both;}
+.lockup.anim .lw-dot{animation:lkDot .44s cubic-bezier(.2,.8,.2,1) 2s both;}
+.lockup.anim .lk-pool{animation:lkFade .4s ease-out 2.07s both;}
+@keyframes lkFade{from{opacity:0;} to{opacity:1;}}
+@keyframes lkWord{from{opacity:0;} to{opacity:1;}}
+@keyframes lkEsca{0%{opacity:0; transform:translate(-50%,-50%) scale(.5);} 60%{opacity:1; transform:translate(-50%,-50%) scale(1.25);} 100%{opacity:1; transform:translate(-50%,-50%) scale(1);}}
 @keyframes lkDot{0%{opacity:0; transform:scale(.2) rotate(-20deg);} 70%{opacity:1; transform:scale(1.16) rotate(5deg);} 100%{opacity:1; transform:scale(1) rotate(0);}}
-@media(prefers-reduced-motion:reduce){ .lockup.anim .lockup-fish > img, .lockup.anim .lk-esca, .lockup.anim .lk-sh, .lockup.anim .lockup-word, .lockup.anim .lk-pool, .lockup.anim .lw-dot{animation:none;} }
+/* The swim is sampled from a damped oscillation at 51 points and runs LINEAR on purpose: a
+   cubic-bezier is re-applied between EVERY pair of keyframes, so the fish would brake at each one
+   — that was the stutter. The curve belongs in the values, not in the timing function.
+   The tilt is the DERIVATIVE of the height (cos to sin), so the fish points where it's going;
+   rolling and rising independently reads as a fish with hiccups. Last frame is exactly zero,
+   otherwise the lantern ends up hanging crooked over the puffer. */
+@keyframes lkSwim{
+    0.0%{transform:translateX(calc(var(--lk-shift,0px) + -4.5000em)) translateY(0.1694em) rotate(5.777deg);}
+    2.0%{transform:translateX(calc(var(--lk-shift,0px) + -4.1507em)) translateY(0.2234em) rotate(4.122deg);}
+    4.0%{transform:translateX(calc(var(--lk-shift,0px) + -3.8221em)) translateY(0.2523em) rotate(2.267deg);}
+    6.0%{transform:translateX(calc(var(--lk-shift,0px) + -3.5134em)) translateY(0.2561em) rotate(0.395deg);}
+    8.0%{transform:translateX(calc(var(--lk-shift,0px) + -3.2238em)) translateY(0.2369em) rotate(-1.327deg);}
+    10.0%{transform:translateX(calc(var(--lk-shift,0px) + -2.9525em)) translateY(0.1987em) rotate(-2.762deg);}
+    12.0%{transform:translateX(calc(var(--lk-shift,0px) + -2.6986em)) translateY(0.1468em) rotate(-3.811deg);}
+    14.0%{transform:translateX(calc(var(--lk-shift,0px) + -2.4615em)) translateY(0.0870em) rotate(-4.421deg);}
+    16.0%{transform:translateX(calc(var(--lk-shift,0px) + -2.2404em)) translateY(0.0254em) rotate(-4.579deg);}
+    18.0%{transform:translateX(calc(var(--lk-shift,0px) + -2.0345em)) translateY(-0.0323em) rotate(-4.319deg);}
+    20.0%{transform:translateX(calc(var(--lk-shift,0px) + -1.8432em)) translateY(-0.0815em) rotate(-3.702deg);}
+    22.0%{transform:translateX(calc(var(--lk-shift,0px) + -1.6657em)) translateY(-0.1186em) rotate(-2.820deg);}
+    24.0%{transform:translateX(calc(var(--lk-shift,0px) + -1.5013em)) translateY(-0.1416em) rotate(-1.776deg);}
+    26.0%{transform:translateX(calc(var(--lk-shift,0px) + -1.3494em)) translateY(-0.1498em) rotate(-0.678deg);}
+    28.0%{transform:translateX(calc(var(--lk-shift,0px) + -1.2093em)) translateY(-0.1440em) rotate(0.371deg);}
+    30.0%{transform:translateX(calc(var(--lk-shift,0px) + -1.0804em)) translateY(-0.1260em) rotate(1.284deg);}
+    32.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.9622em)) translateY(-0.0987em) rotate(1.993deg);}
+    34.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.8539em)) translateY(-0.0654em) rotate(2.456deg);}
+    36.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.7550em)) translateY(-0.0296em) rotate(2.657deg);}
+    38.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.6649em)) translateY(0.0053em) rotate(2.603deg);}
+    40.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.5832em)) translateY(0.0362em) rotate(2.325deg);}
+    42.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.5092em)) translateY(0.0609em) rotate(1.869deg);}
+    44.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.4426em)) translateY(0.0778em) rotate(1.294deg);}
+    46.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.3826em)) translateY(0.0862em) rotate(0.661deg);}
+    48.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.3290em)) translateY(0.0861em) rotate(0.032deg);}
+    50.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.2812em)) translateY(0.0784em) rotate(-0.538deg);}
+    52.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.2389em)) translateY(0.0646em) rotate(-1.004deg);}
+    54.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.2015em)) translateY(0.0464em) rotate(-1.335deg);}
+    56.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.1687em)) translateY(0.0260em) rotate(-1.516deg);}
+    58.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.1400em)) translateY(0.0052em) rotate(-1.545deg);}
+    60.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.1152em)) translateY(-0.0139em) rotate(-1.435deg);}
+    62.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0938em)) translateY(-0.0300em) rotate(-1.209deg);}
+    64.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0756em)) translateY(-0.0418em) rotate(-0.898deg);}
+    66.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0601em)) translateY(-0.0487em) rotate(-0.539deg);}
+    68.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0472em)) translateY(-0.0507em) rotate(-0.168deg);}
+    70.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0365em)) translateY(-0.0480em) rotate(0.181deg);}
+    72.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0277em)) translateY(-0.0413em) rotate(0.480deg);}
+    74.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0206em)) translateY(-0.0317em) rotate(0.707deg);}
+    76.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0149em)) translateY(-0.0202em) rotate(0.849deg);}
+    78.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0105em)) translateY(-0.0080em) rotate(0.902deg);}
+    80.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0072em)) translateY(0.0036em) rotate(0.870deg);}
+    82.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0047em)) translateY(0.0138em) rotate(0.765deg);}
+    84.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0029em)) translateY(0.0218em) rotate(0.603deg);}
+    86.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0017em)) translateY(0.0270em) rotate(0.403deg);}
+    88.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0009em)) translateY(0.0294em) rotate(0.187deg);}
+    90.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0004em)) translateY(0.0289em) rotate(-0.023deg);}
+    92.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0002em)) translateY(0.0259em) rotate(-0.211deg);}
+    94.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0001em)) translateY(0.0209em) rotate(-0.362deg);}
+    96.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0000em)) translateY(0.0146em) rotate(-0.466deg);}
+    98.0%{transform:translateX(calc(var(--lk-shift,0px) + -0.0000em)) translateY(0.0076em) rotate(-0.518deg);}
+    100.0%{transform:translateX(calc(var(--lk-shift,0px) + 0.0000em)) translateY(0.0000em) rotate(0.000deg);}
+  }
+@media(prefers-reduced-motion:reduce){ .lockup.anim .lockup-word, .lockup.anim .lockup-fish, .lockup.anim .lockup-fish > img, .lockup.anim .lk-esca, .lockup.anim .lk-sh, .lockup.anim .lk-pool, .lockup.anim .lw-dot{animation:none;} }
   .mascot-free::before{content:""; position:absolute; inset:-8%; z-index:0; pointer-events:none; border-radius:50%; background:radial-gradient(circle at 50% 46%, rgba(92,206,226,.30), rgba(92,206,226,.08) 46%, transparent 66%);}
   .mascot-free img{position:relative; z-index:1; max-width:99%; max-height:99%; width:auto; height:auto; display:block; filter:drop-shadow(0 0 13px rgba(95,205,225,.5)) drop-shadow(0 8px 18px rgba(0,0,0,.42));}
   .mascot-free.mf-sm::before{inset:-9%; background:radial-gradient(circle at 50% 46%, rgba(96,210,230,.34), rgba(96,210,230,.11) 45%, transparent 67%);}
@@ -1975,7 +2041,7 @@ function go(name, isBack){
 let _loaderShownAt = (typeof performance!=='undefined' && performance.now) ? performance.now() : Date.now();
 /* The launch choreography alone runs ~900ms, so 1500 left barely half a second to actually look
    at the mark. 2200 gives it ~1,3s to land without making the start feel sluggish. */
-const LOADER_MIN_MS = 2200;
+const LOADER_MIN_MS = 3000;
 function _now(){ return (typeof performance!=='undefined' && performance.now) ? performance.now() : Date.now(); }
 function showLoader(){ const el=document.getElementById('app-loader'); if(el){ el.classList.remove('hide'); _loaderShownAt=_now(); } }
 function hideLoader(){ const el=document.getElementById('app-loader'); if(!el) return; const elapsed=_now()-_loaderShownAt; if(elapsed>=LOADER_MIN_MS){ el.classList.add('hide'); } else { setTimeout(function(){ el.classList.add('hide'); }, LOADER_MIN_MS-elapsed); } }
@@ -4903,22 +4969,32 @@ function _resizeAllEfm(){ document.querySelectorAll('#d-rows .efm-in:not(.efm-da
    2) The cone reaches from the lantern down INTO the pool (x1,18 = slight overshoot, so the two
       light shapes merge instead of merely touching) — at any font-size.
    Runs on load, after fonts, and on resize: before Barlow lands the wordmark has different metrics. */
+/* offsetLeft/Top are relative to the nearest POSITIONED ancestor, and .lockup-word is one — so the
+   puffer measures against the wordmark while the fish measures against the lockup. Summing up to a
+   common root is the only way to compare them; taking the raw values mixes two coordinate systems
+   and lands the pool a fish-height too high. */
+function _lkOffset(el, root){
+  let x=0, y=0, n=el;
+  while(n && n!==root){ x+=n.offsetLeft; y+=n.offsetTop; n=n.offsetParent; }
+  return {x, y};
+}
 function placeLockups(){
   document.querySelectorAll('.lockup').forEach(lk=>{
     const fish=lk.querySelector('.lockup-fish'), dot=lk.querySelector('.lw-dot'), sh=lk.querySelector('.lk-sh');
     if(!fish || !dot) return;
-    fish.style.transform='';                                   // reset before measuring, else we shift a shifted box
-    const d=dot.getBoundingClientRect(), f=fish.getBoundingClientRect();
-    if(!d.width || !f.width) return;                           // not laid out yet (hidden screen)
-    const escaX = f.left + f.width*0.913, escaY = f.top + f.height*0.225;
-    const dotCx = d.left + d.width/2, poolY = d.top + d.height/2;
-    fish.style.transform = `translateX(${(dotCx-escaX).toFixed(1)}px)`;
+    if(!fish.offsetWidth || !dot.offsetWidth) return;           // not laid out yet (hidden screen)
+    // offset*, NOT getBoundingClientRect: offset* is the layout position and ignores transforms.
+    // While the fish swims in, getBoundingClientRect returns the ANIMATED box — the offset would
+    // come out wrong, and differently wrong depending on when we happened to look.
+    const fo=_lkOffset(fish, lk), dof=_lkOffset(dot, lk);
+    const escaX = fo.x + fish.offsetWidth*0.913, escaY = fo.y + fish.offsetHeight*0.225;
+    const dotCx = dof.x + dot.offsetWidth/2,     poolY = dof.y + dot.offsetHeight/2;
+    fish.style.setProperty('--lk-shift', (dotCx-escaX).toFixed(1)+'px');
 
     let pool=lk.querySelector('.lk-pool');
     if(!pool){ pool=document.createElement('div'); pool.className='lk-pool'; lk.appendChild(pool); }
-    const r=lk.getBoundingClientRect();
-    pool.style.left=(dotCx-r.left)+'px';
-    pool.style.top =(poolY-r.top)+'px';
+    pool.style.left=dotCx+'px';
+    pool.style.top =poolY+'px';
 
     if(sh) sh.style.height=((poolY-escaY)*1.18).toFixed(1)+'px';
   });
