@@ -398,13 +398,14 @@
   /* Only the credit lives here now (the trend note is gone), so the source keeps its right edge via
      margin-left:auto — space-between would have thrown it to the left the moment it was alone. */
   .wfoot{display:flex; align-items:baseline; gap:12px; margin:12px 4px 0;}
-  .wfoot .wsrc{margin-left:auto;}
   /* Three ranks, three sizes: action 13px (.map-open), explanation 11px, credit 10px. The note is
      content, not fine print — the credit is.
      Both need an explicit size: as a plain wrapper .wsrc inherited 16px/24px, so its line box was 24px
      tall while the note's was 16.5px, and baseline alignment then put the two 2px apart. */
-  .wfoot .wtrend-note{margin:0; min-width:0; font-size:0.6875rem; line-height:1.5;}
-  .wfoot .wsrc{margin:0; min-width:0; font-size:0.625rem; line-height:1.5;}
+  /* margin-left:auto keeps the credit on the right now that it is the only child — but it must live in
+     THIS rule: an earlier `margin-left:auto` was cancelled by the `margin:0` here, same specificity,
+     later wins. Two rules fighting over one property is how the source ended up on the left. */
+  .wfoot .wsrc{margin:0 0 0 auto; min-width:0; font-size:0.625rem; line-height:1.5;}
   /* Map footer: action left, credit right. margin-left:auto on the credit (not space-between) so the
      credit STAYS right when the button is hidden — it is in edit mode. */
   .mfoot{display:flex; align-items:baseline; gap:12px; margin:6px 0 0;}
