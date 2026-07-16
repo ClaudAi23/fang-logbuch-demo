@@ -1161,7 +1161,7 @@
           <div class="sectionlabel" data-i18n="grpPhotos" style="margin-top:2px;">Fotos</div>
           <div id="d-photo-grid" class="photo-grid pgrid"></div>
         </div>
-        <div class="sectionlabel" data-i18n="fltCatch" style="margin-top:2px;">Fang</div>
+        <div class="sectionlabel" id="d-rows-label" data-i18n="fltCatch" style="margin-top:2px;">Fang</div>
         <div id="d-rows"></div>
         <div id="d-notes-wrap" style="margin-top:18px; display:none;">
           <div class="sectionlabel" data-i18n="notes">Notizen</div>
@@ -5030,14 +5030,17 @@ function commitEfmInput(inp){
   if(nv===ov || (nv==null&&ov==null)) return;
   saveDetailField(c, cfg.col, cfg.field, nv, {pb:cfg.pb});
 }
-/* #9 experiment switch. ?tiles=1 turns JC's grouped-modules variant on for THIS device only and
-   remembers it (the PWA loses the query string on the next navigation); ?tiles=0 turns it off.
-   Nobody else sees it, and removing the experiment later is deleting one const and one branch. */
+/* #9: detail rows bundled into modules by meaning. ON by default; ?tiles=0 falls back to the flat
+   rows so the two can be compared side by side IN A BROWSER.
+   Note it can only be compared there: iOS gives an installed PWA its own storage container,
+   separate from Safari, and the PWA always starts at "/" with no query string — so a URL switch
+   never reaches it. That's why the flag looked broken; it wasn't. */
 const _TILES = (function(){ try{
   const u=new URLSearchParams(location.search);
-  if(u.has('tiles')) localStorage.setItem('bf_tiles', u.get('tiles')==='0' ? '' : '1');
-  return !!localStorage.getItem('bf_tiles');
-}catch(e){ return false; } })();
+  if(u.has('tiles')) localStorage.setItem('bf_tiles', u.get('tiles')==='0' ? '0' : '1');
+  const v=localStorage.getItem('bf_tiles');
+  return v===null ? true : v!=='0';        // default ON — no beta users yet, JC evaluates on device
+}catch(e){ return true; } })();
 function efmNext(inp){ const all=[].slice.call(document.querySelectorAll('#d-rows .efm-in')); const i=all.indexOf(inp); if(i>=0 && i+1<all.length){ all[i+1].focus(); } else { inp.blur(); } }
 let _efmCtx=null;
 function sizeEfm(inp){
@@ -5362,6 +5365,8 @@ function openDetailObj(c, from, keepEdit){
   const canGroup = c._db && (state.myContexts||[]).length>0;
   const groupRow = (editing && canGroup) ? `<div class="dgroup-edit"><div class="sectionlabel">${esc(t('logToArea'))}</div><div class="spec efm dgroup-pick" onclick="openDetailAreaSheet()"><svg viewBox="0 0 24 24"><path d="M9 7a3 3 0 1 0 0 6a3 3 0 0 0 0 -6M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg><span class="kv"><span class="efm-pickrow"><span class="v efm-pick">${esc(detailAreaSummary(c))}</span><svg class="efm-chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6l-6 6"/></svg></span></span></div></div>` : '';
   { const gt=document.getElementById('d-group-top'); if(gt){ gt.innerHTML=groupRow; gt.style.display=groupRow?'block':'none'; } }
+  // In module mode each module carries its own heading, so the page-level "Fang" label would say it twice.
+  { const rl=document.getElementById('d-rows-label'); if(rl) rl.style.display=_TILES?'none':''; }
   document.getElementById('d-rows').innerHTML=pbBanner+medBanner+(_TILES?specHTML:`<div class="dspecs">${specHTML}</div>`)+banner;
   if(editing){ _resizeAllEfm(); if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(_resizeAllEfm); } }
   const nw=document.getElementById('d-notes-wrap'); const dn=document.getElementById('d-notes'); dn.onclick=null; dn.classList.remove('ef-notes','empty');
