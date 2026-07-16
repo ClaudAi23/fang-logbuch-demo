@@ -387,14 +387,19 @@
   .wfoot{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:12px 4px 0;}
   /* .wsrc must carry the link's own size: as a plain wrapper it inherited 16px/24px, so its line box
      was 24px tall while the note's was 16.5px — baseline alignment then put the two 2px apart. */
-  .wfoot .wtrend-note, .wfoot .wsrc{margin:0; min-width:0; font-size:0.6875rem; line-height:1.5;}
+  .wfoot .wtrend-note, .wfoot .wsrc{margin:0; min-width:0; font-size:0.625rem; line-height:1.5;}
+  /* Map credit: same size, same colour, same right edge as the weather source — the two sit on one axis.
+     Right-aligned also keeps the traditional OSM corner. */
+  .msrc{margin-top:4px; padding:0 4px; text-align:right; font-size:0.625rem; line-height:1.5;}
+  .msrc a{color:var(--muted); font-size:0.625rem; text-decoration:none;}
+  .msrc a:hover{text-decoration:underline;}
   .wtrend-note{font-size:0.6875rem; color:var(--muted); margin:10px 0 2px;}
   .wspark-cap{font-size:0.6875rem; color:var(--muted); text-align:center; margin-top:4px;}
   /* The source line is the sibling of the trend note, not a footer: same size, same left edge,
      directly beneath it. It was 0.75rem and right-aligned — two small differences that made the
      two lines look like they came from different places. margin-top 8 -> 2 closes the gap. */
   .wsrc{margin-top:2px; text-align:left;}
-  .wsrc a{color:var(--muted); font-size:0.6875rem; text-decoration:none;}
+  .wsrc a{color:var(--muted); font-size:0.625rem; text-decoration:none;}
   .wsrc a:hover{text-decoration:underline;}
 
   .sectionlabel{font-size:0.75rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:4px 4px 10px;}
@@ -1246,6 +1251,11 @@
           <div class="map-wrap">
             <div id="d-map" class="map map-detail"></div>
             <button type="button" class="map-fab" id="d-map-openfab" onclick="openInMaps()" data-i18n-title="openInMaps" title="In Karten öffnen" aria-label="In Karten öffnen"><svg viewBox="0 0 24 24"><path d="M12 18.5l7.265 2.463c.196 .077 .42 .032 .57 -.116a.548 .548 0 0 0 .134 -.572l-7.969 -17.275l-7.97 17.275c-.07 .2 -.017 .424 .135 .572c.15 .148 .374 .193 .57 .116l7.265 -2.463"/></svg></button>
+            <!-- Attribution as its own line UNDER the map instead of Leaflet's tile overlay. OSMF allows
+                 "adjacent to the map", so this is licence-clean — and it must live INSIDE .map-wrap,
+                 which is hidden for a catch that has a water name but no pin. Outside it we would print
+                 a credit for a map that is not there. -->
+            <div class="msrc"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
           </div>
           <div id="d-loc"></div>
           <div id="d-map-edit-bar" style="display:none; margin-top:8px; align-items:center; gap:10px; justify-content:space-between;">
@@ -3660,9 +3670,10 @@ function useMyLocation(){
 function ensureDetailMap(lat,lon){
   if(typeof L==='undefined'||lat==null) return;
   if(!dMap){
-    // OSM requires attribution in its tile usage policy — this is a licence condition, not a style
-    // choice. The detail map was the only one switching it off; the form and stats maps always showed it.
-    dMap=L.map('d-map',{zoomControl:true, scrollWheelZoom:false}).setView([lat,lon],13);
+    // Leaflet's own overlay is off because we render the credit ourselves in .msrc right under the map
+    // (OSMF: "adjacent to the map" is allowed). Switching this off WITHOUT that line would drop the
+    // attribution entirely — which is what it used to do.
+    dMap=L.map('d-map',{zoomControl:true, attributionControl:false, scrollWheelZoom:false}).setView([lat,lon],13);
     L.tileLayer(TILE,TILE_OPT).addTo(dMap);
     dMarker=L.circleMarker([lat,lon],{radius:8,color:'#fff',weight:2,fillColor:'#2E7A8E',fillOpacity:1}).addTo(dMap);
   } else { try{ dMap.off('click'); dMap.scrollWheelZoom.disable(); }catch(e){} dMap.setView([lat,lon],13); _detailMapDraw(lat,lon); }
@@ -3676,7 +3687,7 @@ function _detailMapDraw(lat,lon){
 function initDetailEditMap(c){
   if(typeof L==='undefined') return;
   const has=(c.lat!=null&&c.lon!=null); const center=has?[c.lat,c.lon]:DEFAULT_CENTER;
-  if(!dMap){ dMap=L.map('d-map',{zoomControl:true}).setView(center, has?13:6); L.tileLayer(TILE,TILE_OPT).addTo(dMap); }
+  if(!dMap){ dMap=L.map('d-map',{zoomControl:true, attributionControl:false}).setView(center, has?13:6); L.tileLayer(TILE,TILE_OPT).addTo(dMap); }   // credit lives in .msrc under the map
   else { dMap.setView(center, has?13:6); }
   try{ dMap.scrollWheelZoom.enable(); }catch(e){}
   if(has) _detailMapDraw(c.lat,c.lon); else if(dMarker){ try{ dMap.removeLayer(dMarker); }catch(e){} dMarker=null; }
