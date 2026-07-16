@@ -2881,7 +2881,7 @@ async function removeContextLogo(){
 // ---------- Supabase data layer (solo + shared context catches) ----------
 function isDbCatch(){ return state.auth==='supabase'; }
 function currentContextId(){ return state.mode==='solo' ? null : (state.club? state.club.id : null); }
-function dbRowToCatch(row, photoUrls, thumbUrls){
+function dbRowToCatch(row, photoUrls, thumbUrls, crops, paths){
   return {
     id: row.id, species: row.species,
     length: row.length_cm!=null? row.length_cm : null,
@@ -2893,7 +2893,8 @@ function dbRowToCatch(row, photoUrls, thumbUrls){
     location: row.location||'', lat: row.lat!=null? Number(row.lat):null, lon: row.lon!=null? Number(row.lon):null,
     date: row.caught_at, notes: row.notes||'', moon: row.moon||null, weather: row.weather||null,
     angler: (state.me&&state.me.name)||'', userId: row.owner_id,
-    loggedBy: row.logged_by||null, loggedByName:null, confirmed: row.confirmed!==false, _db:true, _ctxId: row.context_id||null, _ctxIds: row.context_ids||null, coverPos: row.cover_pos||null, coverZoom: row.cover_zoom||null,
+    loggedBy: row.logged_by||null, loggedByName:null, confirmed: row.confirmed!==false, _db:true, _ctxId: row.context_id||null, _ctxIds: row.context_ids||null,
+    crops: crops||[], photoPaths: paths||[],   // one crop per picture; cover_pos/cover_zoom on the catch are retired
     pbLen: row.pb_length===true, pbWt: row.pb_weight===true, pbOptout: row.pb_optout===true
   , photos: photoUrls||[], photo: (photoUrls&&photoUrls[0])||null, thumbs: (thumbUrls&&thumbUrls.length)?thumbUrls:(photoUrls||[]) };
 }
@@ -2903,7 +2904,7 @@ const _sigCache={};
 async function rowsToCatches(rows, nameById){
   const c=getSB(); const ids=rows.map(r=>r.id); const byCatch={};
   if(ids.length){
-    const { data: ph } = await c.from('catch_photos').select('catch_id, path, thumb_path, is_cover, sort').in('catch_id', ids);
+    const { data: ph } = await c.from('catch_photos').select('catch_id, path, thumb_path, is_cover, sort, crop_pos, crop_zoom').in('catch_id', ids);
     (ph||[]).forEach(p=>{ (byCatch[p.catch_id]=byCatch[p.catch_id]||[]).push(p); });
   }
   const allPaths=[];
@@ -2920,9 +2921,13 @@ async function rowsToCatches(rows, nameById){
   }
   return rows.map(r=>{
     const arr=(byCatch[r.id]||[]);
-    const urls=[], thumbs=[];
-    arr.forEach(p=>{ const u=signedMap[p.path]; if(!u) return; urls.push(u); thumbs.push((p.thumb_path&&signedMap[p.thumb_path])||u); });
-    const cc=dbRowToCatch(r, urls, thumbs);
+    /* crops/paths stay parallel to urls — arr is already sorted cover-first, so index 0 is the cover.
+       The path travels with the picture because it is the only stable key: saveSoloPhotos deletes and
+       re-inserts the rows on every photo edit, so the row id does not survive. */
+    const urls=[], thumbs=[], crops=[], paths=[];
+    arr.forEach(p=>{ const u=signedMap[p.path]; if(!u) return; urls.push(u); thumbs.push((p.thumb_path&&signedMap[p.thumb_path])||u);
+      crops.push({p:p.crop_pos||null, z:p.crop_zoom||null}); paths.push(p.path); });
+    const cc=dbRowToCatch(r, urls, thumbs, crops, paths);
     if(nameById){
       if(nameById[r.owner_id]) cc.angler=nameById[r.owner_id];
       if(r.logged_by && nameById[r.logged_by]) cc.loggedByName=nameById[r.logged_by];
@@ -3015,9 +3020,12 @@ async function saveSoloPhotos(catchId, photos){
   // and delete only the objects the user actually removed. Never re-fetch/re-upload existing
   // photos (that could wipe them if a signed URL has expired or the object was already removed).
   const c=getSB();
-  const { data: existing } = await c.from('catch_photos').select('path, thumb_path').eq('catch_id', catchId);
+  const { data: existing } = await c.from('catch_photos').select('path, thumb_path, crop_pos, crop_zoom').eq('catch_id', catchId);
   const exSet = new Set((existing||[]).map(r=>r.path));
   const exThumb={}; (existing||[]).forEach(r=>{ if(r.thumb_path) exThumb[r.path]=r.thumb_path; });
+  /* This function deletes every row and re-inserts them, so anything living on the row is lost unless
+     it is carried over. The crop is keyed by PATH, which survives; the row id does not. */
+  const exCrop={}; (existing||[]).forEach(r=>{ exCrop[r.path]={p:r.crop_pos||null, z:r.crop_zoom||null}; });
   const kept = new Set();
   const finalRows=[];
   for(let i=0;i<photos.length;i++){
@@ -3047,7 +3055,8 @@ async function saveSoloPhotos(catchId, photos){
       const ep=extractStoragePath(p);
       if(ep && exSet.has(ep)){ path=ep; kept.add(ep); thumbPath=exThumb[ep]||null; }
     }
-    if(path) finalRows.push({catch_id:catchId, path, thumb_path:thumbPath, is_cover:i===0, sort:i});
+    if(path){ const _cr=exCrop[path]||{};
+      finalRows.push({catch_id:catchId, path, thumb_path:thumbPath, is_cover:i===0, sort:i, crop_pos:_cr.p||null, crop_zoom:_cr.z||null}); }
   }
   // remove storage objects (main + thumb) for photos the user dropped from the editor
   const toRemove=[];
@@ -4650,6 +4659,10 @@ function setHeroPhoto(el, i){
   const strip=document.getElementById('d-strip'); const ps=strip._photos||[];
   const img=document.getElementById('d-hero-img'); if(img && ps[i]!=null) img.src=ps[i];
   state.detailIdx=parseInt(i,10)||0;
+  /* Each picture carries its own crop, so switching pictures must re-apply it — otherwise the new
+     photo inherits the previous one's framing, which is exactly the bug JC found. */
+  if(img && state.current){ const cr=cropOf(state.current, state.detailIdx);
+    const p=coverPosOf(cr.p); img.style.objectPosition=p; img.style.transformOrigin=p; img.style.transform='scale('+coverZoomOf(cr.z)+')'; }
   Array.from(strip.children).forEach(c=>c.classList.remove('active')); el.classList.add('active');
 }
 let _lb={photos:[],idx:0,scale:1,tx:0,ty:0};
@@ -4671,20 +4684,34 @@ function coverZoomOf(v){
   if(!isFinite(z)) return 1;
   return Math.round(Math.max(COVER_ZMIN, Math.min(COVER_ZMAX, z))*100)/100;
 }
+/* The crop belongs to the PICTURE (JC): one value per catch could never differ per photo, so it lives
+   on catch_photos now. crops[] runs parallel to photos[]; index 0 is the cover, which is what every
+   thumbnail shows. */
+function cropOf(c, idx){ const a=(c&&c.crops)||[]; return a[idx||0]||{}; }
 /* One place that turns a catch + a photo URL into the cropped image, so the thumbnails cannot drift
    away from the hero again. The url is escaped too: it used to sit inside src="" and inside a CSS
    url('…') string unescaped, and it comes from the database like everything else here. */
-function coverImg(c, url, extra){
-  const p=coverPosOf(c&&c.coverPos), z=coverZoomOf(c&&c.coverZoom);
+function coverImg(c, url, extra, idx){
+  const cr=cropOf(c, idx);
+  const p=coverPosOf(cr.p), z=coverZoomOf(cr.z);
   return `<img src="${escAttr(url)}" alt="" ${extra||''} style="object-position:${p}; transform-origin:${p}; transform:scale(${z});">`;
 }
-function saveCoverPos(c, pos, zoom){
-  pos=coverPosOf(pos); zoom=coverZoomOf(zoom==null?c.coverZoom:zoom);
-  c.coverPos=pos; c.coverZoom=zoom;
-  try{ const i=(state.catches||[]).findIndex(x=>x.id===c.id); if(i>=0){ state.catches[i].coverPos=pos; state.catches[i].coverZoom=zoom; } }catch(e){}
+/* Saves the crop of ONE picture. idx addresses the photo the hero is showing; the DB row is found by
+   path, never by index — sort/is_cover are editable, and saveSoloPhotos rewrites the rows wholesale. */
+function saveCoverPos(c, pos, zoom, idx){
+  idx=idx||0; pos=coverPosOf(pos); zoom=coverZoomOf(zoom);
+  if(!c.crops) c.crops=[];
+  c.crops[idx]={p:pos, z:zoom};
+  try{ const i=(state.catches||[]).findIndex(x=>x.id===c.id);
+       if(i>=0){ if(!state.catches[i].crops) state.catches[i].crops=[]; state.catches[i].crops[idx]={p:pos, z:zoom}; } }catch(e){}
   haptic(8);
-  if(c._db && getSB()){ getSB().from('catches').update({cover_pos:pos, cover_zoom:zoom}).eq('id', c.id).then(()=>{}, ()=>{}); }
-  else { try{ saveCatches(); }catch(e){} }
+  if(c._db){
+    // Branch on _db, not on "did we find a path": a DB catch with a missing path must NOT fall through
+    // to saveCatches(), which writes the local list and would look like it saved while it did not.
+    const path=(c.photoPaths||[])[idx];
+    if(getSB() && path) getSB().from('catch_photos').update({crop_pos:pos, crop_zoom:zoom}).eq('catch_id', c.id).eq('path', path).then(()=>{}, ()=>{});
+  }
+  else { try{ saveCatches(); }catch(e){} }   // local catches keep their crops in the object
   /* No toast (JC): the picture visibly moved under the thumb and haptic() already fired — a message
      700px below the hero confirming what you just did with your own hand explains your own wrist.
      It also fired on EVERY drag-end, so three nudges meant three toasts. Other saves keep theirs,
@@ -4697,15 +4724,22 @@ function bindHeroRepos(c){
   if(!isMine){ img.style.cursor='zoom-in'; img.onclick=openLb; return; }
   img.style.cursor='grab'; img.title=t('repositionHint');
   let sx=0,sy=0,startX=50,startY=50,drag=false,moved=false;
-  let zoom=coverZoomOf(c.coverZoom), pinch=false, pinchD0=0, pinchZ0=1;
+  // Read the zoom off the picture that is showing, not off the catch — and re-read it on every gesture,
+  // because the strip may have switched pictures since this handler was bound.
+  const curIdx=()=>state.detailIdx||0;
+  let zoom=coverZoomOf(cropOf(c, curIdx()).z), pinch=false, pinchD0=0, pinchZ0=1;
   const parse=()=>{ const m=(img.style.objectPosition||'50% 50%').split(/\s+/); return [parseFloat(m[0])||50, parseFloat(m[1])||50]; };
   /* object-position picks WHICH part of a cover-scaled image shows — it cannot zoom, because "cover"
      is already the smallest scale that fills the frame. The zoom is a real scale on top, anchored to
      the same focal point (transform-origin = object-position), so zooming keeps what you pointed at. */
   const apply=(x,y)=>{ const p=x+'% '+y+'%'; img.style.objectPosition=p; img.style.transformOrigin=p; img.style.transform='scale('+zoom+')'; };
-  const commit=()=>{ const q=parse(); saveCoverPos(c, q[0]+'% '+q[1]+'%', zoom); };
+  const commit=()=>{ const q=parse(); saveCoverPos(c, q[0]+'% '+q[1]+'%', zoom, curIdx()); };
   const dist=t=>Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY);
-  const down=e=>{ const p=e.touches?e.touches[0]:e; sx=p.clientX; sy=p.clientY; const q=parse(); startX=q[0]; startY=q[1]; drag=true; moved=false; img.style.cursor='grabbing'; };
+  // The handler is bound once but the strip can switch pictures under it — re-read the zoom of the
+  // picture that is actually showing at the start of every gesture, or we would edit it with the
+  // previous photo's zoom and then save that.
+  const syncZoom=()=>{ zoom=coverZoomOf(cropOf(c, curIdx()).z); };
+  const down=e=>{ syncZoom(); const p=e.touches?e.touches[0]:e; sx=p.clientX; sy=p.clientY; const q=parse(); startX=q[0]; startY=q[1]; drag=true; moved=false; img.style.cursor='grabbing'; };
   const move=e=>{ if(!drag) return; const p=e.touches?e.touches[0]:e; const dx=p.clientX-sx, dy=p.clientY-sy;
     if(Math.abs(dx)>4||Math.abs(dy)>4) moved=true; if(!moved) return;
     // Divide by the zoom: at 2x a finger travels twice as far across the screen as across the image.
@@ -4713,12 +4747,13 @@ function bindHeroRepos(c){
     const ny=Math.max(0,Math.min(100,startY-(dy/((img.clientHeight||1)*zoom))*100));
     apply(nx,ny); if(e.cancelable)e.preventDefault(); };
   const up=()=>{ if(!drag) return; drag=false; img.style.cursor='grab'; if(!moved){ openLb(); } else { commit(); } };
-  img.ontouchstart=e=>{ if(e.touches.length===2){ pinch=true; drag=false; pinchD0=dist(e.touches)||1; pinchZ0=zoom; if(e.cancelable)e.preventDefault(); return; } down(e); };
+  img.ontouchstart=e=>{ if(e.touches.length===2){ syncZoom(); pinch=true; drag=false; pinchD0=dist(e.touches)||1; pinchZ0=zoom; if(e.cancelable)e.preventDefault(); return; } down(e); };
   img.ontouchmove=e=>{ if(pinch && e.touches.length===2){ zoom=coverZoomOf(pinchZ0*(dist(e.touches)/pinchD0)); const q=parse(); apply(q[0],q[1]); if(e.cancelable)e.preventDefault(); return; } move(e); };
   img.ontouchend=e=>{ if(pinch){ if(e.touches.length===0){ pinch=false; commit(); } return; } up(); };
   img.onmousedown=down; img.onmousemove=move; img.onmouseup=up; img.onmouseleave=()=>{ if(drag) up(); };
-  img.onwheel=e=>{ e.preventDefault(); zoom=coverZoomOf(zoom*(e.deltaY<0?1.08:1/1.08)); const q=parse(); apply(q[0],q[1]);
-    clearTimeout(img._zt); img._zt=setTimeout(commit,400); };   // one save per gesture, not per tick
+  img.onwheel=e=>{ e.preventDefault(); if(!img._zt) syncZoom();   // only on the first tick of a wheel run
+    zoom=coverZoomOf(zoom*(e.deltaY<0?1.08:1/1.08)); const q=parse(); apply(q[0],q[1]);
+    clearTimeout(img._zt); img._zt=setTimeout(()=>{ img._zt=null; commit(); },400); };   // one save per gesture, not per tick
 }
 function openLightbox(photos, idx){
   if(!photos||!photos.length) return;
@@ -5452,7 +5487,7 @@ function openDetailObj(c, from, keepEdit){
       hero.className='hero';
       /* Same builder as the thumbnails — transform-origin is tied to object-position so zooming pulls
          TOWARDS the chosen focal point instead of towards the middle. */
-      hero.innerHTML=coverImg(c, ps[0], 'id="d-hero-img"')+_facts;
+      hero.innerHTML=coverImg(c, ps[0], 'id="d-hero-img"', 0)+_facts;
       bindHeroRepos(c);
     } else {
       hero.className='hero nopic';
