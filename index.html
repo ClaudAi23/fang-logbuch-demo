@@ -499,9 +499,13 @@
      said the word twice). It is the headline of the gear tiles below it, so it is set like a heading.
      baseline alignment keeps the qualifiers sitting on the method's baseline, not floating mid-cap. */
   .m-line{display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 9px; margin:0 4px;}
-  /* The gap BETWEEN the two blocks must beat the gap INSIDE one (the 4px row-gap above), or the four
-     rows read as one flat list instead of two statements. 6px did not: it was one pixel of difference. */
-  .m-line + .m-line{margin-top:14px;}
+  /* Field labels (J3). Same size/colour as a weather card's label — this is a label over a value, the
+     only difference is that there is no box around it.
+     The gap BETWEEN the two blocks must beat the gap INSIDE one (the 4px row-gap above), or the rows
+     read as one flat list instead of two statements. 6px did not: that was one pixel of difference. */
+  .m-how .flabel{font-size:0.5875rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--muted); margin:0 4px 2px;}
+  .m-how .flabel.two{margin-top:14px;}
   /* JC: method and bait ALWAYS own their line — they are headlines, not items that may share.
      flex-basis:100% does that, so the pair is always on the line below and only the pair is subject
      to the tier rule. */
@@ -1905,9 +1909,9 @@ const I18N = {
     clock:" uur", petri:"🎣 Petri heil!", shareWater:"Water:", loggedWith:"— vastgelegd met ButlerFish", shareNoMeasure:"zonder maten"
   }
 };
-Object.assign(I18N.de, {gTilesMethod:"Methode", gTilesHow:"Wie gefangen", gTilesLoc:"Ort", gTilesCatch:"Fang", gTilesGear:"Ausrüstung", gTilesCond:"Bedingungen", gTilesMisc:"Sonstiges", editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart", switchArea:"Verein/Gruppe wechseln", toStart:"Zum Start", profile:"Profil", signOut:"Abmelden", loginIntro:"Melde dich einmal an. Danach wählst du frei zwischen Solo, Gruppen und Vereinen.", name:"Name", nameHint:"Wird bei deinen Fängen und als Initialen genutzt."});
-Object.assign(I18N.en, {gTilesMethod:"Method", gTilesHow:"How it was caught", gTilesLoc:"Location", gTilesCatch:"Catch", gTilesGear:"Gear", gTilesCond:"Conditions", gTilesMisc:"Other", editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species", switchArea:"Switch club/group", toStart:"To start", profile:"Profile", signOut:"Sign out", loginIntro:"Sign in once. Then freely pick Solo, groups and clubs.", name:"Name", nameHint:"Used on your catches and for your initials."});
-Object.assign(I18N.nl, {gTilesMethod:"Methode", gTilesHow:"Hoe gevangen", gTilesLoc:"Locatie", gTilesCatch:"Vangst", gTilesGear:"Uitrusting", gTilesCond:"Omstandigheden", gTilesMisc:"Overig", editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort", switchArea:"Vereniging/groep wisselen", toStart:"Naar start", profile:"Profiel", signOut:"Uitloggen", loginIntro:"Log één keer in. Daarna kies je vrij tussen Solo, groepen en verenigingen.", name:"Naam", nameHint:"Wordt gebruikt bij je vangsten en als initialen."});
+Object.assign(I18N.de, {gTilesMethod:"Methode", gTilesHow:"Wie gefangen", gTilesBait:"Köder & Gerät", gTilesLoc:"Ort", gTilesCatch:"Fang", gTilesGear:"Ausrüstung", gTilesCond:"Bedingungen", gTilesMisc:"Sonstiges", editCatch:"Fang bearbeiten", editSub:"Änderungen", ttEdit:"Bearbeiten", del:"Löschen", delConfirm:"Diesen Fang wirklich löschen?", sortLabel:"Sortieren", sortNewest:"Neueste", sortOldest:"Älteste", sortLongest:"Längste", sortHeaviest:"Schwerste", sortSpecies:"Fischart", switchArea:"Verein/Gruppe wechseln", toStart:"Zum Start", profile:"Profil", signOut:"Abmelden", loginIntro:"Melde dich einmal an. Danach wählst du frei zwischen Solo, Gruppen und Vereinen.", name:"Name", nameHint:"Wird bei deinen Fängen und als Initialen genutzt."});
+Object.assign(I18N.en, {gTilesMethod:"Method", gTilesHow:"How it was caught", gTilesBait:"Lure & gear", gTilesLoc:"Location", gTilesCatch:"Catch", gTilesGear:"Gear", gTilesCond:"Conditions", gTilesMisc:"Other", editCatch:"Edit catch", editSub:"Changes", ttEdit:"Edit", del:"Delete", delConfirm:"Delete this catch?", sortLabel:"Sort", sortNewest:"Newest", sortOldest:"Oldest", sortLongest:"Longest", sortHeaviest:"Heaviest", sortSpecies:"Species", switchArea:"Switch club/group", toStart:"To start", profile:"Profile", signOut:"Sign out", loginIntro:"Sign in once. Then freely pick Solo, groups and clubs.", name:"Name", nameHint:"Used on your catches and for your initials."});
+Object.assign(I18N.nl, {gTilesMethod:"Methode", gTilesHow:"Hoe gevangen", gTilesBait:"Aas & uitrusting", gTilesLoc:"Locatie", gTilesCatch:"Vangst", gTilesGear:"Uitrusting", gTilesCond:"Omstandigheden", gTilesMisc:"Overig", editCatch:"Vangst bewerken", editSub:"Wijzigingen", ttEdit:"Bewerken", del:"Verwijderen", delConfirm:"Deze vangst verwijderen?", sortLabel:"Sorteren", sortNewest:"Nieuwste", sortOldest:"Oudste", sortLongest:"Langste", sortHeaviest:"Zwaarste", sortSpecies:"Vissoort", switchArea:"Vereniging/groep wisselen", toStart:"Naar start", profile:"Profiel", signOut:"Uitloggen", loginIntro:"Log één keer in. Daarna kies je vrij tussen Solo, groepen en verenigingen.", name:"Naam", nameHint:"Wordt gebruikt bij je vangsten en als initialen."});
 Object.assign(I18N.de, {mapPin:"Standort auf Karte", myLocation:"Mein Standort", tapMap:"Tippe auf die Karte, um den Fangort zu setzen.", openInMaps:"In Karten öffnen", weather:"Wetter", moon:"Mondphase", wTemp:"Lufttemperatur", wWind:"Wind", wPressure:"Luftdruck", wCond:"Bedingungen", wWaterTemp:"Wassertemp.", trend3:"3-Tage-Trend", trend7:"7-Tage-Trend", wLoading:"Wetter wird geladen …", noCoords:"Kein Kartenstandort gesetzt.", moonWax:"zunehmend", moonWane:"abnehmend", wSource:"Quelle", trendNote:"Pfeile: Veränderung über die letzten {n} Tage (lineare Tendenz, Tageswerte).", sparkCap:"Tagesmittel-Temperatur, letzte {n} Tage",
   m_new:"Neumond", m_wc:"zunehmende Sichel", m_fq:"erstes Viertel", m_wg:"zunehmender Mond", m_full:"Vollmond", m_ng:"abnehmender Mond", m_lq:"letztes Viertel", m_nc:"abnehmende Sichel",
   wc_clear:"klar", wc_partly:"leicht bewölkt", wc_cloudy:"bewölkt", wc_fog:"Nebel", wc_drizzle:"Niesel", wc_rain:"Regen", wc_snow:"Schnee", wc_thunder:"Gewitter"});
@@ -5492,9 +5496,15 @@ function openDetailObj(c, from, keepEdit){
         .map(r=>`<span class="q">${dSpecIcon(r[0])}${esc(''+r[2])}</span>`).join('');
       return qs?`<span class="qs">${qs}</span>`:'';
     };
-    let html=`<div class="m-line"><span class="head">${esc(''+head[2])}</span>${pair(['boat','trolling'])}</div>`;
+    /* J3 (JC): each headline gets its own field label, so the section heading above them is gone — it
+       was a second title over a title. The bait needs no icon: the label does that job.
+       The second label is "bait & gear", not "bait": rod and reel sit under it and they are not the
+       bait. Under "Methode" the same shape is fine — boat and speed DO belong to the method. */
+    let html=`<div class="flabel">${esc(t('gTilesMethod'))}</div>`
+      + `<div class="m-line"><span class="head">${esc(''+head[2])}</span>${pair(['boat','trolling'])}</div>`;
     const bait=get('bait'), gear=pair(['rod','reel']);   // reel carries its own icon (JC), so no "·" separator
-    if(bait||gear) html+=`<div class="m-line">${bait?`<span class="bait">${esc(''+bait[2])}</span>`:''}${gear}</div>`;
+    if(bait||gear) html+=`<div class="flabel two">${esc(t('gTilesBait'))}</div>`
+      + `<div class="m-line">${bait?`<span class="bait">${esc(''+bait[2])}</span>`:''}${gear}</div>`;
     return `<div class="m-how">${html}</div>`;   // wrapper: syncHowLines() hangs the shared tier on it
   };
   let specHTML;
@@ -5504,10 +5514,10 @@ function openDetailObj(c, from, keepEdit){
       const mine=rows.filter(r=>keys.indexOf(r[0])>=0);
       mine.forEach(r=>used.add(r[0]));
       if(!mine.length) return '';
-      let inner;
-      if(lab==='gTilesHow' && !editing) inner=_howBlock(mine);
-      if(inner==null) inner = editing ? `<div class="dspecs">${mine.map(_specOne).join('')}</div>`
-                                      : `<div class="wx-grid">${mine.map(_specOne).join('')}</div>`;
+      // The how-block carries its own field labels (J3), so it gets no section heading above it.
+      if(lab==='gTilesHow' && !editing){ const b=_howBlock(mine); if(b) return b; }
+      const inner = editing ? `<div class="dspecs">${mine.map(_specOne).join('')}</div>`
+                            : `<div class="wx-grid">${mine.map(_specOne).join('')}</div>`;
       return `<div class="sectionlabel dmh-out">${esc(t(lab))}</div>${inner}`;
     }).join('');
     const rest=rows.filter(r=>!used.has(r[0]));         // never silently drop a field the groups don't know
