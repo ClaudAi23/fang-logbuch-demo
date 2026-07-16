@@ -499,7 +499,9 @@
      said the word twice). It is the headline of the gear tiles below it, so it is set like a heading.
      baseline alignment keeps the qualifiers sitting on the method's baseline, not floating mid-cap. */
   .m-line{display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 9px; margin:0 4px;}
-  .m-line + .m-line{margin-top:6px;}
+  /* The gap BETWEEN the two blocks must beat the gap INSIDE one (the 4px row-gap above), or the four
+     rows read as one flat list instead of two statements. 6px did not: it was one pixel of difference. */
+  .m-line + .m-line{margin-top:14px;}
   .m-line .head{font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase;
     letter-spacing:.03em; font-size:1.35rem; line-height:1.1; color:var(--text);}
   .m-line .bait{font-weight:600; font-size:1.0625rem; line-height:1.3;}
