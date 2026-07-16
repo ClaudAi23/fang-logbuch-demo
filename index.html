@@ -395,7 +395,10 @@
     display:block; width:75%; height:1px; margin:0 auto 20px; background:var(--border-2);}
   /* Footer: note left, source right, one line. Only fits because the note lost its parenthetical —
      with "(lineare Tendenz, Tageswerte)" it needed 455px of 358 and would have wrapped under the source. */
-  .wfoot{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:12px 4px 0;}
+  /* Only the credit lives here now (the trend note is gone), so the source keeps its right edge via
+     margin-left:auto — space-between would have thrown it to the left the moment it was alone. */
+  .wfoot{display:flex; align-items:baseline; gap:12px; margin:12px 4px 0;}
+  .wfoot .wsrc{margin-left:auto;}
   /* Three ranks, three sizes: action 13px (.map-open), explanation 11px, credit 10px. The note is
      content, not fine print — the credit is.
      Both need an explicit size: as a plain wrapper .wsrc inherited 16px/24px, so its line box was 24px
@@ -3899,8 +3902,19 @@ async function fetchWeather(lat, lon, date){
     if(j.hourly && j.hourly.time && j.hourly.time.length){
       const tt=dt.getTime(); let bi=0,bd=Infinity;
       j.hourly.time.forEach((s,i)=>{ const dd=Math.abs(new Date(s).getTime()-tt); if(dd<bd){bd=dd;bi=i;} });
+      /* We fetch eight days of hourly readings and used to keep exactly ONE of them, then rebuild a
+         "trend" out of daily means — a home-made figure nobody asks for. Two more numbers from data we
+         already have give the conventional answers instead:
+         · press3h — the WMO pressure tendency is the change over the 3 hours BEFORE the observation.
+           That is what a barometer says and what "fallendes Barometer" means to an angler.
+         · temp24h — same hour yesterday, the comparison every weather app makes.
+         Both are hourly, like the value they sit next to, so the chip and the number finally describe
+         the same quantity. */
+      const at=(arr,i)=> (arr && i>=0 && i<arr.length && arr[i]!=null) ? arr[i] : null;
       cur={temp:j.hourly.temperature_2m[bi], pressure:j.hourly.pressure_msl[bi], code:j.hourly.weather_code[bi], wind:j.hourly.wind_speed_10m[bi],
-           windDir:(j.hourly.wind_direction_10m ? j.hourly.wind_direction_10m[bi] : null)};   // degrees the wind comes FROM
+           windDir:(j.hourly.wind_direction_10m ? j.hourly.wind_direction_10m[bi] : null),   // degrees the wind comes FROM
+           press3h: at(j.hourly.pressure_msl, bi-3),
+           temp24h: at(j.hourly.temperature_2m, bi-24)};
     }
     let daily=[];
     if(j.daily && j.daily.time){
@@ -3994,8 +4008,8 @@ function renderWeatherInto(weather, date, boxId, wrapId, watertemp){
   const moonKey=moonPhaseKey(new Date(date));
   // only quarter phases need an explicit direction; crescent/gibbous names already say waxing/waning
   const moonDir={m_fq:'moonWax',m_lq:'moonWane'}[moonKey];
-  const temps=daily.map(d=>d.tmean), pres=daily.map(d=>d.pmean), winds=daily.map(d=>d.wmax);
-  const days=daily.length;
+  // daily[] is still fetched and stored (old catches carry it), but nothing reads it any more: the
+  // chips are hourly-vs-hourly now. Left in place rather than ripped out mid-session.
   // inline trend chip = net change over the available window via least-squares (robust to single-day spikes)
   /* (1) Arrow and number have to make the SAME statement. They did not: the threshold decided the
      arrow while the sign came from the raw value and the number was rounded independently, so a net
@@ -4010,17 +4024,21 @@ function renderWeatherInto(weather, date, boxId, wrapId, watertemp){
     const val=flat?0:Math.abs(net);
     return {txt:`${ar} ${sign}${num(val,dec)} ${unit}`, dir: up?'up':(down?'down':'flat')};
   };
-  const tChip = days>=2 ? chip(trendNet(temps),0.5,1,'°C') : null;
+  /* Each chip now carries its own window, because the footnote that used to explain them is gone (JC).
+     Both are hourly-vs-hourly: same quantity as the big value beside them, unlike the old daily-mean
+     regression. Thresholds: 0.5 °C over a day and 0.5 hPa over 3 h are the point where it stops being
+     noise — below that both the arrow and the number say "±0". */
+  const tChip = (cur.temp!=null && cur.temp24h!=null) ? chip(cur.temp-cur.temp24h, 0.5, 1, '°C/24 h') : null;
   /* No wind trend chip any more (JC): it compared daily MAXIMA against the hourly reading shown next to
      it — two different quantities in one line, the least honest of the three. The slot now carries the
      speed, and the direction became the value. */
-  const pChip = days>=2 ? chip(trendNet(pres),1.5,0,'hPa') : null;
+  const pChip = (cur.pressure!=null && cur.press3h!=null) ? chip(cur.pressure-cur.press3h, 0.5, 1, 'hPa/3 h') : null;
   /* (8, JC): a card needs a VALUE, not just a switched-on preference. wxOn() alone let an empty field
      take a full slot and say "— hPa", which is a hole with a label on it, not information. The catch
      fields have always worked this way (if(c.method) …) — the weather did not. */
   const cells=[];
-  let vonApi=0, mitPfeil=0;   // what ACTUALLY rendered — the footer must describe the cards, not the settings
-  const api=(c,ch)=>{ cells.push(c); vonApi++; if(ch) mitPfeil++; };
+  let vonApi=0;   // what ACTUALLY rendered — the credit must describe the cards, not the settings
+  const api=(c)=>{ cells.push(c); vonApi++; };
   if(wxOn('wxCond') && condKey) api(card('cloud',t('wCond'), esc(t(condKey)), true));
   if(wxOn('wxTemp') && cur.temp!=null) api(card('temperature',t('wTemp'), num(cur.temp,1)+' °C', false, tChip), tChip);
   /* Direction first, speed second (JC). Two things worth knowing here:
@@ -4065,10 +4083,13 @@ function renderWeatherInto(weather, date, boxId, wrapId, watertemp){
      the note explained arrows whenever the fields were merely ENABLED, and the credit appeared even
      with no Open-Meteo card at all.
      The credit is plain "Quelle: Open-Meteo" again (JC): everything in this section now really is
-     theirs, because the water temperature moved out. */
-  const _tn = mitPfeil>0 ? `<div class="wtrend-note">${t('trendNote').replace('{n}',days)}</div>` : '<div></div>';
+     theirs, because the water temperature moved out.
+     The trend note is gone (JC): every chip carries its own window in its text now ("/3 h", "/24 h"),
+     so a footnote explaining the arrows would only repeat what is already there — and the version we
+     had never got its wording right anyway (it said "vor dem Fang" while the window included the
+     catch day). */
   const _src = vonApi>0 ? `<div class="wsrc"><a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer">${t('wSource')}: Open-Meteo</a></div>` : '';
-  html += (_tn!=='<div></div>' || _src) ? `<div class="wfoot">${_tn}${_src}</div>` : '';
+  html += _src ? `<div class="wfoot">${_src}</div>` : '';
   box.innerHTML=html;
 }
 function autoLocate(){
@@ -4080,24 +4101,14 @@ function autoLocate(){
     setFormPin(p.coords.latitude, p.coords.longitude);
   }, ()=>{}, {enableHighAccuracy:true, timeout:8000});
 }
-// net change of a daily series over its span, via least-squares slope × span (uses all days, robust to one-off spikes)
-function trendNet(vals){
-  const pts=[]; vals.forEach((v,i)=>{ if(v!=null) pts.push([i,v]); });
-  const n=pts.length; if(n<2) return null;
-  let sx=0,sy=0,sxx=0,sxy=0;
-  pts.forEach(([x,y])=>{ sx+=x; sy+=y; sxx+=x*x; sxy+=x*y; });
-  const den=n*sxx - sx*sx; if(!den) return null;
-  const slope=(n*sxy - sx*sy)/den;
-  return slope*(pts[n-1][0]-pts[0][0]);
-}
-function sparklineSvg(vals){
-  const w=280,h=46,p=4;
-  const v2=vals.filter(x=>x!=null); if(v2.length<2) return '';
-  const min=Math.min(...v2), max=Math.max(...v2), rng=(max-min)||1;
-  const step=(w-2*p)/((vals.length-1)||1);
-  const pts=vals.map((v,i)=> v==null?null:`${(p+i*step).toFixed(1)},${(h-p-((v-min)/rng)*(h-2*p)).toFixed(1)}`).filter(Boolean).join(' ');
-  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
-}
+/* REMOVED (16 Jul): trendNet() — a least-squares line through 7 daily means, whose rise/fall was shown
+   as "the trend". Retired for two reasons. It was not a convention anybody uses: the standard pressure
+   tendency is the change over the 3 hours before the observation (WMO), and weather apps compare
+   temperature to the same hour yesterday. And it did not even describe the number beside it — the value
+   was an hourly reading, the chip was built from daily means, and for wind from daily maxima.
+   Its own comment claimed "robust to one-off spikes"; measured, that only held for spikes at the ENDS
+   of the window — a spike in the MIDDLE pulled the line harder than a plain first-to-last difference.
+   sparklineSvg() went with it: defined, never called. */
 
 // ---------- catch fields config (per context) ----------
 const METHODS={
