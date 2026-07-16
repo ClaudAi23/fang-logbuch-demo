@@ -509,6 +509,10 @@
   .m-line .qs{display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 9px; min-width:0;}
   .m-line .q{display:inline-flex; align-items:center; gap:5px; font-size:.85rem; color:var(--muted); white-space:nowrap;}
   .m-line .q svg{width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto;}
+  /* Shared tier, set by syncHowLines(): flex-basis:100% forces a wrap even where there would be room,
+     so the line that needs the break decides for both. */
+  .m-how.t2 .qs, .m-how.t3 .qs{flex-basis:100%;}
+  .m-how.t3 .q{flex-basis:100%;}
   /* Weather cards (2-up) with coloured trend chips; moon is a mono icon, no emoji */
   .wx-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
   .wx-card{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:8px 10px; min-width:0;}
@@ -5027,6 +5031,37 @@ const D_SPEC_IC={
   loggedBy:'<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/>'
 };
 function dSpecIcon(tok){ const p=D_SPEC_IC[tok]||D_SPEC_IC.method; return `<svg viewBox="0 0 24 24">${p}</svg>`; }
+/* JC: both "how" lines must show the SAME tier — whatever one is forced into, the other adopts, so the
+   two blocks stay aligned. Flexbox cannot express "match your neighbour" (it decides per container),
+   so we measure the natural tier of each line and force the worse one onto both.
+   Two traps, both of which have already burned this page:
+   · top-edge comparison is useless on a baseline row with mixed font sizes — the tops are NEVER equal.
+     Same-line therefore means "vertical ranges overlap".
+   · a hidden detail screen gives every rect 0, which silently reports tier 1 for everything. So bail
+     out unless the block is actually laid out, and let a later call (fonts/resize) do the work. */
+function _howTier(l){
+  const head=l.querySelector('.head')||l.querySelector('.bait');
+  const qs=l.querySelector('.qs');
+  if(!qs) return 1;                                  // nothing to wrap
+  const q=qs.querySelectorAll('.q');
+  const ov=(a,b)=>{ const A=a.getBoundingClientRect(), B=b.getBoundingClientRect();
+    return Math.min(A.bottom,B.bottom)-Math.max(A.top,B.top) > 2; };
+  const split = q.length>=2 && !ov(q[0],q[1]);
+  if(!head) return split?3:1;                        // pair alone on the line
+  if(ov(head,qs)) return 1;
+  return split?3:2;
+}
+function syncHowLines(){
+  document.querySelectorAll('.m-how').forEach(box=>{
+    if(!box.offsetWidth) return;                     // not laid out -> every rect is 0, measuring is a lie
+    box.classList.remove('t2','t3');                 // measure NATURAL tiers, not the ones we forced last time
+    const lines=[...box.querySelectorAll('.m-line')];
+    const tier=Math.max.apply(null, lines.map(_howTier));
+    if(tier>1) box.classList.add('t'+tier);
+  });
+}
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(syncHowLines);
+window.addEventListener('resize', syncHowLines);
 // ===== Inline "view = edit": tap a text/number spec row → edit in place, blur commits =====
 const INLINE_EF={
   length:{field:'length', col:'length_cm', mode:'numeric', unit:'cm', parse:v=>{ const n=parseInt((''+v).replace(/[^0-9\-]/g,''),10); return isNaN(n)?null:n; }, fmt:v=>fmtLen(v), pb:true},
@@ -5454,8 +5489,8 @@ function openDetailObj(c, from, keepEdit){
     };
     let html=`<div class="m-line"><span class="head">${esc(''+head[2])}</span>${pair(['boat','trolling'])}</div>`;
     const bait=get('bait'), gear=pair(['rod','reel']);   // reel carries its own icon (JC), so no "·" separator
-    if(bait||gear) html+=`<div class="m-line"><span class="bait">${bait?esc(''+bait[2]):''}</span>${gear}</div>`;
-    return html;
+    if(bait||gear) html+=`<div class="m-line">${bait?`<span class="bait">${esc(''+bait[2])}</span>`:''}${gear}</div>`;
+    return `<div class="m-how">${html}</div>`;   // wrapper: syncHowLines() hangs the shared tier on it
   };
   let specHTML;
   if(_TILES){
@@ -5493,6 +5528,7 @@ function openDetailObj(c, from, keepEdit){
   // In module mode each module carries its own heading, so the page-level "Fang" label would say it twice.
   { const rl=document.getElementById('d-rows-label'); if(rl) rl.style.display=_TILES?'none':''; }
   document.getElementById('d-rows').innerHTML=pbBanner+medBanner+(_TILES?specHTML:`<div class="dspecs">${specHTML}</div>`)+banner;
+  syncHowLines();
   if(editing){ _resizeAllEfm(); if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(_resizeAllEfm); } }
   const nw=document.getElementById('d-notes-wrap'); const dn=document.getElementById('d-notes'); dn.onclick=null; dn.classList.remove('ef-notes','empty','dnote-box');
   if(editing){ nw.style.display='block'; dn.textContent=''; const ta=document.createElement('textarea'); ta.className='ef-textarea'; ta.value=c.notes||''; ta.placeholder=t('notesPh'); ta.rows=3;
