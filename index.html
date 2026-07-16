@@ -4027,11 +4027,17 @@ function renderWeatherInto(weather, date, boxId, wrapId, watertemp){
      It moves into the VALUE row at 20px: the drawing says the phase, the word confirms it.
      Its own label key: t('moon') still reads "Mondphase" in the share text, where no heading helps. */
   if(wxOn('wxMoon')){
-    const qd = moonKey==='m_fq' ? {txt:'+', dir:'up'} : (moonKey==='m_lq' ? {txt:'−', dir:'down'} : null);
     /* Two moons, two jobs (JC): the label keeps a static crescent like every other label here — it marks
        the CATEGORY, same as the thermometer on "Luft". The value carries the phase-accurate disc, which
-       is the DATA. A crescent reads as "moon" and cannot be mistaken for a phase reading. */
-    cells.push(`<div class="wx-card"><span class="k">${wxIcon('moon')}${esc(t('wMoon'))}</span><span class="v moon-v">${moonIcon(moonKey)}${esc(t(moonKey))}${qd?`<span class="tr ${qd.dir}">${esc(qd.txt)}</span>`:''}</span></div>`);
+       is the DATA. A crescent reads as "moon" and cannot be mistaken for a phase reading.
+       The phase NAME is set like the other trend chips (JC): on every other card the big value is the
+       reading and the chip is the direction — here the disc is the reading and the name is the
+       direction. It even colours honestly: waxing grows (up), waning shrinks (down), full and new sit
+       still (flat).
+       The old bare "+"/"−" on the quarters is gone with it: "erstes Viertel" already says which one,
+       so the sign was saying the same thing twice. */
+    const dir = {m_wc:'up', m_fq:'up', m_wg:'up', m_ng:'down', m_lq:'down', m_nc:'down'}[moonKey] || 'flat';
+    cells.push(`<div class="wx-card"><span class="k">${wxIcon('moon')}${esc(t('wMoon'))}</span><span class="v moon-v">${moonIcon(moonKey)}<span class="tr ${dir}">${esc(t(moonKey))}</span></span></div>`);
   }
   if(!cells.length){ if(showEl) showEl.style.display='none'; return; }
   if(showEl) showEl.style.display='block';
