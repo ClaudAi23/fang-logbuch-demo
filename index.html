@@ -161,6 +161,9 @@
   @keyframes confettiFall{0%{opacity:0; transform:translateY(-10px) rotate(0);} 12%{opacity:1;} 100%{opacity:0; transform:translateY(60vh) rotate(560deg);}}
   @media(prefers-reduced-motion:reduce){ #success-ov.show .success-card{transform:none;} .success-card.big .su-mascot{animation:none;} .su-confetti{display:none;} }
   .input-err{border-color:var(--danger)!important; box-shadow:0 0 0 1px var(--danger);}
+  /* Fehlerzeile direkt am Feld — die Sammelmeldung unten am Speichern-Knopf steht beim Tippen oft
+     außerhalb des Bildes (JC, 17. Juli: „Der Test triggered erst beim speichern"). */
+  .fld-err{color:var(--danger); font-size:0.8rem; line-height:1.35; margin:5px 0 0; display:none;}
   .skel{background:linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%); background-size:400% 100%; animation:shimmer 1.3s ease infinite; border-radius:8px;}
   @keyframes shimmer{from{background-position:100% 0;} to{background-position:0 0;}}
   .skel-row{display:flex; gap:13px; align-items:center; padding:12px; margin-bottom:10px; background:var(--surface); border:1px solid var(--border); border-radius:10px;}
@@ -4893,6 +4896,9 @@ function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezo
 async function openForm(skipAuto){
   if(_curScreen==='club' || _curScreen==='stats'){ try{ await startSolo(true); }catch(e){} }
   ['f-species','f-weight','f-length','f-location','f-notes','f-method','f-bait','f-rod','f-reel','f-boat','f-watertemp','f-trolling','f-released'].forEach(id=>document.getElementById(id).value='');
+  /* Die Live-Prüfung anhängen und alte rote Zeilen wegräumen. Beides hier, weil `.value=''` oben KEIN
+     `input`-Ereignis auslöst — sonst stünde der Fehler vom letzten Fang im leeren Formular. */
+  try{ numLiveWire(); numLiveReset(); }catch(e){}
   state.speciesKey=null; state.editId=null; state.editReturn=null;
   applyFieldConfig();   // fillMethodsDatalist()/fillSuggestLists() entfallen — siehe dort (tote Datalists)
   document.getElementById('f-title').textContent=t('logCatch');
@@ -5173,12 +5179,68 @@ function numProblem(key, raw){
   const L=NUM_LIMITS[key]; if(!L) return null;
   const s=(''+(raw==null?'':raw)).trim(); if(!s) return null;
   const norm=s.replace(',','.');
-  if(!/^-?\d+(\.\d+)?$/.test(norm)) return {code:'nan'};
+  /* Nachgestelltes Trennzeichen ist erlaubt: „5," IST fünf (`parseFloat('5.')===5`). Wer das Feld nach
+     „5," verlässt, hat sich nicht vertippt — er ist nur fertig. Ein „nan"-Vorwurf wäre hier falsch. */
+  if(!/^-?\d+(\.\d*)?$/.test(norm)) return {code:'nan'};
   const n=parseFloat(norm); if(isNaN(n)) return {code:'nan'};
   const dez=(norm.split('.')[1]||'').length;
   if(dez > L.dec) return {code: L.dec===0 ? 'int' : 'dec'};
   if(n < L.min || n > L.max) return {code:'range'};
   return null;
+}
+/* ---- Prüfen WÄHREND des Tippens (JC, 17. Juli: „Der Test triggered erst beim speichern, kann man das
+   nicht mit eingabe machen?") ------------------------------------------------------------------------
+   Berechtigt: Beim Speichern ist das Feld längst verlassen, und die Sammelmeldung sitzt unten am
+   Knopf — beim Tippen oft außerhalb des Bildes.
+   Der Haken beim Tippen sind die ZWISCHENSTÄNDE: Wer „5,5" eintippt, kommt über „5," — das ist keine
+   gültige Zahl, aber auch kein Fehler, sondern jemand mitten im Wort. Würde die Prüfung darauf
+   anspringen, meckerte sie bei jeder normalen Eingabe einmal.
+   Deshalb: bei unfertigen Eingaben („5,", „-", „,") schweigen und erst melden, wenn etwas FERTIGES
+   falsch ist. Beim Speichern greift dann trotzdem die volle Prüfung — die hier ist der frühe Hinweis,
+   nicht das Tor. */
+function numProblemLive(key, raw){
+  const s=(''+(raw==null?'':raw)).trim(); if(!s) return null;
+  const p=numProblem(key, s);
+  if(!p) return null;
+  /* NUR den „ist keine Zahl"-Vorwurf zurückhalten, solange die Eingabe unfertig aussieht („-", „5,").
+     Erster Versuch war `if(/^-?\d*[.,]?$/.test(s)) return null;` VOR der Prüfung — das verschluckte
+     jede reine Ziffernfolge und damit genau die Fälle, um die es geht: „2500" meldete beim Tippen
+     nichts. Bereich und Nachkommastellen sind auch mitten im Tippen schon eindeutig falsch. */
+  if(p.code==='nan' && /^-?\d*[.,]?$/.test(s)) return null;
+  return p;
+}
+function _fldErrEl(inputId){
+  const inp=document.getElementById(inputId); if(!inp) return null;
+  const box=inp.closest('.field'); if(!box) return null;
+  let el=box.querySelector('.fld-err');
+  if(!el){ el=document.createElement('p'); el.className='fld-err'; box.appendChild(el); }
+  return el;
+}
+/* `streng` = beim Verlassen des Feldes. Dann ist niemand mehr „mitten im Wort", und ein alleinstehendes
+   „-" oder „," soll auch benannt werden. Beim Tippen bleibt die milde Prüfung. */
+function numLiveCheck(key, inputId, streng){
+  const inp=document.getElementById(inputId); if(!inp) return;
+  const p = streng ? numProblem(key, inp.value) : numProblemLive(key, inp.value);
+  const el=_fldErrEl(inputId);
+  if(p){ inp.classList.add('input-err'); if(el){ el.textContent=numErrText(key, p); el.style.display='block'; } }
+  else  { inp.classList.remove('input-err'); if(el){ el.style.display='none'; } }
+}
+const NUM_FIELDS=[['length','f-length'],['weight','f-weight'],['trolling','f-trolling'],['watertemp','f-watertemp']];
+/* Zurücksetzen beim Öffnen des Formulars: `openForm` setzt `.value=''` direkt, und das löst KEIN
+   `input`-Ereignis aus — ohne das hier bliebe die rote Zeile vom letzten Mal stehen. */
+function numLiveReset(){
+  NUM_FIELDS.forEach(function(p){
+    const inp=document.getElementById(p[1]); if(inp) inp.classList.remove('input-err');
+    const el=_fldErrEl(p[1]); if(el){ el.textContent=''; el.style.display='none'; }
+  });
+}
+function numLiveWire(){
+  NUM_FIELDS.forEach(function(p){
+    const inp=document.getElementById(p[1]); if(!inp || inp._numWired) return;
+    inp._numWired=true;
+    inp.addEventListener('input', function(){ numLiveCheck(p[0], p[1], false); });
+    inp.addEventListener('blur',  function(){ numLiveCheck(p[0], p[1], true);  });
+  });
 }
 function numErrText(key, prob){
   const L=NUM_LIMITS[key]; if(!L||!prob) return '';
@@ -6068,6 +6130,10 @@ function startInlineEdit(rowEl, key){
   vspan.style.display='none'; vspan.parentNode.insertBefore(box, vspan.nextSibling);
   rowEl.classList.add('ef-active');
   setTimeout(()=>{ try{ inp.focus(); inp.setSelectionRange(inp.value.length,inp.value.length); }catch(e){} },0);
+  /* Auch hier live färben (JC: „kann man das nicht mit eingabe machen?"). Eine Fehlerzeile passt in die
+     schmale Spec-Zeile nicht — deshalb hier nur der rote Rahmen beim Tippen; den Grund nennt der Toast
+     beim Übernehmen. */
+  if(NUM_LIMITS[key]) inp.addEventListener('input', function(){ inp.classList.toggle('input-err', !!numProblemLive(key, inp.value)); });
   let done=false; const finish=()=>{ if(done) return; done=true; commitInlineEdit(rowEl,key,box,inp,vspan); };
   inp.addEventListener('blur', finish);
   inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); inp.blur(); } });
