@@ -1167,19 +1167,38 @@
       </button>
       
     </div>
+    <!-- Dieselben Tabs wie „Meine Fänge" (JC, 17. Juli: „jetzt erstmal die selbe tab loesung fuer
+         vereine"). Gleiches Bauteil, gleiche Funktion — `setScreenTab` war dafür schon allgemein
+         gebaut. Gilt auch für den SOLO-Modus: Der benutzt denselben Screen. -->
+    <div class="tabrow">
+      <div class="seg" id="list-tabs">
+        <button type="button" class="on" data-tb="ueb" onclick="setScreenTab('list','ueb')" data-i18n="tabOverview">Übersicht</button>
+        <button type="button" data-tb="lst" onclick="setScreenTab('list','lst')" data-i18n="tabCatchList">Fangliste</button>
+      </div>
+    </div>
     <div class="scroll pad">
       <button type="button" class="sync-banner" onclick="retrySync()" style="display:none;"><span class="sb-dot"></span><span class="sb-txt"></span></button>
-      <div id="stats" style="display:flex; gap:10px; margin-bottom:18px;"></div>
-      <div style="display:flex; align-items:center; justify-content:space-between; margin:4px 4px 12px; gap:10px; border-bottom:1px solid var(--border); padding-bottom:10px;">
-        <span class="sectionlabel" id="list-label" style="margin:0;">Neueste Fänge</span>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="exportbtn" onclick="openExportMenu('list')" data-i18n-title="exportTitle" title="Exportieren" aria-label="Exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg></button>
-          <select id="sort-list" onchange="setSort(this.value)" style="display:none;"></select>
-          <button type="button" class="selfield selfield-sm" onclick="openSelSheet('sort-list', t('sortTitle'))"><span id="sort-list-lbl">—</span><svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg></button>
-        </div>
+      <div data-tabpane="list:ueb">
+        <div id="stats" style="display:flex; gap:10px; margin-bottom:18px;"></div>
+        <!-- Rekord-Leiste des Vereins/der Gruppe: dieselbe Leiste wie „Deine Rekorde", aber mit dem
+             GOLD-Rang statt der persönlichen Krone (JC: „statt pbs die gold verein/gruppen rekorde").
+             Im Solo-Modus bleibt sie leer — `buildPodium` steigt dort aus, es gibt keinen Verein. -->
+        <div id="list-records" style="margin-bottom:18px;"></div>
+        <p class="sectionlabel" id="list-maplabel" data-i18n="whereYouFish" style="display:none;">Wo du fängst</p>
+        <div id="list-map" class="map map-stats" style="display:none;"></div>
       </div>
-      <div id="catch-list"></div>
-      <div style="height:84px"></div>
+      <div data-tabpane="list:lst" style="display:none;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:4px 4px 12px; gap:10px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+          <span class="sectionlabel" id="list-label" style="margin:0;">Neueste Fänge</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button type="button" class="exportbtn" onclick="openExportMenu('list')" data-i18n-title="exportTitle" title="Exportieren" aria-label="Exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg></button>
+            <select id="sort-list" onchange="setSort(this.value)" style="display:none;"></select>
+            <button type="button" class="selfield selfield-sm" onclick="openSelSheet('sort-list', t('sortTitle'))"><span id="sort-list-lbl">—</span><svg class="acc-chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6"/></svg></button>
+          </div>
+        </div>
+        <div id="catch-list"></div>
+        <div style="height:84px"></div>
+      </div>
     </div>
   </section>
 
@@ -2003,7 +2022,7 @@
         <div id="stats-records" style="margin-bottom:18px;"></div>
         <!-- Die Karte hatte nie eine Überschrift und stand kommentarlos im Fluss. In einem eigenen
              Tab braucht sie einen Namen. `stats-maplabel` wird mit der Karte zusammen ein-/ausgeblendet
-             (`ensureStatsMap`), sonst stünde die Überschrift über nichts, wenn kein Fang Geodaten hat. -->
+             (`ensureCatchMap`), sonst stünde die Überschrift über nichts, wenn kein Fang Geodaten hat. -->
         <p class="sectionlabel" id="stats-maplabel" data-i18n="whereYouFish" style="display:none;">Wo du fängst</p>
         <div id="stats-map" class="map map-stats" style="display:none;"></div>
       </div>
@@ -2139,9 +2158,9 @@ Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app
 Object.assign(I18N.de, {membersTitle:"Mitglieder", membersHint:"Verwalte Rollen und entferne Mitglieder.", membersHintMember:"Mitglieder und ihre Rollen.", manageMembers:"Mitglieder verwalten …", viewMembers:"Mitglieder ansehen", me:"ich", loggedByRow:"Erfasst von", unconfirmed:"Noch nicht bestätigt", unconfShort:"unbestätigt", loggedByHint:"Dieser Fang wurde von {name} für dich eingetragen. Bestätige ihn, wenn er stimmt.", unconfirmedHint:"Dieser Fang wartet auf Bestätigung.", confirmCatch:"Bestätigen", rejectCatch:"Ablehnen", confirmReject:"Diesen Fang ablehnen und löschen?", roleMember:"Mitglied", roleAdmin:"Admin", roleOwner:"Inhaber", transferOwner:"Inhaberschaft übergeben", transferOwnerConfirm:"{name} wird Inhaber, du wirst Admin. Zurückgeben kann das dann nur noch der neue Inhaber.", transferOwnerDone:"{name} ist jetzt Inhaber", removeMember:"Entfernen", ownerMustTransfer:"Als Inhaber kannst du nicht austreten. Übergib erst die Inhaberschaft an ein anderes Mitglied.", confirmRemove:"{name} aus diesem Verein/dieser Gruppe entfernen?", you:"du", roleTapHint:"Tippe eine Rolle an, um sie zu ändern. Nur du als Inhaber kannst Admins ernennen.", openMailbox:"Postfach öffnen", openMailApp:"Mail-App öffnen"});
 Object.assign(I18N.en, {membersTitle:"Members", membersHint:"Manage roles and remove members.", membersHintMember:"Members and their roles.", manageMembers:"Manage members …", viewMembers:"View members", me:"me", loggedByRow:"Logged by", unconfirmed:"Not confirmed yet", unconfShort:"unconfirmed", loggedByHint:"This catch was logged for you by {name}. Confirm it if it's correct.", unconfirmedHint:"This catch is awaiting confirmation.", confirmCatch:"Confirm", rejectCatch:"Reject", confirmReject:"Reject and delete this catch?", roleMember:"Member", roleAdmin:"Admin", roleOwner:"Owner", transferOwner:"Transfer ownership", transferOwnerConfirm:"{name} becomes the owner, you become an admin. Only the new owner can hand it back.", transferOwnerDone:"{name} is now the owner", removeMember:"Remove", ownerMustTransfer:"As the owner you can't leave. Hand ownership to another member first.", confirmRemove:"Remove {name} from this club/group?", you:"you", roleTapHint:"Tap a role to change it. Only you as owner can appoint admins.", openMailbox:"Open mailbox", openMailApp:"Open Mail app"});
 Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen en verwijder leden.", membersHintMember:"Leden en hun rollen.", manageMembers:"Leden beheren …", viewMembers:"Leden bekijken", me:"ik", loggedByRow:"Ingevoerd door", unconfirmed:"Nog niet bevestigd", unconfShort:"onbevestigd", loggedByHint:"Deze vangst is voor jou ingevoerd door {name}. Bevestig als het klopt.", unconfirmedHint:"Deze vangst wacht op bevestiging.", confirmCatch:"Bevestigen", rejectCatch:"Afwijzen", confirmReject:"Deze vangst afwijzen en verwijderen?", roleMember:"Lid", roleAdmin:"Beheerder", roleOwner:"Eigenaar", transferOwner:"Eigendom overdragen", transferOwnerConfirm:"{name} wordt eigenaar, jij wordt beheerder. Alleen de nieuwe eigenaar kan dit terugdraaien.", transferOwnerDone:"{name} is nu de eigenaar", removeMember:"Verwijderen", ownerMustTransfer:"Als eigenaar kun je niet vertrekken. Draag het eigendom eerst over aan een ander lid.", confirmRemove:"{name} uit deze vereniging/groep verwijderen?", you:"jij", roleTapHint:"Tik op een rol om die te wijzigen. Alleen jij als eigenaar kunt beheerders benoemen.", openMailbox:"Postvak openen", openMailApp:"Mail-app openen"});
-Object.assign(I18N.de,{welcomeSpecies:"Phantom-Fisch", welcomeLoc:"In deinen Träumen", welcomeNote:"Willkommen! Das ist nur mein Muster-Fang zum Zeigen — er zählt natürlich nicht und verschwindet, sobald du deinen ersten echten Fang einträgst. — Dein Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Nur zur Demonstration", welcomeHint:"Dein erster echter Fang lässt den Phantom-Fisch verschwinden.", welcomeRemove:"Phantom-Fisch entfernen", pbRecord:"Persönlicher Rekord", pbRemove:"Nicht mein Rekord", pbRemovedToast:"Rekord entfernt", pbMarkedToast:"Als Rekord markiert", pbMark:"Als Rekord markieren", pbNotRecord:"Dieser Fang ist nicht der Rekord", recordsShelfTitle:"Deine Rekorde", clubRecord:"Vereinsrekord", groupRecord:"Gruppenrekord", recordsSettingTitle:"Rekorde & Podium", recordMetricLabel:"Podium-Wertung", recordsEnabledLabel:"Rekorde anzeigen", recordsSettingHint:"Bestimmt, ob im Verein/der Gruppe ein Podium (Gold/Silber/Bronze je Art) angezeigt wird und ob nach Länge oder Gewicht gewertet wird. Nur Admins.", joinedTitle:"Beigetreten!", joinedBody:"Willkommen! Du bist dem Verein bzw. der Gruppe beigetreten.", joinedBodyClub:"Willkommen! Du bist dem Verein „{name}“ beigetreten.", joinedBodyGroup:"Willkommen! Du bist der Gruppe „{name}“ beigetreten.", sortTitle:"Sortieren nach", taSearchPh:"Suchen oder neu eingeben …", recentLabel:"Zuletzt verwendet", allLabel:"Alle", addNewOpt:"neu hinzufügen", addField:"hinzufügen"});
-Object.assign(I18N.en,{welcomeSpecies:"Phantom Fish", welcomeLoc:"In your dreams", welcomeNote:"Welcome! This is just my sample catch to show you around — it doesn't count, and it vanishes the moment you log your first real catch. — Your Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"For demonstration only", welcomeHint:"Your first real catch sends the Phantom Fish away.", welcomeRemove:"Remove Phantom Fish", pbRecord:"Personal best", pbRemove:"Not my record", pbRemovedToast:"Record removed", pbMarkedToast:"Marked as record", pbMark:"Mark as record", pbNotRecord:"This catch isn't the record", recordsShelfTitle:"Your records", clubRecord:"Club record", groupRecord:"Group record", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium ranking", recordsEnabledLabel:"Show records", recordsSettingHint:"Controls whether the club/group shows a podium (gold/silver/bronze per species) and whether it ranks by length or weight. Admins only.", joinedTitle:"You're in!", joinedBody:"Welcome! You've joined the club or group.", joinedBodyClub:"Welcome! You've joined the club “{name}”.", joinedBodyGroup:"Welcome! You've joined the group “{name}”.", sortTitle:"Sort by", taSearchPh:"Search or type new …", recentLabel:"Recently used", allLabel:"All", addNewOpt:"add new", addField:"add"});
-Object.assign(I18N.nl,{welcomeSpecies:"Fantoomvis", welcomeLoc:"In je dromen", welcomeNote:"Welkom! Dit is alleen mijn voorbeeldvangst om je op weg te helpen — hij telt niet mee en verdwijnt zodra je je eerste echte vangst vastlegt. — Je Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Alleen ter demonstratie", welcomeHint:"Je eerste echte vangst laat de Fantoomvis verdwijnen.", welcomeRemove:"Fantoomvis verwijderen", pbRecord:"Persoonlijk record", pbRemove:"Niet mijn record", pbRemovedToast:"Record verwijderd", pbMarkedToast:"Als record gemarkeerd", pbMark:"Als record markeren", pbNotRecord:"Deze vangst is niet het record", recordsShelfTitle:"Je records", clubRecord:"Verenigingsrecord", groupRecord:"Groepsrecord", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium-waardering", recordsEnabledLabel:"Records tonen", recordsSettingHint:"Bepaalt of de vereniging/groep een podium toont (goud/zilver/brons per soort) en of er op lengte of gewicht wordt gerangschikt. Alleen beheerders.", joinedTitle:"Je bent lid!", joinedBody:"Welkom! Je bent lid geworden van de vereniging of groep.", joinedBodyClub:"Welkom! Je bent lid geworden van vereniging „{name}”.", joinedBodyGroup:"Welkom! Je bent lid geworden van groep „{name}”.", sortTitle:"Sorteren op", taSearchPh:"Zoeken of nieuw invoeren …", recentLabel:"Recent gebruikt", allLabel:"Alle", addNewOpt:"nieuw toevoegen", addField:"toevoegen"});
+Object.assign(I18N.de,{welcomeSpecies:"Phantom-Fisch", welcomeLoc:"In deinen Träumen", welcomeNote:"Willkommen! Das ist nur mein Muster-Fang zum Zeigen — er zählt natürlich nicht und verschwindet, sobald du deinen ersten echten Fang einträgst. — Dein Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Nur zur Demonstration", welcomeHint:"Dein erster echter Fang lässt den Phantom-Fisch verschwinden.", welcomeRemove:"Phantom-Fisch entfernen", pbRecord:"Persönlicher Rekord", pbRemove:"Nicht mein Rekord", pbRemovedToast:"Rekord entfernt", pbMarkedToast:"Als Rekord markiert", pbMark:"Als Rekord markieren", pbNotRecord:"Dieser Fang ist nicht der Rekord", recordsShelfTitle:"Deine Rekorde", clubRecordsTitle:"Vereinsrekorde", groupRecordsTitle:"Gruppenrekorde", clubRecord:"Vereinsrekord", groupRecord:"Gruppenrekord", recordsSettingTitle:"Rekorde & Podium", recordMetricLabel:"Podium-Wertung", recordsEnabledLabel:"Rekorde anzeigen", recordsSettingHint:"Bestimmt, ob im Verein/der Gruppe ein Podium (Gold/Silber/Bronze je Art) angezeigt wird und ob nach Länge oder Gewicht gewertet wird. Nur Admins.", joinedTitle:"Beigetreten!", joinedBody:"Willkommen! Du bist dem Verein bzw. der Gruppe beigetreten.", joinedBodyClub:"Willkommen! Du bist dem Verein „{name}“ beigetreten.", joinedBodyGroup:"Willkommen! Du bist der Gruppe „{name}“ beigetreten.", sortTitle:"Sortieren nach", taSearchPh:"Suchen oder neu eingeben …", recentLabel:"Zuletzt verwendet", allLabel:"Alle", addNewOpt:"neu hinzufügen", addField:"hinzufügen"});
+Object.assign(I18N.en,{welcomeSpecies:"Phantom Fish", welcomeLoc:"In your dreams", welcomeNote:"Welcome! This is just my sample catch to show you around — it doesn't count, and it vanishes the moment you log your first real catch. — Your Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"For demonstration only", welcomeHint:"Your first real catch sends the Phantom Fish away.", welcomeRemove:"Remove Phantom Fish", pbRecord:"Personal best", pbRemove:"Not my record", pbRemovedToast:"Record removed", pbMarkedToast:"Marked as record", pbMark:"Mark as record", pbNotRecord:"This catch isn't the record", recordsShelfTitle:"Your records", clubRecordsTitle:"Club records", groupRecordsTitle:"Group records", clubRecord:"Club record", groupRecord:"Group record", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium ranking", recordsEnabledLabel:"Show records", recordsSettingHint:"Controls whether the club/group shows a podium (gold/silver/bronze per species) and whether it ranks by length or weight. Admins only.", joinedTitle:"You're in!", joinedBody:"Welcome! You've joined the club or group.", joinedBodyClub:"Welcome! You've joined the club “{name}”.", joinedBodyGroup:"Welcome! You've joined the group “{name}”.", sortTitle:"Sort by", taSearchPh:"Search or type new …", recentLabel:"Recently used", allLabel:"All", addNewOpt:"add new", addField:"add"});
+Object.assign(I18N.nl,{welcomeSpecies:"Fantoomvis", welcomeLoc:"In je dromen", welcomeNote:"Welkom! Dit is alleen mijn voorbeeldvangst om je op weg te helpen — hij telt niet mee en verdwijnt zodra je je eerste echte vangst vastlegt. — Je Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Alleen ter demonstratie", welcomeHint:"Je eerste echte vangst laat de Fantoomvis verdwijnen.", welcomeRemove:"Fantoomvis verwijderen", pbRecord:"Persoonlijk record", pbRemove:"Niet mijn record", pbRemovedToast:"Record verwijderd", pbMarkedToast:"Als record gemarkeerd", pbMark:"Als record markeren", pbNotRecord:"Deze vangst is niet het record", recordsShelfTitle:"Je records", clubRecordsTitle:"Verenigingsrecords", groupRecordsTitle:"Groepsrecords", clubRecord:"Verenigingsrecord", groupRecord:"Groepsrecord", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium-waardering", recordsEnabledLabel:"Records tonen", recordsSettingHint:"Bepaalt of de vereniging/groep een podium toont (goud/zilver/brons per soort) en of er op lengte of gewicht wordt gerangschikt. Alleen beheerders.", joinedTitle:"Je bent lid!", joinedBody:"Welkom! Je bent lid geworden van de vereniging of groep.", joinedBodyClub:"Welkom! Je bent lid geworden van vereniging „{name}”.", joinedBodyGroup:"Welkom! Je bent lid geworden van groep „{name}”.", sortTitle:"Sorteren op", taSearchPh:"Zoeken of nieuw invoeren …", recentLabel:"Recent gebruikt", allLabel:"Alle", addNewOpt:"nieuw toevoegen", addField:"toevoegen"});
 Object.assign(I18N.de, { dangerZone:"Gefahrenzone", deleteAccount:"Konto löschen", deleteAccountHint:"Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.", confirmDeleteAccount:"Konto wirklich löschen? Alle deine Daten werden unwiderruflich gelöscht.", confirmDeleteAccount2:"Letzte Warnung: Das kann nicht rückgängig gemacht werden. Fortfahren?", accountDeletedTitle:"Konto gelöscht", accountDeletedBody:"Dein Konto und deine Daten wurden gelöscht.", leaveAreaBtn:"Verein/Gruppe verlassen", deleteContext:"Verein/Gruppe löschen", deleteContextHint:"Löscht alles unwiderruflich: Mitgliedschaften, Fänge und Fotos.", confirmDeleteContext:"„{name}“ wirklich löschen? Alle Mitgliedschaften, Fänge und Fotos werden unwiderruflich gelöscht.", confirmLeave:"„{name}“ verlassen?"});
 Object.assign(I18N.en, { dangerZone:"Danger zone", deleteAccount:"Delete account", deleteAccountHint:"Permanently deletes your account and all your data (catches, photos, memberships).", confirmDeleteAccount:"Really delete your account? All your data will be permanently deleted.", confirmDeleteAccount2:"Last warning: this cannot be undone. Continue?", accountDeletedTitle:"Account deleted", accountDeletedBody:"Your account and data have been deleted.", leaveAreaBtn:"Leave club/group", deleteContext:"Delete club/group", deleteContextHint:"Permanently deletes everything: memberships, catches and photos.", confirmDeleteContext:"Really delete \"{name}\"? All memberships, catches and photos will be permanently deleted.", confirmLeave:"Leave \"{name}\"?"});
 Object.assign(I18N.nl, { dangerZone:"Gevarenzone", deleteAccount:"Account verwijderen", deleteAccountHint:"Verwijdert je account en al je gegevens (vangsten, foto's, lidmaatschappen) definitief.", confirmDeleteAccount:"Account echt verwijderen? Al je gegevens worden definitief verwijderd.", confirmDeleteAccount2:"Laatste waarschuwing: dit kan niet ongedaan worden gemaakt. Doorgaan?", accountDeletedTitle:"Account verwijderd", accountDeletedBody:"Je account en gegevens zijn verwijderd.", leaveAreaBtn:"Vereniging/groep verlaten", deleteContext:"Vereniging/groep verwijderen", deleteContextHint:"Verwijdert alles definitief: lidmaatschappen, vangsten en foto's.", confirmDeleteContext:"\"{name}\" echt verwijderen? Alle lidmaatschappen, vangsten en foto's worden definitief verwijderd.", confirmLeave:"\"{name}\" verlaten?"});
@@ -3669,7 +3688,10 @@ async function chooseClub(cl, kind, keepForm){
   document.getElementById('list-title').textContent=state.club.name;
   document.getElementById('list-hdr').innerHTML=clubLogoHTML(state.club);
   if(state.auth==='supabase'){
-    if(!keepForm) go('list');
+    /* Wie bei „Meine Fänge": Reset nur beim echten ÖFFNEN. `keepForm` heißt, dass wir im Formular
+       bleiben — dann ist der Screen gar nicht das Ziel. Und Zurückwischen aus einem Fang geht nicht
+       hier durch, lässt den Tab also stehen. */
+    if(!keepForm){ go('list'); try{ setScreenTab('list','ueb'); }catch(e){} }
     document.getElementById('catch-list').innerHTML=skelRows(5);
     document.getElementById('stats').innerHTML='';
     try{ state.catches = await loadContextCatches(state.club.id); }catch(e){ state.catches=[]; }
@@ -3677,7 +3699,7 @@ async function chooseClub(cl, kind, keepForm){
     subscribeContextRealtime(state.club.id);
     if(keepForm){ try{ await loadCtxMembers(); }catch(e){} applyFieldConfig(); buildAnglerOptions(); }
   } else {
-    state.catches=loadCatchesFor(state.mode, state.club.id); renderList(); go('list');
+    state.catches=loadCatchesFor(state.mode, state.club.id); renderList(); go('list'); try{ setScreenTab('list','ueb'); }catch(e){}
   }
 }
 async function startSolo(keepForm){
@@ -3688,14 +3710,14 @@ async function startSolo(keepForm){
   document.getElementById('list-title').textContent=t('solo');
   document.getElementById('list-hdr').innerHTML=userAvatarHTML();
   if(state.auth==='supabase'){
-    if(!keepForm) go('list');
+    if(!keepForm){ go('list'); try{ setScreenTab('list','ueb'); }catch(e){} }
     document.getElementById('catch-list').innerHTML=skelRows(5);
     document.getElementById('stats').innerHTML='';
     try{ state.soloCatches = await loadSoloCatches(); }catch(e){ state.soloCatches=[]; }
     state.catches = state.soloCatches; renderList();
     if(keepForm){ state.ctxMembers=[]; applyFieldConfig(); buildAnglerOptions(); }
   } else {
-    state.catches=loadCatchesFor('solo'); renderList(); go('list');
+    state.catches=loadCatchesFor('solo'); renderList(); go('list'); try{ setScreenTab('list','ueb'); }catch(e){}
   }
 }
 function leaveArea(){ if(state.club&&state.club.id) markSeen(state.club.id); unsubscribeRealtime(); state.club=null; state.mode='club'; state.soloName=null; goChooser(); }
@@ -4042,6 +4064,15 @@ function renderList(){
     (bigLen ? scardBtn(t('longestStat'), fmtLen(bigLen.length), true, bigLen.id) : '') +
     (bigWt ? scardBtn(t('heaviestStat'), fmtWeight(bigWt.weight), true, bigWt.id) : '');
 
+  /* Rekord-Leiste und Karte für die Übersicht (17. Juli). Bewusst HIER — vor dem `return` für die leere
+     Liste ein paar Zeilen weiter unten. Stünden sie danach, behielten Leiste und Karte beim Wechsel in
+     einen Verein ohne Fänge den Inhalt des vorigen: Man sähe fremde Rekorde unter neuem Namen.
+     `items` ist gefiltert, wie bei „Meine Fänge" auch. Die Podium-RÄNGE rechnet `buildPodium` dagegen
+     über den ganzen Verein (siehe oben) — ein weggefilterter Goldfang taucht dann eben nicht auf,
+     verliert aber seinen Rang nicht. */
+  try{ renderRecordsShelf('list', items); }catch(e){}
+  try{ ensureCatchMap('list', items); }catch(e){}
+
   document.getElementById('sort-list').innerHTML=sortOptionsHtml(); try{ syncSelfield('sort-list'); }catch(e){}
   const list=document.getElementById('catch-list'); list.innerHTML=''; _openSwipe=null;
   const sorted=sortCatches(items);
@@ -4105,21 +4136,46 @@ function otherCtxBadge(c){
   return '<span class="ctxbadge" data-names="'+esc(title)+'" onclick="event.stopPropagation(); showCtxNames(this)" title="'+esc(title)+'" style="opacity:.7; margin-left:-2px; cursor:pointer;">+'+n+'</span>';
 }
 function showCtxNames(el){ const b=(el&&el.getAttribute('data-names'))||''; showInfo(t('alsoLoggedIn'), b); }
-// "Deine Rekorde" shelf — one record card per species holding the crown under the current metric.
-function renderRecordsShelf(items){
-  const box=document.getElementById('stats-records'); if(!box) return;
+/* Eine Leiste, zwei Sorten Rekord (17. Juli, JC: „statt pbs die gold verein/gruppen rekorde").
+   „Meine Fänge" zeigt die persönliche KRONE (`isPb`, persönliche Metrik), der Vereins-Screen den
+   GOLD-Rang des Podiums (`podiumRank===1`, Metrik des Vereins). Der Rest — Karten, Foto, Ordnung,
+   Klickziel — ist identisch, deshalb eine Funktion mit zwei Regelsätzen statt zweier Funktionen, die
+   auseinanderlaufen.
+   `buildPodium()` läuft bereits in `renderList()` und steigt im Solo-Modus und bei abgeschalteten
+   Rekorden (`records_enabled=false`) aus — dann bleibt `podiumRank` überall 0 und die Leiste
+   verschwindet von selbst. Kein Sonderfall nötig. */
+const REC_SHELF={
+  stats:{ box:'stats-records', from:'stats',
+          hit:(c)=> isPb(c),
+          metric:()=> pbMetric(),
+          title:()=> t('recordsShelfTitle'),
+          badge:()=> `<span class="rec-crown">${CROWN_IC}</span>` },
+  list: { box:'list-records', from:'list',
+          hit:(c)=> podiumRank(c)===1,
+          metric:()=> ctxRecordMetric(),
+          /* NICHT `ctxRecWord()` — das ist die EINZAHL („Vereinsrekord") und dient als Tag an einer
+             einzelnen Goldkachel. Über einer Leiste mit mehreren Karten wäre sie schlicht falsch. */
+          title:()=> (state.club && state.club.type==='group') ? t('groupRecordsTitle') : t('clubRecordsTitle'),
+          badge:()=> `<span class="rec-crown">${medalBadge(1)}</span>` }
+};
+function renderRecordsShelf(kind, items){
+  const CFG=REC_SHELF[kind]; if(!CFG) return;
+  const box=document.getElementById(CFG.box); if(!box) return;
   const seen={}; const uniq=[];
-  (items||[]).forEach(c=>{ if(isPb(c) && !c._welcome && !seen[c.species]){ seen[c.species]=1; uniq.push(c); } });
+  (items||[]).forEach(c=>{ if(CFG.hit(c) && !c._welcome && !seen[c.species]){ seen[c.species]=1; uniq.push(c); } });
   if(!uniq.length){ box.innerHTML=''; box.style.display='none'; return; }
   box.style.display='';
-  const metric=pbMetric();
+  const metric=CFG.metric();
   const cards=uniq.map(c=>{
     const val = metric==='weight' ? (c.weight!=null?fmtWeight(c.weight):'—') : (c.length!=null?fmtLen(c.length):'—');
     const cov=coverThumbOf(c);
     const thumb = cov ? `<span class="rec-thumb">${coverImg(c, cov, 'loading="lazy" decoding="async"')}</span>` : `<span class="rec-thumb rec-thumb-ph">${FISH_IC}</span>`;
-    return `<button type="button" class="rec-card" onclick="openStatsRecord('${c.id}')"><span class="rec-crown">${CROWN_IC}</span>${thumb}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span></button>`;
+    /* `openRecordCatch(id, from)` gibt es längst — sein Kommentar sagt die Vereinsseite sogar voraus:
+       Er sucht in BEIDEN Töpfen, weil ein Vereinsfang von einem anderen Mitglied sein kann und dann
+       nicht in `myCatches()` liegt. `from` führt zurück auf den eigenen Screen. */
+    return `<button type="button" class="rec-card" onclick="openRecordCatch('${c.id}','${CFG.from}')">${CFG.badge()}${thumb}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span></button>`;
   }).join('');
-  box.innerHTML=`<div class="rec-head">${CROWN_IC}<span>${esc(t('recordsShelfTitle'))}</span></div><div class="rec-strip">${cards}</div>`;
+  box.innerHTML=`<div class="rec-head">${CFG.badge()}<span>${esc(CFG.title())}</span></div><div class="rec-strip">${cards}</div>`;
 }
 /* Sucht in BEIDEN Töpfen: `myCatches()` sind die eigenen über alle Kontexte, `state.catches` die des
    gerade offenen Vereins. Die Rekord-Kachel gibt es auf beiden Screens, und ein Vereinsfang muss nicht
@@ -4131,7 +4187,8 @@ function openRecordCatch(id, from){
     if(c){ openDetailObj(c, from||'stats'); return; }
   }
 }
-function openStatsRecord(id){ openRecordCatch(id,'stats'); }
+/* `openStatsRecord(id)` stand hier — ein Einzeiler auf `openRecordCatch(id,'stats')`. Seit die
+   Rekord-Leiste ihr `from` selbst mitgibt (stats bzw. list), hat er null Aufrufer. */
 function renderStats(){
   _podium={};   // podium is context-scoped; the cross-context stats list must not show medals
   try{ updateSyncBanner(); }catch(e){}
@@ -4140,7 +4197,7 @@ function renderStats(){
   const fc=document.getElementById('stats-filter-count');
   if(cnt>0){ fc.style.display='inline-block'; fc.textContent=cnt; } else fc.style.display='none';
   const items=myCatches().filter(matchesFilter);
-  ensureStatsMap(items);
+  ensureCatchMap('stats', items);
   let bigLen=null, bigWt=null;
   items.forEach(c=>{ if(c.length!=null && (bigLen==null || c.length>bigLen.length)) bigLen=c; if(c.weight!=null && (bigWt==null || c.weight>bigWt.weight)) bigWt=c; });
   const speciesCount=new Set(items.map(c=>c.species)).size;
@@ -4180,7 +4237,7 @@ function renderStats(){
        und darf sich auch nicht so anfühlen. */
     (showMeasures ? (bigLen ? kpiBtn(t('longest'), fmtLen(bigLen.length), true, bigLen.id) : kpi(t('longest'), '—', true)) : '') +
     (showMeasures ? (bigWt ? kpiBtn(t('heaviest'), fmtWeight(bigWt.weight), true, bigWt.id) : kpi(t('heaviest'), '—', true)) : '');
-  try{ renderRecordsShelf(items); }catch(e){}
+  try{ renderRecordsShelf('stats', items); }catch(e){}
   { const sc=document.getElementById('stats-count'); if(sc) sc.textContent=items.length+' '+t('catches'); }
   document.getElementById('sort-stats').innerHTML=sortOptionsHtml(); try{ syncSelfield('sort-stats'); }catch(e){}
   const list=document.getElementById('stats-list'); list.innerHTML='';
@@ -4203,7 +4260,9 @@ function renderStats(){
 }
 
 // ---------- maps & weather ----------
-let fMap=null, fMarker=null, dMap=null, dMarker=null, sMap=null, sMarkers=[];
+/* `sMap`/`sMarkers` standen hier und sind am 17. Juli entfallen: Karte und Marker liegen jetzt in
+   `_mapRef` je Screen, seit „Meine Fänge" und der Verein dieselbe Karte benutzen. */
+let fMap=null, fMarker=null, dMap=null, dMarker=null;
 const DEFAULT_CENTER=[52.37, 4.90];
 const TILE='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const TILE_OPT={maxZoom:19, attribution:'© OpenStreetMap'};
@@ -4308,28 +4367,37 @@ async function persistDetailPhotos(){
   if(idx>=0){ const s=state.catches[idx]; s.photos=c.photos.slice(); s.photo=c.photo; s.crops=newCrops.slice(); s.photoPaths=newPaths.slice(); }
   if(!c._db){ try{ saveCatches(); }catch(e){} }
 }
-function ensureStatsMap(items){
-  const wrap=document.getElementById('stats-map');
-  const pts=items.filter(c=>c.lat!=null&&c.lon!=null);
+/* Eine Karte für BEIDE Screens (17. Juli). Vorher hieß das `ensureStatsMap` und kannte nur „Meine
+   Fänge"; der Vereins-Screen bekommt jetzt dieselbe (JC: „Karte auch rein"). Kopieren wäre die dritte
+   Stelle gewesen, an der man `invalidateSize` und die Überschrift-Logik vergessen kann.
+   `_mapRef` hält Karte und Marker je Screen — Leaflet-Instanzen darf man nicht teilen, sie hängen fest
+   an ihrem DOM-Knoten. */
+const _mapRef={ stats:{m:null, mk:[]}, list:{m:null, mk:[]} };
+function ensureCatchMap(kind, items){
+  const R=_mapRef[kind]; if(!R) return;
+  const wrap=document.getElementById(kind+'-map'); if(!wrap) return;
+  const pts=(items||[]).filter(c=>c.lat!=null&&c.lon!=null);
   /* Die Überschrift folgt der Karte: Hat kein Fang Geodaten, steht sonst „Wo du fängst" über nichts. */
-  const _lbl=document.getElementById('stats-maplabel');
+  const _lbl=document.getElementById(kind+'-maplabel');
   if(typeof L==='undefined'||!pts.length){ wrap.style.display='none'; if(_lbl) _lbl.style.display='none'; return; }
   wrap.style.display='block'; if(_lbl) _lbl.style.display='';
-  if(!sMap){
-    sMap=L.map('stats-map',{zoomControl:true}).setView([pts[0].lat,pts[0].lon],6);
-    L.tileLayer(TILE,TILE_OPT).addTo(sMap);
+  if(!R.m){
+    R.m=L.map(kind+'-map',{zoomControl:true}).setView([pts[0].lat,pts[0].lon],6);
+    L.tileLayer(TILE,TILE_OPT).addTo(R.m);
   }
-  sMarkers.forEach(m=>sMap.removeLayer(m)); sMarkers=[];
+  R.mk.forEach(m=>R.m.removeLayer(m)); R.mk=[];
   const bounds=[];
   pts.forEach(c=>{
     // Stats map keeps dots (JC) — many catches are a scatter, not a pincushion. Only the ink follows.
-    const m=L.circleMarker([c.lat,c.lon],{radius:7,color:'#fff',weight:2,fillColor:MAP_INK,fillOpacity:1}).addTo(sMap);
-    m.on('click', ()=>openDetailObj(c,'stats'));
-    sMarkers.push(m); bounds.push([c.lat,c.lon]);
+    const m=L.circleMarker([c.lat,c.lon],{radius:7,color:'#fff',weight:2,fillColor:MAP_INK,fillOpacity:1}).addTo(R.m);
+    /* Der Rückweg muss zum eigenen Screen führen: `kind` ist genau das `from`, das der Fang-Detail
+       zum Zurückgehen braucht — sonst landet man aus der Vereinskarte in „Meine Fänge". */
+    m.on('click', ()=>openDetailObj(c, kind));
+    R.mk.push(m); bounds.push([c.lat,c.lon]);
   });
-  if(bounds.length>1){ try{ sMap.fitBounds(bounds,{padding:[24,24], maxZoom:13}); }catch(e){} }
-  else sMap.setView(bounds[0],12);
-  setTimeout(()=>{ try{sMap.invalidateSize();}catch(e){} }, 80);
+  if(bounds.length>1){ try{ R.m.fitBounds(bounds,{padding:[24,24], maxZoom:13}); }catch(e){} }
+  else R.m.setView(bounds[0],12);
+  setTimeout(()=>{ try{R.m.invalidateSize();}catch(e){} }, 80);
 }
 function openInMaps(){
   const c=state.current; if(!c||c.lat==null) return;
@@ -7091,9 +7159,9 @@ function setScreenTab(screen, which){
   /* Beim Wechsel nach oben: Der neue Tab fängt oben an, nicht auf der Scrollhöhe des alten. */
   try{ const sc=document.querySelector('#s-'+screen+' .scroll'); if(sc) sc.scrollTop=0; }catch(e){}
   /* Leaflet misst beim Bauen — in einem `display:none`-Kasten misst es 0 und die Karte bleibt grau.
-     Dieselbe Zeile steht schon bei fMap/dMap/sMap; hier ist sie nötig, weil der Kasten beim
+     Dieselbe Zeile steht schon bei fMap/dMap und in `ensureCatchMap`; hier ist sie nötig, weil der Kasten beim
      Zurückwechseln erst JETZT wieder sichtbar wird. */
-  if(screen==='stats' && which==='ueb'){ setTimeout(function(){ try{ if(sMap) sMap.invalidateSize(); }catch(e){} }, 60); }
+  if(which==='ueb'){ setTimeout(function(){ try{ const R=_mapRef[screen]; if(R && R.m) R.m.invalidateSize(); }catch(e){} }, 60); }
 }
 function setSettingsTab(tab){
   state.settingsTab=tab;
