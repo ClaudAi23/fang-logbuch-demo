@@ -2277,7 +2277,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-18.3';
+const BUILD = '2026-07-18.4';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -4944,7 +4944,9 @@ function renderSpotSheet(nurWechsel){
   if(!nurWechsel){
     const nm=(c.location||'').trim();
     _spotEl('spot-nm').textContent = nm || t('gTilesLoc');
-    _spotEl('spot-n').textContent = items.length+' '+t('fltCatch');
+    /* `t('catches')` = „Fänge" (Plural) — nicht `t('fltCatch')`, das ist der Filter-Titel „Fang" und
+       ergab „2 Fang". Die Fangliste macht es an ihrer Zählzeile schon richtig (`stats-count`). */
+    _spotEl('spot-n').textContent = items.length+' '+t('catches');
     _spotEl('spot-strip').innerHTML = items.map((x,ix)=>{
       const t2=(typeof coverThumbOf==='function') ? coverThumbOf(x) : (x.photo||null);
       return `<button type="button" class="spot-th${ix===i?' on':''}" onclick="setSpotIdx(${ix})">`
