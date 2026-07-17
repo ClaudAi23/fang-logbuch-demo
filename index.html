@@ -2407,11 +2407,29 @@ window.addEventListener('pageshow', function(e){ if(e.persisted) _armBackIfNeede
     weit hinten. Deshalb: nur handeln, wenn `popstate` es nicht ohnehin gerade getan hat. */
  var _lastPop = 0;
  window.addEventListener('popstate', function(){ _lastPop = Date.now(); });
+ /* ---- Der Wisch erzeugt einen KLICK (17. Juli — die eigentliche Ursache) ---------------------------
+    JC: „aus den Einstellungen zurückgewischt lande ich auch in der Gruppe, mit dem Umweg über Home."
+    Das war der entscheidende Hinweis: Die App landet IMMER in der Gruppe, egal wo man startet. Ein
+    doppelter Rückschritt kann das nicht — dessen Ziel hinge vom Startpunkt ab.
+    Was wirklich passiert: `edgeBack` ist `{passive:true}` und kann nichts unterdrücken. Nach `touchend`
+    synthetisiert der Browser einen **click auf das Element unter dem Finger** — und dort steht nach der
+    Rück-Navigation ein ANDERER Screen. Der Finger endet mitten auf dem Homescreen, wo die Vereinskarten
+    liegen (`<button onclick=chooseClub(...)>`). Der Klick öffnet also den Verein, über dem er zufällig
+    abhebt: Home blitzt auf, `chooseClub()` lädt 3–4 s, und man steht in der Gruppe.
+    Deshalb: den Klick schlucken, der einem Wisch folgt. Muss in der CAPTURE-Phase geschehen und
+    non-passive sein — sonst ist der Knopf längst gedrückt, bevor wir etwas sagen können. */
+ var _swipeUntil = 0;
+ document.addEventListener('click', function(e){
+   if(Date.now() < _swipeUntil){ _swipeUntil = 0; e.stopPropagation(); e.preventDefault(); }
+ }, true);
  (function edgeBack(){
    var sx=0,sy=0,edge=false,t0=0;
    document.addEventListener('touchstart',function(e){ if(e.touches.length!==1){edge=false;return;} var t=e.touches[0]; sx=t.clientX; sy=t.clientY; t0=Date.now(); edge=sx<=24; },{passive:true});
    document.addEventListener('touchend',function(e){ if(!edge){return;} edge=false; var lb=document.getElementById('lightbox'); if(lb&&lb.style.display&&lb.style.display!=="none") return; var t=e.changedTouches[0]; var dx=t.clientX-sx, dy=t.clientY-sy;
      if(dx>60 && Math.abs(dy)<40 && (Date.now()-t0)<600){
+       // Der gleich folgende synthetische click gehört zu DIESEM Wisch, nicht zu dem, was jetzt
+       // zufällig unter dem Finger liegt. 600 ms decken auch die träge iOS-Synthese ab.
+       _swipeUntil = Date.now() + 600;
        /* REIHENFOLGE (17. Juli, JC: „geht zurück auf home, erwartet: zur Gruppe"):
           `touchend` feuert VOR dem `popstate` der nativen Geste. Meine erste Absicherung fragte
           „kam gerade ein popstate?" — zu diesem Zeitpunkt naturgemäß nein, also griff sie nie und
