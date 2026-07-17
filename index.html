@@ -2457,8 +2457,11 @@ window.addEventListener('popstate', function(){
      `appBack()` — mit einem Eintrag je Screen würde das die Tiefe sofort wieder auffüllen, und iOS
      zeigte beim nächsten Wisch erneut den Schnappschuss der falschen Ebene.
      Jetzt: Ist die App-Historie leer, sind wir ganz am Anfang — dort einen Eintrag legen, damit der
-     nächste Wisch die App nicht verlässt (JC: „von home sollte ich nicht zurück gehen können"). */
-  try{ if(!_navStack.length) _armBack(); }catch(e){}
+     nächste Wisch die App nicht verlässt (JC: „von home sollte ich nicht zurück gehen können").
+     Über `_armBackIfNeeded` statt `_armBack`, damit dieselbe Regel gilt: In der installierten App
+     liegt hinter Home nichts, dort bleibt der Wächter weg — sonst legte ich hier sofort wieder hin,
+     was die Geste erst möglich macht. */
+  try{ if(!_navStack.length) _armBackIfNeeded(); }catch(e){}
 });
 /* ---- Warum der Wächter an einer NUTZERGESTE hängt und nicht am Laden (17. Juli) -------------------
    WebKit hat eine Regel, die Blink und Gecko nicht haben: Ein `history.pushState` zählt nur dann als
@@ -2474,7 +2477,24 @@ window.addEventListener('popstate', function(){
    das folgenlos (dort zählte er ohnehin); auf iOS ist es der Unterschied zwischen wirkt und wirkt nicht.
    Vor der ersten Berührung gibt es bewusst keinen Wächter — wer die App gerade geöffnet und noch
    nichts angefasst hat, SOLL mit dem Wisch dahin zurück, wo er herkam. */
-function _armBackIfNeeded(){ if(!(history.state && history.state._fb)) _armBack(); }
+/* ---- Auf Home in der installierten App: GAR KEINEN Wächter (17. Juli) ----------------------------
+   JC: „warum stellen wir dann swipe back nicht auf home aus?" — weil „ausstellen" hieße, den Wächter
+   wegzulassen, und dann nähme die Geste das, was im Browser DAHINTER liegt: die Seite davor.
+   ABER: JC testet in der INSTALLIERTEN App — und dort liegt nichts dahinter, der Verlauf fängt bei uns
+   an. Das Log zeigt es: auf Home `len: 2` = unser Seitenaufruf + der eine Wächter. Dieser Wächter ist
+   also das EINZIGE, was der Geste überhaupt ein Ziel gibt. Ohne ihn hat sie keins, und iOS führt sie
+   gar nicht erst aus — kein Zucken, wirklich tot. (Das `preventDefault` an der Kante bleibt trotzdem:
+   Es fing 4 von 5 Wischen ab, aber eben nicht alle — eine Systemgeste lässt sich von der Seite aus
+   nicht zuverlässig stoppen. Jetzt braucht es das gar nicht mehr, es schadet aber auch nicht.)
+   Im Browser-Tab liegt sehr wohl etwas dahinter (bei JC: Google). Dort MUSS der Wächter stehen, sonst
+   fliegt man mit dem Wisch aus der App. Unterschieden wird das an `_histBase`: Fängt der Verlauf beim
+   Laden bei 1 an, sind wir sein Anfang — dann gibt es nichts zu schützen. */
+const _histBase = (function(){ try{ return history.length; }catch(e){ return 2; } })();
+function _armBackIfNeeded(){
+  // Auf Home ohne App-Historie UND ohne fremden Verlauf dahinter: kein Wächter → keine Geste.
+  if(_curScreen==='club' && !_navStack.length && _histBase<=1) return;
+  if(!(history.state && history.state._fb)) _armBack();
+}
 ['pointerdown','touchstart','keydown'].forEach(function(ev){
   window.addEventListener(ev, _armBackIfNeeded, {capture:true, passive:true});
 });
