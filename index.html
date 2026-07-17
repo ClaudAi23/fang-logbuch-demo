@@ -638,6 +638,14 @@
   .detail-sub{color:var(--muted); margin:6px 0 0; font-size:0.9375rem; font-weight:500;}
   .detail-band{position:relative; padding:20px 16px 14px;}
   .detail-band .dt{font-family:'Barlow Condensed',sans-serif; font-size:2.125rem; font-weight:700; line-height:1; margin:0; color:var(--text);}
+  /* Selbst eingetragene Arten dürfen das Layout nicht sprengen (JC, 16. Juli).
+     Gemessen am 17. Juli im 386-px-Kasten: „Gefleckter Riesenschlammbeisser-Karpfen" bricht von selbst
+     sauber um — der Bindestrich gibt eine Trennstelle. Ein Wort OHNE Trennstelle nicht:
+     „Donaustaudammschifffahrtskapitaenswels" maß 532 px in 386 px Kasten und lief hinaus.
+     Genau das tippt jemand von Hand ein. `anywhere` bricht erst, wenn es sonst überliefe — normale
+     Namen bleiben unberührt (nachgemessen: „Hecht" unverändert einzeilig, der lange Name 2 Zeilen
+     statt Überlauf). `hyphens:auto` setzt dabei einen Trennstrich, wo die Sprache ihn erlaubt. */
+  .detail-band .dt, .catch .sp, .rec-sp{overflow-wrap:anywhere; hyphens:auto;}
   .detail-band .dt-row{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
   .detail-band .ds{margin:5px 0 0; font-size:0.9375rem; font-weight:500; color:var(--muted);}
   .pending-pill{display:inline-block; padding:2px 9px; border-radius:999px; font-size:0.625rem; font-weight:700; letter-spacing:.02em; line-height:1.4; background:var(--teal-tint); border:1px solid var(--teal); color:var(--teal-bright); white-space:nowrap; flex:0 0 auto;}
@@ -1278,7 +1286,9 @@
         <textarea id="f-notes" placeholder="Köder, Wetter, Bemerkungen …" data-i18n-ph="notesPh"></textarea>
       </div>
 
-      <p class="hint" style="margin:2px 0 14px;"><span class="req">*</span> <span data-i18n="starReq">immer erforderlich</span> &nbsp;·&nbsp; <span style="color:var(--danger); font-weight:600;">*</span> <span data-i18n="starAdmin">vom Verein/Gruppe als Pflicht gesetzt</span></p>
+      <!-- Die rote Hälfte wird von applyFieldConfig() ein-/ausgeblendet: Sie erklärt ein Zeichen, das es
+           nur gibt, wenn ein Verein wirklich ein Feld fordert (JC, 16. Juli). -->
+      <p class="hint" style="margin:2px 0 14px;"><span class="req">*</span> <span data-i18n="starReq">immer erforderlich</span><span id="star-legend-admin">&nbsp;·&nbsp; <span style="color:var(--danger); font-weight:600;">*</span> <span data-i18n="starAdmin">vom Verein/Gruppe als Pflicht gesetzt</span></span></p>
       <div id="form-del-wrap" style="display:none; margin-top:26px; text-align:center;">
         <button type="button" id="form-del-btn" class="del-link" onclick="deleteCatch(state.editId, state.editReturn)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 12h10l1-12"/></svg>
@@ -2083,9 +2093,9 @@ Object.assign(I18N.nl, {betaAppSection:"Beta & app", installApp:"Opslaan als app
 Object.assign(I18N.de, {membersTitle:"Mitglieder", membersHint:"Verwalte Rollen und entferne Mitglieder.", membersHintMember:"Mitglieder und ihre Rollen.", manageMembers:"Mitglieder verwalten …", viewMembers:"Mitglieder ansehen", me:"ich", loggedByRow:"Erfasst von", unconfirmed:"Noch nicht bestätigt", unconfShort:"unbestätigt", loggedByHint:"Dieser Fang wurde von {name} für dich eingetragen. Bestätige ihn, wenn er stimmt.", unconfirmedHint:"Dieser Fang wartet auf Bestätigung.", confirmCatch:"Bestätigen", rejectCatch:"Ablehnen", confirmReject:"Diesen Fang ablehnen und löschen?", roleMember:"Mitglied", roleAdmin:"Admin", roleOwner:"Inhaber", transferOwner:"Inhaberschaft übergeben", transferOwnerConfirm:"{name} wird Inhaber, du wirst Admin. Zurückgeben kann das dann nur noch der neue Inhaber.", transferOwnerDone:"{name} ist jetzt Inhaber", removeMember:"Entfernen", ownerMustTransfer:"Als Inhaber kannst du nicht austreten. Übergib erst die Inhaberschaft an ein anderes Mitglied.", confirmRemove:"{name} aus diesem Verein/dieser Gruppe entfernen?", you:"du", roleTapHint:"Tippe eine Rolle an, um sie zu ändern. Nur du als Inhaber kannst Admins ernennen.", openMailbox:"Postfach öffnen", openMailApp:"Mail-App öffnen"});
 Object.assign(I18N.en, {membersTitle:"Members", membersHint:"Manage roles and remove members.", membersHintMember:"Members and their roles.", manageMembers:"Manage members …", viewMembers:"View members", me:"me", loggedByRow:"Logged by", unconfirmed:"Not confirmed yet", unconfShort:"unconfirmed", loggedByHint:"This catch was logged for you by {name}. Confirm it if it's correct.", unconfirmedHint:"This catch is awaiting confirmation.", confirmCatch:"Confirm", rejectCatch:"Reject", confirmReject:"Reject and delete this catch?", roleMember:"Member", roleAdmin:"Admin", roleOwner:"Owner", transferOwner:"Transfer ownership", transferOwnerConfirm:"{name} becomes the owner, you become an admin. Only the new owner can hand it back.", transferOwnerDone:"{name} is now the owner", removeMember:"Remove", ownerMustTransfer:"As the owner you can't leave. Hand ownership to another member first.", confirmRemove:"Remove {name} from this club/group?", you:"you", roleTapHint:"Tap a role to change it. Only you as owner can appoint admins.", openMailbox:"Open mailbox", openMailApp:"Open Mail app"});
 Object.assign(I18N.nl, {membersTitle:"Leden", membersHint:"Beheer rollen en verwijder leden.", membersHintMember:"Leden en hun rollen.", manageMembers:"Leden beheren …", viewMembers:"Leden bekijken", me:"ik", loggedByRow:"Ingevoerd door", unconfirmed:"Nog niet bevestigd", unconfShort:"onbevestigd", loggedByHint:"Deze vangst is voor jou ingevoerd door {name}. Bevestig als het klopt.", unconfirmedHint:"Deze vangst wacht op bevestiging.", confirmCatch:"Bevestigen", rejectCatch:"Afwijzen", confirmReject:"Deze vangst afwijzen en verwijderen?", roleMember:"Lid", roleAdmin:"Beheerder", roleOwner:"Eigenaar", transferOwner:"Eigendom overdragen", transferOwnerConfirm:"{name} wordt eigenaar, jij wordt beheerder. Alleen de nieuwe eigenaar kan dit terugdraaien.", transferOwnerDone:"{name} is nu de eigenaar", removeMember:"Verwijderen", ownerMustTransfer:"Als eigenaar kun je niet vertrekken. Draag het eigendom eerst over aan een ander lid.", confirmRemove:"{name} uit deze vereniging/groep verwijderen?", you:"jij", roleTapHint:"Tik op een rol om die te wijzigen. Alleen jij als eigenaar kunt beheerders benoemen.", openMailbox:"Postvak openen", openMailApp:"Mail-app openen"});
-Object.assign(I18N.de,{welcomeSpecies:"Phantom-Fisch", welcomeLoc:"In deinen Träumen", welcomeNote:"Willkommen! Das ist nur mein Muster-Fang zum Zeigen — er zählt natürlich nicht und verschwindet, sobald du deinen ersten echten Fang einträgst. — Dein Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Nur zur Demonstration", welcomeHint:"Dein erster echter Fang lässt den Phantom-Fisch verschwinden.", welcomeRemove:"Phantom-Fisch entfernen", pbRecord:"Persönlicher Rekord", pbRemove:"Nicht mein Rekord", pbRemovedToast:"Rekord entfernt", pbMarkedToast:"Als Rekord markiert", pbMark:"Als Rekord markieren", pbNotRecord:"Dieser Fang ist nicht der Rekord", recordsShelfTitle:"Deine Rekorde", clubRecord:"Vereinsrekord", groupRecord:"Gruppenrekord", recordsSettingTitle:"Rekorde & Podium", recordMetricLabel:"Podium-Wertung", recordsEnabledLabel:"Rekorde anzeigen", recordsSettingHint:"Bestimmt, ob im Verein/der Gruppe ein Podium (Gold/Silber/Bronze je Art) angezeigt wird und ob nach Länge oder Gewicht gewertet wird. Nur Admins.", joinedTitle:"Beigetreten!", joinedBody:"Willkommen! Du bist dem Verein bzw. der Gruppe beigetreten.", sortTitle:"Sortieren nach", taSearchPh:"Suchen oder neu eingeben …", recentLabel:"Zuletzt verwendet", allLabel:"Alle", addNewOpt:"neu hinzufügen", addField:"hinzufügen"});
-Object.assign(I18N.en,{welcomeSpecies:"Phantom Fish", welcomeLoc:"In your dreams", welcomeNote:"Welcome! This is just my sample catch to show you around — it doesn't count, and it vanishes the moment you log your first real catch. — Your Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"For demonstration only", welcomeHint:"Your first real catch sends the Phantom Fish away.", welcomeRemove:"Remove Phantom Fish", pbRecord:"Personal best", pbRemove:"Not my record", pbRemovedToast:"Record removed", pbMarkedToast:"Marked as record", pbMark:"Mark as record", pbNotRecord:"This catch isn't the record", recordsShelfTitle:"Your records", clubRecord:"Club record", groupRecord:"Group record", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium ranking", recordsEnabledLabel:"Show records", recordsSettingHint:"Controls whether the club/group shows a podium (gold/silver/bronze per species) and whether it ranks by length or weight. Admins only.", joinedTitle:"You're in!", joinedBody:"Welcome! You've joined the club or group.", sortTitle:"Sort by", taSearchPh:"Search or type new …", recentLabel:"Recently used", allLabel:"All", addNewOpt:"add new", addField:"add"});
-Object.assign(I18N.nl,{welcomeSpecies:"Fantoomvis", welcomeLoc:"In je dromen", welcomeNote:"Welkom! Dit is alleen mijn voorbeeldvangst om je op weg te helpen — hij telt niet mee en verdwijnt zodra je je eerste echte vangst vastlegt. — Je Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Alleen ter demonstratie", welcomeHint:"Je eerste echte vangst laat de Fantoomvis verdwijnen.", welcomeRemove:"Fantoomvis verwijderen", pbRecord:"Persoonlijk record", pbRemove:"Niet mijn record", pbRemovedToast:"Record verwijderd", pbMarkedToast:"Als record gemarkeerd", pbMark:"Als record markeren", pbNotRecord:"Deze vangst is niet het record", recordsShelfTitle:"Je records", clubRecord:"Verenigingsrecord", groupRecord:"Groepsrecord", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium-waardering", recordsEnabledLabel:"Records tonen", recordsSettingHint:"Bepaalt of de vereniging/groep een podium toont (goud/zilver/brons per soort) en of er op lengte of gewicht wordt gerangschikt. Alleen beheerders.", joinedTitle:"Je bent lid!", joinedBody:"Welkom! Je bent lid geworden van de vereniging of groep.", sortTitle:"Sorteren op", taSearchPh:"Zoeken of nieuw invoeren …", recentLabel:"Recent gebruikt", allLabel:"Alle", addNewOpt:"nieuw toevoegen", addField:"toevoegen"});
+Object.assign(I18N.de,{welcomeSpecies:"Phantom-Fisch", welcomeLoc:"In deinen Träumen", welcomeNote:"Willkommen! Das ist nur mein Muster-Fang zum Zeigen — er zählt natürlich nicht und verschwindet, sobald du deinen ersten echten Fang einträgst. — Dein Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Nur zur Demonstration", welcomeHint:"Dein erster echter Fang lässt den Phantom-Fisch verschwinden.", welcomeRemove:"Phantom-Fisch entfernen", pbRecord:"Persönlicher Rekord", pbRemove:"Nicht mein Rekord", pbRemovedToast:"Rekord entfernt", pbMarkedToast:"Als Rekord markiert", pbMark:"Als Rekord markieren", pbNotRecord:"Dieser Fang ist nicht der Rekord", recordsShelfTitle:"Deine Rekorde", clubRecord:"Vereinsrekord", groupRecord:"Gruppenrekord", recordsSettingTitle:"Rekorde & Podium", recordMetricLabel:"Podium-Wertung", recordsEnabledLabel:"Rekorde anzeigen", recordsSettingHint:"Bestimmt, ob im Verein/der Gruppe ein Podium (Gold/Silber/Bronze je Art) angezeigt wird und ob nach Länge oder Gewicht gewertet wird. Nur Admins.", joinedTitle:"Beigetreten!", joinedBody:"Willkommen! Du bist dem Verein bzw. der Gruppe beigetreten.", joinedBodyClub:"Willkommen! Du bist dem Verein „{name}“ beigetreten.", joinedBodyGroup:"Willkommen! Du bist der Gruppe „{name}“ beigetreten.", sortTitle:"Sortieren nach", taSearchPh:"Suchen oder neu eingeben …", recentLabel:"Zuletzt verwendet", allLabel:"Alle", addNewOpt:"neu hinzufügen", addField:"hinzufügen"});
+Object.assign(I18N.en,{welcomeSpecies:"Phantom Fish", welcomeLoc:"In your dreams", welcomeNote:"Welcome! This is just my sample catch to show you around — it doesn't count, and it vanishes the moment you log your first real catch. — Your Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"For demonstration only", welcomeHint:"Your first real catch sends the Phantom Fish away.", welcomeRemove:"Remove Phantom Fish", pbRecord:"Personal best", pbRemove:"Not my record", pbRemovedToast:"Record removed", pbMarkedToast:"Marked as record", pbMark:"Mark as record", pbNotRecord:"This catch isn't the record", recordsShelfTitle:"Your records", clubRecord:"Club record", groupRecord:"Group record", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium ranking", recordsEnabledLabel:"Show records", recordsSettingHint:"Controls whether the club/group shows a podium (gold/silver/bronze per species) and whether it ranks by length or weight. Admins only.", joinedTitle:"You're in!", joinedBody:"Welcome! You've joined the club or group.", joinedBodyClub:"Welcome! You've joined the club “{name}”.", joinedBodyGroup:"Welcome! You've joined the group “{name}”.", sortTitle:"Sort by", taSearchPh:"Search or type new …", recentLabel:"Recently used", allLabel:"All", addNewOpt:"add new", addField:"add"});
+Object.assign(I18N.nl,{welcomeSpecies:"Fantoomvis", welcomeLoc:"In je dromen", welcomeNote:"Welkom! Dit is alleen mijn voorbeeldvangst om je op weg te helpen — hij telt niet mee en verdwijnt zodra je je eerste echte vangst vastlegt. — Je Butler", welcomeDemo:"DEMO", welcomeDemoTitle:"Alleen ter demonstratie", welcomeHint:"Je eerste echte vangst laat de Fantoomvis verdwijnen.", welcomeRemove:"Fantoomvis verwijderen", pbRecord:"Persoonlijk record", pbRemove:"Niet mijn record", pbRemovedToast:"Record verwijderd", pbMarkedToast:"Als record gemarkeerd", pbMark:"Als record markeren", pbNotRecord:"Deze vangst is niet het record", recordsShelfTitle:"Je records", clubRecord:"Verenigingsrecord", groupRecord:"Groepsrecord", recordsSettingTitle:"Records & podium", recordMetricLabel:"Podium-waardering", recordsEnabledLabel:"Records tonen", recordsSettingHint:"Bepaalt of de vereniging/groep een podium toont (goud/zilver/brons per soort) en of er op lengte of gewicht wordt gerangschikt. Alleen beheerders.", joinedTitle:"Je bent lid!", joinedBody:"Welkom! Je bent lid geworden van de vereniging of groep.", joinedBodyClub:"Welkom! Je bent lid geworden van vereniging „{name}”.", joinedBodyGroup:"Welkom! Je bent lid geworden van groep „{name}”.", sortTitle:"Sorteren op", taSearchPh:"Zoeken of nieuw invoeren …", recentLabel:"Recent gebruikt", allLabel:"Alle", addNewOpt:"nieuw toevoegen", addField:"toevoegen"});
 Object.assign(I18N.de, { dangerZone:"Gefahrenzone", deleteAccount:"Konto löschen", deleteAccountHint:"Löscht dein Konto und alle deine Daten (Fänge, Fotos, Mitgliedschaften) unwiderruflich.", confirmDeleteAccount:"Konto wirklich löschen? Alle deine Daten werden unwiderruflich gelöscht.", confirmDeleteAccount2:"Letzte Warnung: Das kann nicht rückgängig gemacht werden. Fortfahren?", accountDeletedTitle:"Konto gelöscht", accountDeletedBody:"Dein Konto und deine Daten wurden gelöscht.", leaveAreaBtn:"Verein/Gruppe verlassen", deleteContext:"Verein/Gruppe löschen", deleteContextHint:"Löscht alles unwiderruflich: Mitgliedschaften, Fänge und Fotos.", confirmDeleteContext:"„{name}“ wirklich löschen? Alle Mitgliedschaften, Fänge und Fotos werden unwiderruflich gelöscht.", confirmLeave:"„{name}“ verlassen?"});
 Object.assign(I18N.en, { dangerZone:"Danger zone", deleteAccount:"Delete account", deleteAccountHint:"Permanently deletes your account and all your data (catches, photos, memberships).", confirmDeleteAccount:"Really delete your account? All your data will be permanently deleted.", confirmDeleteAccount2:"Last warning: this cannot be undone. Continue?", accountDeletedTitle:"Account deleted", accountDeletedBody:"Your account and data have been deleted.", leaveAreaBtn:"Leave club/group", deleteContext:"Delete club/group", deleteContextHint:"Permanently deletes everything: memberships, catches and photos.", confirmDeleteContext:"Really delete \"{name}\"? All memberships, catches and photos will be permanently deleted.", confirmLeave:"Leave \"{name}\"?"});
 Object.assign(I18N.nl, { dangerZone:"Gevarenzone", deleteAccount:"Account verwijderen", deleteAccountHint:"Verwijdert je account en al je gegevens (vangsten, foto's, lidmaatschappen) definitief.", confirmDeleteAccount:"Account echt verwijderen? Al je gegevens worden definitief verwijderd.", confirmDeleteAccount2:"Laatste waarschuwing: dit kan niet ongedaan worden gemaakt. Doorgaan?", accountDeletedTitle:"Account verwijderd", accountDeletedBody:"Je account en gegevens zijn verwijderd.", leaveAreaBtn:"Vereniging/groep verlaten", deleteContext:"Vereniging/groep verwijderen", deleteContextHint:"Verwijdert alles definitief: lidmaatschappen, vangsten en foto's.", confirmDeleteContext:"\"{name}\" echt verwijderen? Alle lidmaatschappen, vangsten en foto's worden definitief verwijderd.", confirmLeave:"\"{name}\" verlaten?"});
@@ -3275,10 +3285,24 @@ async function maybeApplyPendingJoin(){
   if(!code || state.auth!=='supabase' || !state.me) return;
   try{ localStorage.removeItem('bf_pending_join'); }catch(e){}
   try{
-    const { error } = await getSB().rpc('join_by_code', { p_code: code });
+    /* `data` nicht wegwerfen (JC, 17. Juli: „Erfolgs-Screen nach Einladung ist nicht kontextsensitiv —
+       nennt nicht, wohin eingeladen wurde"). Die Meldung sagte „dem Verein bzw. der Gruppe" — die App
+       WUSSTE es die ganze Zeit: `join_by_code` gibt laut Signatur die komplette `contexts`-Zeile zurück
+       (Name UND `type`), der Client hat nur `error` herausgegriffen. Kein neuer DB-Weg nötig.
+       Der alte `joinedBody` bleibt als Notnagel, falls die Zeile mal nicht mitkommt — lieber die vage
+       Meldung als gar keine. */
+    const { data, error } = await getSB().rpc('join_by_code', { p_code: code });
     if(error) throw error;
+    const ctx = Array.isArray(data) ? data[0] : data;
     await goChooser();
-    try{ showInfo(t('joinedTitle'), t('joinedBody')); }catch(e){}
+    try{
+      let body = t('joinedBody');
+      if(ctx && ctx.name){
+        const key = ctx.type==='group' ? 'joinedBodyGroup' : 'joinedBodyClub';
+        body = t(key).replace('{name}', ctx.name);
+      }
+      showInfo(t('joinedTitle'), body);
+    }catch(e){}
   }catch(e){
     const msg=(e&&e.message)||'';
     if(/already|member|duplicate/i.test(msg)) return;   // already joined — no noise
@@ -4761,6 +4785,7 @@ function applyFieldConfig(force){
   force = force || {};   // fields (by key) to force-show — e.g. an edited catch that already has a value there
   _lastFieldForce = force;   // remembered so a method change can re-evaluate without losing force-shown fields
   const admin=formAdminCfg();   // alle Ziele des Formulars, nicht nur der offene Verein
+  let _adminStarSichtbar = false;   // steht irgendwo tatsächlich ein roter Stern?
   CFG_FIELDS.forEach(f=>{
     const el=document.getElementById('ff-'+f.key); if(!el) return;
     const required = admin[f.key]==='required';
@@ -4768,6 +4793,9 @@ function applyFieldConfig(force){
     if(f.key==='trolling' && !force.trolling) show = isTrollingMethod((document.getElementById('f-method')||{}).value);
     el.style.display = show ? '' : 'none';
     el.classList.toggle('req-on', required);
+    /* Nur SICHTBARE Pflichtfelder zählen: Ein ausgeblendetes trägt seinen Stern zwar in der Klasse,
+       zeigt ihn aber nirgends — die Legende erklärte sonst ein Zeichen, das gar nicht dasteht. */
+    if(required && show) _adminStarSichtbar = true;
     /* A required field must not offer "no answer" (JC): with Entnahme on required, "—" is not a third
        state, it is the absence of the answer the club is asking for. Hidden from the picker, never
        removed — see renderSelSheet() for why. */
@@ -4776,6 +4804,11 @@ function applyFieldConfig(force){
       if(blank) blank.dataset.hide = required ? '1' : '0';
     }
   });
+  /* Legende kontextsensitiv (JC, 16. Juli: „erklärt Pflicht/Optional auch dort, wo es die Sorte gar
+     nicht gibt"). Die BLAUE Hälfte bleibt immer: Art, Datum und Angler tragen ihren Stern fest im HTML,
+     die gibt es in jedem Formular. Die ROTE hängt am Verein — solo oder in einem Verein ohne Vorgaben
+     steht sie über gar nichts. */
+  { const _lg=document.getElementById('star-legend-admin'); if(_lg) _lg.style.display = _adminStarSichtbar ? '' : 'none'; }
   // collapse a .row whose fields are all hidden (e.g. Rute + Boot both off)
   document.querySelectorAll('#s-form .row').forEach(row=>{
     const fields=[...row.querySelectorAll('.field')];
@@ -5780,12 +5813,20 @@ function detailBack(){
      `toggleDetailEdit()` kann das längst richtig: speichern, aus der DB nachladen, den Fang sauber im
      Lesemodus zeigen. Es wurde hier nur nie gerufen. */
   if(_detailEdit){ toggleDetailEdit(); return; }
-  const to=state.detailFrom||'list';
+  /* Den Stapel ABRÄUMEN, nicht drauflegen (17. Juli, live nachgemessen).
+     Vorher stand hier `go(to)` — ohne `isBack`. Das zählt als VORWÄRTS-Schritt: `go()` legte `detail`
+     auf `_navStack`, statt die Ebene abzuräumen. Ergebnis: `nav=[club,list,detail]`, und der nächste
+     Wisch zog einen in den Fang ZURÜCK, den man gerade per Knopf verlassen hatte.
+     `formBack` macht es seit jeher richtig (`go(_navStack.pop(), true)`) — hier war es nie nachgezogen.
+     Der Stapel ist maßgeblich, nicht `state.detailFrom`: Er treibt auch den Wisch, und genau deshalb
+     müssen Knopf und Wisch aus derselben Quelle trinken. `detailFrom` bleibt der Notnagel für den
+     leeren Stapel. */
+  const to = (typeof _navStack!=='undefined' && _navStack.length) ? _navStack.pop() : (state.detailFrom||'list');
   /* The thumbnails are rendered HTML, not bound to state. Re-cropping the hero updated the catch
      object but left the list DOM exactly as it was, so going back showed the old crop until the app
      was reloaded. Re-render the screen we are returning to. */
   const paint=()=>{ try{ if(to==='list') renderList(); else if(to==='stats') renderStats(); }catch(e){} };
-  paint(); go(to);
+  paint(); go(to, true);
 }
 function _detailScroll(){
   const sc=document.querySelector('#s-detail .scroll'); const h=document.getElementById('d-htitle'); if(!sc||!h) return;
@@ -6787,7 +6828,14 @@ function openSettings(){
   setSettingsTab('personal');   // always default to Personal (left tab), never pre-select the group tab
   go('settings');
 }
-function closeSettings(){ go(state.settingsReturn || 'club'); }
+/* Gleiche Sache wie in `detailBack`: `go(...)` ohne `isBack` legte `settings` auf den Stapel, statt
+   die Ebene abzuräumen. Gemessen: Fang → Einstellungen → Zurück-Knopf ergab `nav=[club,list,detail,
+   settings]` — der nächste Wisch führte zurück in die EINSTELLUNGEN. `settingsReturn` bleibt der
+   Notnagel für den leeren Stapel. */
+function closeSettings(){
+  const to = (typeof _navStack!=='undefined' && _navStack.length) ? _navStack.pop() : (state.settingsReturn || 'club');
+  go(to, true);
+}
 function setSettingsTab(tab){
   state.settingsTab=tab;
   document.querySelectorAll('#settings-tabs button').forEach(b=>b.classList.toggle('on', b.dataset.st===tab));
