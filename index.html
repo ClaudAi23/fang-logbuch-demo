@@ -718,6 +718,13 @@
   .rec-card{flex:0 0 auto; width:108px; position:relative; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; color:var(--text);}
   .rec-crown{position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; z-index:2;}
   .rec-crown svg{width:13px; height:13px; stroke:#fff;}
+  /* Gold statt Ocker für die Vereins-/Gruppenrekorde: Dieselbe Plakette, aber im Gold des Podiums
+     (`--medal-g` = #D4AF37, wie `.medal-g`) — sonst sähe der Vereinsrekord aus wie eine persönliche
+     Krone. Das Zeichen darin ist die Medaille, OHNE Rangzahl. */
+  .rec-crown-gold{background:#D4AF37;}
+  /* Die Kopfzeile färbt ihr SVG ocker (`.rec-head svg`); für die Medaillen-Leiste muss es Gold sein,
+     sonst tragen Kopf und Karten zwei verschiedene Farben für dieselbe Sache. */
+  #list-records .rec-head svg{stroke:#D4AF37;}
   /* Was a background-image with background-size:cover. A background cannot be zoomed relative to
      "cover", so it is an <img> in a clipping frame now — same construction as .thumb and the hero,
      which also means the photo URL sits in src="" instead of inside a CSS url('…') string. */
@@ -4144,19 +4151,29 @@ function showCtxNames(el){ const b=(el&&el.getAttribute('data-names'))||''; show
    `buildPodium()` läuft bereits in `renderList()` und steigt im Solo-Modus und bei abgeschalteten
    Rekorden (`records_enabled=false`) aus — dann bleibt `podiumRank` überall 0 und die Leiste
    verschwindet von selbst. Kein Sonderfall nötig. */
+/* Kopf-Icon und Kachel-Plakette sind ZWEIERLEI, auch wenn beide dasselbe Zeichen zeigen:
+   `.rec-crown` ist `position:absolute; top:8px; right:8px` — die Plakette in der Kachelecke.
+   Die Kopfzeile erwartet dagegen ein nacktes SVG (`.rec-head svg` färbt es ocker).
+   Beim ersten Versuch hatte ich beides zu einem `badge()` verschmolzen und damit die Kopfzeile von
+   „Meine Fänge" absolut positioniert — ein Fehler, den ich mir selbst eingebaut hatte.
+   `medalBadge(1)` passt hier ebenfalls nicht: Es trägt die RANGZAHL. An einer einzelnen Kachel sagt
+   die „das ist Platz 1"; in dieser Leiste liegt ohnehin nur Gold, da stünde fünfmal dieselbe 1 —
+   und in der Überschrift ergab es „1Gruppenrekorde". */
 const REC_SHELF={
   stats:{ box:'stats-records', from:'stats',
           hit:(c)=> isPb(c),
           metric:()=> pbMetric(),
           title:()=> t('recordsShelfTitle'),
-          badge:()=> `<span class="rec-crown">${CROWN_IC}</span>` },
+          headIcon:()=> CROWN_IC,
+          cardBadge:()=> `<span class="rec-crown">${CROWN_IC}</span>` },
   list: { box:'list-records', from:'list',
           hit:(c)=> podiumRank(c)===1,
           metric:()=> ctxRecordMetric(),
           /* NICHT `ctxRecWord()` — das ist die EINZAHL („Vereinsrekord") und dient als Tag an einer
              einzelnen Goldkachel. Über einer Leiste mit mehreren Karten wäre sie schlicht falsch. */
           title:()=> (state.club && state.club.type==='group') ? t('groupRecordsTitle') : t('clubRecordsTitle'),
-          badge:()=> `<span class="rec-crown">${medalBadge(1)}</span>` }
+          headIcon:()=> MEDAL_IC,
+          cardBadge:()=> `<span class="rec-crown rec-crown-gold">${MEDAL_IC}</span>` }
 };
 function renderRecordsShelf(kind, items){
   const CFG=REC_SHELF[kind]; if(!CFG) return;
@@ -4173,9 +4190,9 @@ function renderRecordsShelf(kind, items){
     /* `openRecordCatch(id, from)` gibt es längst — sein Kommentar sagt die Vereinsseite sogar voraus:
        Er sucht in BEIDEN Töpfen, weil ein Vereinsfang von einem anderen Mitglied sein kann und dann
        nicht in `myCatches()` liegt. `from` führt zurück auf den eigenen Screen. */
-    return `<button type="button" class="rec-card" onclick="openRecordCatch('${c.id}','${CFG.from}')">${CFG.badge()}${thumb}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span></button>`;
+    return `<button type="button" class="rec-card" onclick="openRecordCatch('${c.id}','${CFG.from}')">${CFG.cardBadge()}${thumb}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span></button>`;
   }).join('');
-  box.innerHTML=`<div class="rec-head">${CFG.badge()}<span>${esc(CFG.title())}</span></div><div class="rec-strip">${cards}</div>`;
+  box.innerHTML=`<div class="rec-head">${CFG.headIcon()}<span>${esc(CFG.title())}</span></div><div class="rec-strip">${cards}</div>`;
 }
 /* Sucht in BEIDEN Töpfen: `myCatches()` sind die eigenen über alle Kontexte, `state.catches` die des
    gerade offenen Vereins. Die Rekord-Kachel gibt es auf beiden Screens, und ein Vereinsfang muss nicht
