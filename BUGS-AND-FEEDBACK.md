@@ -54,11 +54,6 @@ Stand: 17. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt)
 
 ## 🔧 OFFENE BAUTEN (abgestimmt — kein Diskussionsbedarf)
 
-- **🔧 Fischart „zuletzt verwendet" (letzte 5 aus den Faengen) — entschieden, noch offen.**
-  `TA_CFG` fuer die Art hat `recent:()=> []`: Der Platz ist verdrahtet und steht leer. Wird wichtig,
-  sobald der Artenkatalog von 9 auf hunderte waechst. *(Braucht keine Spalte — Arten stehen auf den
-  Faengen und werden nicht "gepflegt" wie Geraet. Der Bestand `user_items` ist dafuer NICHT zustaendig.)*
-
 - **🔧 Fotos umsortieren: ZIEHEN im Raster — entschieden (JC, 17. Juli).**
   Im Fotoeditor gibt es heute **nur „Titelbild setzen"** (`setFormCover`) — das schiebt ein Bild auf
   Platz 1; Bild 3 vor Bild 2 geht gar nicht. Die Daten können es längst: `catch_photos.sort` ist eine

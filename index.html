@@ -6500,9 +6500,16 @@ function _anglerByline(c){
     `<span class="d-rel ${c.released?'rel':'kept'}">${c.released?REL_IC:KEPT_IC}${esc(c.released?t('releasedReleased'):t('releasedKept'))}</span>`;
   return `<span class="av">${av}</span><span class="nm">${esc(nm)}</span>${rel}<span class="dt">${esc(fmtDateLong(c.date))}</span>`;
 }
-const REL_IC='<svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
-/* Only "released" gets an icon, and the asymmetry is the point: releasing is the statement, keeping
-   is the neutral default. The previous plus sign meant "add" and said nothing about the fish. */
+/* Beide ohne Icon (JC, 17. Juli: „zurueckgezetzt badge sollte keinen feil drin haben").
+   Hier stand ein Rückwärtspfeil mit U-Turn-Bogen, und der Kommentar daneben verteidigte die Asymmetrie:
+   „releasing is the statement, keeping is the neutral default". Der Gedanke stimmt — nur sagt ihn die
+   PLAKETTE SCHON: `.d-rel.rel` ist teal mit teal Rahmen, `.d-rel.kept` grau. Text, Farbe und Rahmen
+   tragen die Aussage bereits dreifach; der Pfeil war die vierte Kodierung derselben Sache und das
+   einzige, was aus der Zeile herausstach.
+   Der Vorgänger war ein Plus-Zeichen, das „hinzufügen" hieß — auch schon ein Icon, das nicht passte.
+   Zwei Anläufe für ein Bild, das die Farbe längst malt: Deshalb keins statt ein drittes.
+   `.d-rel svg` bleibt im CSS stehen — kostet nichts und wartet, falls doch mal eins kommt. */
+const REL_IC='';
 const KEPT_IC='';
 const D_SPEC_IC={
   angler:'<path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>',
@@ -7093,7 +7100,15 @@ function openDetailObj(c, from, keepEdit){
   else nw.style.display='none';
   document.getElementById('edit-btn').style.display = (_editable && !_detailEdit) ? '' : 'none';
   { const _db2=document.getElementById('edit-done-btn'); if(_db2) _db2.style.display = (_editable && _detailEdit) ? '' : 'none'; }
-  { const _sb=document.getElementById('share-btn'); if(_sb){ const _shareOk=((navigator.maxTouchPoints||0)>0 && !!navigator.share); _sb.style.display = (!_detailEdit && _shareOk) ? '' : 'none'; } }
+  /* NUR eigene Fänge teilen (JC, 17. Juli: „i should not be able to share the catches of others" →
+     „ganz sperren"). Der Knopf fragte bisher nur nach dem GERÄT, nicht nach dem Besitzer — während die
+     richtige Bedingung zwei Zeilen darüber steht. `shareCatch()` nahm danach `state.current` ungeprüft
+     und verschickte Text UND FOTO: also Renés Bild aus meinem Telefon.
+     Warum es niemandem auffiel: `_shareOk` verlangt `navigator.share`, das es am Schreibtisch nicht gibt
+     — der Knopf war beim Testen immer aus.
+     `_isMine` und NICHT `_editable`: `_editable` verlangt zusätzlich `detailFrom==='list'|'stats'`, dann
+     könnte ich meinen EIGENEN Fang nicht mehr teilen, wenn ich ihn über die Vereinsseite geöffnet habe. */
+  { const _sb=document.getElementById('share-btn'); if(_sb){ const _shareOk=((navigator.maxTouchPoints||0)>0 && !!navigator.share); _sb.style.display = (!_detailEdit && _shareOk && _isMine) ? '' : 'none'; } }
   const mw=document.getElementById('d-map-wrap');
   const mEditBar=document.getElementById('d-map-edit-bar'), mFab=document.getElementById('d-map-openfab'), mLabel=document.getElementById('d-map-label');
   if(editing){ mw.style.display='block'; { const mapBox=mw.querySelector('.map-wrap'); if(mapBox) mapBox.style.display=''; }
@@ -7379,6 +7394,15 @@ function catchText(c){
 // Mobile only: native share sheet (with photo). On desktop the button is hidden.
 async function shareCatch(){
   const c=state.current; if(!c || !navigator.share) return;
+  /* Zweiter Riegel, und er ist der eigentliche (JC: „ganz sperren"). Den Knopf zu VERSTECKEN ist keine
+     Sperre — es ist eine Bitte. Diese Funktion hängt an einem globalen `onclick` und ist damit von
+     überall aufrufbar; und sollte je ein zweiter Einstieg dazukommen (Kontextmenü, Wischgeste, Teilen
+     aus der Liste), erbte er die Prüfung hier automatisch, die Sichtbarkeitsregel dagegen nicht.
+     Dieselbe Bedingung wie beim Knopf — bewusst wörtlich, nicht als Hilfsfunktion: `_isMine` wird in
+     `openDetailObj` aus `state.me` und dem Fang gebildet, und ein drittes Zuhause für dieselbe Frage
+     wäre eine Kopie, die irgendwann auseinanderläuft. */
+  const mine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
+  if(!mine) return;
   const text=catchText(c);
   try{
     let data={text};
@@ -7796,7 +7820,14 @@ function resetFilter(){
 loadPrefs();
 applyTheme();
 applyLang();
-if((navigator.maxTouchPoints||0)>0 && navigator.share){ document.getElementById('share-btn').style.display=''; }
+/* HIER STAND EIN ZWEITER SCHREIBER auf share-btn.style.display (17. Juli entfernt):
+     if(touch && navigator.share){ share-btn.style.display=''; }
+   Er schaltete den Knopf beim START pauschal sichtbar — ohne einen Fang zu kennen, also auch ohne zu
+   wissen, wem er gehört. Damit hätte er die neue `_isMine`-Prüfung wieder aufgehoben, sobald jemand die
+   Detailseite erreicht, bevor `openDetailObj` den Knopf setzt.
+   Zwei Schreiber auf derselben Eigenschaft überschreiben sich irgendwann — dieselbe Falle wie beim
+   Log-Catch-FAB (fc358c0). Der Knopf gehört jetzt allein `openDetailObj`: Nur dort ist der Fang bekannt.
+   Sein Ausgangszustand ist `display:none` im HTML, also ist er aus, bis jemand ihn begründet einschaltet. */
 document.getElementById('club-logo').innerHTML=`<img src="/mascot.png" alt="ButlerFish" />`;
 // #login-logo is the hero lockup now (markup lives in the HTML) — don't overwrite it with the bare mascot.
 initAuth();
