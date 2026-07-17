@@ -474,6 +474,24 @@
     top:calc(10px + env(safe-area-inset-top));
     right:calc(12px + env(safe-area-inset-right));
   }
+  /* „Mein Standort" (JC, 18. Juli) — direkt unter dem Vollbild-Knopf, gleiche Kante, gleiche Optik.
+     Erbt dessen Aussehen; nur die Position ist eigen. Im Vollbild wandert er mit der Safe Area mit,
+     sonst läge er hochkant unter der Uhr — derselbe Fehler wie am 17. Juli. */
+  .map-me-btn{position:absolute; top:50px; right:8px; z-index:401; width:34px; height:34px; border-radius:9px;
+    border:1px solid rgba(13,81,100,.25); background:#fff; color:var(--map-ink);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
+    box-shadow:0 2px 8px rgba(0,0,0,.28);}
+  .map-me-btn:hover{background:#eef4f6;}
+  .map-me-btn svg{width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  /* Ortung dauert bis zu 8 s — ohne Rückmeldung tippt man dreimal und hält es für kaputt. */
+  .map-me-btn.laedt{opacity:.5; pointer-events:none;}
+  .map-me-btn.laedt svg{animation:meSpin 1s linear infinite;}
+  @keyframes meSpin{to{transform:rotate(360deg);}}
+  @media(prefers-reduced-motion:reduce){ .map-me-btn.laedt svg{animation:none;} }
+  .map.is-fs .map-me-btn{
+    top:calc(52px + env(safe-area-inset-top));
+    right:calc(12px + env(safe-area-inset-right));
+  }
   .map.is-fs .leaflet-top{ padding-top:env(safe-area-inset-top); }
   .map.is-fs .leaflet-left{ padding-left:env(safe-area-inset-left); }
   .map.is-fs .leaflet-bottom{ padding-bottom:env(safe-area-inset-bottom); }
@@ -905,6 +923,29 @@
   .spot-th img{width:100%; height:100%; object-fit:cover; display:block;}
   .spot-th > svg{width:24px; height:24px; fill:none; stroke:var(--muted); stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
   .spot-th.on{border-color:var(--teal-bright); transform:scale(1.06);}
+  /* ---- QUERFORMAT (JC, 18. Juli: „completely broken") -----------------------------------------------
+     Der Grund ist Arithmetik, kein Geschmack: Quer ist der Schirm ~390 px HOCH. Kopf (38) + Hero (210)
+     + Streifen (62) + Polster = ~330 px. Das Sheet verschluckt den ganzen Bildschirm samt Karte — und
+     die Karte ist der Ort, an dem man gerade steht.
+     Quer wird deshalb NEBENEINANDER gelegt statt gestapelt: Hero links, Streifen rechts als schmale
+     Spalte. Das ist derselbe Inhalt in der Richtung, in der Platz ist — quer hat Breite, keine Höhe.
+     `orientation:landscape` PLUS `max-height`: Ein iPad quer hat reichlich Höhe und braucht das nicht;
+     die Regel soll auf niedrige Fenster zielen, nicht auf breite. */
+  @media (orientation:landscape) and (max-height:520px){
+    .spot-sheet{top:0; bottom:0; display:flex; flex-direction:column;
+      background:linear-gradient(to right, var(--bg) 78%, rgba(2,27,40,.55));
+      transform:translateY(0) translateX(-102%); width:min(560px, 82vw);
+      right:auto; padding:0 0 env(safe-area-inset-bottom);
+      padding-left:env(safe-area-inset-left);}
+    .spot-sheet.on{transform:translateX(0);}
+    .spot-kopf{padding:10px 14px 6px;}
+    /* Hero und Streifen teilen sich die Höhe; der Hero nimmt, was übrig bleibt. */
+    .spot-hero{flex:1 1 auto; height:auto; min-height:0; margin:0 14px 8px; width:calc(100% - 28px);}
+    .spot-hero .art{font-size:1.2rem;}
+    .spot-hero .band{padding:18px 12px 10px;}
+    .spot-strip{flex:0 0 auto; padding:0 14px 8px;}
+    .spot-th{width:44px; height:44px;}
+  }
   /* Cluster: NUR die Zahl (JC entschieden — kein Foto, keine Plakette). */
   .cl-dot{width:46px; height:46px; border-radius:50%; background:var(--map-ink); color:#fff;
     border:2px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.5); display:flex; align-items:center;
@@ -2277,7 +2318,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-18.4';
+const BUILD = '2026-07-18.5';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -2386,6 +2427,12 @@ Object.assign(I18N.nl, {demoHint:"Demo: velden zijn al ingevuld — tik gewoon o
    zur Pflicht, dass man einen Verein hinzufügt — „Bitte Pflichtfelder ausfüllen" ließe einen raten,
    woher die Forderung kommt, obwohl man am Fang selbst nichts geändert hat. Dieselbe Überlegung wie bei
    `requiringCtxName` im Formular. */
+/* Ortung gescheitert (18. Juli). Bewusst ohne Schuldzuweisung: Der häufigste Grund ist eine verweigerte
+   Erlaubnis, aber es kann auch drinnen ohne Empfang sein — „Bitte erlaube den Zugriff" wäre in der
+   Hälfte der Fälle eine Unterstellung. */
+Object.assign(I18N.de, {locFail:"Standort nicht gefunden."});
+Object.assign(I18N.en, {locFail:"Couldn't find your location."});
+Object.assign(I18N.nl, {locFail:"Locatie niet gevonden."});
 Object.assign(I18N.de, {reqAreaTitle:"Ein Wert fehlt noch", reqAreaMsg:"„{ctx}“ verlangt: {fields}. Ohne diesen Wert kann der Fang dort nicht eingetragen werden.", reqAreaGo:"Jetzt eintragen", reqAreaAdded:"In „{ctx}“ eingetragen.", reqAreaPick:"Bitte den Wert oben am Fang eintragen."});
 Object.assign(I18N.en, {reqAreaTitle:"A value is missing", reqAreaMsg:"“{ctx}” requires: {fields}. Without it the catch can't be logged there.", reqAreaGo:"Add it now", reqAreaAdded:"Logged to “{ctx}”.", reqAreaPick:"Please add the value on the catch above."});
 Object.assign(I18N.nl, {reqAreaTitle:"Er ontbreekt een waarde", reqAreaMsg:"„{ctx}” vereist: {fields}. Zonder die waarde kan de vangst daar niet worden vastgelegd.", reqAreaGo:"Nu invullen", reqAreaAdded:"Vastgelegd in „{ctx}”.", reqAreaPick:"Vul de waarde hierboven bij de vangst in."});
@@ -4752,6 +4799,46 @@ function mapFsIcon(open){
     ? '<svg viewBox="0 0 24 24"><path d="M9 3v6H3M15 3v6h6M9 21v-6H3M15 21v-6h6"/></svg>'      // zusammenfalten
     : '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';     // aufziehen
 }
+/* „Zoom auf meinen Standort" (JC, 18. Juli). Sitzt UNTER dem Vollbild-Knopf, rechts: Leaflets Zoom liegt
+   oben links, Maßstab und Copyright unten — rechts ist die freie Kante, und dort erwartet man beides
+   aus jeder Kartenanwendung.
+   KEIN automatisches Orten beim Öffnen: Die Erlaubnis-Abfrage des Browsers soll nur kommen, wenn jemand
+   danach fragt — dieselbe Regel, die im Formular schon steht („no automatic geolocation on open").
+   Der Punkt ist bewusst FLÜCHTIG (kein Marker, der bleibt): Er sagt „hier bist du gerade", nicht „hier
+   war ein Fang". Ein zweiter dauerhafter Kreis auf einer Karte voller Fang-Kreise wäre eine Lüge. */
+let _meMk={};
+function mapMeButton(kind, wrap){
+  if(!navigator.geolocation) return;   // ohne Ortung kein Knopf, statt eines, der nichts tut
+  const b=document.createElement('button');
+  b.type='button'; b.className='map-me-btn';
+  b.setAttribute('aria-label', t('myLocation'));
+  b.title=t('myLocation');
+  b.innerHTML='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg>';
+  b.onclick=(e)=>{
+    e.stopPropagation();
+    const R=_mapRef[kind]; if(!R||!R.m) return;
+    b.classList.add('laedt');
+    navigator.geolocation.getCurrentPosition(p=>{
+      b.classList.remove('laedt');
+      const lat=p.coords.latitude, lon=p.coords.longitude;
+      /* `_spotSelbstBewegt`, sonst schlösse dieser Flug ein offenes Spot-Sheet — dieselbe Falle wie
+         beim Zentrieren. Zwei Absender auf einer Leitung, und der Nutzer hat nichts bewegt. */
+      _spotSelbstBewegt=true;
+      try{ R.m.flyTo([lat,lon], 14, {duration:.6}); }catch(e2){ try{ R.m.setView([lat,lon],14); }catch(e3){} }
+      setTimeout(()=>{ _spotSelbstBewegt=false; }, 1100);
+      try{ if(_meMk[kind]) R.m.removeLayer(_meMk[kind]); }catch(e2){}
+      _meMk[kind]=L.circleMarker([lat,lon],{radius:7,color:'#fff',weight:3,fillColor:'#4C8DF6',fillOpacity:1,
+        interactive:false}).addTo(R.m);
+      try{ haptic(8); }catch(e2){}
+    }, ()=>{
+      b.classList.remove('laedt');
+      /* Eigener Text, NICHT `noCoords` — das heißt „Kein Kartenstandort gesetzt" und meint einen Fang
+         ohne Pin. Hier ist die ORTUNG gescheitert; derselbe Satz wäre an dieser Stelle schlicht falsch. */
+      try{ toast(t('locFail')); }catch(e2){}
+    }, {enableHighAccuracy:true, timeout:8000});
+  };
+  wrap.appendChild(b);
+}
 function mapFsButton(kind, wrap){
   const b=document.createElement('button');
   b.type='button'; b.className='map-fs-btn';
@@ -4833,6 +4920,7 @@ function ensureCatchMap(kind, items){
        zehn Aktualisierungen ein Stapel davon übereinander. Er hängt am Karten-Element (nicht an einem
        Leaflet-Control), damit er den Vollbild-Zustand mit umschalten kann. */
     try{ mapFsButton(kind, wrap); }catch(e){}
+    try{ mapMeButton(kind, wrap); }catch(e){}
   }
   R.pts=pts;
   drawCatchMarkers(kind);
@@ -4876,8 +4964,13 @@ function drawCatchMarkers(kind){
       m.on('click', ()=>openSpotSheet(kind, g));
       R.mk.push(m);
     } else {
-      // Stats map keeps dots (JC) — many catches are a scatter, not a pincushion. Only the ink follows.
-      const m=L.circleMarker([c0.lat,c0.lon],{radius:7,color:'#fff',weight:2,fillColor:MAP_INK,fillOpacity:1}).addTo(R.m);
+      /* Stats map keeps dots (JC) — many catches are a scatter, not a pincushion. Only the ink follows.
+         radius 7 → 10 (JC, 18. Juli: „the smallest single point should be slightly bigger"). 14 px waren
+         unter jeder Touch-Norm (Apple/Material: 44); jetzt 20 px + 4 px unsichtbarer Rand = 28 px Ziel.
+         Immer noch unter 44 — aber ein Punkt IST kein Knopf, und JC wollte „slightly", nicht „doppelt".
+         Der Cluster daneben ist 46 px; ein Einzelpunkt darf ruhig kleiner bleiben als eine Gruppe. */
+      const m=L.circleMarker([c0.lat,c0.lon],{radius:10,color:'#fff',weight:2,fillColor:MAP_INK,fillOpacity:1,
+        bubblingMouseEvents:false}).addTo(R.m);
       /* Der Rückweg muss zum eigenen Screen führen: `kind` ist genau das `from`, das der Fang-Detail
          zum Zurückgehen braucht — sonst landet man aus der Vereinskarte in „Meine Fänge". */
       m.on('click', ()=>openDetailObj(c0, kind));
