@@ -2295,6 +2295,8 @@ function soloAvatarHTML(){ return state.soloAvatar ? `<img src="${state.soloAvat
 let _navStack=[], _curScreen='club';
 const _ROOT_SCREENS=['login','club'];   // arriving at a root screen clears the in-app back history
 function go(name, isBack){
+  try{ nlog('go', { von:_curScreen, nach:name, isBack:!!isBack, stack:(_navStack||[]).slice(),
+        wer: (new Error()).stack ? String((new Error()).stack).split('\n')[2].trim().slice(0,90) : '?' }); }catch(e){}
   if(!isBack && _curScreen && name!==_curScreen){
     if(_ROOT_SCREENS.includes(name)) _navStack=[]; else _navStack.push(_curScreen);
   }
@@ -2353,6 +2355,35 @@ function formIsDirty(){ return _curScreen==='form' && state.formSnap!=null && fo
 function confirmDiscard(){ return confirmDialog(t('discardTitle'), t('discardMsg'), t('discardBtn'), true); }
 async function formBack(){ if(formIsDirty() && !(await confirmDiscard())) return; state.formSnap=null; if(typeof _navStack!=='undefined' && _navStack.length){ go(_navStack.pop(), true); } else { go('list'); } }
 // Called for every hardware/gesture "back" (Android back button, edge-swipe). Navigates WITHIN the app; never closes it.
+/* ---- TEMPORÄR: Navigations-Log (17. Juli) --------------------------------------------------------
+   JC nach zwei Stunden: „Sollen wir logs einbauen. Wir machen jetzt schon 2 stunden hin und her und du
+   schaffst es nicht es zu fixen." Berechtigt. Ich habe dreimal geraten und dreimal geliefert, ohne den
+   Fehler auf JCs Gerät je zu sehen — auf dem Desktop läuft alles korrekt (Blink), auf dem iPhone ist
+   jeder Browser WebKit.
+   Deshalb: Die App schreibt die Ereigniskette in die DB, ich lese sie hier. JC muss nichts abtippen.
+   NUR mit `?navlog=1` aktiv — kein anderer Nutzer merkt je etwas davon. Wieder ausbauen, sobald der
+   Fehler gefunden ist (samt `drop table public.nav_log`).
+   Wichtig ist die REIHENFOLGE, nicht der Inhalt: Wer ruft `appBack`, wie oft, in welchem Abstand —
+   und was den Klick auf den Homescreen auslöst. */
+let _navlog = false, _navlogSess = '', _navlogT0 = 0, _navlogQ = [];
+try{ _navlog = new URLSearchParams(location.search).get('navlog')==='1'; }catch(e){}
+if(_navlog){
+  _navlogSess = Math.random().toString(36).slice(2,10);
+  _navlogT0 = Date.now();
+  const flush = async ()=>{
+    if(!_navlogQ.length) return;
+    const rows=_navlogQ.splice(0, _navlogQ.length);
+    try{ const c=getSB(); if(c) await c.from('nav_log').insert(rows); }catch(e){}
+  };
+  window.nlog = (ev, data)=>{
+    _navlogQ.push({ sess:_navlogSess, ms: Date.now()-_navlogT0, ev, data: data||null });
+    // gesammelt schicken: Ein Wisch feuert mehrere Ereignisse in Millisekunden, einzelne Requests
+    // würden die Reihenfolge verwischen, die wir gerade untersuchen.
+    clearTimeout(window._nlogT); window._nlogT=setTimeout(flush, 900);
+  };
+  window.addEventListener('pagehide', flush);
+} else { window.nlog = ()=>{}; }
+
 /* EINE GESTE = EIN RÜCKSCHRITT (17. Juli, JC: „first I get back to the home screen to then getting
    back to the group overview").
    Warum hier und nicht bei den Aufrufern: An `appBack()` hängen inzwischen drei — der `popstate` der
@@ -2364,6 +2395,9 @@ async function formBack(){ if(formIsDirty() && !(await confirmDiscard())) return
 let _lastBack=0;
 function appBack(){
   const _now=Date.now();
+  try{ nlog('appBack', { screen:_curScreen, stack:(_navStack||[]).slice(), edit:_detailEdit,
+        seit_letztem: _now-_lastBack, gesperrt: (_now-_lastBack < 350),
+        von: (new Error()).stack ? String((new Error()).stack).split('\n')[2].trim().slice(0,90) : '?' }); }catch(e){}
   if(_now-_lastBack < 350) return;
   _lastBack=_now;
   const _ob=document.getElementById('onboarding-ov');
@@ -2400,7 +2434,7 @@ function appBack(){
    (Auf dem Desktop war der Mechanismus nachweislich in Ordnung — gemessen: popstate feuert, kein
    Reload. Der Verdacht richtet sich deshalb genau auf das Nicht-Erreichen dieser Zeile.) */
 function _armBack(){ try{ history.pushState({_fb:1}, ''); }catch(e){} }
-window.addEventListener('popstate', function(){ _armBack(); appBack(); });
+window.addEventListener('popstate', function(){ try{ nlog('popstate', { screen:_curScreen, state:history.state, len:history.length }); }catch(e){} _armBack(); appBack(); });
 /* ---- Warum der Wächter an einer NUTZERGESTE hängt und nicht am Laden (17. Juli) -------------------
    WebKit hat eine Regel, die Blink und Gecko nicht haben: Ein `history.pushState` zählt nur dann als
    echter History-Eintrag, wenn er aus einer **Nutzergeste** entsteht. Ein pushState beim Seitenaufbau
@@ -2443,7 +2477,11 @@ window.addEventListener('pageshow', function(e){ if(e.persisted) _armBackIfNeede
     non-passive sein — sonst ist der Knopf längst gedrückt, bevor wir etwas sagen können. */
  var _swipeUntil = 0;
  document.addEventListener('click', function(e){
-   if(Date.now() < _swipeUntil){ _swipeUntil = 0; e.stopPropagation(); e.preventDefault(); }
+   var geschluckt = Date.now() < _swipeUntil;
+   try{ nlog('click', { geschluckt: geschluckt, seit_wisch: _swipeUntil ? (Date.now()-(_swipeUntil-600)) : null,
+        ziel: (function(){ try{ var t=e.target.closest('button,a')||e.target; return (t.tagName||'')+'.'+String(t.className||'').split(' ')[0]+'|'+String(t.textContent||'').trim().slice(0,28); }catch(_){ return '?'; } })(),
+        screen:_curScreen }); }catch(_e){}
+   if(geschluckt){ _swipeUntil = 0; e.stopPropagation(); e.preventDefault(); }
  }, true);
  (function edgeBack(){
    var sx=0,sy=0,edge=false,t0=0;
@@ -2453,6 +2491,7 @@ window.addEventListener('pageshow', function(e){ if(e.persisted) _armBackIfNeede
        // Der gleich folgende synthetische click gehört zu DIESEM Wisch, nicht zu dem, was jetzt
        // zufällig unter dem Finger liegt. 600 ms decken auch die träge iOS-Synthese ab.
        _swipeUntil = Date.now() + 600;
+       try{ nlog('wisch-erkannt', { dx:Math.round(dx), dauer:Date.now()-t0, screen:_curScreen }); }catch(_e){}
        /* Dieser Handler navigiert NICHT mehr (17. Juli). Er stammt aus der Zeit, als der History-
           Wächter auf iOS wirkungslos war (WebKit zählt nur Einträge aus einer Nutzergeste) — da war er
           das Einzige, was einen Wisch überhaupt in der App hielt. Seit der Wächter greift, erledigt die
@@ -3427,6 +3466,8 @@ function subscribeContextRealtime(ctxId){
   }catch(e){}
 }
 async function chooseClub(cl, kind, keepForm){
+  try{ nlog('chooseClub', { name: cl&&cl.name, keepForm:!!keepForm, screen:_curScreen,
+        wer: (new Error()).stack ? String((new Error()).stack).split('\n')[2].trim().slice(0,90) : '?' }); }catch(e){}
   keepForm = keepForm===true;
   if(cl && cl.id) markSeen(cl.id);
   state.club=cl; state.mode=kind||'club';
