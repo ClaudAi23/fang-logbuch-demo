@@ -1211,7 +1211,11 @@
     <div class="scroll pad">
       <button type="button" class="sync-banner" onclick="retrySync()" style="display:none;"><span class="sb-dot"></span><span class="sb-txt"></span></button>
       <div data-tabpane="list:ueb">
-        <div id="stats" style="display:flex; gap:10px; margin-bottom:18px;"></div>
+        <!-- 2×2-Raster wie „Meine Fänge" (17. Juli). Vorher eine Dreier-Reihe (`display:flex`) ohne
+             „Arten" — daher JCs Befund, die Kacheln seien hier größer: In der Reihe zu dritt wurde jede
+             breiter, und die Schrift war zusätzlich auf 1.875rem statt 1.625rem. Jetzt rendert beide
+             dieselbe Funktion. -->
+        <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px;"></div>
         <!-- Rekord-Leiste des Vereins/der Gruppe: dieselbe Leiste wie „Deine Rekorde", aber mit dem
              GOLD-Rang statt der persönlichen Krone (JC: „statt pbs die gold verein/gruppen rekorde").
              Im Solo-Modus bleibt sie leer — `buildPodium` steigt dort aus, es gibt keinen Verein. -->
@@ -4067,6 +4071,59 @@ function podiumRank(c){ return (c && _podium[c.id]) || 0; }
    Braucht keine Konfiguration je Screen: `isPb` und `podiumRank` beantworten sich selbst. Auf „Meine
    Fänge" ist `_podium` leer (kontextabhängig, wird in `renderStats` zurückgesetzt) → dort erscheint nie
    eine Medaille. Auf der Vereinsseite können BEIDE zugleich stehen. */
+/* ---- KPI-Kacheln: eine Funktion für beide Screens (17. Juli) --------------------------------------
+   JC: „in den gruppen werden arten noch nicht im overview angezeigt. es scheint mir auch dass die
+   schriftgroesse der kacheln hier im vergleich zu meine faenge groesser ist."
+   Beides stimmte, und beides hatte denselben Grund: Ich hatte beim Umbau nur Leiste und Karte
+   angeglichen, die Kacheln aber gelassen, wie sie waren. Gemessen:
+     Meine Fänge   Wert 1.625rem · Label 0.625rem  · 2×2-Raster · Total | ARTEN | Längster | Schwerster
+     Verein        Wert 1.875rem · Label 0.6875rem · Dreier-Reihe ·      ohne Arten
+   Statt die Zahlen anzugleichen (zwei Stellen, die wieder auseinanderlaufen) rendert jetzt DIESELBE
+   Funktion beide. `from` entscheidet nur, wohin die Rekord-Kacheln führen. */
+function renderKpiCards(kind, items){
+  const box = document.getElementById(kind==='stats' ? 'stats-cards' : 'stats');
+  if(!box) return;
+  let bigLen=null, bigWt=null;
+  (items||[]).forEach(c=>{ if(c.length!=null && (bigLen==null || c.length>bigLen.length)) bigLen=c;
+                           if(c.weight!=null && (bigWt==null || c.weight>bigWt.weight)) bigWt=c; });
+  const speciesCount=new Set((items||[]).map(c=>c.species)).size;
+  const yr=new Date().getFullYear();
+  const _f=state.filter||{};
+  // „Dieses Jahr": nur ohne Datumsfilter — sonst doppelt es bloß die Gesamtzahl.
+  const hasDateFilter = !!(_f.from || _f.to);
+  const yearCount = (items||[]).filter(c=>new Date(c.date).getFullYear()===yr).length;
+  const _kl='font-size:0.625rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);';
+  const _kv="font-family:'Barlow Condensed',sans-serif; font-size:1.625rem; font-weight:700; line-height:1.1;";
+  const _kcard='background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 12px; min-height:60px; box-sizing:border-box;';
+  const kpi=(label,val,rust)=>`<div style="${_kcard}">
+    <div style="${_kl}">${label}</div>
+    <div style="${_kv}${rust?' color:var(--teal);':''}">${val}</div></div>`;
+  /* Längster/Schwerster öffnen den Fang direkt (JC, 17. Juli) — die Kachel nennt einen bestimmten Fisch,
+     also soll sie zu ihm führen.
+     `color:var(--text)` ist kein Zierat: Ein <button> zieht sich `color:buttontext` aus dem
+     UA-Stylesheet, und das schlägt Vererbung — die Wertzeile würde iOS-blau. Dieselbe Falle wie bei
+     `.map-open` und `.wx-info`. `font:inherit`, weil <button> sonst die System-Schrift setzt. */
+  const kpiBtn=(label,val,rust,cid)=>`<button type="button" onclick="openRecordCatch('${escAttr(String(cid))}','${kind}')"
+    style="${_kcard} display:block; width:100%; text-align:left; font:inherit; color:var(--text); cursor:pointer;">
+    <div style="${_kl}">${label}</div>
+    <div style="${_kv}${rust?' color:var(--teal);':''}">${val}</div></button>`;
+  // Die Total-Kachel trägt die Jahreszahl kompakt rechts — so bleibt das Raster ein sauberes 2×2 statt
+  // einer ungeraden fünften Kachel, und alle Kacheln behalten dieselbe Höhe.
+  const totalCard=`<div style="${_kcard} display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+    <div><div style="${_kl}">${activeFilterCount()>0?t('hits'):t('total')}</div><div style="${_kv}">${(items||[]).length}</div></div>
+    ${hasDateFilter?'':`<div style="text-align:right;"><div style="${_kl}">${yr}</div><div style="${_kv} font-size:1.125rem; color:var(--muted);">${yearCount}</div></div>`}
+  </div>`;
+  // Zählungen oben (Total | Arten), die zwei Größenrekorde als Paar darunter (Längster | Schwerster).
+  // Sie reisen als Paar (beide oder keiner), damit das Raster nie eine ungerade Dreierreihe wird.
+  const showMeasures = !!(bigLen || bigWt);
+  box.innerHTML =
+    totalCard +
+    kpi(t('speciesCount'), speciesCount) +
+    /* Nur klickbar, wenn es auch einen Fang dahinter gibt: Zeigt die Kachel „—", führt sie nirgendwo hin
+       und darf sich auch nicht so anfühlen. */
+    (showMeasures ? (bigLen ? kpiBtn(t('longest'), fmtLen(bigLen.length), true, bigLen.id) : kpi(t('longest'), '—', true)) : '') +
+    (showMeasures ? (bigWt ? kpiBtn(t('heaviest'), fmtWeight(bigWt.weight), true, bigWt.id) : kpi(t('heaviest'), '—', true)) : '');
+}
 function badgeWrap(thumbHtml, c){
   const r=podiumRank(c);
   const crown = isPb(c) ? `<span class="bdg bdg-crown">${CROWN_IC}</span>` : '';
@@ -4090,27 +4147,11 @@ function renderList(){
 
   const items=state.catches.filter(matchesFilter);
   try{ buildPodium(state.catches); }catch(e){ _podium={}; }   // rank over the FULL context, independent of active filter
-  // stats
-  let bigLen=null, bigWt=null;
-  items.forEach(c=>{ if(c.length!=null && (bigLen==null || c.length>bigLen.length)) bigLen=c; if(c.weight!=null && (bigWt==null || c.weight>bigWt.weight)) bigWt=c; });
-  const _sBox='flex:1; min-width:0; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px;';
-  const _sLbl='font-size:0.6875rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;';
-  const _sVal="font-family:'Barlow Condensed',sans-serif; font-size:1.875rem; font-weight:700; line-height:1.1;";
-  const scard=(label,val,rust)=>`<div style="${_sBox}">
-      <div style="${_sLbl}">${label}</div>
-      <div style="${_sVal}${rust?' color:var(--teal);':''}">${val}</div>
-    </div>`;
-  /* Wie in den Stats (JC, 17. Juli): Längster/Schwerster führen zu ihrem Fang. `color:var(--text)` gegen
-     das `color:buttontext` des UA-Stylesheets, `font:inherit` gegen die System-Schrift. */
-  const scardBtn=(label,val,rust,cid)=>`<button type="button" onclick="openRecordCatch('${escAttr(String(cid))}','list')"
-      style="${_sBox} text-align:left; font:inherit; color:var(--text); cursor:pointer;">
-      <div style="${_sLbl}">${label}</div>
-      <div style="${_sVal}${rust?' color:var(--teal);':''}">${val}</div>
-    </button>`;
-  document.getElementById('stats').innerHTML =
-    scard(cnt>0?t('hits'):t('total'), items.length, false) +
-    (bigLen ? scardBtn(t('longestStat'), fmtLen(bigLen.length), true, bigLen.id) : '') +
-    (bigWt ? scardBtn(t('heaviestStat'), fmtWeight(bigWt.weight), true, bigWt.id) : '');
+  /* Kacheln: DIESELBE Funktion wie „Meine Fänge" (17. Juli, JC: „arten werden noch nicht im overview
+     angezeigt … schriftgroesse der kacheln groesser"). Hier standen eigene `scard`/`scardBtn` mit
+     1.875rem und ohne Arten-Kachel — zwei Bauweisen für dieselbe Sache, die zwangsläufig
+     auseinanderliefen. `renderKpiCards` rechnet alles aus `items`. */
+  renderKpiCards('list', items);
 
   /* Rekord-Leiste und Karte für die Übersicht (17. Juli). Bewusst HIER — vor dem `return` für die leere
      Liste ein paar Zeilen weiter unten. Stünden sie danach, behielten Leiste und Karte beim Wechsel in
@@ -4261,45 +4302,7 @@ function renderStats(){
   if(cnt>0){ fc.style.display='inline-block'; fc.textContent=cnt; } else fc.style.display='none';
   const items=myCatches().filter(matchesFilter);
   ensureCatchMap('stats', items);
-  let bigLen=null, bigWt=null;
-  items.forEach(c=>{ if(c.length!=null && (bigLen==null || c.length>bigLen.length)) bigLen=c; if(c.weight!=null && (bigWt==null || c.weight>bigWt.weight)) bigWt=c; });
-  const speciesCount=new Set(items.map(c=>c.species)).size;
-  const yr=new Date().getFullYear();
-  // "This year" tile: only when no date filter is active (otherwise it just duplicates Total).
-  const _f=state.filter||{};
-  const hasDateFilter = !!(_f.from || _f.to);
-  const yearCount = items.filter(c=>new Date(c.date).getFullYear()===yr).length;
-  const _kl='font-size:0.625rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);';
-  const _kv="font-family:'Barlow Condensed',sans-serif; font-size:1.625rem; font-weight:700; line-height:1.1;";
-  const _kcard='background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 12px; min-height:60px; box-sizing:border-box;';
-  const kpi=(label,val,rust)=>`<div style="${_kcard}">
-    <div style="${_kl}">${label}</div>
-    <div style="${_kv}${rust?' color:var(--teal);':''}">${val}</div></div>`;
-  /* Längster/Schwerster öffnen den Fang direkt (JC, 17. Juli) — die Kachel nennt einen bestimmten Fisch,
-     also soll sie zu ihm führen; der Umweg über die Liste und das Suchen von Hand entfällt.
-     `color:var(--text)` ist kein Zierat: Ein <button> zieht sich `color:buttontext` aus dem
-     UA-Stylesheet, und das schlägt Vererbung — die Wertzeile hat keine eigene Farbe und würde
-     iOS-blau. Dieselbe Falle wie damals bei `.map-open` und `.wx-info`.
-     `font:inherit`, weil <button> sonst die System-Schrift setzt. */
-  const kpiBtn=(label,val,rust,cid)=>`<button type="button" onclick="openRecordCatch('${escAttr(String(cid))}','stats')"
-    style="${_kcard} display:block; width:100%; text-align:left; font:inherit; color:var(--text); cursor:pointer;">
-    <div style="${_kl}">${label}</div>
-    <div style="${_kv}${rust?' color:var(--teal);':''}">${val}</div></button>`;
-  // Total tile carries the year count as a compact secondary on the right, so the grid stays a clean 2×2 (no uneven 5th tile) and tiles keep uniform height.
-  const totalCard=`<div style="${_kcard} display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-    <div><div style="${_kl}">${t('total')}</div><div style="${_kv}">${items.length}</div></div>
-    ${hasDateFilter?'':`<div style="text-align:right;"><div style="${_kl}">${yr}</div><div style="${_kv} font-size:1.125rem; color:var(--muted);">${yearCount}</div></div>`}
-  </div>`;
-  // Counts on the top row (Total | Arten), the two size records paired in the second row (Längster | Schwerster).
-  // Longest + Heaviest travel as a pair (both or neither) so the grid never becomes an odd row of three.
-  const showMeasures = !!(bigLen || bigWt);
-  document.getElementById('stats-cards').innerHTML =
-    totalCard +
-    kpi(t('speciesCount'), speciesCount) +
-    /* Nur klickbar, wenn es auch einen Fang dahinter gibt: Zeigt die Kachel „—", führt sie nirgendwo hin
-       und darf sich auch nicht so anfühlen. */
-    (showMeasures ? (bigLen ? kpiBtn(t('longest'), fmtLen(bigLen.length), true, bigLen.id) : kpi(t('longest'), '—', true)) : '') +
-    (showMeasures ? (bigWt ? kpiBtn(t('heaviest'), fmtWeight(bigWt.weight), true, bigWt.id) : kpi(t('heaviest'), '—', true)) : '');
+  renderKpiCards('stats', items);
   try{ renderRecordsShelf('stats', items); }catch(e){}
   { const sc=document.getElementById('stats-count'); if(sc) sc.textContent=items.length+' '+t('catches'); }
   document.getElementById('sort-stats').innerHTML=sortOptionsHtml(); try{ syncSelfield('sort-stats'); }catch(e){}
