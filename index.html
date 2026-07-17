@@ -2277,7 +2277,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-18.2';
+const BUILD = '2026-07-18.3';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -4733,7 +4733,10 @@ async function persistDetailPhotos(){
    Stelle gewesen, an der man `invalidateSize` und die Überschrift-Logik vergessen kann.
    `_mapRef` hält Karte und Marker je Screen — Leaflet-Instanzen darf man nicht teilen, sie hängen fest
    an ihrem DOM-Knoten. */
-const _mapRef={ stats:{m:null, mk:[]}, list:{m:null, mk:[]} };
+/* `pts` = die Fänge mit Geodaten dieser Karte. Steht hier, weil `drawCatchMarkers` sie bei JEDEM Zoom
+   neu braucht (Cluster hängen am Maßstab, nicht an den Daten) — ohne sie müsste `ensureCatchMap` beim
+   Zoomen komplett neu laufen und würde per `fitBounds` die Ansicht zurückwerfen. */
+const _mapRef={ stats:{m:null, mk:[], pts:[]}, list:{m:null, mk:[], pts:[]} };
 /* ---- Vollbild-Karte (17. Juli) --------------------------------------------------------------------
    Umgeschaltet wird eine Klasse am KARTEN-Element — die Leaflet-Instanz bleibt dieselbe. Ein Overlay
    mit zweiter Karte hätte Marker, Zoom und Mittelpunkt neu aufbauen müssen; so überlebt alles.
@@ -4821,23 +4824,54 @@ function ensureCatchMap(kind, items){
        wegwandert. Bewegt sie sich wegen des eigenen `panTo` beim Öffnen, darf es NICHT schließen.
        `_spotSelbstBewegt` trennt die zwei; ohne das Flag machte sich das Sheet selbst zu. */
     R.m.on('movestart zoomstart', ()=>{ if(_spot && !_spotSelbstBewegt) closeSpotSheet(); });
+    /* Nach JEDEM Zoom neu gruppieren: Wer sich bei Zoom 13 berührt, steht bei Zoom 18 weit auseinander.
+       Ein Cluster ist keine Eigenschaft der Fänge, sondern des Maßstabs — er muss sich beim Reinzoomen
+       auflösen, sonst behauptet er Gedränge, wo längst Platz ist. `zoomend`, nicht `zoom`: währenddessen
+       wäre es ein Flackern bei jedem Zwischenschritt. */
+    R.m.on('zoomend', ()=>{ try{ drawCatchMarkers(kind); }catch(e){} });
     /* Der Knopf wird EINMAL beim Bauen der Karte angehängt, nicht bei jedem Rendern — sonst läge nach
        zehn Aktualisierungen ein Stapel davon übereinander. Er hängt am Karten-Element (nicht an einem
        Leaflet-Control), damit er den Vollbild-Zustand mit umschalten kann. */
     try{ mapFsButton(kind, wrap); }catch(e){}
   }
-  R.mk.forEach(m=>R.m.removeLayer(m)); R.mk=[];
-  const bounds=[];
-  /* Fänge auf DERSELBEN Koordinate bündeln (JC, 18. Juli). Schlüssel auf 5 Nachkommastellen ≈ 1 m:
-     feiner wäre GPS-Rauschen, gröber würfe Nachbar-Spots zusammen.
-     Das ist kein Randfall — 2 von JCs 4 Fängen mit Geodaten liegen exakt aufeinander. Angler haben eine
-     Hausstrecke, der Pin landet am selben See. Je länger die Nutzung, desto dicker der Stapel. */
-  const grp={};
-  pts.forEach(c=>{ const k=(+c.lat).toFixed(5)+','+(+c.lon).toFixed(5); (grp[k]=grp[k]||[]).push(c); });
-  Object.keys(grp).forEach(k=>{
-    const g=grp[k], c0=g[0];
+  R.pts=pts;
+  drawCatchMarkers(kind);
+  const bounds=pts.map(c=>[c.lat,c.lon]);
+  if(bounds.length>1){ try{ R.m.fitBounds(bounds,{padding:[24,24], maxZoom:13}); }catch(e){} }
+  else R.m.setView(bounds[0],12);
+  setTimeout(()=>{ try{R.m.invalidateSize();}catch(e){} }, 80);
+}
+/* Wer liegt auf dem SCHIRM übereinander? (18. Juli — Korrektur eines Fehlers von derselben Nacht.)
+   Erster Anlauf gruppierte nach KOORDINATE (`toFixed(5)` ≈ 1 m). Das griff bei JCs Daten nie: Forelle
+   und Flusskrebs liegen **8 m** auseinander, nicht auf demselben Punkt. Ich hatte die Koordinaten auf
+   drei Nachkommastellen ausgegeben (±55 m), „51.127 / 51.127" gelesen und daraus „exakt dieselbe
+   Koordinate" geschlossen — eine Rundungs-Illusion, auf die ich eine ganze Spezifikation gestützt habe.
+   RICHTIG IST: Übereinanderliegen ist keine Eigenschaft der Koordinate, sondern des ZOOMS. 8 m sind bei
+   Zoom 13 etwa ein Pixel und bei Zoom 18 der halbe Bildschirm. Deshalb Pixel-Abstand statt Koordinate —
+   und neu gerechnet bei jedem Zoom, damit sich ein Cluster beim Reinzoomen von selbst auflöst.
+   Damit ist es wieder JCs ursprünglicher Gedanke: Der Zoom entscheidet. Mein Einwand „Zoom misst Weite,
+   nicht Gedränge" war falsch — auf dem Bildschirm ist der Zoom genau das Maß fürs Gedränge. */
+const CLUSTER_PX=44;   // berühren sich zwei 44-px-Ziele, ist keins mehr sicher zu treffen
+function _clusterGruppen(kind){
+  const R=_mapRef[kind]; const rest=(R.pts||[]).slice(), out=[];
+  while(rest.length){
+    const a=rest.shift(), g=[a];
+    const pa=R.m.latLngToLayerPoint([a.lat,a.lon]);
+    for(let i=rest.length-1;i>=0;i--){
+      const pb=R.m.latLngToLayerPoint([rest[i].lat,rest[i].lon]);
+      if(pa.distanceTo(pb) < CLUSTER_PX) g.push(rest.splice(i,1)[0]);
+    }
+    out.push(g);
+  }
+  return out;
+}
+function drawCatchMarkers(kind){
+  const R=_mapRef[kind]; if(!R||!R.m) return;
+  R.mk.forEach(m=>{ try{ R.m.removeLayer(m); }catch(e){} }); R.mk=[];
+  _clusterGruppen(kind).forEach(g=>{
+    const c0=g[0];
     if(g.length>1){
-      // Cluster: nur die Zahl. Antippen -> Spot-Sheet (zentriert, dunkelt ab, Hero + Streifen).
+      // Cluster: NUR die Zahl (JC). Antippen -> Spot-Sheet: zentrieren, abdunkeln, Hero + Streifen.
       const m=L.marker([c0.lat,c0.lon],{icon:L.divIcon({html:`<div class="cl-dot">${g.length}</div>`, iconSize:[46,46], iconAnchor:[23,23]})}).addTo(R.m);
       m.on('click', ()=>openSpotSheet(kind, g));
       R.mk.push(m);
@@ -4849,11 +4883,7 @@ function ensureCatchMap(kind, items){
       m.on('click', ()=>openDetailObj(c0, kind));
       R.mk.push(m);
     }
-    bounds.push([c0.lat,c0.lon]);
   });
-  if(bounds.length>1){ try{ R.m.fitBounds(bounds,{padding:[24,24], maxZoom:13}); }catch(e){} }
-  else R.m.setView(bounds[0],12);
-  setTimeout(()=>{ try{R.m.invalidateSize();}catch(e){} }, 80);
 }
 /* ---- SPOT-SHEET (JC, 18. Juli: „bau es genau so") -------------------------------------------------
    Mehrere Fänge auf derselben Koordinate: dunkler Grund + Hero + waagerechter Streifen.
