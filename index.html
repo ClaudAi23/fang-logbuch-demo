@@ -676,8 +676,31 @@
   .welcome-hint{margin:8px 4px 0; font-size:0.78rem; color:var(--muted); text-align:center;}
   /* Personal Best crown + banner (ochre badge, monochrome symbol) */
   .catch{position:relative;}
-  .pb-crown{position:absolute; top:6px; left:6px; z-index:2; width:22px; height:22px; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.28);}
-  .pb-crown svg{width:13px; height:13px;}
+  /* `.pb-crown` stand hier (an der ZEILE verankert) und hat am 17. Juli seinen letzten Verwender
+     verloren — die Krone sitzt jetzt über `.bdg-crown` am Bild. Der Hero hat seine eigene
+     (`.d-hero-crown`) und ist unberührt: JC — „hero bearbeiten wir später". */
+  /* ---- Plaketten am BILD (17. Juli, JC): Krone links, Vereinsmedaille oben rechts. ---------------
+     Vorher sprachen drei Stellen drei Sprachen: `.pb-crown` hing an der ZEILE (`.catch`), nicht am
+     Bild — sie lag nur zufällig überm Thumbnail, weil das links sitzt. Die Medaille stand INLINE
+     neben dem Namen. Und in der Rekord-Leiste saß sie oben rechts an der KARTE. Beides zugleich war
+     gar nicht darstellbar — dabei ist „mein PB und zugleich Gruppenrekord" der interessanteste Fall.
+
+     Warum ein TRÄGER und nicht einfach in `.thumb`: `.thumb` hat `overflow:hidden` — das rundet das
+     Foto. Eine überstehende Plakette darin wäre abgeschnitten (in meinem eigenen Mockup war sie das,
+     obwohl ich JC „halb überstehend" beschrieben hatte). Der Träger klippt nicht. */
+  .thumbwrap{position:relative; flex:0 0 auto; display:flex;}
+  .bdg{position:absolute; z-index:3; width:22px; height:22px; border-radius:50%; display:flex;
+    align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.35);}
+  .bdg svg{width:13px; height:13px; fill:none; stroke-width:2;}
+  /* Überstehend statt im Bild: Das Listen-Thumbnail ist 60 px, eine Plakette 22 px — im Bild fräßen
+     zwei davon die Ecken. So bleibt vom Fisch mehr übrig. */
+  .bdg-crown{left:-5px; top:-5px; background:var(--accent); color:var(--on-accent);}
+  .bdg-crown svg{stroke:currentColor;}
+  .bdg-medal{right:-5px; top:-5px;}
+  .bdg-medal svg{stroke:#fff;}
+  /* Dieselben Farben wie `.medal-g/s/b` — es ist dieselbe Aussage, nur an anderer Stelle. */
+  .bdg-g{background:#D4AF37;} .bdg-s{background:#AEB4BC;} .bdg-b{background:#B5793B;}
+  .rec-card .thumbwrap{width:100%;}
   .pb-banner{display:flex; align-items:center; gap:9px; margin-top:10px; padding:9px 12px; border-radius:12px; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:0.9rem;}
   .pb-banner svg{width:20px; height:20px; flex:0 0 auto;}
   /* Personal PB shown inline: ochre crown badge to the right of the species name */
@@ -716,12 +739,10 @@
   /* color is NOT optional here: <button> gets "color:buttontext" from the UA sheet, which beats
      inheritance — so .rec-sp fell back to iOS Safari's system blue while the desktop looked fine. */
   .rec-card{flex:0 0 auto; width:108px; position:relative; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; color:var(--text);}
-  .rec-crown{position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; z-index:2;}
-  .rec-crown svg{width:13px; height:13px; stroke:#fff;}
-  /* Gold statt Ocker für die Vereins-/Gruppenrekorde: Dieselbe Plakette, aber im Gold des Podiums
-     (`--medal-g` = #D4AF37, wie `.medal-g`) — sonst sähe der Vereinsrekord aus wie eine persönliche
-     Krone. Das Zeichen darin ist die Medaille, OHNE Rangzahl. */
-  .rec-crown-gold{background:#D4AF37;}
+  /* `.rec-crown` (oben RECHTS an der Karte) und `.rec-crown-gold` standen hier. Beide sind am
+     17. Juli entfallen: Die Plaketten sitzen jetzt am Bild — Krone links, Medaille rechts —, und das
+     macht `.bdg` für Liste und Rekord-Leiste gemeinsam. `.rec-crown-gold` hat es nur ein paar Minuten
+     gegeben; es war der Zwischenschritt, bevor JC die Regel für ALLE Bilder festlegte. */
   /* Die Kopfzeile färbt ihr SVG ocker (`.rec-head svg`); für die Medaillen-Leiste muss es Gold sein,
      sonst tragen Kopf und Karten zwei verschiedene Farben für dieselbe Sache. */
   #list-records .rec-head svg{stroke:#D4AF37;}
@@ -735,11 +756,15 @@
   .rec-sp{font-weight:600; font-size:0.9rem;}
   .rec-val{font-family:'Barlow Condensed',sans-serif; font-weight:700; color:var(--teal); font-size:1.05rem;}
   /* Group/club podium medals (gold/silver/bronze) */
-  .medal{display:inline-flex; align-items:center; justify-content:center; position:relative; width:20px; height:20px; border-radius:50%; color:#fff; flex:0 0 auto;}
-  .medal svg{width:12px; height:12px; stroke:#fff;}
-  .medal i{position:absolute; bottom:-3px; right:-3px; font-style:normal; font-size:0.55rem; font-weight:700; background:#fff; color:#2a2a2a; min-width:12px; height:12px; padding:0 2px; border-radius:999px; display:flex; align-items:center; justify-content:center; line-height:1;}
+  /* `.medal`, `.medal svg` und `.medal i` standen hier — die Inline-Medaille MIT Rangzahl neben dem
+     Artnamen. Sie sind am 17. Juli mit `medalBadge()` entfallen.
+     `.medal-g/s/b` bleiben: Die Detailseite baut ihr Medaillen-Banner damit
+     (`class="pb-banner medal-banner medal-g"`) — die Farben sind dort weiter in Gebrauch. Fast hätte
+     ich den ganzen Block gelöscht; die drei Farbklassen hängen nur zufällig am selben Namen. */
   .medal-g{background:#D4AF37;} .medal-s{background:#AEB4BC;} .medal-b{background:#B5793B;}
-  .rec-word{display:inline-block; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:0.6rem; color:#8a6a17; background:rgba(212,175,55,.18); border:1px solid #D4AF37; border-radius:999px; padding:1px 7px; flex:0 0 auto;}
+  /* `.rec-word` — das Tag „Vereinsrekord" neben dem Namen — ist am 17. Juli entfallen (JC: „nein, kann
+     raus"). Die Goldmedaille am Bild sagt dasselbe, und der Artname bekommt seinen Platz zurück.
+     Das WORT selbst lebt weiter: auf der Detailseite, wo Platz dafür ist (`ctxRecWord()`). */
   .medal-banner.medal-g{background:#C79A1E;} .medal-banner.medal-s{background:#8f959d;} .medal-banner.medal-b{background:#a76c34;}
   .dspecs{display:grid; grid-template-columns:1fr 1fr; gap:0 18px; grid-auto-flow:dense;}
   /* #9 experiment (?tiles=1): rows bundled into modules by meaning. The last row inside a module
@@ -4034,7 +4059,23 @@ function buildPodium(items){
   Object.values(bySp).forEach(arr=>{ arr.sort((a,b)=>b.v-a.v); arr.slice(0,3).forEach((x,i)=>{ _podium[x.id]=i+1; }); });
 }
 function podiumRank(c){ return (c && _podium[c.id]) || 0; }
-function medalBadge(rank){ const cls=rank===1?'g':(rank===2?'s':'b'); return `<span class="medal medal-${cls}">${MEDAL_IC}<i>${rank}</i></span>`; }
+/* Ein Bild, zwei Plaketten — die EINE Stelle, die das entscheidet (17. Juli, JC: „in allen bildern in
+   einer liste oder rekord slidern, sollte die PB Krone Links, Die vereinsmedallie oben rechts sein").
+   Gilt für Listen-Zeilen UND Rekord-Karten; der Hero bleibt außen vor (JC: „bearbeiten wir später").
+   OHNE RANGZAHL (JCs Entscheidung): In der Liste unterscheidet die Farbe Gold/Silber/Bronze, in der
+   Rekord-Leiste liegt ohnehin nur Gold — die Zahl stünde dort fünfmal identisch da.
+   Braucht keine Konfiguration je Screen: `isPb` und `podiumRank` beantworten sich selbst. Auf „Meine
+   Fänge" ist `_podium` leer (kontextabhängig, wird in `renderStats` zurückgesetzt) → dort erscheint nie
+   eine Medaille. Auf der Vereinsseite können BEIDE zugleich stehen. */
+function badgeWrap(thumbHtml, c){
+  const r=podiumRank(c);
+  const crown = isPb(c) ? `<span class="bdg bdg-crown">${CROWN_IC}</span>` : '';
+  const med   = r ? `<span class="bdg bdg-medal bdg-${r===1?'g':(r===2?'s':'b')}">${MEDAL_IC}</span>` : '';
+  return `<span class="thumbwrap">${thumbHtml}${crown}${med}</span>`;
+}
+/* `medalBadge(rank)` stand hier — Medaille MIT Rangzahl, für die Liste. Am 17. Juli entfallen: Die
+   Medaille sitzt jetzt am Bild und trägt keine Zahl mehr (JC: „keine rangzahl"). Die Farbe sagt den
+   Rang. Die `.medal-*`-Farben leben in `.bdg-g/s/b` weiter — dieselben Werte, andere Stelle. */
 function podiumOrdinal(rank){ return rank===1 ? '' : (rank+'.-'); }  // "" / "2.-" / "3.-"
 
 function renderList(){
@@ -4091,9 +4132,12 @@ function renderList(){
   sorted.forEach(c=>{
     const b=document.createElement('button'); b.className='catch';
     const _cov=coverThumbOf(c); const thumb = _cov ? `<span class="thumb">${coverImg(c, _cov, 'loading="lazy" decoding="async"')}</span>` : `<span class="thumb">${FISH_IC}</span>`;
-    b.innerHTML=`${isPb(c)?'<span class="pb-crown">'+CROWN_IC+'</span>':''}${thumb}
+    /* Krone und Medaille sitzen jetzt AM BILD (`badgeWrap`), nicht mehr an der Zeile bzw. neben dem
+       Namen. Mit raus: die Medaille inline und das Wort „Vereinsrekord" — JC am 17. Juli: „nein, kann
+       raus". Die Medaille am Bild sagt dasselbe, und der Name bekommt seinen Platz zurück. */
+    b.innerHTML=`${badgeWrap(thumb, c)}
       <span style="flex:1; min-width:0;">
-        <span class="top"><span style="display:flex; align-items:center; gap:7px; min-width:0;"><span class="sp">${trSpecies(c.species)}</span>${podiumRank(c)?medalBadge(podiumRank(c)):''}${podiumRank(c)===1?'<span class="rec-word">'+esc(ctxRecWord())+'</span>':''}${c._pending?'<span class="pending-pill">'+esc(t('pendingChip'))+'</span>':''}</span><span class="val">${primaryStr(c)}</span></span>
+        <span class="top"><span style="display:flex; align-items:center; gap:7px; min-width:0;"><span class="sp">${trSpecies(c.species)}</span>${c._pending?'<span class="pending-pill">'+esc(t('pendingChip'))+'</span>':''}</span><span class="val">${primaryStr(c)}</span></span>
         <span class="meta">${(c._db&&c.confirmed===false)?`<span style="display:inline-block;padding:1px 7px;border-radius:999px;font-size:0.625rem;font-weight:700;background:var(--teal-dark);color:#fff;margin-right:4px;">${esc(t('unconfShort'))}</span>`:''}${[c.angler, c.location, fmtDate(c.date)].filter(Boolean).join(' · ')}</span>
       </span>
       ${CHEV_IC}`;
@@ -4164,16 +4208,14 @@ const REC_SHELF={
           hit:(c)=> isPb(c),
           metric:()=> pbMetric(),
           title:()=> t('recordsShelfTitle'),
-          headIcon:()=> CROWN_IC,
-          cardBadge:()=> `<span class="rec-crown">${CROWN_IC}</span>` },
+          headIcon:()=> CROWN_IC },
   list: { box:'list-records', from:'list',
           hit:(c)=> podiumRank(c)===1,
           metric:()=> ctxRecordMetric(),
           /* NICHT `ctxRecWord()` — das ist die EINZAHL („Vereinsrekord") und dient als Tag an einer
              einzelnen Goldkachel. Über einer Leiste mit mehreren Karten wäre sie schlicht falsch. */
           title:()=> (state.club && state.club.type==='group') ? t('groupRecordsTitle') : t('clubRecordsTitle'),
-          headIcon:()=> MEDAL_IC,
-          cardBadge:()=> `<span class="rec-crown rec-crown-gold">${MEDAL_IC}</span>` }
+          headIcon:()=> MEDAL_IC }
 };
 function renderRecordsShelf(kind, items){
   const CFG=REC_SHELF[kind]; if(!CFG) return;
@@ -4190,7 +4232,11 @@ function renderRecordsShelf(kind, items){
     /* `openRecordCatch(id, from)` gibt es längst — sein Kommentar sagt die Vereinsseite sogar voraus:
        Er sucht in BEIDEN Töpfen, weil ein Vereinsfang von einem anderen Mitglied sein kann und dann
        nicht in `myCatches()` liegt. `from` führt zurück auf den eigenen Screen. */
-    return `<button type="button" class="rec-card" onclick="openRecordCatch('${c.id}','${CFG.from}')">${CFG.cardBadge()}${thumb}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span></button>`;
+    /* Dieselben Plaketten wie in der Liste — `badgeWrap` entscheidet selbst, was drangehört.
+       Auf „Meine Fänge" ist `_podium` leer → nur die Krone. In der Vereins-Leiste ist alles Gold →
+       Medaille, plus Krone, wenn der Gruppenrekord zugleich das eigene PB ist. Genau der Fall, den
+       die alte Bauweise gar nicht zeigen konnte. */
+    return `<button type="button" class="rec-card" onclick="openRecordCatch('${c.id}','${CFG.from}')">${badgeWrap(thumb, c)}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span></button>`;
   }).join('');
   box.innerHTML=`<div class="rec-head">${CFG.headIcon()}<span>${esc(CFG.title())}</span></div><div class="rec-strip">${cards}</div>`;
 }
@@ -4266,9 +4312,12 @@ function renderStats(){
   sorted.forEach(c=>{
     const b=document.createElement('button'); b.className='catch';
     const _cov=coverThumbOf(c); const thumb = _cov ? `<span class="thumb">${coverImg(c, _cov, 'loading="lazy" decoding="async"')}</span>` : `<span class="thumb">${FISH_IC}</span>`;
-    b.innerHTML=`${isPb(c)?'<span class="pb-crown">'+CROWN_IC+'</span>':''}${thumb}
+    /* Krone und Medaille sitzen jetzt AM BILD (`badgeWrap`), nicht mehr an der Zeile bzw. neben dem
+       Namen. Mit raus: die Medaille inline und das Wort „Vereinsrekord" — JC am 17. Juli: „nein, kann
+       raus". Die Medaille am Bild sagt dasselbe, und der Name bekommt seinen Platz zurück. */
+    b.innerHTML=`${badgeWrap(thumb, c)}
       <span style="flex:1; min-width:0;">
-        <span class="top"><span style="display:flex; align-items:center; gap:7px; min-width:0;"><span class="sp">${trSpecies(c.species)}</span>${podiumRank(c)?medalBadge(podiumRank(c)):''}${podiumRank(c)===1?'<span class="rec-word">'+esc(ctxRecWord())+'</span>':''}${c._pending?'<span class="pending-pill">'+esc(t('pendingChip'))+'</span>':''}</span><span class="val">${primaryStr(c)}</span></span>
+        <span class="top"><span style="display:flex; align-items:center; gap:7px; min-width:0;"><span class="sp">${trSpecies(c.species)}</span>${c._pending?'<span class="pending-pill">'+esc(t('pendingChip'))+'</span>':''}</span><span class="val">${primaryStr(c)}</span></span>
         <span class="meta" style="display:flex; align-items:center; gap:6px; white-space:normal; overflow:visible; text-overflow:clip;"><span style="display:flex; align-items:center; min-width:0; overflow:hidden; white-space:nowrap;"><span class="ctxbadge">${c._ctx}</span>${otherCtxBadge(c)}${(c._db&&c.confirmed===false)?`<span style="display:inline-block;padding:1px 7px;border-radius:999px;font-size:0.625rem;font-weight:700;background:var(--teal-dark);color:#fff;margin-right:4px;">${esc(t('unconfShort'))}</span>`:''}</span><span style="margin-left:auto; flex-shrink:0; white-space:nowrap;">${esc(c.angler)} · ${fmtDate(c.date)}</span></span>
       </span>
       ${CHEV_IC}`;
