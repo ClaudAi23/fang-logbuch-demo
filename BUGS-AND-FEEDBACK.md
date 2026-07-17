@@ -40,6 +40,102 @@ Stand: 17. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt)
   **Nebenbei belegt:** Die Versionsnummer im Ladescreen hat beim ersten Einsatz getan, wofür sie da ist —
   `v 2026-07-17.5` ist im Video lesbar, JC hatte also den richtigen Stand.
 
+### Karte
+- **🔧 Karte: Punkt → Foto, sobald wenige Fänge im Bild sind — ENTSCHIEDEN (JC, 18. Juli).**
+  JCs Idee: *„dass es ein foto wird sobald man reingezoomt ist."* Dazu mein Einwand: Zoom misst die
+  Kartenweite, nicht das Gedränge — bei 20 Fängen an einem See hilft er nicht.
+  **JC nach dem Mockup: „dein vorschlag ist besser."** → Also **nicht** an der Zoomstufe festmachen,
+  sondern an der **Anzahl im Sichtfeld** (`mockup-karte-fotos.html`, Umschalter „Anzahl im Bild").
+  - Der Gedanke dahinter bleibt JCs: **Der Zoom ist die Absichtserklärung.** Wer rauszoomt, will das
+    Muster (Streubild); wer reinzoomt, will *diesen* Fang. Die Karte muss nicht Übersicht ODER Werkzeug
+    sein — der Nutzer sagt selbst, was er gerade braucht.
+  - **Offen: die Schwelle.** Im Mockup geraten (≤ 6 im Bild, ab Zoom 9). JC probiert am Gerät, wo es
+    sich richtig anfühlt — dann ist es eine Zahl.
+  - **Offen: der Übergang.** Schaltet hart um. Wachsen wäre schöner, lohnt erst wenn die Schwelle sitzt.
+  - **Offen: Nachladen.** Nur Fotos im Sichtfeld holen, sonst zieht die Karte bei 100 Fängen das Album.
+  - **NICHT gelöst, und keine der beiden Regeln löst es:** Zwei Fänge auf **derselben** Koordinate
+    (in JCs Daten real: Forelle + Flusskrebs, 51.127/7.381) liegen auch bei maximalem Zoom übereinander.
+    Dagegen hilft nur **Auffächern oder Bündeln** — eigener Bau, eigene Entscheidung.
+  - **Hängt zusammen mit** „Zoomen auf der Karte als Filter" (unten) — gleiche Karte, gleicher Zoom,
+    zusammen denken statt zweimal anfassen.
+  - **Trefferfläche:** Der Punkt ist heute `radius:7` = **14 px**; Apple/Material empfehlen 44 px. Wer
+    danebentippt, schließt „geht nicht" und probiert es nie wieder. Das erklärt JCs *„ich habe entdeckt,
+    dass man…"* — mit den Fotos (44 px) löst es sich reingezoomt von selbst, rausgezoomt bleibt es offen.
+
+- **💬 (VERWORFEN, Beleg bleibt) Ring-Variante — `mockup-karte-cluster-ring.html`.**
+  JC: *„a cluster with lets say number 5 and if you press it the background darkes a little and the 5
+  others appear as a ring around the button."* Ersetzt durch das Spot-Sheet oben; Begründung dort.
+  - **Das ist der NORMALFALL, nicht der Randfall.** Schon jetzt liegen **2 von JCs 4** Fängen exakt
+    aufeinander — Angler haben eine Hausstrecke, der Pin landet am selben See. Je länger die Nutzung,
+    desto dicker der Stapel. Ich hatte das erst als Härtefall abgetan; das war falsch.
+  - **Warum der Ring den Münzstapel schlägt** (JCs erste Idee, „coins on their edges"): Ein Stapel
+    behauptet immer eine **Rangfolge** — „wer liegt oben?" wird zur Designfrage. Ein Ring hat keine
+    erste Position; die Frage verschwindet, statt beantwortet zu werden.
+  - **Warum der Ring *spiderfy* schlägt** (der Leaflet-Standard): Das Abdunkeln macht daraus einen
+    **Moment** („jetzt geht es um diesen Spot") statt eines Karten-Tricks mit Spinnenbeinen, der immer
+    aussieht, als hätte die Karte einen Fehler. Und die Zahl skaliert: bei zwanzig steht „20".
+  - **ENTSCHIEDEN (JC, 18. Juli):**
+    - **Ring am Kartenrand → die Karte zentriert vorher** auf den Cluster (kein Halbkreis).
+      **Haken, der beim Bau zu lösen ist:** Zentrieren **bewegt die Karte** — und der Ring schließt heute
+      bei jeder Kartenbewegung (`map.on('movestart zoomstart', schliesse)`). Er würde sich also selbst
+      zumachen, kaum dass er auf ist. Eigene Bewegung und Nutzerbewegung müssen getrennt werden
+      (Flag während des eigenen `flyTo`/`panTo`, oder erst zentrieren, dann öffnen). Dieselbe Falle wie
+      die zwei Schreiber auf `share-btn` — zwei Absender auf einer Leitung.
+    - **Cluster zeigt NUR DIE ZAHL** (kein Foto + Plakette).
+  - **Offen:** Wo kippt der Ring? Rechnung: 44-px-Pins + 10 px Luft → Umfang voll nach ~**10**; danach
+    braucht es „+X weitere". JC probiert die Zahl am Regler aus.
+  - **Gebaute Details, die zur Entscheidung gehören:** Eine **gestrichelte Mitte** markiert den echten
+    Ort — ohne sie behauptet der Ring fünf Orte, wo einer ist. Schließen per Tap daneben / Escape /
+    Kartenbewegung.
+  - **Hausregel, die beim Bau gilt:** Der Ring ist eine **EBENE, kein Screen** — wie Vollbildkarte,
+    Lightbox, Modal und Edit-Modus. *Eine Geste macht genau eine Ebene auf.* Wischen-zurück muss den
+    **Ring** schließen, nicht den Screen. Genau das ging am 17. Juli beim Vollbild schief, weil der
+    Wächter nur im `popstate`-Handler sass statt in `go()`.
+
+- **✅ Platzhalter ohne Foto: FISCH — entschieden (JC, 18. Juli: „fisch 100%").** Gilt überall (Karte,
+  Listen, Rekord-Karten). Damit ist auch der Altpunkt *„Leere Catch-Bilder: warum nicht der Puffer?"*
+  beantwortet und gelöscht.
+  Begründung aus dem Mockup, falls die Frage wiederkommt: Der Puffer ist detailreich (Augen, Stacheln,
+  Schattierung, 360×315, nicht quadratisch) — bei 44 px bleibt ein oranger Fleck. **Dasselbe Problem wie
+  Renés Ganzkörper-Avatar:** zu viel Bild für zu wenig Fläche. Der Fisch-Umriss ist für klein gebaut
+  (2-px-Strich).
+  JCs Frage: *„warum nicht unser platzhalterfischsymbol?"* → Richtig, ein Punkt wäre eine **dritte**
+  Antwort auf „kein Foto" neben Foto und Platzhalter. Gleiche Bedeutung, andere Form.
+  **Diese Entscheidung gilt überall** (Karte, Listen-Thumbnails, Rekord-Karten) — sonst hat die App drei
+  Auffassungen davon, was „kein Foto" heißt. Löst zugleich den Altpunkt *„Leere Catch-Bilder: warum nicht
+  der Puffer?"* (unten).
+  **Befund aus dem Mockup:** Der Puffer ist detailreich (Augen, Stacheln, Schattierung, 360×315, nicht
+  quadratisch). Bei 44 px bleibt ein oranger Fleck — **dasselbe Problem wie Renés Ganzkörper-Avatar**:
+  zu viel Bild für zu wenig Fläche. Der Fisch-Umriss ist für klein gebaut (2-px-Strich). Vergleich in
+  echter Größe und 4× in `mockup-karte-fotos.html`.
+
+### Fotos umsortieren
+- **🐛 Fotos ziehen geht immer noch nicht (JC, 18. Juli, nach `v 2026-07-18.1`). MORGEN WEITER.**
+  **Was BELEGT ist** (am Live-Stand gemessen, nicht geraten):
+  - Die Zelle bekommt `.sortable` ✓, `touch-action` ist jetzt `none` ✓ (war `auto`), andere Kacheln
+    dimmen ✓ (`1` → `0.4`), Vereins-/Gruppengeste unversehrt ✓.
+  - **Das `touch-action`-Problem war echt — aber es war nicht die (einzige) Ursache.** Es ist behoben,
+    und es geht trotzdem nicht. Ich habe einen echten Fund für die Lösung gehalten. Derselbe Fehler wie
+    beim Topbar-Bug: erster Treffer ≠ Ursache.
+  - **Nicht verwertbar als Beleg:** Mein Test meldete „`drag-active` wirkt nicht" — Fehlalarm. Die Zelle
+    war 0×0 (`#photo-grid` liegt im Formular-Screen, der nicht sichtbar ist); ein nicht gerendertes
+    Element hat kein `transform`. Auch inline erzwungen kam `none`. Die Regel ist in Ordnung.
+  **Was ich morgen zuerst prüfen würde** (Reihenfolge = Verdachtsstärke):
+  1. **Trifft der Finger überhaupt die Zelle?** In jeder `.photo-cell` liegen drei Knöpfe (`.rm`,
+     `.setcover`, `.exifbtn`) plus das `<img>`. `pointerdown` blubbert zwar, aber ein Knopf könnte die
+     Geste abfangen oder `preventDefault`en.
+  2. **Der 8-px-Abbruch:** `if(!active && Math.abs(e.clientY-startY)>8) → abbrechen`. Ein Finger wackelt
+     auf einem 100-px-Foto leichter als auf einer breiten Vereinskachel — die Geste stirbt vielleicht,
+     bevor die 320 ms um sind.
+  3. **`setPointerCapture` kommt erst nach 320 ms.** Bis dahin gehen `pointermove`-Events an das Element
+     unter dem Finger — im Raster ist das schnell eine *andere* Zelle als die gedrückte.
+  4. **Läuft `makeSortable` für das Raster überhaupt?** In `renderFormPhotos` verdrahtet — am Gerät nie
+     bestätigt, dass die Handler auf den echten Zellen hängen.
+  **Was ich von JC brauche:** Was passiert beim Drücken-und-Ziehen — scrollt die Seite, hebt die Kachel
+  ab und springt zurück, oder passiert gar nichts? Das trennt (1)/(2) von (3)/(4) sofort.
+  *(Am Schreibtisch nicht nachstellbar: Es ist eine Touch-Geste. Chrome kann Pointer-Events simulieren —
+  das ist morgen der erste Versuch, statt wieder am Code zu raten.)*
+
 ### Angler-Auswahl
 - **🐛 Beim Loggen fehlt René in der Angler-Liste, obwohl gemeinsame Gruppe (JC, 18. Juli: „i cant, as
   his name doesnt show up in the list, even we share groups together"). BEFUND BESTÄTIGT.**
@@ -198,9 +294,6 @@ Stand: 17. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt)
   aber Gewässer/Ort ein — soll die Karte automatisch nachziehen? **Claudes Vorschlag: Karte zentrieren,
   Pin nie setzen** (ein gesetzter Pin behauptet Genauigkeit, die ein Ortsname nicht hat).
 - **💬 Soll die Einstellungen-Option auf der Catch-Seite überhaupt bleiben? (JC, 16. Juli.)**
-- **💬 Leere Catch-Bilder: warum nicht der Puffer? (JC, 17. Juli)** — Platzhalter für Fänge ohne Foto.
-  *(Anmerkung: Der Hero ohne Foto wurde am 15. Juli auf Hintergrundfarbe + niedrige Höhe umgebaut —
-  JC meint vermutlich die Listen-Thumbnails. Vor dem Mockup kurz klären, welche Stelle.)*
 - **💬 (1) „Hero-Kategorie"** — unklar, Rückfrage offen: was/wo genau (Detail-Hero? Stats? Kategorie-Label
   auf dem Foto?).
 

@@ -9,6 +9,46 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟡 `v 2026-07-18.2` (18. Juli) — SPOT-SHEET: Mehrere Fänge auf derselben Koordinate.**
+  JC hat entdeckt, dass man von der Karte Fänge auswählen kann — *„wie könnten wir das noch klarer
+  machen?"* Daraus wurde ein Bau, und **der Weg dahin gehört ins Protokoll, weil jeder Schritt von JC
+  kam und jeder eine offene Frage GELÖSCHT hat, statt sie zu beantworten:**
+  1. **Punkt → Foto beim Reinzoomen** (JC). Räumte meinen Einwand ab, Foto-Pins kollidierten mit dem
+     Streubild: Der **Zoom ist die Absichtserklärung** — wer rauszoomt will das Muster, wer reinzoomt
+     *diesen* Fang. Mein Beitrag war nur die Schraube: nicht am Zoom festmachen, sondern an der **Anzahl
+     im Sichtfeld** (Zoom misst Weite, nicht Gedränge). *„dein vorschlag ist besser."*
+  2. **Münzstapel** (JC) → verworfen: Ein Stapel behauptet immer eine **Rangfolge** („wer liegt oben?").
+  3. **Cluster + Ring** (JC) → löschte die Rangfolge-Frage (ein Ring hat keine erste Position) und schlug
+     *spiderfy*, das immer aussieht, als hätte die Karte einen Fehler. Verworfen wegen meines Einwands:
+     **ein Ring hat keine Leserichtung** — bei 5 egal, bei 20 sucht man im Kreis (und er misst dann
+     388 px, füllt ein 390-px-Handy randlos). Er hätte eine **Schwelle** gebraucht.
+  4. **Dunkler Grund + Hero + waagerechter Streifen** (JC) → **löschte die Schwelle.** Der Streifen sieht
+     bei 2 aus wie bei 24, er wird nur länger. Meine Frage „ab wann kein Ring mehr?" stellt sich nicht.
+     *„bau es genau so."*
+  - **Der Fall ist NICHT selten — das hatte ich unterschätzt:** 2 von JCs 4 Fängen mit Geodaten liegen
+    **exakt** aufeinander. Angler haben eine Hausstrecke, der Pin landet am selben See. Je länger die
+    Nutzung, desto dicker der Stapel. Ich hatte es erst als Härtefall abgetan; es ist der Regelfall.
+  - **Gebaut:** Gruppieren auf 5 Nachkommastellen (≈1 m — feiner ist GPS-Rauschen, gröber würfe
+    Nachbar-Spots zusammen) · 1 Fang → Punkt wie bisher · ≥2 → Cluster mit **nur der Zahl** (JC) ·
+    Antippen → **zentrieren** (JC), abdunkeln, Sheet hoch · Hero 210 px + Streifen (`scroll-snap`) ·
+    ohne Foto der **Fisch** (JC: „fisch 100%") · Tap auf Hero öffnet den Fang.
+  - **DREI FALLEN, beim Bauen erschlagen statt später:**
+    1. **Zentrieren hätte das Sheet sofort wieder geschlossen** — es schließt bei Kartenbewegung, und
+       Zentrieren *ist* eine. `_spotSelbstBewegt` trennt eigene von Nutzerbewegung. **Dieselbe Sorte
+       Fehler wie die zwei Schreiber auf `share-btn` und der Log-Catch-FAB (`fc358c0`)** — zwei Absender
+       auf einer Leitung, heute zum dritten Mal.
+    2. **Der Wächter sitzt in `go()`**, nicht nur im `popstate`-Handler: Der fängt die Wischgeste, aber
+       kein In-App-Zurück. **Genau daran ist gestern das Vollbild gescheitert** (`fc358c0`).
+    3. **Sheet VOR Vollbild** bei Wischgeste und Escape — es liegt darüber (z-index 1210), also ist es
+       die oberste Ebene. *Eine Geste macht genau eine Ebene auf.*
+  - **Markup am `<body>`, außerhalb `#app`** — derselbe Grund wie bei der Vollbildkarte: Ein Vorfahr mit
+    `-webkit-overflow-scrolling:touch` bildet auf iOS einen containing block für `position:fixed`.
+  - **NICHT belegt:** Am Gerät nichts angefasst — die Chrome-Extension lädt keine `file://`-Seiten, und
+    Chrome ist für Klicks gesperrt. Belegt sind JS-Syntax und Aufrufkette, mehr nicht. Vorlage:
+    `mockup-karte-spot-hero.html` (verworfen, aber aufgehoben: `mockup-karte-cluster-ring.html`).
+  - **Noch NICHT gebaut:** Punkt → Foto nach Anzahl im Sichtfeld (Schritt 1 oben) — steht als entschieden
+    auf der Liste, JC muss die Schwelle noch am Regler festlegen.
+
 - **🟡 `v 2026-07-18.1` (18. Juli) — Loader-Farbe (JCs Video vermessen) · Fotos ziehen ging nicht: das CSS fehlte.**
   - **🐛 Obere Leiste wird später dunkel — AN JCs VIDEO FRAME FÜR FRAME VERMESSEN.**
     JC nach dem `theme-color`-Fix: *„immer noch nicht ganz."* Er hatte recht; mein Fix war trotzdem

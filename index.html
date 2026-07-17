@@ -861,6 +861,55 @@
      zweizeilig ist, sass er auf jeder Karte woanders.
      Die Karte zeigt jetzt wieder Fisch, Art, Wert — wer ihn gefangen hat, steht auf der Detailseite
      (Byline, siehe `anglerAvatarHTML`), und dort ist der Avatar gross genug. */
+  /* ---- SPOT-SHEET: mehrere Fänge auf DERSELBEN Koordinate (JC, 18. Juli) ---------------------------
+     Der Weg dahin, in drei Schritten — jeder hat eine offene Frage GELÖSCHT statt sie zu beantworten:
+     Münzstapel („wer liegt oben?") → Ring („ab wann zu viele?") → Hero+Streifen (keine Schwelle nötig).
+     Verworfen und warum: Ein Stapel behauptet immer eine Rangfolge. Ein Ring hat keine Leserichtung —
+     bei 5 egal, bei 20 sucht man im Kreis (und er misst dann 388px, füllt ein 390px-Handy randlos).
+     Spiderfy sieht aus, als hätte die Karte einen Fehler.
+     Der Streifen IST `.rec-strip` — dieselbe Geste wie die Rekord-Leiste, an neuer Stelle.
+     Der Fall ist NICHT selten: 2 von JCs 4 Fängen mit Geodaten liegen exakt aufeinander. Angler haben
+     eine Hausstrecke; der Pin landet am selben See. */
+  .spot-dim{position:fixed; inset:0; z-index:1200; background:rgba(2,27,40,.78); opacity:0;
+    pointer-events:none; transition:opacity .24s ease; -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);}
+  .spot-dim.on{opacity:1; pointer-events:auto;}
+  /* Am <body>, wie die Vollbildkarte — aus demselben Grund: Ein Vorfahr mit
+     `-webkit-overflow-scrolling:touch` bildet auf iOS einen containing block für `fixed`, und dann
+     klebt das Sheet am Scroll-Container statt am Fenster. Siehe `mapFsToggle`. */
+  .spot-sheet{position:fixed; left:0; right:0; bottom:0; z-index:1210; transform:translateY(102%);
+    transition:transform .3s cubic-bezier(.2,.8,.3,1); padding:0 0 calc(14px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top, var(--bg) 72%, rgba(2,27,40,0));}
+  .spot-sheet.on{transform:translateY(0);}
+  .spot-kopf{display:flex; align-items:baseline; gap:8px; padding:14px 16px 8px;}
+  .spot-kopf .nm{font-family:'Barlow Condensed',sans-serif; font-size:1.15rem; font-weight:700; color:var(--text);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .spot-kopf .n{font-size:.75rem; color:var(--muted); flex:0 0 auto;}
+  .spot-hero{margin:0 16px 10px; border-radius:14px; overflow:hidden; position:relative; height:210px;
+    background:var(--teal-tint); display:flex; align-items:center; justify-content:center; cursor:pointer;
+    border:0; padding:0; width:calc(100% - 32px);}
+  .spot-hero img{width:100%; height:100%; object-fit:cover; display:block;}
+  .spot-hero > svg{width:54px; height:54px; fill:none; stroke:var(--muted); stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  .spot-hero .band{position:absolute; left:0; right:0; bottom:0; padding:26px 14px 12px; text-align:left;
+    background:linear-gradient(to top, rgba(2,27,40,.92), rgba(2,27,40,0));}
+  /* Einzeilig + Ellipse: „Amerikanischer Flusskrebs" ist ein echter Name, kein Ausreißer — und ein
+     zweizeiliger Hero-Titel verschöbe das Band bei jedem Wechsel. */
+  .spot-hero .art{font-family:'Barlow Condensed',sans-serif; font-size:1.5rem; font-weight:700; line-height:1;
+    color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .spot-hero .meta{font-size:.78rem; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .spot-strip{display:flex; gap:8px; overflow-x:auto; padding:2px 16px 6px; scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;}
+  .spot-strip::-webkit-scrollbar{height:0;}
+  .spot-th{flex:0 0 auto; width:54px; height:54px; border-radius:10px; overflow:hidden; cursor:pointer;
+    border:2px solid transparent; background:var(--teal-tint); scroll-snap-align:center; padding:0;
+    display:flex; align-items:center; justify-content:center; transition:border-color .15s, transform .15s;}
+  .spot-th img{width:100%; height:100%; object-fit:cover; display:block;}
+  .spot-th > svg{width:24px; height:24px; fill:none; stroke:var(--muted); stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  .spot-th.on{border-color:var(--teal-bright); transform:scale(1.06);}
+  /* Cluster: NUR die Zahl (JC entschieden — kein Foto, keine Plakette). */
+  .cl-dot{width:46px; height:46px; border-radius:50%; background:var(--map-ink); color:#fff;
+    border:2px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.5); display:flex; align-items:center;
+    justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.15rem;}
+  .leaflet-div-icon{background:none; border:0;}
   .rec-strip{display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch;}
   /* color is NOT optional here: <button> gets "color:buttontext" from the UA sheet, which beats
      inheritance — so .rec-sp fell back to iOS Safari's system blue while the desktop looked fine. */
@@ -1235,6 +1284,17 @@
      alten Stand gemessen habe, ohne es zu merken. Wer sie sehen will, sieht sie; wer nicht, übersieht
      sie: klein, gedämpft, unten, außerhalb des Lockups. Kein Klick, kein Menüweg, keine Erklärung. -->
 <div id="app-build"></div></div>
+<!-- SPOT-SHEET: mehrere Fänge auf derselben Koordinate (JC, 18. Juli).
+     Liegt AUSSERHALB von #app, direkt am <body> — derselbe Grund wie bei der Vollbildkarte: Ein Vorfahr
+     mit `-webkit-overflow-scrolling:touch` bildet auf iOS einen containing block für `position:fixed`,
+     und dann klebt das Sheet am Scroll-Container statt am Fenster. Hier gibt es keinen Vorfahren, der
+     es einfangen könnte — unabhängig davon, welcher es gewesen wäre. -->
+<div id="spot-dim" class="spot-dim" onclick="closeSpotSheet()"></div>
+<div id="spot-sheet" class="spot-sheet" role="dialog" aria-modal="true">
+  <div class="spot-kopf"><span class="nm" id="spot-nm">—</span><span class="n" id="spot-n"></span></div>
+  <button type="button" class="spot-hero" id="spot-hero" onclick="openSpotCatch()"></button>
+  <div class="spot-strip" id="spot-strip"></div>
+</div>
 <div id="app">
   <span id="demo-tag" class="demo-tag" style="display:none;">DEMO</span>
 
@@ -2217,7 +2277,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-18.1';
+const BUILD = '2026-07-18.2';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -2599,6 +2659,11 @@ function go(name, isBack, viaGesture, noArm){
      `is-fs` blieb am Element kleben, und beim nächsten Screen lag die Karte wieder über allem.
      Hier greift es für jeden Weg, weil JEDE Navigation durch `go()` läuft. */
   try{ if(_mapFs) mapFsToggle(_mapFs, false); }catch(e){}
+  /* Dasselbe für das Spot-Sheet (18. Juli): auch eine EBENE, kein Screen. Hier statt nur im
+     `popstate`-Handler, aus demselben Grund wie oben — der fängt die Wischgeste, aber kein
+     In-App-Zurück. Ein Sheet, das nach dem Screen-Wechsel offen bleibt, wäre der Vollbild-Fehler
+     von gestern nochmal. */
+  try{ if(_spot) closeSpotSheet(); }catch(e){}
   /* Beim VERLASSEN festhalten, wo der Nutzer stand — sonst gibt es beim Zurückkommen nichts
      wiederherzustellen. Muss vor dem Screen-Wechsel passieren: Danach ist der alte Screen
      `display:none` und sein `scrollTop` liest sich als 0. */
@@ -2790,6 +2855,10 @@ window.addEventListener('popstate', function(ev){
      Edit-Modus in `appBack` — eine Geste macht genau eine Ebene auf. Hier oben statt in `appBack`,
      weil auch der VORWÄRTS-Fall sie schließen soll: Sonst bliebe das Vollbild offen, während die App
      darunter weiterwandert. */
+  /* Das Spot-Sheet VOR dem Vollbild: Es liegt darüber (z-index 1210 gegen die Karte), also ist es die
+     oberste Ebene. Eine Geste macht genau eine Ebene auf — käme das Vollbild zuerst, verlöre ein Wisch
+     beide auf einmal. (Im Vollbild kann das Sheet offen sein: der Cluster ist dort antippbar.) */
+  if(_spot){ try{ closeSpotSheet(); }catch(e){} return; }
   if(_mapFs){ try{ mapFsToggle(_mapFs, false); }catch(e){} return; }
   if(_vor){ _goForward(); return; }
   /* `true` = die native Geste war es. Nur von hier kommt sie — deshalb animieren wir gleich nicht
@@ -4730,7 +4799,13 @@ function mapFsToggle(kind, force){
   setTimeout(()=>{ try{ if(R && R.m) R.m.invalidateSize(); }catch(e){} }, 60);
 }
 /* Escape schließt es auch am Schreibtisch. */
-window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && _mapFs) mapFsToggle(_mapFs, false); });
+/* Escape räumt am Schreibtisch die oberste Ebene ab — Sheet vor Vollbild, dieselbe Reihenfolge wie
+   bei der Wischgeste. Ein Escape schließt eine Ebene, nicht zwei. */
+window.addEventListener('keydown', (e)=>{
+  if(e.key!=='Escape') return;
+  if(_spot){ try{ closeSpotSheet(); }catch(_e){} return; }
+  if(_mapFs) mapFsToggle(_mapFs, false);
+});
 function ensureCatchMap(kind, items){
   const R=_mapRef[kind]; if(!R) return;
   const wrap=document.getElementById(kind+'-map'); if(!wrap) return;
@@ -4742,6 +4817,10 @@ function ensureCatchMap(kind, items){
   if(!R.m){
     R.m=L.map(kind+'-map',{zoomControl:true}).setView([pts[0].lat,pts[0].lon],6);
     L.tileLayer(TILE,TILE_OPT).addTo(R.m);
+    /* Bewegt der NUTZER die Karte, ist das Sheet nicht mehr gemeint — es zeigt einen Spot, der gerade
+       wegwandert. Bewegt sie sich wegen des eigenen `panTo` beim Öffnen, darf es NICHT schließen.
+       `_spotSelbstBewegt` trennt die zwei; ohne das Flag machte sich das Sheet selbst zu. */
+    R.m.on('movestart zoomstart', ()=>{ if(_spot && !_spotSelbstBewegt) closeSpotSheet(); });
     /* Der Knopf wird EINMAL beim Bauen der Karte angehängt, nicht bei jedem Rendern — sonst läge nach
        zehn Aktualisierungen ein Stapel davon übereinander. Er hängt am Karten-Element (nicht an einem
        Leaflet-Control), damit er den Vollbild-Zustand mit umschalten kann. */
@@ -4749,17 +4828,103 @@ function ensureCatchMap(kind, items){
   }
   R.mk.forEach(m=>R.m.removeLayer(m)); R.mk=[];
   const bounds=[];
-  pts.forEach(c=>{
-    // Stats map keeps dots (JC) — many catches are a scatter, not a pincushion. Only the ink follows.
-    const m=L.circleMarker([c.lat,c.lon],{radius:7,color:'#fff',weight:2,fillColor:MAP_INK,fillOpacity:1}).addTo(R.m);
-    /* Der Rückweg muss zum eigenen Screen führen: `kind` ist genau das `from`, das der Fang-Detail
-       zum Zurückgehen braucht — sonst landet man aus der Vereinskarte in „Meine Fänge". */
-    m.on('click', ()=>openDetailObj(c, kind));
-    R.mk.push(m); bounds.push([c.lat,c.lon]);
+  /* Fänge auf DERSELBEN Koordinate bündeln (JC, 18. Juli). Schlüssel auf 5 Nachkommastellen ≈ 1 m:
+     feiner wäre GPS-Rauschen, gröber würfe Nachbar-Spots zusammen.
+     Das ist kein Randfall — 2 von JCs 4 Fängen mit Geodaten liegen exakt aufeinander. Angler haben eine
+     Hausstrecke, der Pin landet am selben See. Je länger die Nutzung, desto dicker der Stapel. */
+  const grp={};
+  pts.forEach(c=>{ const k=(+c.lat).toFixed(5)+','+(+c.lon).toFixed(5); (grp[k]=grp[k]||[]).push(c); });
+  Object.keys(grp).forEach(k=>{
+    const g=grp[k], c0=g[0];
+    if(g.length>1){
+      // Cluster: nur die Zahl. Antippen -> Spot-Sheet (zentriert, dunkelt ab, Hero + Streifen).
+      const m=L.marker([c0.lat,c0.lon],{icon:L.divIcon({html:`<div class="cl-dot">${g.length}</div>`, iconSize:[46,46], iconAnchor:[23,23]})}).addTo(R.m);
+      m.on('click', ()=>openSpotSheet(kind, g));
+      R.mk.push(m);
+    } else {
+      // Stats map keeps dots (JC) — many catches are a scatter, not a pincushion. Only the ink follows.
+      const m=L.circleMarker([c0.lat,c0.lon],{radius:7,color:'#fff',weight:2,fillColor:MAP_INK,fillOpacity:1}).addTo(R.m);
+      /* Der Rückweg muss zum eigenen Screen führen: `kind` ist genau das `from`, das der Fang-Detail
+         zum Zurückgehen braucht — sonst landet man aus der Vereinskarte in „Meine Fänge". */
+      m.on('click', ()=>openDetailObj(c0, kind));
+      R.mk.push(m);
+    }
+    bounds.push([c0.lat,c0.lon]);
   });
   if(bounds.length>1){ try{ R.m.fitBounds(bounds,{padding:[24,24], maxZoom:13}); }catch(e){} }
   else R.m.setView(bounds[0],12);
   setTimeout(()=>{ try{R.m.invalidateSize();}catch(e){} }, 80);
+}
+/* ---- SPOT-SHEET (JC, 18. Juli: „bau es genau so") -------------------------------------------------
+   Mehrere Fänge auf derselben Koordinate: dunkler Grund + Hero + waagerechter Streifen.
+   Vorlage: `mockup-karte-spot-hero.html`.
+   WARUM KEINE SCHWELLE: Ein Ring hätte eine gebraucht („ab ~9 etwas anderes") — willkürlich und zu
+   begründen. Der Streifen sieht bei 2 aus wie bei 24, er wird nur länger. Die Frage stellt sich nicht.
+   Der Streifen IST `.rec-strip` in klein: dieselbe Geste, die JC von der Rekord-Leiste kennt. */
+let _spot=null;          // {kind, items, i}
+let _spotSelbstBewegt=false;
+function _spotEl(id){ return document.getElementById(id); }
+function openSpotSheet(kind, items){
+  if(!items || !items.length) return;
+  _spot={ kind, items: items.slice(), i:0 };
+  const R=_mapRef[kind];
+  /* (a) zentrieren, (b) abdunkeln, (c) hochfahren — in dieser Reihenfolge (JC entschieden: die Karte
+     zentriert vorher, statt den Ring/das Sheet am Rand abzuschneiden).
+     DIE FALLE: Zentrieren IST eine Kartenbewegung, und Kartenbewegung schließt das Sheet — es machte
+     sich also selbst zu, kaum dass es auf ist. Zwei Absender auf einer Leitung, dieselbe Sorte Fehler
+     wie die zwei Schreiber auf `share-btn` und der Log-Catch-FAB (fc358c0).
+     Deshalb ein Flag um die EIGENE Bewegung; `moveend` räumt es wieder ab. */
+  if(R && R.m){
+    _spotSelbstBewegt=true;
+    try{ R.m.panTo([items[0].lat, items[0].lon], {animate:true, duration:.28}); }catch(e){}
+    setTimeout(()=>{ _spotSelbstBewegt=false; }, 700);   // > die .28s Animation, mit Luft
+  }
+  renderSpotSheet();
+  _spotEl('spot-dim').classList.add('on');
+  _spotEl('spot-sheet').classList.add('on');
+  /* Eine Ebene, kein Screen — wie Vollbildkarte, Lightbox, Modal, Edit-Modus. Der Wisch-zurück muss
+     DAS SHEET schließen, nicht den Screen. `_armBack` legt den Verlaufs-Wächter, `go()` räumt auf. */
+  try{ _armBack(); }catch(e){}
+  try{ haptic(8); }catch(e){}
+}
+function closeSpotSheet(){
+  if(!_spot) return;
+  _spot=null;
+  try{ _spotEl('spot-dim').classList.remove('on'); }catch(e){}
+  try{ _spotEl('spot-sheet').classList.remove('on'); }catch(e){}
+}
+function setSpotIdx(i){
+  if(!_spot) return; _spot.i=i; renderSpotSheet(true);
+}
+function openSpotCatch(){
+  if(!_spot) return;
+  const c=_spot.items[_spot.i], kind=_spot.kind;
+  closeSpotSheet();
+  try{ openDetailObj(c, kind); }catch(e){}
+}
+function renderSpotSheet(nurWechsel){
+  if(!_spot) return;
+  const { items, i } = _spot, c=items[i];
+  const cov = (typeof coverThumbOf==='function') ? coverThumbOf(c) : (c.photo||null);
+  const hero=_spotEl('spot-hero');
+  const val = c.length!=null ? fmtLen(c.length) : (c.weight!=null ? fmtWeight(c.weight) : '—');
+  hero.innerHTML = (cov ? `<img src="${escAttr(cov)}" alt="" decoding="async">` : FISH_IC)
+    + `<span class="band"><span class="art">${esc(trSpecies(c.species))}</span>`
+    + `<span class="meta">${esc(val)} · ${esc(fmtDateLong(c.date))}${c.angler?' · '+esc(c.angler):''}</span></span>`;
+  if(!nurWechsel){
+    const nm=(c.location||'').trim();
+    _spotEl('spot-nm').textContent = nm || t('gTilesLoc');
+    _spotEl('spot-n').textContent = items.length+' '+t('fltCatch');
+    _spotEl('spot-strip').innerHTML = items.map((x,ix)=>{
+      const t2=(typeof coverThumbOf==='function') ? coverThumbOf(x) : (x.photo||null);
+      return `<button type="button" class="spot-th${ix===i?' on':''}" onclick="setSpotIdx(${ix})">`
+           + (t2 ? `<img src="${escAttr(t2)}" alt="" loading="lazy" decoding="async">` : FISH_IC) + `</button>`;
+    }).join('');
+  } else {
+    const ths=_spotEl('spot-strip').querySelectorAll('.spot-th');
+    ths.forEach((el,ix)=>el.classList.toggle('on', ix===i));
+    try{ ths[i].scrollIntoView({inline:'center', behavior:'smooth', block:'nearest'}); }catch(e){}
+  }
 }
 function openInMaps(){
   const c=state.current; if(!c||c.lat==null) return;
