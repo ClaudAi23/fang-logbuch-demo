@@ -2361,28 +2361,30 @@ async function formBack(){ if(formIsDirty() && !(await confirmDiscard())) return
    Fehler auf JCs Gerät je zu sehen — auf dem Desktop läuft alles korrekt (Blink), auf dem iPhone ist
    jeder Browser WebKit.
    Deshalb: Die App schreibt die Ereigniskette in die DB, ich lese sie hier. JC muss nichts abtippen.
-   NUR mit `?navlog=1` aktiv — kein anderer Nutzer merkt je etwas davon. Wieder ausbauen, sobald der
-   Fehler gefunden ist (samt `drop table public.nav_log`).
+   Läuft NUR für JCs Konten (siehe NAVLOG_USER) — für alle anderen ist `nlog` sofort wieder draußen.
+   Wieder ausbauen, sobald der Fehler gefunden ist (samt `drop table public.nav_log`).
    Wichtig ist die REIHENFOLGE, nicht der Inhalt: Wer ruft `appBack`, wie oft, in welchem Abstand —
    und was den Klick auf den Homescreen auslöst. */
-let _navlog = false, _navlogSess = '', _navlogT0 = 0, _navlogQ = [];
-try{ _navlog = new URLSearchParams(location.search).get('navlog')==='1'; }catch(e){}
-if(_navlog){
-  _navlogSess = Math.random().toString(36).slice(2,10);
-  _navlogT0 = Date.now();
-  const flush = async ()=>{
-    if(!_navlogQ.length) return;
-    const rows=_navlogQ.splice(0, _navlogQ.length);
-    try{ const c=getSB(); if(c) await c.from('nav_log').insert(rows); }catch(e){}
-  };
-  window.nlog = (ev, data)=>{
-    _navlogQ.push({ sess:_navlogSess, ms: Date.now()-_navlogT0, ev, data: data||null });
-    // gesammelt schicken: Ein Wisch feuert mehrere Ereignisse in Millisekunden, einzelne Requests
-    // würden die Reihenfolge verwischen, die wir gerade untersuchen.
-    clearTimeout(window._nlogT); window._nlogT=setTimeout(flush, 900);
-  };
-  window.addEventListener('pagehide', flush);
-} else { window.nlog = ()=>{}; }
+/* An JCs Konto gehängt, nicht an einen `?navlog=1`-Parameter (JC: „I use the app. There is only me as
+   user until I tell you. To be safe you can even tie it to my user."). Ein Parameter hätte bedeutet,
+   dass JC sich eine Extra-URL merken muss — Zeremonie ohne Zweck. So benutzt er die App normal.
+   Beide Konten, sonst loggt es je nach Login nicht. */
+const NAVLOG_USER = ['e84b11f7-2c96-48ac-85c2-df6adeabf9d0','a1cea296-5860-4740-8f89-08a01fabbc1d'];
+let _navlogSess = Math.random().toString(36).slice(2,10), _navlogT0 = Date.now(), _navlogQ = [];
+async function _navlogFlush(){
+  if(!_navlogQ.length) return;
+  const rows=_navlogQ.splice(0, _navlogQ.length);
+  try{ const c=getSB(); if(c) await c.from('nav_log').insert(rows); }catch(e){}
+}
+window.nlog = function(ev, data){
+  // Zur AUFRUFZEIT prüfen: Beim Parsen des Skripts gibt es state.me noch nicht.
+  if(!(state && state.me && NAVLOG_USER.indexOf(state.me.id)>=0)) return;
+  _navlogQ.push({ sess:_navlogSess, ms: Date.now()-_navlogT0, ev, data: data||null });
+  // gesammelt schicken: Ein Wisch feuert mehrere Ereignisse in Millisekunden, einzelne Requests
+  // würden die Reihenfolge verwischen, die wir gerade untersuchen.
+  clearTimeout(window._nlogT); window._nlogT=setTimeout(_navlogFlush, 900);
+};
+window.addEventListener('pagehide', _navlogFlush);
 
 /* EINE GESTE = EIN RÜCKSCHRITT (17. Juli, JC: „first I get back to the home screen to then getting
    back to the group overview").
