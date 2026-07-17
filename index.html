@@ -2148,7 +2148,10 @@ function seed(){
 
 let state = { club:null, mode:"club", soloName:null, user:null, userId:null, me:null, auth:null, soloCatches:[], myContexts:[], myAllCatches:[], pending:[],
   catches:[], editPhotos:[], current:null, speciesKey:null, editId:null, formLat:null, formLon:null, formWeather:null, filterTarget:"list",
-  measure:"length", theme:"system", lang:"system", sort:"newest", logos:{}, soloAvatar:null, filter:emptyFilter() };
+  measure:"length", theme:"system", lang:"system", sort:"newest", logos:{}, soloAvatar:null, filter:emptyFilter(),
+  /* Der Vorschlags-Bestand aus `user_items`: {kind: [Namen, zuletzt benutzte zuerst]}. Wird von
+     `loadUserItems()` gefüllt und nach `localStorage['bf_items']` gespiegelt. */
+  items:{}, _itemsLoaded:false };
 
 function emptyFilter(){ return {from:"",to:"",species:"",angler:"",ort:"",lmin:"",lmax:"",wmin:"",wmax:"",ctxs:[],hideUnconfirmed:false}; }
 
@@ -2826,6 +2829,10 @@ async function goChooser(){
     try{ state.myContexts = await loadMyContexts(); }catch(e){ state.myContexts=[]; }
     // activity depends on myContexts; admin counts are independent → run them all in parallel.
     const jobs=[ loadCtxActivity().catch(()=>{ state.ctxNew={}; }) ];
+    /* Vorschlags-Bestand: einmal je Sitzung, parallel zum Rest. `goChooser()` läuft auch bei jedem
+       Zurück auf Home — ohne den Merker wären das drei Abfragen pro Heimkehr, für Daten, die sich in
+       der Zwischenzeit nur durch uns selbst ändern (und dann schon lokal stimmen). */
+    if(!state._itemsLoaded) jobs.push(loadUserItems().catch(()=>{}));
     if(state.me && state.me.isAppAdmin){
       jobs.push(countPendingReqs().then(n=>{ state.pendingReqs=n; }).catch(()=>{ state.pendingReqs=0; }));
       jobs.push(countPendingBetaReqs().then(n=>{ state.pendingBetaReqs=n; }).catch(()=>{ state.pendingBetaReqs=0; }));
@@ -5641,19 +5648,92 @@ function openSpecies(){ renderSpecies(document.getElementById('f-species').value
 function filterSpecies(){ state.speciesKey=null; renderSpecies(document.getElementById('f-species').value); }
 function pickSpecies(key, label){ document.getElementById('f-species').value=label; state.speciesKey=key; closeSpecies(); }
 function closeSpecies(){ const b=document.getElementById('combo-list'); if(b) b.classList.remove('open'); }
-// --- remembered field suggestions (personal, stored locally) ---
+/* --- Vorschläge sind Bestand (17. Juli) -----------------------------------------------------------
+   Bis heute lagen Methode/Köder/Rute/Rolle/Boot in `localStorage['bf_suggest']` — **pro Gerät**. Eine
+   Neuinstallation löschte sie (JC, 16. Juli: „i even reinstalled the app"), ein zweites Gerät kannte sie
+   nie. Das war nie ein Code-Fehler, sondern die Bauart.
+   Jetzt: eine Zeile je Gegenstand in `public.user_items`, nur für den Besitzer lesbar.
+
+   Warum eine eigene Tabelle und KEINE jsonb-Spalte an `profiles` (mein erster Rat — zurückgenommen):
+   `profiles_select` erlaubt `(id = auth.uid()) OR shares_context(id)`, und RLS wirkt **zeilenweise,
+   nicht spaltenweise**. Die Tackle-Box hätte für jeden Vereinskameraden offengelegen. In der DB
+   nachgewiesen: Kamerad sieht JCs Profilzeile = 1, sieht JCs user_items = 0.
+   Zweiter Grund: Ein JSON-Klumpen wird als Ganzes geschrieben — zwei Geräte hätten sich die Liste
+   gegenseitig überschrieben. Eine Zeile je Gegenstand kann das nicht.
+
+   Warum das trotzdem ein kleiner Eingriff ist: Das Typeahead-Sheet, `TA_CFG` und alle Aufrufer fragen
+   ausschließlich `_suggestGet()`. Hier wird die Quelle darunter getauscht — sonst nichts. */
 const SUGGEST_FIELDS=['method','bait','rod','reel','boat'];
-function _suggestGet(){ try{ return JSON.parse(localStorage.getItem('bf_suggest')||'{}')||{}; }catch(e){ return {}; } }
+/* Feld am Fang → Sorte im Bestand. `location` heißt als Gegenstand `water`: Daraus wird „my waters". */
+const ITEM_KIND_OF={ method:'method', bait:'bait', rod:'rod', reel:'reel', boat:'boat', location:'water' };
+
+function _itemsMirror(){ try{ return JSON.parse(localStorage.getItem('bf_items')||'{}')||{}; }catch(e){ return {}; } }
+function _itemsSave(){ try{ localStorage.setItem('bf_items', JSON.stringify(state.items||{})); }catch(e){} }
+function _suggestLegacy(){ try{ return JSON.parse(localStorage.getItem('bf_suggest')||'{}')||{}; }catch(e){ return {}; } }
+/* Reihenfolge: Bestand im Speicher → Spiegel (offline/Kaltstart) → alter `bf_suggest`.
+   Der alte Weg bleibt der Rückfall für den **Demo-Modus** (kein Server) und für die Sekunden vor dem
+   ersten Laden. Deshalb verschwindet nirgends etwas, während die Übernahme läuft. */
+function _suggestGet(){
+  const s=state.items; if(s && Object.keys(s).length) return s;
+  const m=_itemsMirror(); if(Object.keys(m).length) return m;
+  return _suggestLegacy();
+}
+function _itemsPendingGet(){ try{ return JSON.parse(localStorage.getItem('bf_items_pending')||'[]')||[]; }catch(e){ return []; } }
+function _itemsPendingSet(a){ try{ localStorage.setItem('bf_items_pending', JSON.stringify(a.slice(-200))); }catch(e){} }
+function _itemsQueue(fn, kind, name){ const q=_itemsPendingGet(); q.push({fn:fn, kind:kind, name:name}); _itemsPendingSet(q); }
+/* Bewusst NICHT an die Fang-Warteschlange gehängt: Die transportiert Fänge, das hier sind Vorschläge.
+   Ein gemeinsamer Weg verkoppelte zwei Dinge, die nichts miteinander zu tun haben. */
+async function _itemsRpc(fn, kind, name){
+  if(state.auth!=='supabase') return;              // Demo-Modus bleibt lokal, wie bisher
+  const c=getSB(); if(!c){ _itemsQueue(fn, kind, name); return; }
+  try{ const { error } = await c.rpc(fn, { p_kind:kind, p_name:name }); if(error) throw error; }
+  catch(e){ _itemsQueue(fn, kind, name); }
+}
+async function _itemsFlushPending(){
+  const q=_itemsPendingGet(); if(!q.length) return;
+  _itemsPendingSet([]);                            // erst leeren: schlägt es wieder fehl, landet es erneut drin
+  for(const e of q){ await _itemsRpc(e.fn, e.kind, e.name); }
+}
+/* Lokal zuerst — die Liste stimmt sofort, der Server zieht nebenher nach. */
+function rememberItem(kind, name){
+  const v=((name||'')+'').trim(); if(!v || !kind) return;
+  const s=state.items||(state.items={});
+  s[kind]=[v].concat((s[kind]||[]).filter(function(x){ return (''+x).toLowerCase()!==v.toLowerCase(); }));
+  _itemsSave();
+  _itemsRpc('remember_item', kind, v);
+}
+function forgetItem(kind, name){
+  const v=((name||'')+'').trim(); if(!v || !kind) return;
+  const s=state.items||(state.items={});
+  s[kind]=(s[kind]||[]).filter(function(x){ return (''+x).toLowerCase()!==v.toLowerCase(); });
+  _itemsSave();
+  _itemsRpc('forget_item', kind, v);
+}
 function rememberSuggest(obj){
+  try{ Object.keys(ITEM_KIND_OF).forEach(function(f){ rememberItem(ITEM_KIND_OF[f], obj && obj[f]); }); }catch(e){}
+}
+/* Einmal je Gerät: Was NUR dieses Gerät kennt, hochreichen. Der Server-Seed (`seed_user_items`) holt den
+   Bestand aus den FÄNGEN — vollständig und für alle Geräte gleich. Hier kommt nur dazu, was in
+   `bf_suggest` steht, aber an keinem Fang hängt (z. B. ein gelöschter Fang).
+   Der Merker ist wichtig: Ohne ihn käme eine später gelöschte Rute beim nächsten Start zurück. */
+async function _itemsSeedFromDevice(){
+  try{ if(localStorage.getItem('bf_items_seeded')) return; }catch(e){ return; }
+  const s=_suggestLegacy();
+  for(const k of SUGGEST_FIELDS){ for(const v of (s[k]||[])){ await _itemsRpc('remember_item', k, v); } }
+  try{ localStorage.setItem('bf_items_seeded','1'); }catch(e){}
+}
+async function loadUserItems(){
+  if(state.auth!=='supabase') return;
+  const c=getSB(); if(!c) return;
+  try{ await c.rpc('seed_user_items'); }catch(e){}   // serverseitig gewächtert: läuft nur, wenn leer
+  try{ await _itemsSeedFromDevice(); }catch(e){}
+  try{ await _itemsFlushPending(); }catch(e){}
   try{
-    const s=_suggestGet();
-    SUGGEST_FIELDS.forEach(function(k){
-      const v=((obj[k]||'')+'').trim(); if(!v) return;
-      let arr=(s[k]||[]).filter(function(x){ return (x||'').toLowerCase()!==v.toLowerCase(); });
-      arr.unshift(v); s[k]=arr.slice(0,20);
-    });
-    localStorage.setItem('bf_suggest', JSON.stringify(s));
-  }catch(e){}
+    const { data, error } = await c.from('user_items').select('kind,name').order('last_used_at',{ascending:false});
+    if(error) throw error;
+    const m={}; (data||[]).forEach(function(r){ (m[r.kind]=m[r.kind]||[]).push(r.name); });
+    state.items=m; _itemsSave(); state._itemsLoaded=true;
+  }catch(e){ /* offline: der Spiegel bleibt gültig, die App zeigt weiter, was sie zuletzt wusste */ }
 }
 /* fillSuggestLists() stand hier und war seit dem Typeahead-Umbau tot: Es füllte `<datalist id="dl-bait">`
    & Co. — die es nicht mehr gibt (geprüft: kein einziges `id="dl-…"` und kein `list=`-Attribut in der
@@ -5700,7 +5780,14 @@ function _taSuggestCfg(key, inputId){
     onPick:(v)=>{ const el=document.getElementById(inputId); if(el){ el.value=v; try{ el.dispatchEvent(new Event('input',{bubbles:true})); }catch(_e){} } }
   };
 }
+/* Leitet die Gewässer aus den GELADENEN Fängen ab — sieht also nur, was gerade offen ist, und lässt sich
+   nicht bearbeiten (JCs Argument gegen abgeleitete Listen). Bleibt als RÜCKFALL: Demo-Modus (kein Server)
+   und die Sekunden vor dem ersten `loadUserItems()`. */
 function _ortSuggest(){ const set=new Set(); (state.catches||[]).concat(state.myAllCatches||[]).forEach(c=>{ const v=(c&&c.location||'').trim(); if(v) set.add(v); }); return [...set]; }
+/* Die eine Quelle für Gewässer-Vorschläge. Steht der Bestand, regiert er — sonst der alte Weg.
+   Bewusst kein Zusammenlegen beider: Dann käme ein gelöschtes Gewässer über die Fänge sofort zurück,
+   und „my waters" wäre von Tag eins eine Attrappe. */
+function _waterSuggest(){ const w=(_suggestGet().water)||[]; return w.length ? w : _ortSuggest(); }
 const TA_CFG={
   'f-species':{
     title:()=> t('species'),
@@ -5722,8 +5809,10 @@ const TA_CFG={
   'f-boat':_taSuggestCfg('boat','f-boat'),
   'flt-ort':{
     title:()=> t('locationContains'),
-    opts:()=> _ortSuggest().map(v=>({v:v})),
-    recent:()=> _ortSuggest().slice(0,6).map(v=>({v:v})),
+    /* `rm:'water'` gibt es erst seit dem 17. Juli: Gewässer waren abgeleitet und deshalb nicht löschbar
+       — es gab nichts zu vergessen. Jetzt sind sie Bestand wie Köder und Rute. */
+    opts:()=> _waterSuggest().map(v=>({v:v, rm:'water'})),
+    recent:()=> _waterSuggest().slice(0,6).map(v=>({v:v, rm:'water'})),
     onPick:(v)=>{ const el=document.getElementById('flt-ort'); if(el){ el.value=v; try{ el.dispatchEvent(new Event('input',{bubbles:true})); }catch(_e){} } }
   }
 };
@@ -5755,11 +5844,9 @@ function _taRow(o, q, cur){
 }
 function taForget(key, val, ev){
   if(ev){ try{ ev.stopPropagation(); ev.preventDefault(); }catch(e){} }
-  try{
-    const s=_suggestGet();
-    s[key]=(s[key]||[]).filter(x=>(''+x).toLowerCase()!==(''+val).toLowerCase());
-    localStorage.setItem('bf_suggest', JSON.stringify(s));
-  }catch(e){}
+  /* Schrieb bis zum 17. Juli in `bf_suggest` — also nur auf diesem Gerät. Auf einem zweiten kam der
+     gelöschte Eintrag fröhlich weiter. Jetzt löscht es den Gegenstand überall. */
+  try{ forgetItem(key, val); }catch(e){}
   try{ haptic(6); }catch(e){}
   renderTA();
 }
@@ -6085,8 +6172,8 @@ async function commitEfmDate(inp){ const c=state.current; if(!c||!inp.value) ret
 }
 function editWaterField(c){
   openTypeaheadCfg({ title:t('dWater'), allowNew:true, curVal:()=>c.location||'',
-    opts:()=> _ortSuggest().map(v=>({v:v})),
-    recent:()=> _ortSuggest().slice(0,6).map(v=>({v:v})),
+    opts:()=> _waterSuggest().map(v=>({v:v, rm:'water'})),
+    recent:()=> _waterSuggest().slice(0,6).map(v=>({v:v, rm:'water'})),
     onClear:async()=>{ await saveDetailField(c,'location','location',null,{}); openDetailObj(c, state.detailFrom, true); },
     onPick:async(v)=>{
       const val=(v||'').trim()||null; await saveDetailField(c,'location','location',val,{}); openDetailObj(c, state.detailFrom, true); } });
