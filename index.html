@@ -395,6 +395,30 @@
   .sync-banner .sb-dot{width:8px; height:8px; border-radius:50%; background:var(--spark); flex:0 0 auto; animation:sbpulse 1.2s ease-in-out infinite;}
   @keyframes sbpulse{0%,100%{opacity:.3;}50%{opacity:1;}}
   .map{height:200px; border-radius:10px; overflow:hidden; border:1px solid var(--border-2); background:var(--surface-2); z-index:0;}
+  /* ---- Vollbild-Karte (17. Juli, JC: „Karte sollte auch vergroessert werden koennen zum fullscreen
+     mittls Icon auf der Karte. du suchst aus wo es am besten passt.") ------------------------------
+     OBEN RECHTS. Begründung, nicht Geschmack: Leaflets Zoom-Knöpfe sitzen oben LINKS (`.leaflet-control-zoom`),
+     unten liegen Maßstab und Copyright — oben rechts ist die einzige freie Ecke, und dort erwartet man
+     den Knopf aus jeder Kartenanwendung.
+     Kein `:fullscreen` der Browser-API: Auf iOS kann eine PWA das für ein <div> nicht (nur für <video>).
+     Deshalb `position:fixed; inset:0` — das tut dasselbe, funktioniert überall und lässt sich mit
+     Zurück-Geste und Escape schließen. */
+  .map-fs-btn{position:absolute; top:8px; right:8px; z-index:401; width:34px; height:34px; border-radius:9px;
+    border:1px solid rgba(13,81,100,.25); background:#fff; color:var(--map-ink);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
+    box-shadow:0 2px 8px rgba(0,0,0,.28);}
+  .map-fs-btn:hover{background:#eef4f6;}
+  .map-fs-btn svg{width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  /* Der Vollbild-Zustand hängt am KARTEN-Element selbst, nicht an einem Overlay: So bleibt die
+     Leaflet-Instanz dieselbe — Marker, Zoom und Mittelpunkt überleben das Öffnen und Schließen.
+     Ein zweiter Kartenaufbau im Overlay hätte all das neu gebraucht. */
+  /* `!important` ist hier kein Holzhammer, sondern nötig: Leaflet setzt `position:relative` INLINE auf
+     den Kartencontainer (`_initLayout`, wenn der Container nicht schon positioniert ist). Inline
+     schlägt Stylesheet — ohne `!important` bliebe die Karte relativ und das Vollbild wirkungslos.
+     `height` ebenso: `.map-stats{height:240px}` steht in einer eigenen Regel. */
+  .map.is-fs{position:fixed !important; inset:0; width:100vw !important; height:100vh !important;
+    max-height:none; border-radius:0; border:none; margin:0; z-index:400;}
+  .map.is-fs .map-fs-btn{top:calc(10px + env(safe-area-inset-top)); right:12px;}
   .map-detail{height:170px;}
   .map-wrap{position:relative;}
   .map-fab{position:absolute; right:10px; top:10px; z-index:1000; width:38px; height:38px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:11px; border:1px solid var(--border-2); background:var(--surface); color:var(--teal); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.28);}
@@ -2107,7 +2131,11 @@ const I18N = {
     details:"Fang-Details", dAngler:"Angler", dWater:"Gewässer", dLength:"Länge", dWeight:"Gewicht", dDate:"Datum", noMeasures:"Keine Maße erfasst", ttShare:"Teilen",
     settings:"Einstellungen", display:"Darstellung", appearance:"Design", themeLight:"Hell", themeDark:"Dunkel", themeSystem:"System", themeHint:"„System\" folgt automatisch der Hell/Dunkel-Einstellung deines Geräts.", measureLabel:"Standard-Maß in Übersicht & Statistik", mLength:"Länge", mWeight:"Gewicht", measureHint:"Bestimmt, welches Maß in der Fangliste angezeigt wird, wonach der größte Fang berechnet wird und welcher Fang deinen persönlichen Rekord (Krone) hält.", language:"Sprache", clubLogoAdmin:"Logo", currentLogo:"Aktuelles Logo", uploadLogo:"Logo hochladen", logoHint:"Nur Admins können das Logo ändern. Es gilt für alle Mitglieder.", myImage:"Mein Bild", initialsDefault:"Standard: deine Initialen", uploadImage:"Bild hochladen",
     filter:"Filter", narrow:"Fänge eingrenzen", ttReset:"Zurücksetzen", period:"Zeitraum", year:"Jahr", month:"Monat", from:"Von", to:"Bis", periodHint:"Entweder Jahr/Monat <em>oder</em> Von–Bis — sie schließen sich gegenseitig aus.", properties:"Eigenschaften", fltCatch:"Fang", fltSize:"Maße", locationContains:"Ort / Gewässer enthält", locationPh:"z. B. Vereinsteich", lengthFrom:"Länge von (cm)", lengthTo:"Länge bis (cm)", weightFrom:"Gewicht von (kg)", weightTo:"Gewicht bis (kg)", minPh:"min", maxPh:"max", applyFilter:"Anwenden", reset:"Zurücksetzen", all:"Alle",
-    myStats:"Meine Fänge", statsSub:"Alle Fänge zusammen", tabOverview:"Übersicht", tabCatchList:"Fangliste", whereYouFish:"Wo du fängst", byContext:"Nach Verein / Solo", bySpecies:"Nach Fischart", longest:"Längster", heaviest:"Schwerster", noneYet:"Noch keine Fänge.", speciesCount:"Arten", thisYear:"Dieses Jahr", ctxFilter:"Verein / Gruppe",
+    myStats:"Meine Fänge", statsSub:"Alle Fänge zusammen", tabOverview:"Übersicht", tabCatchList:"Fangliste", /* JC, 17. Juli: „Wo du faengst sollte Catch Location(s) heissen." — Er hat den englischen Namen genannt;
+   die App ist aber dreisprachig, und ein englischer Brocken mitten im deutschen Screen wäre ein Bruch.
+   Deshalb übersetzt statt wörtlich übernommen. Wenn JC den Begriff als feststehende Marke in ALLEN
+   Sprachen will, ist es eine Zeile. */
+whereYouFish:"Fangorte", mapFullscreen:"Karte vergrößern", mapExitFullscreen:"Vollbild verlassen", byContext:"Nach Verein / Solo", bySpecies:"Nach Fischart", longest:"Längster", heaviest:"Schwerster", noneYet:"Noch keine Fänge.", speciesCount:"Arten", thisYear:"Dieses Jahr", ctxFilter:"Verein / Gruppe",
     clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit ButlerFish", shareNoMeasure:"ohne Maße"
   },
   en:{
@@ -2120,7 +2148,7 @@ const I18N = {
     details:"Catch details", dAngler:"Angler", dWater:"Water", dLength:"Length", dWeight:"Weight", dDate:"Date", noMeasures:"No measurements", ttShare:"Share",
     settings:"Settings", display:"Display", appearance:"Theme", themeLight:"Light", themeDark:"Dark", themeSystem:"System", themeHint:"\"System\" follows your device's light/dark setting.", measureLabel:"Default measure in list & stats", mLength:"Length", mWeight:"Weight", measureHint:"Sets which measure shows in the catch list, how the biggest catch is determined, and which catch holds your personal best (crown).", language:"Language", clubLogoAdmin:"Logo", currentLogo:"Current logo", uploadLogo:"Upload logo", logoHint:"Only admins can change the logo. It applies to all members.", myImage:"My picture", initialsDefault:"Default: your initials", uploadImage:"Upload picture",
     filter:"Filter", narrow:"Narrow down catches", ttReset:"Reset", period:"Period", year:"Year", month:"Month", from:"From", to:"To", periodHint:"Either year/month <em>or</em> from–to — they're mutually exclusive.", properties:"Properties", fltCatch:"Catch", fltSize:"Measurements", locationContains:"Location / water contains", locationPh:"e.g. Club pond", lengthFrom:"Length from (cm)", lengthTo:"Length to (cm)", weightFrom:"Weight from (kg)", weightTo:"Weight to (kg)", minPh:"min", maxPh:"max", applyFilter:"Apply", reset:"Reset", all:"All",
-    myStats:"My catches", statsSub:"All catches combined", tabOverview:"Overview", tabCatchList:"Catches", whereYouFish:"Where you fish", byContext:"By club / solo", bySpecies:"By species", longest:"Longest", heaviest:"Heaviest", noneYet:"No catches yet.", speciesCount:"Species", thisYear:"This year", ctxFilter:"Club / group",
+    myStats:"My catches", statsSub:"All catches combined", tabOverview:"Overview", tabCatchList:"Catches", whereYouFish:"Catch location(s)", mapFullscreen:"Expand map", mapExitFullscreen:"Exit full screen", byContext:"By club / solo", bySpecies:"By species", longest:"Longest", heaviest:"Heaviest", noneYet:"No catches yet.", speciesCount:"Species", thisYear:"This year", ctxFilter:"Club / group",
     clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with ButlerFish", shareNoMeasure:"no measurements"
   },
   nl:{
@@ -2133,7 +2161,7 @@ const I18N = {
     details:"Vangstdetails", dAngler:"Visser", dWater:"Water", dLength:"Lengte", dWeight:"Gewicht", dDate:"Datum", noMeasures:"Geen maten", ttShare:"Delen",
     settings:"Instellingen", display:"Weergave", appearance:"Thema", themeLight:"Licht", themeDark:"Donker", themeSystem:"Systeem", themeHint:"\"Systeem\" volgt de licht/donker-instelling van je apparaat.", measureLabel:"Standaardmaat in lijst & statistiek", mLength:"Lengte", mWeight:"Gewicht", measureHint:"Bepaalt welke maat in de vangstlijst staat, hoe de grootste vangst wordt bepaald en welke vangst je persoonlijk record (kroon) heeft.", language:"Taal", clubLogoAdmin:"Logo", currentLogo:"Huidig logo", uploadLogo:"Logo uploaden", logoHint:"Alleen beheerders kunnen het logo wijzigen. Het geldt voor alle leden.", myImage:"Mijn foto", initialsDefault:"Standaard: je initialen", uploadImage:"Foto uploaden",
     filter:"Filter", narrow:"Vangsten filteren", ttReset:"Resetten", period:"Periode", year:"Jaar", month:"Maand", from:"Van", to:"Tot", periodHint:"Of jaar/maand <em>of</em> van–tot — ze sluiten elkaar uit.", properties:"Eigenschappen", fltCatch:"Vangst", fltSize:"Maten", locationContains:"Plek / water bevat", locationPh:"bijv. Verenigingsvijver", lengthFrom:"Lengte van (cm)", lengthTo:"Lengte tot (cm)", weightFrom:"Gewicht van (kg)", weightTo:"Gewicht tot (kg)", minPh:"min", maxPh:"max", applyFilter:"Toepassen", reset:"Resetten", all:"Alle",
-    myStats:"Mijn vangsten", statsSub:"Alle vangsten samen", tabOverview:"Overzicht", tabCatchList:"Vangsten", whereYouFish:"Waar je vist", byContext:"Per vereniging / solo", bySpecies:"Per vissoort", longest:"Langste", heaviest:"Zwaarste", noneYet:"Nog geen vangsten.", speciesCount:"Soorten", thisYear:"Dit jaar", ctxFilter:"Vereniging / groep",
+    myStats:"Mijn vangsten", statsSub:"Alle vangsten samen", tabOverview:"Overzicht", tabCatchList:"Vangsten", whereYouFish:"Vangstlocaties", mapFullscreen:"Kaart vergroten", mapExitFullscreen:"Volledig scherm sluiten", byContext:"Per vereniging / solo", bySpecies:"Per vissoort", longest:"Langste", heaviest:"Zwaarste", noneYet:"Nog geen vangsten.", speciesCount:"Soorten", thisYear:"Dit jaar", ctxFilter:"Vereniging / groep",
     clock:" uur", petri:"🎣 Petri heil!", shareWater:"Water:", loggedWith:"— vastgelegd met ButlerFish", shareNoMeasure:"zonder maten"
   }
 };
@@ -2615,6 +2643,12 @@ window.addEventListener('popstate', function(ev){
   const _ni = (_st && typeof _st._i==='number') ? _st._i : 0;
   const _vor = _ni > _histIdx;
   _histIdx = _ni;
+  /* Die Vollbild-Karte ist eine EBENE, kein Screen: Sie muss die Geste zuerst bekommen, sonst verlässt
+     man aus dem Vollbild gleich den ganzen Screen. Dieselbe Regel wie bei Modal, Lightbox und
+     Edit-Modus in `appBack` — eine Geste macht genau eine Ebene auf. Hier oben statt in `appBack`,
+     weil auch der VORWÄRTS-Fall sie schließen soll: Sonst bliebe das Vollbild offen, während die App
+     darunter weiterwandert. */
+  if(_mapFs){ try{ mapFsToggle(_mapFs, false); }catch(e){} return; }
   if(_vor){ _goForward(); return; }
   /* `true` = die native Geste war es. Nur von hier kommt sie — deshalb animieren wir gleich nicht
      nach (siehe `.no-anim` oben im CSS). */
@@ -4442,6 +4476,43 @@ async function persistDetailPhotos(){
    `_mapRef` hält Karte und Marker je Screen — Leaflet-Instanzen darf man nicht teilen, sie hängen fest
    an ihrem DOM-Knoten. */
 const _mapRef={ stats:{m:null, mk:[]}, list:{m:null, mk:[]} };
+/* ---- Vollbild-Karte (17. Juli) --------------------------------------------------------------------
+   Umgeschaltet wird eine Klasse am KARTEN-Element — die Leaflet-Instanz bleibt dieselbe. Ein Overlay
+   mit zweiter Karte hätte Marker, Zoom und Mittelpunkt neu aufbauen müssen; so überlebt alles.
+   `invalidateSize()` nach jedem Wechsel ist Pflicht: Leaflet merkt von einer CSS-Größenänderung nichts
+   und zeichnete sonst weiter auf 386 px in einem 1180-px-Kasten. Dieselbe Falle wie bei den Tabs.
+   Ein `history.pushState`-Wächter, damit die Zurück-Geste das Vollbild schließt statt den Screen zu
+   verlassen — dieselbe Mechanik wie beim Rest der App (`_armBack`), nur mit eigenem Marker. */
+let _mapFs=null;
+function mapFsIcon(open){
+  return open
+    ? '<svg viewBox="0 0 24 24"><path d="M9 3v6H3M15 3v6h6M9 21v-6H3M15 21v-6h6"/></svg>'      // zusammenfalten
+    : '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';     // aufziehen
+}
+function mapFsButton(kind, wrap){
+  const b=document.createElement('button');
+  b.type='button'; b.className='map-fs-btn';
+  b.setAttribute('aria-label', t('mapFullscreen'));
+  b.title=t('mapFullscreen');
+  b.innerHTML=mapFsIcon(false);
+  b.onclick=(e)=>{ e.stopPropagation(); mapFsToggle(kind); };
+  wrap.appendChild(b);
+}
+function mapFsToggle(kind, force){
+  const wrap=document.getElementById(kind+'-map'); if(!wrap) return;
+  const R=_mapRef[kind];
+  const open = (force!=null) ? force : !wrap.classList.contains('is-fs');
+  wrap.classList.toggle('is-fs', open);
+  const b=wrap.querySelector('.map-fs-btn');
+  if(b){ b.innerHTML=mapFsIcon(open); b.setAttribute('aria-label', t(open?'mapExitFullscreen':'mapFullscreen')); b.title=b.getAttribute('aria-label'); }
+  _mapFs = open ? kind : null;
+  /* Der Verlaufs-Wächter: Ohne ihn verließe die Zurück-Geste im Vollbild den ganzen Screen — man käme
+     aus der Karte in die Gruppenliste statt zurück zur Übersicht. */
+  if(open){ try{ const _n=_histIdx+1; history.pushState({_fb:1, _i:_n, _mapfs:1}, ''); _histIdx=_n; _fwdStack.length=0; }catch(e){} }
+  setTimeout(()=>{ try{ if(R && R.m) R.m.invalidateSize(); }catch(e){} }, 60);
+}
+/* Escape schließt es auch am Schreibtisch. */
+window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && _mapFs) mapFsToggle(_mapFs, false); });
 function ensureCatchMap(kind, items){
   const R=_mapRef[kind]; if(!R) return;
   const wrap=document.getElementById(kind+'-map'); if(!wrap) return;
@@ -4453,6 +4524,10 @@ function ensureCatchMap(kind, items){
   if(!R.m){
     R.m=L.map(kind+'-map',{zoomControl:true}).setView([pts[0].lat,pts[0].lon],6);
     L.tileLayer(TILE,TILE_OPT).addTo(R.m);
+    /* Der Knopf wird EINMAL beim Bauen der Karte angehängt, nicht bei jedem Rendern — sonst läge nach
+       zehn Aktualisierungen ein Stapel davon übereinander. Er hängt am Karten-Element (nicht an einem
+       Leaflet-Control), damit er den Vollbild-Zustand mit umschalten kann. */
+    try{ mapFsButton(kind, wrap); }catch(e){}
   }
   R.mk.forEach(m=>R.m.removeLayer(m)); R.mk=[];
   const bounds=[];
@@ -6823,16 +6898,14 @@ function openDetailObj(c, from, keepEdit){
     specHTML=rows.map(_specOne).join('');
   }
   let pbBanner='';   // personal PB now shown as an ochre crown next to the species (see d-crown), no banner
+  /* Das Medaillen-Banner („Gruppenrekord · längster Hecht · Butter bei die Mutti!") ist am 17. Juli
+     entfallen — JC: „wir sollten auf den Gruppen die gruppenrekord nachrichtbanner loeschen. wir machen
+     spaeter was im hero. das besprechen wir noch."
+     Es war der letzte Verwender von `podiumOrdinal()` und `.medal-banner`/`.medal-g/s/b`; die stehen
+     weiter im CSS, bis feststeht, was im Hero passiert — sie jetzt zu löschen hieße, sie in zwei Tagen
+     neu zu schreiben. Der Rang selbst geht nicht verloren: Die Medaille am Bild zeigt ihn in Liste und
+     Rekord-Leiste. */
   let medBanner='';
-  const _pr=podiumRank(c);
-  if(_pr){
-    const ml = ctxRecordMetric()==='weight'? t('msHeaviest') : t('msLongest');
-    const ord = podiumOrdinal(_pr); const mlText = ord ? ml.toLowerCase() : ml;
-    const ctxName = (state.club&&state.club.name)||'';
-    const lead = _pr===1 ? (esc(ctxRecWord())+' · ') : '';
-    const cls = _pr===1?'g':(_pr===2?'s':'b');
-    medBanner = `<div class="pb-banner medal-banner medal-${cls}">${MEDAL_IC}<span>${lead}${ord}${esc(mlText)} ${esc(trSpecies(c.species))}${ctxName?' · '+esc(ctxName):''}</span></div>`;
-  }
   const canGroup = c._db && (state.myContexts||[]).length>0;
   const groupRow = (editing && canGroup) ? `<div class="dgroup-edit"><div class="sectionlabel">${esc(t('logToArea'))}</div><div class="spec efm dgroup-pick" onclick="openDetailAreaSheet()"><svg viewBox="0 0 24 24"><path d="M9 7a3 3 0 1 0 0 6a3 3 0 0 0 0 -6M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg><span class="kv"><span class="efm-pickrow"><span class="v efm-pick">${esc(detailAreaSummary(c))}</span><svg class="efm-chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6l-6 6"/></svg></span></span></div></div>` : '';
   { const gt=document.getElementById('d-group-top'); if(gt){ gt.innerHTML=groupRow; gt.style.display=groupRow?'block':'none'; } }
