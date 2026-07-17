@@ -2315,8 +2315,26 @@ let _loaderShownAt = (typeof performance!=='undefined' && performance.now) ? per
    at the mark. 2200 gives it ~1,3s to land without making the start feel sluggish. */
 const LOADER_MIN_MS = 4600;
 function _now(){ return (typeof performance!=='undefined' && performance.now) ? performance.now() : Date.now(); }
-function showLoader(){ const el=document.getElementById('app-loader'); if(el){ el.classList.remove('hide'); _loaderShownAt=_now(); } }
-function hideLoader(){ const el=document.getElementById('app-loader'); if(!el) return; const elapsed=_now()-_loaderShownAt; if(elapsed>=LOADER_MIN_MS){ el.classList.add('hide'); } else { setTimeout(function(){ el.classList.add('hide'); }, LOADER_MIN_MS-elapsed); } }
+/* showLoader() ist ersatzlos entfallen (17. Juli): Es rief niemand — der Splash gehört dem Kaltstart,
+   und seit hideLoader() ihn aus dem Dokument nimmt, gäbe es auch nichts mehr zum Wiederzeigen. */
+/* Der Splash fliegt nach seinem Auftritt RAUS — nicht nur „versteckt" (JC, 17. Juli: „wenn immer ich
+   zurück gehe sehe ich unsere Intro animation … am Ende der Animation, statisch").
+   Der Befund: `.hide` war gesetzt, `getComputedStyle` meldete aber durchgehend `opacity:1;
+   visibility:visible` — die Klasse griff nicht, und der Overlay legte sich beim Zurückgehen wieder über
+   die App. Sichtbar war das fertige Lockup, also der Endzustand der Choreografie.
+   Warum die Klasse nicht wirkte, habe ich nicht herausgefunden. Deshalb wird der Fall unmöglich gemacht
+   statt erklärt: Was nicht mehr im Dokument steht, kann nicht wiederkommen — und die elf beendeten
+   Lockup-Animationen verschwinden gleich mit.
+   `remove()` erst NACH der 0,5-s-Blende, sonst reißt der Splash hart weg statt zu verschwinden. */
+function hideLoader(){
+  const el=document.getElementById('app-loader'); if(!el) return;
+  const elapsed=_now()-_loaderShownAt;
+  const weg=function(){
+    el.classList.add('hide');
+    setTimeout(function(){ try{ el.remove(); }catch(e){} }, 700);   // > die 500ms der Blende
+  };
+  if(elapsed>=LOADER_MIN_MS) weg(); else setTimeout(weg, LOADER_MIN_MS-elapsed);
+}
 function updateFab(){
   // Plain "+" FAB everywhere (destination-named variant reverted per JC).
   var fb=document.getElementById('mainfab'); if(!fb) return; var lab=fb.querySelector('.fab-label');
