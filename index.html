@@ -467,6 +467,11 @@
      when there is no weather. */
   #d-weather-wrap::before, #d-water-wrap::before, #d-map-wrap::before, #d-notes-wrap::before{content:"";
     display:block; width:75%; height:1px; margin:0 auto 20px; background:var(--border-2);}
+  /* Eine Pause braucht einen Vorgänger. Die Linie verschwand bisher nur mit dem EIGENEN Abschnitt —
+     nicht mit dem darüber. Im Kachel-Modus ohne ausgefüllte Felder ist „Fang" leer UND sein Label
+     ausgeblendet (siehe `d-rows-label`), dann stand „Wetter" ganz oben und pausierte vor nichts
+     (JC, 17. Juli, Anhang 2). `_detailRules()` setzt die Klasse. */
+  #s-detail .no-rule::before{display:none !important;}
   /* Footer: note left, source right, one line. Only fits because the note lost its parenthetical —
      with "(lineare Tendenz, Tageswerte)" it needed 455px of 358 and would have wrapped under the source. */
   /* Only the credit lives here now (the trend note is gone), so the source keeps its right edge via
@@ -703,8 +708,14 @@
      Flex-Kinder haben `min-width:auto` und schrumpfen sonst nicht unter ihre Inhaltsbreite — genau
      deshalb lief der Name im Hero-Band hinaus, obwohl meine Umbruch-Regel dort galt. */
   .catch .sp{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; min-width:0;}
+  /* `break-word`, NICHT `anywhere` (17. Juli, JC: „wir schneiden ein bisschen zu frueh ab, oder?").
+     Der Unterschied ist genau der Fehler: `anywhere` bricht MITTEN IM WORT, auch wenn später ein
+     Leerzeichen käme — daraus wurde „Amerikanisc / her…". `break-word` bricht ein Wort nur auf, wenn es
+     ALLEIN nicht in eine Zeile passt. „Amerikanischer" (14 Zeichen bei ~14 Zeichen Platz) bleibt ganz,
+     „Flusskrebs" geht in Zeile 2 — ohne Ellipse. Ein echtes Monsterwort ohne Leerzeichen wird weiterhin
+     gebrochen, weil es allein nicht passt. */
   .rec-sp, .detail-band .dt, .d-hero-facts .dt{
-    display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:anywhere;}
+    display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:break-word;}
   /* Zwei Zeilen für den Artnamen: Eine wäre für „Amerikanischer Flusskrebs" zu wenig (ein echter Name,
      kein Ausreißer), drei ließen die Kachel wieder wachsen. */
   .rec-sp{-webkit-line-clamp:2;}
@@ -791,16 +802,24 @@
      `initialsAvatar`. Ein Name daneben wäre bei 108 px nach 11 Zeichen abgeschnitten, und über einem
      Initialen-Avatar stünde derselbe Buchstabe zweimal.
      Quer/Desktop: Name dazu. Dort ist Platz — und quer IST der Desktop. */
-  .rec-who{display:flex; align-items:center; gap:5px; margin-top:4px; min-width:0;}
-  .rec-who-av{width:16px; height:16px; border-radius:50%; overflow:hidden; flex:0 0 auto;
-    background:var(--surface-2); display:flex; align-items:center; justify-content:center;}
-  .rec-who-av img{width:100%; height:100%; object-fit:cover; display:block;}
-  /* `initialsAvatar` setzt seine Schriftgröße INLINE (0.9375rem) — das ist für einen 16-px-Kreis viel
-     zu groß und inline schlägt Stylesheet. Deshalb `!important`, wie beim Vollbild der Karte auch. */
-  .rec-who-av > span{font-size:.5rem !important; letter-spacing:0 !important;}
-  .rec-who-nm{display:none; font-size:.66rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  /* Der Ring ist hier KEINE Zierde. Krone und Medaille sind einfarbige Kreise — die trennen sich vom
+     Foto durch die Farbe selbst. Der Angler ist ein FOTO AUF EINEM FOTO; ohne Ring verschwimmt Gesicht
+     in Gesicht. Deshalb trägt nur er einen (JC, 17. Juli: „aber brauch das vll einen rand?"). */
+  .bdg-who{position:absolute; left:-5px; bottom:-5px; z-index:3; width:24px; height:24px;
+    border-radius:50%; overflow:hidden; background:var(--surface-2);
+    border:2px solid var(--surface); box-shadow:0 2px 6px rgba(0,0,0,.35);
+    display:flex; align-items:center; justify-content:center;}
+  .bdg-who img{width:100%; height:100%; object-fit:cover; display:block;}
+  /* `initialsAvatar` setzt seine Schriftgröße INLINE (0.9375rem) — für einen 24-px-Kreis viel zu groß,
+     und inline schlägt Stylesheet. Deshalb `!important`, wie beim Vollbild der Karte auch. */
+  .bdg-who > span{font-size:.6rem !important; letter-spacing:0 !important;}
+  /* Hochkant: nur das Gesicht (am Bild). Der Avatar IST die Identität. Ein Name daneben wäre bei 108 px
+     nach 11 Zeichen abgeschnitten, und über einem Initialen-Avatar stünde derselbe Buchstabe zweimal.
+     Quer/Desktop: Name dazu. Dort ist Platz — und quer IST der Desktop. */
+  .rec-who-nm{display:none;}
   @media (orientation:landscape) and (min-width:560px){
-    .rec-who-nm{display:inline;}
+    .rec-who-nm{display:block; margin-top:3px; font-size:.66rem; color:var(--muted);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;}
     .rec-card{width:132px;}   /* quer ist Platz — da passt der Name hin */
   }
   .rec-strip{display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch;}
@@ -4225,11 +4244,17 @@ function renderKpiCards(kind, items){
     (showMeasures ? (bigLen ? kpiBtn(t('longest'), fmtLen(bigLen.length), true, bigLen.id) : kpi(t('longest'), '—', true)) : '') +
     (showMeasures ? (bigWt ? kpiBtn(t('heaviest'), fmtWeight(bigWt.weight), true, bigWt.id) : kpi(t('heaviest'), '—', true)) : '');
 }
-function badgeWrap(thumbHtml, c){
+function badgeWrap(thumbHtml, c, withWho){
   const r=podiumRank(c);
   const crown = isPb(c) ? `<span class="bdg bdg-crown">${CROWN_IC}</span>` : '';
   const med   = r ? `<span class="bdg bdg-medal bdg-${r===1?'g':(r===2?'s':'b')}">${MEDAL_IC}</span>` : '';
-  return `<span class="thumbwrap">${thumbHtml}${crown}${med}</span>`;
+  /* Das Gesicht unten links AM BILD (17. Juli, JC: „A ist gut"). Mein erster Versuch stellte es als
+     eigene Zeile unter den Wert — dort war es eine Waise: Weil der Artname mal ein-, mal zweizeilig ist,
+     saß es auf jeder Karte woanders, und die Karten wurden unterschiedlich hoch. Am Bild kostet es
+     keine Höhe, alle Karten bleiben gleich, und es sagt ohne Worte „der da hat ihn gefangen".
+     Die vierte Ecke ist frei: Krone oben links, Medaille oben rechts, Gesicht unten links. */
+  const who = withWho ? `<span class="bdg-who">${anglerAvatarHTML(c)}</span>` : '';
+  return `<span class="thumbwrap">${thumbHtml}${crown}${med}${who}</span>`;
 }
 /* `medalBadge(rank)` stand hier — Medaille MIT Rangzahl, für die Liste. Am 17. Juli entfallen: Die
    Medaille sitzt jetzt am Bild und trägt keine Zahl mehr (JC: „keine rangzahl"). Die Farbe sagt den
@@ -4291,6 +4316,11 @@ function renderList(){
 }
 
 // ---------- personal stats (cross-context) ----------
+/* Die eigenen Fänge über alle Kontexte. ACHTUNG, das ist eine Falle (17. Juli): `state.myAllCatches`
+   wird NUR geladen, wenn jemand „Meine Fänge" öffnet — im Fang-Formular ist der Topf leer. Genau daran
+   scheiterte die neue „zuletzt verwendet"-Liste bei der Fischart (JC: „funktioniert nicht (neuer catch
+   flow)"): Sie fragte hier und bekam nichts.
+   Deshalb `myCatchesLocal()` weiter unten für alles, was auch OHNE geladenen Gesamttopf stimmen muss. */
 function myCatches(){
   if(state.auth==='supabase') return (state.myAllCatches||[]);
   const out=[]; const myId = state.me ? state.me.id : null;
@@ -4381,14 +4411,13 @@ function renderRecordsShelf(kind, items){
        Auf „Meine Fänge" ist `_podium` leer → nur die Krone. In der Vereins-Leiste ist alles Gold →
        Medaille, plus Krone, wenn der Gruppenrekord zugleich das eigene PB ist. Genau der Fall, den
        die alte Bauweise gar nicht zeigen konnte. */
-    /* Hochkant nur das Gesicht, quer der Name dazu (JC, 17. Juli). Der Name steht im HTML immer drin
-       und wird per CSS ein-/ausgeblendet — kein zweiter Render-Pfad, der beim Drehen nachziehen müsste.
-       Gerechnet, nicht geraten: 108 px Karte − 16 px Avatar − Abstand ≈ 84 px für den Namen bei 0,66 rem
-       ≈ 11–12 Zeichen. „Sebastian" passt, „Oktay Düzgün" nicht. Deshalb hochkant gar nicht erst. */
-    const who = CFG.who
-      ? `<span class="rec-who"><span class="rec-who-av">${anglerAvatarHTML(c)}</span><span class="rec-who-nm">${esc((c.angler||'').trim())}</span></span>`
-      : '';
-    return `<button type="button" class="rec-card" onclick="openRecordCatch('${c.id}','${CFG.from}')">${badgeWrap(thumb, c)}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span>${who}</button>`;
+    /* Hochkant nur das Gesicht (aus `badgeWrap` unten links AM Bild), quer der Name dazu (JC, 17. Juli).
+       Der Name steht im HTML immer drin und wird per CSS ein-/ausgeblendet — kein zweiter Render-Pfad,
+       der beim Drehen nachziehen müsste.
+       Gerechnet, nicht geraten: 108 px Karte bei 0,66 rem ≈ 11–12 Zeichen. „Sebastian" passt,
+       „Oktay Düzgün" nicht. Deshalb hochkant gar nicht erst — quer sind es 132 px und Zeit zum Schauen. */
+    const who = CFG.who ? `<span class="rec-who-nm">${esc((c.angler||'').trim())}</span>` : '';
+    return `<button type="button" class="rec-card" onclick="openRecordCatch('${c.id}','${CFG.from}')">${badgeWrap(thumb, c, CFG.who)}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span>${who}</button>`;
   }).join('');
   box.innerHTML=`<div class="rec-head">${CFG.headIcon()}<span>${esc(CFG.title())}</span></div><div class="rec-strip">${cards}</div>`;
 }
@@ -4785,7 +4814,27 @@ function previewWeather(){
    Damit ist auch der „Zwei-Türen"-Fehler endgültig weg: Es gibt nichts mehr, das je nach Blickwinkel
    anders antworten könnte.
    `watertemp` wird nicht mehr durchgereicht: Der Parameter war seit dem „Am Wasser"-Umbau tot. */
-function renderWeather(c){ renderWeatherInto(c.weather, c.date, 'd-weather','d-weather-wrap'); }
+function renderWeather(c){ renderWeatherInto(c.weather, c.date, 'd-weather','d-weather-wrap'); _detailRules(); }
+/* Wer trägt eine Trennlinie und wer nicht (JC, 17. Juli).
+   Nicht am Wetter repariert, sondern an der Regel: Die kurze Linie ist eine PAUSE zwischen zwei
+   Abschnitten — der erste sichtbare Abschnitt hat nichts, wovon er pausieren könnte, also trägt er
+   keine. Das gilt dann auch für „Am Wasser", „Ort" und „Notizen", wenn die mal die ersten sind.
+   Warum JS und nicht CSS: Die Abschnitte werden über `style.display='none'` versteckt — INLINE.
+   Darauf kann kein Selektor zugreifen; „erstes sichtbares Geschwister" gibt es in CSS ohnehin nicht.
+   `offsetParent` wäre hier untauglich: Beim ersten Aufbau ist `#s-detail` noch gar nicht sichtbar,
+   dann meldeten ALLE Abschnitte „unsichtbar" und jeder wäre der erste. Deshalb wird gefragt, was
+   gesetzt wurde, nicht was gerade gemalt wird. */
+function _detailRules(){
+  const pad=document.querySelector('#s-detail .pad'); if(!pad) return;
+  let seen=false;   // steht über mir schon etwas Sichtbares?
+  Array.from(pad.children).forEach(el=>{
+    if(el.id==='d-weather-wrap' || el.id==='d-water-wrap' || el.id==='d-map-wrap' || el.id==='d-notes-wrap')
+      el.classList.toggle('no-rule', !seen);
+    // Leer zählt nicht als Vorgänger: `#d-rows` bleibt im Kachel-Modus ohne Felder als leeres <div> stehen.
+    const hidden = el.style.display==='none';
+    if(!hidden && (el.textContent.trim() || el.querySelector('img,canvas,.map'))) seen=true;
+  });
+}
 const WX_IC={
   cloud:'<path d="M6.657 18c-2.572 0 -4.657 -2.007 -4.657 -4.483c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-11.878"/>',
   temperature:'<path d="M10 13.5a4 4 0 1 0 4 0v-8.5a2 2 0 0 0 -4 0v8.5"/><path d="M10 9l4 0"/>',
@@ -6244,6 +6293,17 @@ function _ortSuggest(){ const set=new Set(); (state.catches||[]).concat(state.my
    Bewusst kein Zusammenlegen beider: Dann käme ein gelöschtes Gewässer über die Fänge sofort zurück,
    und „my waters" wäre von Tag eins eine Attrappe. */
 function _waterSuggest(){ const w=(_suggestGet().water)||[]; return w.length ? w : _ortSuggest(); }
+/* Meine Fänge — auch dann, wenn der Gesamttopf nicht geladen ist (17. Juli).
+   Im Fang-Formular ist `state.myAllCatches` leer, solange man „Meine Fänge" nicht geöffnet hat. Dann
+   nehmen wir den Topf des offenen Vereins und filtern auf die EIGENEN — sonst stünden fremde Arten
+   unter „zuletzt verwendet", und das ist etwas anderes als „meine zuletzt". Kein Nachladen: Das
+   Formular geht auf, wenn der Fisch im Kescher liegt; eine Netzanfrage hat da nichts verloren. */
+function myCatchesLocal(){
+  const gesamt = state.myAllCatches||[];
+  if(gesamt.length) return gesamt;
+  const meId = state.me && state.me.id;
+  return (state.catches||[]).filter(c=> !c || !c._db || !meId || c.userId===meId);
+}
 const TA_CFG={
   'f-species':{
     title:()=> t('species'),
@@ -6254,7 +6314,7 @@ const TA_CFG={
       const std=SPECIES.map(s=>({v:trSpecies(s), key:s}));
       const seen=new Set(std.map(o=>o.v.toLowerCase()));
       const eigene=[];
-      (myCatches()||[]).forEach(c=>{ const v=(c&&c.species||'').trim(); if(!v) return;
+      (myCatchesLocal()||[]).forEach(c=>{ const v=(c&&c.species||'').trim(); if(!v) return;
         const k=v.toLowerCase(); if(seen.has(k)) return; seen.add(k); eigene.push({v:v, key:v}); });
       return std.concat(eigene);
     },
@@ -6267,7 +6327,7 @@ const TA_CFG={
        danach ist es der Unterschied zwischen Tippen und Suchen. */
     recent:()=>{
       const seen=new Set(); const out=[];
-      (myCatches()||[])
+      (myCatchesLocal()||[])
         .slice()
         .sort((a,b)=> new Date(b.date) - new Date(a.date))
         .forEach(c=>{

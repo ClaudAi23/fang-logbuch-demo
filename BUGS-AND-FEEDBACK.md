@@ -2,254 +2,271 @@
 
 **Was offen ist: Bugs, abgestimmte Bauten, Diskussionspunkte, Betrieb.** Erledigtes wandert ins `CHANGELOG.md`. Größere Features & Vision → `ROADMAP.md`.
 
-Stand: 12. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt) · 💬 Diskussion/Entscheidung · ⚙️ Betrieb.
+Stand: 17. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt) · 💬 Diskussion/Entscheidung · ⚙️ Betrieb.
 
 > **Prozess-Regel (JC):** Bei **Diskussions-/Entscheidungspunkten** legt Claude Optionen vor und **wartet auf JC's Entscheidung** — keine Alleingänge, außer JC sagt ausdrücklich „bau es".
 
-## 🔧 Fotos lassen sich nicht umsortieren (JC, 16. Juli)
-Im Fotoeditor gibt es **nur „Titelbild setzen"** (`setFormCover`) — das schiebt ein Bild auf Platz 1.
-Eine echte Umsortierung (Bild 3 vor Bild 2) ist nicht baubar, die Reihenfolge ergibt sich allein daraus,
-in welcher Folge man Titelbilder setzt. JC hat die Reihenfolge nur über diesen Umweg ändern können.
-Die Daten können es längst: `catch_photos.sort` ist eine eigene Spalte, und `saveSoloPhotos` schreibt
-sie aus der Reihenfolge von `state.editPhotos`. Es fehlt **nur die Bedienung** — Ziehen im Raster oder
-Pfeile. Vorschlag steht aus, nichts entschieden.
+---
 
-## 🔧 Test-Log-Knopf sitzt falsch — muss weg (JC, 16. Juli)
-Der Knopf **„Test-Log an/aus"** steht **ganz oben in Einstellungen → Persönlich**, direkt über „Profil" —
-also an prominentester Stelle in einem Tab, den jeder Nutzer sieht. Er war nur für den Zuschnitt-Test
-am Gerät gedacht. Erster Versuch war die Gefahrenzone; die hängt am Verein/Gruppe-Tab und war für JC
-gar nicht erreichbar, deshalb der Umzug nach oben — schnell, nicht richtig.
+## ⚙️ BETRIEB — offen
 
-**Nach dem Test ersatzlos entfernen** (nicht verschieben): den Knopf, `dbgToggle()`, `dbgCopy()`,
-`dlog()`, die `.dbg-*`-CSS-Regeln, den `bf_dbg`-Eintrag in localStorage und die `dlog`-Aufrufe in
-`saveCoverPos`, `rowsToCatches` und `saveSoloPhotos`.
-**Eine Sache aus dem Log aber behalten:** `saveCoverPos` hat Datenbankfehler vorher mit
-`.then(()=>{}, ()=>{})` stillschweigend verschluckt. Das Melden bleibt — nur eben nicht ins Test-Panel.
-
-## 🔧 Gewässername aus dem Pin **vorschlagen** (JC, 16. Juli — Ansatz steht, Details offen)
-**Entschieden (JC): vorschlagen, nicht setzen.** Beim Setzen eines Pins auf ein **leeres** Namensfeld
-schlägt die App einen Namen vor, den JC antippen oder ignorieren kann. **Nie überschreiben, nie
-automatisch** — sonst kostet ein verschobener Pin den handgetippten Namen („Hausstrecke").
-
-Recherchiert (16. Juli), damit es nicht später auffällt:
-- **Nominatim-Richtlinie:** max. **1 Anfrage/Sekunde**, **eigener User-Agent** Pflicht (Standard-Header
-  der HTTP-Bibliotheken reichen ausdrücklich nicht), **systematische Abfragen verboten**. Einzelne
-  Pin-Setzungen sind unkritisch; **einmal über alle Altfänge laufen wäre genau der verbotene Fall.**
-- **Der harte Teil ist inhaltlich:** Reverse Geocoding liefert eine **Adresse**, keinen Gewässernamen.
-  Ein Pin auf dem Kleinen Brombachsee ergibt „Absberg, Weißenburg-Gunzenhausen, Bayern". Für den See
-  bräuchte es eine gezielte Suche nach `natural=water` in der Umgebung — und ein Pin am Ufer trifft
-  womöglich eine Wiese. Dazu: OSM-Namen sind oft nicht das, was Angler sagen.
-- Offen: Welcher Dienst? Vorschlag nur bei leerem Feld oder auch als „passt das noch?" nach dem
-  Verschieben? Was bei mehreren Wasserflächen in Reichweite?
-
-## 💬 Fußnoten, Kartenquelle, „In Karten öffnen" (JC, 16. Juli — zu diskutieren)
-JC ist mit den Notizen unter dem Wetter unzufrieden. Idee: **Sternchen** an den Wert, Erklärung
-gesammelt **unten auf der Seite**. Dazu gehört die Kartenquelle (siehe unten) und die Frage, ob der
-Knopf oben rechts auf der Karte als „In Karten öffnen" erkennbar ist — JC: „still not clear".
-
-## 🐛 Vorschläge in Textfeldern sind nach jedem App-Neustart weg (JC, 16. Juli)
-Gemeldet am Gerät: die gemerkten Eingaben für Köder/Rute/Rolle/Boot/Methode überleben einen Reload nicht.
-Gespeichert wird unter `localStorage['bf_suggest']` (`rememberSuggest` / `_suggestGet`), gefüllt per
-`fillSuggestLists()` in die `<datalist>`. Noch **nicht untersucht** — drei plausible Spuren, keine bestätigt:
-Wird beim Start überhaupt gelesen (Aufrufzeitpunkt von `fillSuggestLists`)? Wird beim Speichern
-tatsächlich geschrieben? Oder räumt iOS den Storage der installierten PWA weg — die hat einen eigenen
-Container, getrennt von Safari. **Vor dem Fix messen, nicht raten.**
-
-## 🧪 GETESTET & BESTÄTIGT (JC, Gerät — 13. Juli, alles ✅)
-Gesamter Gerätetest-Backlog bestätigt & abgehakt: Standalone-Vollbild · #12 Footer · #19 Avatar · Chooser schneller · E-Mail read-only · Verein/Gruppe-Tab · **Fotos/Thumbnails** · Tagline · Login-Umbruch (app-weit) · Maskottchen-Loader (nur Kaltstart, größer, 1,5 s) · Statusleisten-Flash gefixt · #15 Toolbar + Pfeil-Fix · „Dieses Jahr"-Kachel (Jahr / bei Zeitfilter ausgeblendet) · #14 „Fänge aus" Multiselect-Sheet (+ Solo immer, Layers-Icon) · Angler-Filter aus Mitgliedern · Filter sticky Apply · #13 Sticky-Kopf (Art + Maß + Datum, Fade beim Scrollen) · #17 Chips · #16 Teilen-Vorschau.
-
-## ✅ ONBOARDING-REWORK + TAGLINE (deployed 13. Juli, Commit 784317c — smoke-getestet)
-- Reihenfolge: **Welcome → Was-erwartet-dich → Profil → Als App**.
-- „Was erwartet dich"-Screen: Maskottchen (82 px) · **Butler Fish**-Titel · **Catch · Log · Organize** (= neue Tagline, lokalisiert) · 3 Benefit-Zeilen (Im Handumdrehen erfasst · Solo oder gemeinsam · **Deine Bestwerte mit Pokal-Icon**) · Footer ＋. Icons neu/zentriert.
-- **Tagline app-weit** von „Dein Fang, gut aufgehoben." → **„Catch · Log · Organize"** (lokalisiert: de „Fangen · Protokollieren · Organisieren", nl „Vangen · Loggen · Organiseren"). Header, Login, Onboarding + HTML-Defaults bereinigt.
-- **Cleanout:** 27 ungenutzte alte Onboarding-i18n-Keys entfernt (obTeamTitle/Solo/Verein/Gruppe…, obCLO). *(Auf Gerät prüfen: Icon-Ausrichtung, Höhe/Scrollen.)*
+*(Keine offen.)*
 
 ---
 
-## ⏸️ VERTAGT AUF MORGEN — #9 „Zwei Bildsprachen auf der Detail-Seite" (JC: **wichtigstes Thema nach dem Rebranding**)
-**Wo wir stehen — Frage:** Die Detail-Seite hat zwei Sprachen: **„Fang" = offene Zeilen** (Icon + Label + Wert, Haarlinien, kein Container) vs. **„Wetter" = gefüllte Karten**. Kohärent oder inkonsistent?
-
-**Mockups gemacht:** `weather_block_language_options` (Jetzt / A / B) und `detail_module_style_variants` (A / C / D). Alle mit gekürzten Labels, damit nur der Container variiert, und mit Fang-Zeilen darüber (Kohärenz nur im Kontrast beurteilbar).
-
-**Optionen:**
-- **Jetzt:** 5 einzeln umrandete Kästchen → unruhig, wirkt wie anderer Baukasten statt Aussage.
-- **A (Claude-Empfehlung):** Fang bleibt offene Zeilen · **Wetter wird EIN Modul** (eine Fläche, 2-spaltiges Innenraster mit Haarlinien, keine Einzelrahmen). Dashboard-Blick bleibt, Rauschen halbiert.
-- **B:** Wetter als Zeilen (nach unten vereinheitlicht) → maximal kohärent, aber Wetter verliert den Auf-einen-Blick-Charakter, wird sogar höher als A.
-- **C:** **beides Modul** (Fang-Panel + Wetter-Panel) → im Standbild am „designtesten", ABER: Edit-Modus bricht (Eingabefeld im Panel im Panel = der von JC verworfene „bulky form"-Look); auf dunklem Theme stapeln sich 3 Flächen → Hierarchie flacht ab, Hero verliert Punch.
-- **D:** Zeilen + eigene Fläche/Tint je Modul → Dilemma: Tint entweder unsichtbar (nutzlos) oder wirkt wie Farbfehler; Wetter verliert trotzdem den Blick.
-
-**Claudes Kernargument für A:** *Die Bildsprache soll Editierbarkeit kodieren.* Offene Zeilen = deine Daten (verwandeln sich unterm Stift in Eingaben). Geschlossene Fläche = gemessene Welt, nie editierbar. Konsistent **nach Bedeutung**, nicht nach Dekoration — in einem Satz vor einer Jury erklärbar.
-
-**Offener nächster Schritt:** JC überlegt noch. Claude hat angeboten, **C im Edit-Modus zu mocken** (Eingabefelder im Panel) — das beantwortet die Frage vermutlich von selbst. **Erst Rebranding, dann das hier.**
-
-## 🎨 DESIGN-REVIEW Detail-Seite (Claude, 16. Juli — zur Absegnung durch JC)
-*Aus dem Award-Review der Detail-Seite. Nichts davon war vorher im Backlog. #9 (zwei Bildsprachen) wird separat diskutiert.*
-- **🐛 (1) Trend-Pfeil und Zahl widersprechen sich:** Wind zeigt „→ **−0** km/h" (minus null!), Druck „→ **+1** hPa" — der Pfeil sagt flach, die Zahl sagt Veränderung. Ursache: Schwelle entscheidet über den Pfeil, die Zahl wird unabhängig gerundet. **Fix:** unter der Schwelle „±0" **oder** gar keine Zahl; Pfeil und Zahl müssen dieselbe Aussage treffen.
-- **🐛 (2) Einheit doppelt:** Label „SCHLEPPGESCHW. **(KM/H)**" + Wert „2,56 **km/h**". Einheit gehört nur an den Wert → Label „Schleppgeschw.".
-- **🐛 (3) Schleppgeschw. sichtbar bei Methode „Fly fishing".** Bewusst hatten wir vorhandene Werte nicht versteckt — die Kombination sieht aber falsch aus. **Vorschlag:** im Detail ausblenden, wenn Methode ≠ Trolling (Daten bleiben erhalten, erscheinen wieder bei passender Methode).
-- **🔧 (4) Wetter-Labels kürzen:** „LUFTTEMPERATUR" o. Ä. ist zu lang für die schmalen Karten; die Sektion heißt schon „Wetter" → **Luft · Wasser · Wind · Druck · Mond**.
-- **🔧 (5) Trend-Fußnote zu technisch + unpräzise:** „Pfeile: Veränderung über die letzten 7 Tage (lineare Tendenz, Tageswerte)" — bei einem Fang vom 28. Jan sind es nicht „die letzten 7 Tage", sondern die **7 Tage vor dem Fang**. Kurz + korrekt formulieren.
-- **🔧 (6) Mond-Icon zu klein (13px):** ausgerechnet das einzige Icon, das echte Information trägt. → in der **Wertzeile ~20px** zeigen statt als Mini-Label-Icon.
-- **🔧 (7) Karten-Pin ist ein schlichter Punkt** — echter Marker (Tropfenform, Teal) wäre ein billiger, sichtbarer Gewinn.
-- ✅ **(alt 8) Angler-Byline steht sehr einsam** — erledigt 16. Juli (Byline trägt jetzt Name · Badge · Datum).
-- **🐛 (8) Nicht ausgefüllte Felder werden angezeigt (JC, 16. Juli):** Im Wetterblock entscheidet **`wxOn(key)` — die Voreinstellung — ob eine Kachel erscheint, nicht ob ein Wert da ist** (Zeilen 3969–3973). Bedingungen rendert bei fehlendem Wert ausdrücklich `'—'`. Ein eingeschaltetes, aber leeres Feld belegt damit Platz und sagt nichts. Die Fangfelder im Lesemodus machen es richtig (`if(c.method) …`). **Noch nicht entschieden:** Gilt „leer = weg" auch, wenn der Verein das Feld auf `required` stellt? Dann wäre die Lücke ja die Aussage.
-- **🐛 (9) Wassertemperatur lässt sich auf der Detailseite gar nicht eintragen (JC, 16. Juli):** Kein Anzeigefehler — das Feld **fehlt im Detail-Editor komplett**: nicht in den Edit-Zeilen (5610–5624), nicht in der Nachtragsliste für leere Felder (5669), nicht in `EDITABLE_FIELDS` (5674), kein `INLINE_EF`-Eintrag. Es existiert nur im alten Log-Formular (`f-watertemp`). **Belegt:** JCs Profil hat `watertemp: true`, trotzdem ist `water_temp_c` bei **allen 10 Fängen null** — das Feld war eingeschaltet und wurde nie angeboten. Anzeige und DB-Weg sind in Ordnung (Zeile 2908 liest, 3971 zeigt `if(watertemp!=null)`). **Fix:** watertemp in die vier Listen aufnehmen, `INLINE_EF` mit `unit:'°C'`, `col:'water_temp_c'`, `mode:'decimal'`.
-
 ## 🐛 OFFENE BUGS
-- ✅ **Text-Felder leerbar (15. Juli — GEFIXT & live verifiziert):** „Feld leeren"-Zeile (`__clear`) im Typeahead-Sheet für Köder/Rute/Boot/Methode + Gewässer, nur wenn ein Wert gesetzt ist; speichert `null` → Feld zeigt „—". i18n de/en/nl. Live-Smoke: Köder → `null`. *Kleine Politur offen: beim Gewässer steht die Zeile nach dem „zuletzt"-Eintrag (Vorschläge + recent kommen beide aus `_ortSuggest`) — sollte ganz oben stehen.*
-- ~~**Text-Felder lassen sich nicht leeren (JC, 15. Juli):**~~ Zahl-Felder (Länge/Gewicht/Tempo) sind echte Inline-Inputs → löschen ergibt `null` → „—". **Text-Felder (Köder, Rute, Boot, Methode, Gewässer)** laufen über das **Typeahead-Sheet**, das nur *auswählen* kann und **keine „Leeren"-Option** hat → einmal gesetzt, nie mehr entfernbar. **Fix:** „Entfernen/Leeren"-Zeile im Typeahead-Sheet (nur wenn Wert gesetzt), speichert `null`; Sentinel-Key `__clear` in `editTypeaheadField` + `editWaterField`; i18n-Label de/en/nl.
-- **Log-Formular zeigt alle Sektions-Überschriften** (Basis · Der Fang · Fotos · Gewässer · Bedingungen · Technik · Notizen), auch wenn keine Felder aktiv/relevant → nur Überschriften mit sichtbaren Feldern zeigen.
-- ✅ **Statistik „Dieses Jahr"-Kachel** (gefixt, deployed): zeigt jetzt das aktuelle Jahr als Label; bei aktivem Datumsfilter das Jahr/den Bereich (z. B. „2024", „2023–2024", „≥ 2024") + passende Anzahl.
 
-*(Gefixt & deployed 12. Juli: Log-Felder-Häkchen zentriert · Konto-Buttons vereinheitlicht + „Konto löschen" wie Danger Zone. Auf Gerät gegenprüfen: Häkchen-Zentrierung (Pixel-Tweak).)*
+### Verhalten — Rollen
+- **🔬 Ownerschaft übergeben am Gerät durchspielen (offen).** Der Rollen-Umbau (owner/admin/member) ist
+  gebaut, live und in der DB verifiziert — Details im `CHANGELOG.md` (Commit `6abb9d7`). Geprüft wurde die
+  **Logik**, nicht der **Fluss**: Die Übergabe hat noch niemand am Gerät durchgeklickt.
 
-*(Gefixt & deployed 12. Juli: Notizen-Doppel-Überschrift · Feier nur bei **neuem** Fang (+ etwas länger) · Fang-Karte Datum zeigt Jahr wenn ≠ laufendes Jahr + „–" bei fehlenden Maßen ausgeblendet · Reset-Button-Sichtbarkeit · Mitglieder-Tap-Warnung (letzter Admin). Device-Test-Bugs siehe CHANGELOG. **Auf Gerät prüfen:** Open-in-Maps, Safe-Area, Sheet-Wisch.)*
+### 🔬 Am Gerät noch unverifiziert (live seit `878d17d`, 17. Juli — Details im `CHANGELOG.md`)
+- **Sternchen-Legende kontextsensitiv** — braucht zum Prüfen einen Verein mit einem Pflichtfeld.
+- **Erfolgs-Screen nach Einladung nennt Verein/Gruppe beim Namen** — braucht eine echte Einladung.
+*(Stapel-Fix und lange Fischnamen sind an der ausgelieferten Fassung nachgemessen — die sind belegt.)*
+
+### Filter
+- **🐛? „Meine Fänge"-Filter: Gruppenfilter fehlt (JC, 17. Juli — „filter my catches is missing a group
+  filter, ist it?").**
+  **Nachgesehen, und der Befund ist nicht eindeutig:** Es *gibt* ihn. `#flt-ctx-field` mit dem Label
+  **„Fänge aus"** (`showCatchesFrom`), und er wird genau dann eingeblendet, wenn
+  `state.filterTarget==='stats'` — also auf „Meine Fänge". Der Filter-Knopf dort ruft `openFilter('stats')`,
+  die Bedingung müsste greifen.
+  **Damit sind es zwei mögliche Fehler, und ich weiß nicht welcher:**
+  (a) Er erscheint tatsächlich nicht → echter Bug, dann am Gerät nachsehen, ob `filterTarget` stimmt.
+  (b) Er erscheint, aber JC hat ihn unter „Fänge aus" nicht als Gruppenfilter erkannt → Benennung.
+  *Für (b) spricht: Der i18n-Schlüssel `ctxFilter` heißt „Verein / Gruppe" — das Wort existiert also,
+  wird an dieser Stelle aber nicht benutzt.*
+  **Vor dem Fix: JC fragen, ob das Feld „Fänge aus" da ist.**
+
+### Verhalten
+- **🔧 Detail-Edit: Tap auf einen Verein soll nach dem Pflichtwert fragen (JC entschieden 17. Juli — NOCH ZU BAUEN).**
+  **Der Befund, der JCs Entwurf („Warnung beim Speichern") nicht aufgehen ließ:** Im Detail-Edit gibt es
+  **kein Speichern**. `detailToggleArea()` schreibt im Moment des Antippens direkt in die DB:
+  `await getSB().from('catches').update({context_id, context_ids})` — ohne jede Prüfung. Der Verein ist
+  drin, bevor ein Dialog aufgehen könnte. *(Im Formular greift es dagegen seit dem 17. Juli korrekt —
+  dort sammelt `toggleArea` nur in `state.formTargets`, geprüft wird in `saveCatch`.)*
+  **JCs Entscheidung:** Der Tap fragt gleich nach dem Wert — „ASV braucht die Entnahme" → Auswahl öffnet
+  sich → danach ist der Verein drin. Kein Umweg übers Formular; der Moment bleibt dort, wo er ausgelöst wurde.
+
+---
 
 ## 🔧 OFFENE BAUTEN (abgestimmt — kein Diskussionsbedarf)
-- **🦸 CATCH-DETAIL HERO-REDESIGN (14. Juli — Design LOCKED via Mockups, bauen):** kompletter Detail-Seiten-Umbau.
-  - **Hero (oben):** immersives Cover-Foto; **Krone oben rechts** (bei PB). Overlay unten: **Artname (groß) + Größen-Chips (Länge, Gewicht)**. **KEIN Datum, KEIN Angler** im Hero. Multi-Foto → Thumbnail-Streifen unter dem Hero (erste ~4 + „+N", Tap → Galerie). Kein Foto → Hero schrumpft zu schlankem Band (Art + Größe), funktioniert weiter.
-  - **PB-Anzeige = Krone im Hero oben rechts** (ersetzt Krone-neben-Art). Manuelle Kontrolle (Edit-Modus: Krone tippen → Menü; Edge-Case **A** bestätigt) kann danach dran.
-  - **Angler = Byline (Variante B), IMMER zeigen** (auch Solo): „Gefangen von [Avatar-Initialen] Name" als Credit-Zeile **unter den Fotos** (Hero → Thumbnail-Streifen → Byline → „Fang"). Bei nur/keinem Foto direkt unter dem Hero. **Nicht** als Spec-Feld-Zeile.
-  - **„Fang"-Spec-Reihenfolge:** 1) Datum (voll) · 2) Entnahme | Methode · 3) Köder (voll) · 4) **Rute | Rolle** (Rolle/Reel = neues Feld) · 5) Boot | Tempo · 6) Gewässer (voll). **Länge/Gewicht raus** (im Hero), **Angler raus** (Byline).
-  - **Paar-Regel:** jedes Paar entweder **beide halb** oder **beide voll** (nie halb+voll); einzelnes Paarmitglied → volle Zeile. Gilt für alle Paare.
-  - **Wetter:** 2×2-Karten (Luft, Druck, Wasser, Mond) mit **Trend-Pfeilen** (JC mag die Darstellung). **Trends nicht vergessen.**
-  - **Karte** darunter (mit den Karten-Control-Fixes aus dem Politur-Batch).
-  - Mockups: `catch_detail_final_overview` (final), Hero-Varianten. JC: „Sieht toll aus".
-- **🆕 JC-Feedback-Batch (15. Juli — Hero-Test):**
-  - ✅ **Hero-Foto Zoom** — Overlay (Facts/Grad) click-through → Tap aufs Foto öffnet die Zoom-Lightbox. Live.
-  - ✅ **Hero ohne Foto** — statt Band jetzt derselbe Hero-Look mit **Hintergrundfarbe + niedriger Höhe** (132px); Angler-Byline **darunter** (vorher rutschte er über den Hero-Inhalt). Live.
-  - 🔧 **Einstellungen „+ add" → „−"** wenn geöffnet/aktiv (welche Stelle genau prüfen — Akkordeon/Add-Buttons). Klein.
-  - 🔧 **Back-Nav-Bug:** von einem Catch in die Einstellungen → „Zurück" landet beim **Verein** statt beim **Catch**. Rückkehr-Ziel merken.
-  - 💬 **PB-Anzeige für DB/Verein-Fänge:** evtl. **„PB"-Text statt Krone** — oder **PB + Krone**? (JC fragt.) → kurz entscheiden.
-- **🆕 JC-Feedback-Batch (14. Juli, 2. Runde):**
-  - **(1) Hero-Kategorie** — 💬 unklar, Rückfrage: was/wo genau (Detail-Hero? Stats? Kategorie-Label auf dem Foto?).
-  - **(2) „Rolle/Reel" als Eingabe-Kategorie** — neues Feld wie Rute/Boot/Köder (Feld-Config + Detail + Edit + Share/CSV). ✅ klar, bauen.
-  - **(3) Rekord-Kacheln umsortierbar** — „Deine Rekorde"-Shelf (Stats, `rec-strip`) per **horizontalem** Drag&Drop neu ordnen (Reihenfolge lokal). ✅ klar, bauen.
-  - **(4) PB-Anzeige NEU diskutieren** — JC will „how **and** where" ändern (nach Krone-neben-Art). 💬 → **Manuelle-PB-Kontrolle pausiert**, bis Anzeige entschieden. Neue Mockups/Optionen nötig.
-  - **(5) Zwei Nachkommastellen max** in Zahl-Feldern (wo Dezimal unterstützt: Gewicht kg, Schlepp km/h; ggf. Wassertemp). ✅ klar, bauen (Input-Clamp + parse).
-  - **(6) Stats umordnen/ordnen** — 💬 Reihenfolge der Stats-Sektionen/Kacheln: fixe neue Reihenfolge (JC nennt) oder Drag? Rückfrage. (a) **Karten-Controls** — Leaflet +/−-Zoom restylen + „In Karten öffnen"-Icon (Position/Stil); jetzt auch Edit-Karte betroffen. (b) **Wetter-Footer aufräumen + Mondphase** (Emoji raus → mono/theme-aware Icon). (c) **Schleppgeschw. nur wenn Methode = Trolling** — Trigger = kanonische Methode „Trolling/Schleppangeln"/„Trolling"/„Trollen" (Substring trolling/schlepp/trollen); Feld + ＋-Zeile in Detail **und** Formular nur dann. (d) **Altes „Bearbeiten"-Formular abschaffen** (JC: „can go") — Inline-Edit deckt alles ab; Einstiegspunkte/openEdit/editCurrentCatch entfernen, Formular-Sektion prüfen.
-- **🎛️ Manuelle PB-Kontrolle + Anzeige-Änderung (JC 14. Juli — WICHTIG):** „Nicht mein Rekord" (Krone weg ohne Löschen; braucht `pb_optout`) + „Als Rekord markieren"; **UND JC will die PB-Anzeige (Krone/Banner) ändern** → Richtung offen, Proposal/Rückfrage vor Bau.
-- *Nicht Detail-Seite / später:* #16 Teilen-Vorschau (anderer Screen), Maßeinheiten-Settings (→ ROADMAP G), Record-Moment/Confetti-Edge-Cases (Test, später).
-- **✅ #15 Detail → echter Edit-Modus (14. Juli — KOMPLETT inline, live verifiziert; Geräte-Test läuft):** Felder, Notizen, **Fotos, Karte, Gruppe/Verein** — alles im Stift→„Fertig"-Modus, kein Formular-Umweg. Indikator = Stil A (flacher Unterstrich, hugt Wert; Chevron = Picker). Datum = echtes Inline-`datetime-local`. Gewässer = Typeahead. Fotos = editierbares Grid (Add/Remove/Cover), Karte = Tap-Pin + „Mein Standort", Gruppe = „Eintragen in"-Zeile ohne App-Kontext-Switch. Bridge-Button entfernt. Geräte-Test durch JC läuft. **Ursprünglicher Plan (erledigt):**
-  - ✅ Read-only **komplett clean** (keine Indikatoren, keine ＋-Zeilen), **ein** Stift oben rechts.
-  - ✅ editierbare Text-/Zahl-Felder = **dauerhafte Inline-Inputs** (sauberer Spec-Look, dezente Akzent-Unterlinie) → **native ↑/↓ funktionieren jetzt**; Enter = nächstes Feld; Blur committet pro Feld.
-  - ✅ Auswahl/Datum/Angler → Sheet/Picker, **bleibt im Edit-Modus** (`keepEdit=true`).
-  - ✅ **Notizen-Textarea mit Placeholder**.
-  - ✅ **„＋ hinzufügen"** nur im Edit-Modus, Ausrichtung gefixt.
-  - **Offen — nächstes Increment (JC will inline, nicht Formular):**
-    - **Karte anpassbar** (Pin verschieben + „Mein Standort") — heute per Button „Fotos, Karte & Bereich bearbeiten" → Formular (Interim, kein Regress).
-    - **Fotos editierbar** (hinzufügen/entfernen/neu ordnen — `renderFormPhotos`/`state.editPhotos`/`saveSoloPhotos`) — heute per Button → Formular.
-    - **„Eintragen in" / Gruppe-Verein ändern** (Area-Sheet) — heute per Button → Formular.
-    - **Fischart** editierbar (Typeahead) — heute per Button → Formular.
-  - **Geräte-Test (JC):** iOS ↑/↓-Feldnavigation, Blur-Commit, Sheet-bleibt-im-Modus. Dann Fotos/Karte/Bereich inline verdrahten & Formular-Button entfernen.
-  - *Damit gefixt (JC 14. Juli): ＋-Buttons verschoben · native ↑/↓ tot · Notizen ohne Placeholder · Gewicht/Tempo nicht als editierbar erkennbar. Noch via Formular-Button: Gruppe · Karte · Fotos.*
-- ✅ **Sentence case** (geprüft): Audit über EN-Labels durchgeführt — keine Title-Case-Verstöße gefunden (DE-Nomen korrekt groß). Erledigt.
-- **Angler-Filter aus Mitgliederliste** *(JC: „to change it")* — Filter mit allen Mitgliedern vorbefüllen („Ich" zuerst), nicht nur mit Anglern, die schon gefangen haben.
-- **Ladezeiten/gefühlte Langsamkeit + Maskottchen-Ladescreen** *(JC: „follow the rec")* — Maskottchen-Loader zentriert beim Initial-Load/Datenabruf **und** echter Perf-Pass: Login-Queries parallelisieren, Fonts `display=swap` (später self-host), Foto-Thumbnails (später). Loader kaschiert, Perf-Pass behebt.
-- **Einstellungen Verein/Gruppe-Selektor kontextsensitiv:** wie der Homescreen-„+" soll der Verein/Gruppe-Umschalter in den Einstellungen **nur eines** zeigen (entweder Verein **oder** Gruppe, je nach Kontext), nicht beides. *(JC, 13. Juli.)*
-- **🔧 Manuelle PB-Kontrolle (JC, 14. Juli — VOR dem großen Test heute):** die Krone wird heute **automatisch** vergeben (größter geloggter Fang je Art/Metrik). Nötig:
-  - **(a) „Nicht mein Rekord" entfernen** — Krone von einem Fang nehmen, obwohl er der größte **geloggte** ist (der echte PB ist einfach nicht erfasst), **ohne** den Fang zu löschen. Braucht persistenten Per-Fang-Opt-out (sonst setzt `recomputePb` die Krone wieder), z. B. Spalte `pb_optout`.
-  - **(b) Selbst als PB markieren** — manuelle Übersteuerung der Auto-Wahl.
-  - **Regel:** manuell/Opt-out gewinnt immer gegen `recomputePb` (ausgeschlossene Zeilen bekommen die Flag nie). Detail-Aktion „Nicht mein Rekord" / „Als Rekord markieren".
 
-**Diskussion 11–20 entschieden (13. Juli) — Bau in Etappen:**
-- **Batch A (leichter):** 11 Tagline · 12 Höhe bis unten füllen · 13 Art-Kopf + Subtitle · 17 2-Spalten-Feld-Toggles · 19 My-Catches-Avatar · 20 Profil-Subheadline · Verein/Gruppe-Selektor kontextsensitiv.
-- **Batch B (Layout/Struktur, danach):** 14 Filter/Kontext-Auswahl als Avatar-Sheet · 15 My-Catches-Button-Layout · 16 Teilen-Vorschau kombinieren · 18 Einstellungen-Navigation vereinheitlichen (Akkordeon überall, Persönlich/Verein-Gruppe aligned).
+- **🔧 Fischart „zuletzt verwendet" (letzte 5 aus den Faengen) — entschieden, noch offen.**
+  `TA_CFG` fuer die Art hat `recent:()=> []`: Der Platz ist verdrahtet und steht leer. Wird wichtig,
+  sobald der Artenkatalog von 9 auf hunderte waechst. *(Braucht keine Spalte — Arten stehen auf den
+  Faengen und werden nicht "gepflegt" wie Geraet. Der Bestand `user_items` ist dafuer NICHT zustaendig.)*
 
-*(Gefixt & deployed 12. Juli: Mitglieder-Hinweis gekürzt · Reset als Icon-Overlay + Sichtbarkeit (auch Chip-Insert) · Backward-Compat-Token entfernt · Rollen-Badge ohne Chevron · **Profil #16 komplett** (Initialen-Editor über Standort, „Kürzel anpassen"→„Initialen", Tap-Avatar=Farbe wechseln).)*
+- **🔧 Fotos umsortieren: ZIEHEN im Raster — entschieden (JC, 17. Juli).**
+  Im Fotoeditor gibt es heute **nur „Titelbild setzen"** (`setFormCover`) — das schiebt ein Bild auf
+  Platz 1; Bild 3 vor Bild 2 geht gar nicht. Die Daten können es längst: `catch_photos.sort` ist eine
+  eigene Spalte, und `saveSoloPhotos` schreibt sie aus der Reihenfolge von `state.editPhotos`.
+  **Es fehlt nur die Geste — und die gibt es bereits:** Vereine/Gruppen werden per **Long-Press-Ziehen**
+  sortiert (Reihenfolge in `bf_order`, Handler ~Z. 6493). JC: *„verhalten sollte ähnlich dem umsortieren
+  der gruppen und vereinslisten sein"* — **genau, dieselbe Mechanik wiederverwenden**, nicht neu erfinden.
 
-## ⏳ VERTAGT — Erfolgs-Karte: glüht cyan (JC, 16. Juli: „diskutieren wir nochmal")
+- **🔧 Versionsnummer im Ladescreen (JC, 15. Juli)** — der `BUILD`-Marker liegt schon als Code-Cleanup
+  in der Roadmap; hier bekommt er einen sichtbaren Ort. Beantwortet nebenbei die Frage „läuft das Update
+  überhaupt?", die uns schon Zeit gekostet hat.
 
-**Wo:** `#success-ov` / `.success-card` — erscheint nach dem Speichern eines Fangs. Normal mit Häkchen;
-als `.big` beim **Rekord-Moment** (erster Fang · längster · schwerster · neue Art) mit Konfetti, größerem
-Maskottchen und einer pulsierenden Animation namens **`lureflare`** — *Köderlicht*.
+- **🔧 Rekord-Kacheln umsortierbar** — „Deine Rekorde"-Shelf (Stats, `rec-strip`) per **horizontalem**
+  Drag&Drop neu ordnen (Reihenfolge lokal). *(JC, 14. Juli.)*
+
+- **🔧 Einstellungen „+ add" → „−"** wenn geöffnet/aktiv (welche Stelle genau prüfen — Akkordeon/Add-Buttons). Klein.
+
+- **🔧 Vereins-/Gruppenlogo in die WhatsApp-Einladung (JC, 17. Juli)** — die Einladungs-Nachricht könnte
+  das Logo des Vereins/der Gruppe tragen. *(Prüfen: WhatsApp zieht Vorschaubilder aus OG-Tags einer URL —
+  ein Bild lässt sich nicht in den Text legen. Braucht also eine Einladungs-Seite mit `og:image`,
+  nicht nur einen Text. Hängt damit an der Deep-Link-Arbeit, Roadmap #17.)*
+
+- **🔧 Altes „Bearbeiten"-Formular abschaffen** (JC: „can go") — Inline-Edit deckt alles ab;
+  Einstiegspunkte/`openEdit`/`editCurrentCatch` entfernen, Formular-Sektion prüfen.
+
+- **🔧 Angler-Filter aus Mitgliederliste** *(JC: „to change it")* — Filter mit allen Mitgliedern
+  vorbefüllen („Ich" zuerst), nicht nur mit Anglern, die schon gefangen haben.
+
+- **🔧 Einstellungen Verein/Gruppe-Selektor kontextsensitiv** — wie der Homescreen-„+" soll der
+  Umschalter **nur eines** zeigen (entweder Verein **oder** Gruppe, je nach Kontext), nicht beides. *(JC, 13. Juli.)*
+
+- **🔧 Ladezeiten/gefühlte Langsamkeit** *(JC: „follow the rec")* — Maskottchen-Loader zentriert beim
+  Initial-Load/Datenabruf **und** echter Perf-Pass: Login-Queries parallelisieren, Fonts `display=swap`
+  (später self-host), Foto-Thumbnails (später). Loader kaschiert, Perf-Pass behebt.
+
+- **🔧 Gewässername aus dem Pin *vorschlagen* (JC, 16. Juli — Ansatz steht, Details offen).**
+  **Entschieden (JC): vorschlagen, nicht setzen.** Beim Setzen eines Pins auf ein **leeres** Namensfeld
+  schlägt die App einen Namen vor, den JC antippen oder ignorieren kann. **Nie überschreiben, nie
+  automatisch** — sonst kostet ein verschobener Pin den handgetippten Namen („Hausstrecke").
+  Recherchiert (16. Juli):
+  - **Nominatim-Richtlinie:** max. **1 Anfrage/Sekunde**, **eigener User-Agent** Pflicht (Standard-Header
+    der HTTP-Bibliotheken reichen ausdrücklich nicht), **systematische Abfragen verboten**. Einzelne
+    Pin-Setzungen sind unkritisch; **einmal über alle Altfänge laufen wäre genau der verbotene Fall.**
+  - **Der harte Teil ist inhaltlich:** Reverse Geocoding liefert eine **Adresse**, keinen Gewässernamen.
+    Ein Pin auf dem Kleinen Brombachsee ergibt „Absberg, Weißenburg-Gunzenhausen, Bayern". Für den See
+    bräuchte es eine gezielte Suche nach `natural=water` in der Umgebung — und ein Pin am Ufer trifft
+    womöglich eine Wiese. Dazu: OSM-Namen sind oft nicht das, was Angler sagen.
+  - Offen: Welcher Dienst? Vorschlag nur bei leerem Feld oder auch als „passt das noch?" nach dem
+    Verschieben? Was bei mehreren Wasserflächen in Reichweite?
+
+- **Batch B (Layout/Struktur):** 15 My-Catches-Button-Layout · 16 Teilen-Vorschau kombinieren.
+
+---
+
+## 💬 ZU DISKUTIEREN / ENTSCHEIDEN (Proposals kommen vor dem Bau)
+
+### Löschen
+- **💬 Löschen aus EINER Gruppe löscht den Fang ÜBERALL — ohne Warnung (JC, 17. Juli).**
+  JC: *„wenn ich einen fang aus einer gruppe loesche, sollte es eine warnung geben, falls der fang noch
+  in anderen gruppen geloggt ist."*
+  **Nachgesehen, und es ist schärfer als die Meldung:** Es fehlt nicht nur die Warnung — es gibt gar
+  keinen Weg, ihn *aus einer* Gruppe zu nehmen. Ein Fang ist **eine Zeile** mit `context_id` +
+  `context_ids`; `deleteCatch()` macht `from('catches').delete().eq('id', id)`. Die Zeile ist weg, und
+  damit der Fang aus **allen** Vereinen und Gruppen gleichzeitig. Der Dialog sagt dazu nur „Diesen Fang
+  wirklich löschen?".
+  **Der Fall ist nicht theoretisch:** In der DB liegen **2 von 17** Fängen in mehreren Kontexten, einer
+  in **dreien**.
+  **Die eigentliche Frage ist nicht der Warntext, sondern was „Löschen" hier heißen soll** — und davon
+  hängt der Bau ab:
+  - **(a) Nur warnen:** „Dieser Fang ist auch in *Butter bei die Mutti* und *ASV Steife Rute* eingetragen.
+    Löschen entfernt ihn überall." Ehrlich, klein, ändert nichts an den Daten. Löst aber JCs eigentliches
+    Problem nicht, wenn er ihn nur aus *einer* Gruppe nehmen wollte.
+  - **(b) Zwei Aktionen trennen:** „Aus dieser Gruppe entfernen" (streicht die Gruppe aus `context_ids`,
+    Fang bleibt) vs. „Fang löschen" (Zeile weg). Das ist vermutlich, was JC meint — und es ist die
+    einzige Variante, die den Fang eines anderen Vereins nicht mit wegreißt.
+  - **Zu klären, bevor irgendwas gebaut wird:** Wer darf was? Der Vereins-**Admin** möchte einen Fang
+    vielleicht aus *seinem* Verein nehmen — er darf ihn aber nicht dem Angler aus dem Logbuch löschen.
+    Heute kann er beides nicht unterscheiden, weil es nur einen Knopf gibt. Dazu: Was passiert mit der
+    letzten Gruppe — wird der Fang dann Solo, oder ist das das Löschen? Und: Rekorde/Podium hängen an
+    `context_ids`, müssen also nachgerechnet werden.
+
+
+### Personal Best
+- **💬 PB-Anzeige NEU diskutieren (JC, 14. Juli)** — JC will „how **and** where" ändern (nach
+  Krone-neben-Art). Neue Mockups/Optionen nötig. *(Blockiert nichts mehr: Die manuelle PB-Kontrolle stand
+  hier als „pausiert, bis die Anzeige entschieden ist" — sie ist längst gebaut und live.)*
+- **💬 PB-Anzeige für DB/Verein-Fänge:** evtl. **„PB"-Text statt Krone** — oder **PB + Krone**?
+- **💬 „PB erkannt. Bestätigen." — was ist besser bei neuen Usern, um Noise zu verhindern? (JC, 14. Juli.)**
+  Der wunde Punkt: Bei einem neuen Nutzer ist **jeder Fang ein Rekord** — der erste Hecht ist der größte
+  Hecht. Die Feier feuert dann bei jedem Log und entwertet sich in einer Woche. Optionen zu bauen
+  (nicht entschieden): Feier erst ab dem n-ten Fang einer Art · erste Woche stiller · nur feiern, wenn
+  ein *bestehender* Rekord geschlagen wird (nicht beim Aufstellen des ersten).
+
+### Detail-Seite & Fang-Eingabe
+- **💬 Lateinische Namen zu den Fängen (JC, 16. Juli — vertagt auf „morgen").**
+  In Klammern hinter dem Artnamen im Hero. **Der Haken:** 8 der 9 Arten bilden sauber ab, **„Forelle"
+  aber ist drei Arten** — Bachforelle (*Salmo trutta*), Seeforelle (*S. t. lacustris*) und Regenbogenforelle
+  (*Oncorhynchus mykiss*, **andere Gattung**). Ein Name für „Forelle" wäre schlicht falsch.
+  Dazu: **selbst eingetragene Arten bekommen gar keinen.** Hängt am kuratierten Artenkatalog (Roadmap).
+- **💬 Karte aus dem Ortsnamen ziehen (JC, 16. Juli — vertagt).** Hat ein Foto keine Geodaten, JC trägt
+  aber Gewässer/Ort ein — soll die Karte automatisch nachziehen? **Claudes Vorschlag: Karte zentrieren,
+  Pin nie setzen** (ein gesetzter Pin behauptet Genauigkeit, die ein Ortsname nicht hat).
+- **💬 Soll die Einstellungen-Option auf der Catch-Seite überhaupt bleiben? (JC, 16. Juli.)**
+- **💬 Leere Catch-Bilder: warum nicht der Puffer? (JC, 17. Juli)** — Platzhalter für Fänge ohne Foto.
+  *(Anmerkung: Der Hero ohne Foto wurde am 15. Juli auf Hintergrundfarbe + niedrige Höhe umgebaut —
+  JC meint vermutlich die Listen-Thumbnails. Vor dem Mockup kurz klären, welche Stelle.)*
+- **💬 (1) „Hero-Kategorie"** — unklar, Rückfrage offen: was/wo genau (Detail-Hero? Stats? Kategorie-Label
+  auf dem Foto?).
+
+### Filter & Auswahl-Elemente
+- **💬 Ab wie vielen Einträgen braucht unser Auswahl-Element eine Suchleiste? (JC, 14. Juli)** — bei 2
+  ergibt sie keinen Sinn. Und **„neu hinzufügen" ergibt nicht überall Sinn** (z. B. Kept/Released-Filter)
+  → das Element muss kontextsensitiv werden. *(Ein Bau, drei Symptome: Suchleiste, „+ neu", das „—".)*
+- **💬 Artenfilter als Mehrfachauswahl? Andere Filter auch? (JC, 14. Juli.)**
+- **💬 Zoomen auf der Karte als Filter für die angezeigten Fänge? (JC, 14. Juli.)**
+- **🔧 „Meine Fänge" bekommt ZWEI TABS: Übersicht / Fangliste — entschieden (JC, 17. Juli).**
+  JCs eigener Vorschlag vom 14. Juli, und er löst **beide** Meldungen auf einmal: die Karte ist zu
+  prominent (nimmt die halbe Seite und zeigt bei 2 Fängen zwei Punkte auf halb Europa), **und** die
+  Knöpfe (Download/Sortieren) sitzen weird direkt über dem ersten Fang. Karte + Kacheln wandern in
+  „Übersicht", die Liste bekommt ihren eigenen Raum mit ihren eigenen Knöpfen.
+  *(Damit erledigt sich Batch-B-Punkt 15 „My-Catches-Button-Layout" mit.)*
+- **💬 Gruppen-Seiten neu denken (JC, 14. Juli)** — sollen ebenfalls die Rekord-Liste bekommen
+  (horizontal scrollend) und umsortierbare Rekord-Kacheln.
+
+### Einstellungen & Struktur
+- **💬 Icons in den Einstellungen?** *(Rest einer größeren Frage, die sich mit dem Feld-Umbau selbst
+  erledigt hat — dieser Teil ist nie entschieden worden.)*
+- **💬 Mehrspaltiges Layout je Gruppe?** In den Log-Feldern (Vereins-Liste) evtl. **2 Spalten** pro Gruppe,
+  um Platz zu sparen. *(JC mag die Kategorien inhaltlich — nur Platz/Layout.)*
+- **💬 Tagline neu brainstormen:** „Catch · Log · Organize" → Optionen sammeln.
+- **💬 (Rundown #4) „App nutzt nicht die volle Höhe":** mein Safe-Area-Fix war vermutlich **nicht** das
+  Gemeinte — klären, was genau gemeint war.
+
+---
+
+## ⏳ VERTAGT (JC hat sie bewusst geparkt)
+
+### Erfolgs-Karte: glüht cyan (JC, 16. Juli: „diskutieren wir nochmal")
+**Wo:** `#success-ov` / `.success-card` — erscheint nach dem Speichern eines Fangs. Als `.big` beim
+**Rekord-Moment** mit Konfetti und einer pulsierenden Animation namens **`lureflare`** — *Köderlicht*.
 
 **Der Befund:** Genau dieses Köderlicht ist `rgba(95,205,225)` — **cyan**, hartcodiert, kein Token.
 Rest aus der Zeit vor dem Rebrand. Überall sonst (Lockup, Splash, Topbar) ist die Laterne inzwischen warm
 `#EB9E18`. Im auffälligsten Moment der App glüht der Anglerfisch also kalt. `.su-check`, `.su-badge` und
 `.success-card.big .su-title` hängen zusätzlich an `--spark` (Aqua).
 
-**Die eigentliche Frage** (deshalb vertagt, nicht gebaut): Ist Aqua die **Farbe des Feierns** — dann ist es
-eine Entscheidung und gehört als Token sauber benannt, statt als hartcodierter Rest herumzuliegen. Oder ist
-es ein Versehen — dann zieht die ganze Karte auf warm nach (Maskottchen, Häkchen, Badge, Titel), sonst bleibt
-sie halb aqua und die Farbe sieht nach Zufall aus.
+**Die eigentliche Frage:** Ist Aqua die **Farbe des Feierns** — dann ist es eine Entscheidung und gehört
+als Token benannt. Oder ein Versehen — dann zieht die ganze Karte auf warm nach, sonst bleibt sie halb
+aqua und die Farbe sieht nach Zufall aus.
+**Optionen:** (a) alles warm · (b) nur das Maskottchen warm, Rest aqua · (c) bewusst kalt, aber als
+Token. Mockup: `mockup-glow.html`, Abschnitt ①.
 
-**Optionen:** (a) alles warm · (b) nur das Maskottchen warm, Rest aqua · (c) bewusst kalt lassen, aber als
-Token statt hartcodiert. Mockup mit allen Zuständen: `mockup-glow.html`, Abschnitt ①.
+### Login: gleiche Szene wie der Splash? (JC, 16. Juli)
+**Der Login zeigt dasselbe Lockup und damit dieselbe 3,3-s-Choreografie.** Kein Blocker: die Eingabefelder
+sind sofort benutzbar, es animiert nur das Logo darüber. **Aber:** Wer auf dem Login steht, will rein —
+nicht zusehen.
+**Optionen:** (a) so lassen · (b) kurze Einblendung (~0,9 s) · (c) ganz ohne Animation.
+Technisch trivial: eigene Klasse statt `.anim` am `#login-logo`.
 
-## ⏳ VERTAGT — Login: gleiche Szene wie der Splash? (JC, 16. Juli)
+### Splash-Dauer bei Wiederkehrern (JC, 16. Juli: „leg es als Punkt in den Backlog")
+**Der Ladescreen steht bei jedem Start 4,6 s.** Bewusst so entschieden, und für einen Design-Award ist es
+ein Auftritt. **Das Problem kommt später:** Wer zum dritten Mal am Wasser einen Fang eintippt, wartet
+4,6 Sekunden — genau dann, wenn die App schnell sein müsste (Fisch liegt im Kescher).
+**Üblicher Weg:** volle Szene beim **ersten Start am Tag**, danach Kurzfassung (~1,2 s). Merker via
+`localStorage` + Datum. **Offen:** ob überhaupt, und welcher Auslöser.
 
-**Der Login zeigt dasselbe Lockup und damit dieselbe 3,3-s-Choreografie** (Fisch schwimmt ein → Laterne → Licht sinkt → Puffer).
-Kein Blocker: die Eingabefelder sind sofort benutzbar, es animiert nur das Logo darüber.
+---
 
-**Aber:** Wer auf dem Login steht, will rein — nicht zusehen. Und anders als der Splash ist der Login kein Auftritt,
-sondern ein Formular. Die Szene erzählt dort niemandem etwas Neues.
+## 🧯 ALTLASTEN (gefunden, nicht angefasst — kein Auftrag, aber sie beißen später)
 
-**Optionen:** (a) so lassen · (b) Login bekommt eine kurze Einblendung (~0,9 s, Fisch steht sofort, nur Laterne + Puffer
-blenden auf) · (c) Login zeigt das Lockup ganz ohne Animation.
+- **`saveSoloPhotos` löscht bei jeder Fotobearbeitung alle Zeilen und legt sie neu an** (`delete` →
+  `insert`). Funktioniert heute nur, weil die Zuschnitte per `path` hinübergerettet werden. Zwei Risiken:
+  **(a)** das nächste Feld an der Fotozeile fällt wieder hinten runter; **(b)** **schlägt das `insert`
+  fehl, sind alle Fotozeilen des Fangs weg** — die Storage-Objekte überleben, die Zeilen nicht.
+  Seit 17. Juli meldet der Fall wenigstens `console.error` statt zu schweigen (vorher ging er nur ins
+  Test-Log). **Der echte Fix ist ein `upsert` statt delete+insert** — eigener Bau, nicht nebenbei.
+- **Mitgliederliste in den Vereinseinstellungen zeigt keine Profilbilder**, obwohl sie geladen werden.
+- **Toter Code:** `manifest.webmanifest` (nicht verlinkt) · `.mascot-band`-CSS.
+  *(Die verwaisten i18n-Keys `trendNote`, `sparkCap`, `trend3`, `trend7`, `wSourceFields` sind am
+  17. Juli entfernt — sie existierten wirklich und hatten null Verwendungen.)*
 
-**Offen für JC.** Technisch trivial: eigene Klasse statt `.anim` am `#login-logo`, die Choreografie selbst bleibt unangetastet.
+> **⚠️ Prüf-Falle, an der ich am 17. Juli hereingefallen bin — bitte nicht wiederholen:**
+> `I18N` wird **nicht** von einem einzigen Objektliteral gebildet. Das Literal enthält nur **160**
+> Schlüssel; die restlichen ~390 tragen **37 `Object.assign(I18N.de, {…})`-Blöcke** darunter nach.
+> Wer nur das Literal auswertet (Klammern zählen ab `const I18N = {`), bekommt für jeden nachgetragenen
+> Schlüssel `undefined` — und damit **ein „ist längst weg", das schlicht falsch ist**. Genau so habe ich
+> JC gemeldet, die fünf Keys oben seien schon aufgeräumt, und den korrekten Tracker-Eintrag gelöscht.
+> **Richtig:** den ganzen Bereich von `const I18N = {` bis `function t(k)` auswerten.
 
-## ⏳ VERTAGT — Splash-Dauer bei Wiederkehrern (JC, 16. Juli: „leg es als Punkt in den Backlog")
+---
 
-**Der Ladescreen steht bei jedem Start 4,6 s.** Das ist die volle Szene: Wort → Fisch schwimmt dunkel ein (1,4 s) →
-Laterne an → Licht sinkt in fünf Stufen zum Puffer → Puffer erscheint (fertig bei 3,28 s) → ~1,3 s Standbild.
-Bewusst so entschieden, und für einen Design-Award ist es ein Auftritt.
-
-**Das Problem kommt später, nicht jetzt:** Wer zum dritten Mal am Wasser einen Fang eintippt, wartet 4,6 Sekunden.
-Der Splash ist dann kein Auftritt mehr, sondern eine Hürde — und zwar genau in dem Moment, in dem die App
-schnell sein müsste (Fisch liegt im Kescher).
-
-**Üblicher Weg:** volle Szene beim **ersten Start am Tag** (oder nach Kaltstart/Update), danach eine Kurzfassung
-(~1,2 s, nur Einblenden statt Szene). Merker via `localStorage` + Datum. Der Award-Auftritt bleibt erhalten,
-der Alltag wird schnell.
-
-**Offen für JC:** ob überhaupt, und welcher Auslöser — erster Start pro Tag / pro Session / nur nach Update.
-Nicht bauen, bevor JC entschieden hat.
-
-## 💬 ZUM DISKUTIEREN / VORSCHLÄGE (Redesigns — Proposals kommen vor dem Bau)
-*(Erledigt & deployed: Swipe-to-dismiss · Tagline „Catch. Log. Organize." · Benennung „Log fields"/„Sharing" · **Profil-Settings-Umbau** · **Log-to „Solo" zeigt Avatar+Name** · **Mitglieder inline** (Avatar+Rolle, Tap-Rolle, Inline-Entfernen) · **Danger Zone eingeklappt** (Akkordeon).)*
-
-*(✅ **Batch 1–10 deployed** 13. Juli, Commit 1fc87a0 — live geprüft. Details siehe CHANGELOG.)*
-1. ✅ **Invite/Share** = kompakter sekundärer Icon-Button (Teilen-Icon) inline neben dem Code.
-2. ✅ **App & Help:** eine Gruppe behalten, Install-Text gekürzt (seltener iPhone-Chrome-Block raus).
-3. ✅ **Homescreen „+"** kontextsensitiv: Klick auf Vereine-„+" zeigt nur Vereins-Aktionen, Gruppen-„+" nur Gruppen-Aktionen. **+ mehr Abstand** zwischen Kategorien (26 px).
-4. ✅ **Open-in-Maps** als Icon-Overlay unten rechts auf der Detail-Karte (Vollbreite-Button raus).
-5. ✅ **Clubs/Gruppen umsortieren** per Drag (Long-Press-Ziehen, Reihenfolge lokal gespeichert). *(Touch-Gefühl auf Gerät gegenprüfen.)*
-6. ✅ **+N-Badge antippbar:** öffnet Info „Auch eingetragen in …" mit den weiteren Vereinen/Gruppen.
-7. ✅ **Vorschläge merken:** Methode, Köder, Ruten, Boot merken sich zuvor eingegebene Werte (persönlich, lokal). → Roadmap: geteilte Vorschläge für Verein/Gruppe später.
-8. ✅ **„Mein Standort"** als Icon-Overlay unten rechts auf der Formular-Karte.
-9. ✅ **Notizen-Platzhalter** gekürzt („z. B. Drill, Wetter, Stimmung …").
-10. ✅ **Detail-Hero-Band** ohne farbiges Band — Artname + Maß als schlichte dunkle Überschrift.
-11. **Tagline neu brainstormen:** „Catch. Log. Organize." → z. B. „Keeps your catch organized" o. ä. — Optionen sammeln.
-12. **(Rundown #4) „App nutzt nicht die volle Höhe":** mein Safe-Area-Fix war vermutlich **nicht** das Gemeinte — klären, was genau gemeint war.
-13. ~~Fischart als Detail-Kopf~~ → ✅ **Keep as-is** (JC, 14. Juli: „keep for now").
-14. ✅ **Filter-Kontext als Avatar-Picker** (deployed): der Verein/Gruppe-Filter nutzt jetzt den „Log to"-Stil — Sektion **Kategorien** (Alle · Solo · Alle Gruppen · Alle Vereine, mit Icons) klar getrennt von **Vereine/Gruppen** (mit Logos, Häkchen bei Auswahl). Fischart etc. bleiben normale Selects (bewusst, kein Over-Sheeting).
-15. **My-Catches-Button-Layout:** Download + Sortieren sitzen direkt **über dem ersten Fang**, Filter oben — wirkt weird. Anordnung überdenken.
-16. **Teilen-Vorschau überdenken:** aktuell **zwei Boxen** (Vorschau + Editor) mit fast gleichem Inhalt → schöner/kombinieren (z. B. Live-Vorschau = Editor).
-17. **Mehrspaltiges Layout je Gruppe?** In den Log-Feldern (und ähnlichen Listen) evtl. **2 Spalten** pro Gruppe, um Platz zu sparen. *(JC mag die Kategorien inhaltlich — nur Platz/Layout.)*
-18. ✅ **Einheitliche Einstellungs-Navigation** — **bereits durch den Settings-Akkordeon-Umbau erledigt**: beide Tabs (Persönlich **und** Verein/Gruppe) nutzen durchgängig dasselbe Akkordeon-Muster (`accgroup`/`acchead`/`toggleAcc`), gleiche Sektions-Optik. Einzige bewusste Asymmetrie: Personal-Danger liegt im „Konto"-Akkordeon, Gruppe hat eigene „Gefahrenzone" (so mit JC in #21/#22 entschieden). *(Falls JC hier noch etwas Konkretes stört → melden.)*
-19. **„Meine Fänge" — eigenes Logo/Initialen?** Soll dort das persönliche Avatar/Initialen-Bild erscheinen (statt/zusätzlich zum aktuellen Header)?
-20. **Profil-Kopf: Logo + Name als Subheadline?** In der Profil-Sektion (Einstellungen) evtl. Logo/Avatar + Name als **Subheadline** unter der „Profil"-Überschrift einführen. Layout/Struktur diskutieren.
-21. ✅ **Personal Danger Zone** (deployed) — eigene „Gefahrenzone" in persönlichen Einstellungen: Mitgliedschaften mit „Verlassen" + „Konto löschen"; „Verlassen" aus Gruppen-Einstellungen entfernt. *(JC: „Delete from group, dont keep both" — umgesetzt.)*
-22. ~~„Verlassen"-Ort~~ → **in #21 gelöst.**
-23. ~~Log-Formular-Überschriften~~ → ✅ **kein Bug** (leere Sektionen werden bereits ausgeblendet; JC: „nothing to fix"). Ein-Feld-Sektionen/leichteres Layout → Teil der späteren **Overall-Catch-Log-Layout**-Diskussion (siehe #24).
-24. ~~**Overall Catch-Log-Layout**~~ → ✅ **erledigt (13. Juli, Batch 3/3.6, live):** Ein-Feld-Sektionen (Fotos/Notizen) verlieren ihren großen Header und tragen das Label direkt am Feld; kurze Felder bleiben 2-spaltig (Länge/Gewicht). Teil der Design-Review-Umsetzung. Detail-Ansicht zusätzlich als 2-spaltiges Spec-Sheet (3.5). Feineres Nachschärfen jederzeit möglich.
-25. ✅ **Intro/Onboarding-Review (deployed):** (a) Welcome-Text gekürzt, (b) Profil minimal+zentriert, (c) Buttons `sm`, (d) App-Icon statt Emoji, (e) Titel „Dein Profil", (f) „Als App"-Schritt bleibt. *Ursprüngliche Findings:*
-    - **(a) Welcome-Text „solo oder gemeinsam":** 4 Schritte (Welcome → Profil → Solo/Verein/Gruppe → Als App speichern). Findings, die nicht mehr zu unseren Entscheidungen passen:
-    - **(a) Welcome-Text „solo oder gemeinsam":** neu bewerten; zudem **zwei widersprüchliche Werte** gespeichert (Basis-i18n „mit deinem Verein" vs. _P-Override „gemeinsam") → aufräumen. Option: Tagline „Catch. Log. Organize." nutzen?
-    - **(b) Profil-Schritt out of sync:** zeigt nur Foto + Name — **nicht** das neue Profil (Initialen-Editor, Tap-Avatar = Farbe). Minimal lassen oder angleichen?
-    - **(c) Button-Layout inkonsistent:** Onboarding-Nav-Buttons sind **groß** (`.btn`), Rest der App nutzt `.btn secondary sm`; zudem gemischte Größen im Onboarding (großer Nav vs. kleiner „Als App"-Button).
-    - **(d) Emoji:** Schritt „Als App speichern" nutzt 📲-Emoji — passt nicht zur emoji-freien/Maskottchen-Marke. Durch Maskottchen/Outline-Icon ersetzen?
-    - **(e) „Wie sollen dich andere sehen?":** verfrüht (noch kein Social) → umformulieren (Profil/Name).
-    - **(f) „Als App speichern"-Schritt:** eigener Schritt nötig oder in App-&-Hilfe integrieren?
-
-## ⚙️ BETRIEB — offen
-*(Keine offen. Domain-Umzug/Rebrand → `ROADMAP.md` Parked #2.)*
-
-## ⚙️ BETRIEB — erledigt (Referenz)
-- ✅ **Allowlist FINAL (13):** johannesclaudi@gmail.com (Admin) · oktay.duzgun@gmail.com · schuerholz.rene@googlemail.com · Matthew.scott0991@gmail.com · m_baron1@gmx.de · michael-baron86@gmx.de · mberger2209@gmx.de · cmjcody@gmail.com · felixformhals@web.de · jurjen.terpstra@gmail.com · leandro.gianfrancesco@gmx.de · svenflosbach@yahoo.de · ralphkempen@gmail.com.
-- ✅ **info@thefishingbutler.app** — Porkbun „Fix DNS" setzte MX + SPF; getestet, Mail kommt in Gmail an. Kein Trial/Kosten. *(`noreply@…` = nur Resend-Absender, kein Postfach; Versand unabhängig von info@.)*
-- ✅ **Rechtstexte (Beta)** — Impressum + Datenschutz de/en/nl, Anschrift Amsterdam, auf EU-Recht (DSGVO + RL 2000/31/EG). Für *öffentlichen* Launch offen: Anwalt, DPAs, Drittland — siehe `LEGAL-DRAFT.md`.
-- ✅ **DB- + Storage-Reset (10. Juli)** — alles geleert; johannesclaudi@gmail.com bleibt Admin; Allowlist unverändert.
-- ✅ **E-Mail-Backend komplett** — `RESEND_API_KEY`-Secret gesetzt (10. Juli); Edge Functions `feedback-notify` + `beta-request-notify` ACTIVE. Feedback-Modal speichert in DB + mailt an johannesclaudi@gmail.com.
+## ⚙️ BETRIEB — erledigt (Referenz, nicht löschen: das ist Live-Konfiguration)
+- ✅ **Allowlist (14, Stand 17. Juli — in der DB geprüft):** johannesclaudi@gmail.com (Admin) ·
+  oktay.duzgun@gmail.com · schuerholz.rene@googlemail.com · Matthew.scott0991@gmail.com · m_baron1@gmx.de ·
+  michael-baron86@gmx.de · mberger2209@gmx.de · cmjcody@gmail.com · felixformhals@web.de ·
+  jurjen.terpstra@gmail.com · leandro.gianfrancesco@gmx.de · svenflosbach@yahoo.de · ralphkempen@gmail.com ·
+  **englart@hotmail.com** *(17. Juli auf JCs Ansage nachgetragen; von JC am 14. Juli zweimal gebeten und
+  damals übersehen — die Person konnte sich drei Tage lang nicht einloggen)*.
+- 📎 **Wie die Allowlist wirklich funktioniert** (gelernt am 17. Juli, damit es niemand nochmal suchen muss):
+  Die App fragt `beta_allowlist` **nie** ab — die Prüfung sitzt komplett in der DB. Der Trigger
+  `enforce_beta_allowlist()` wirft beim Anlegen `not_on_beta_allowlist`; gelesen wird über
+  `is_email_allowed()`. Beide vergleichen über **`canon_email()`**, das kleinschreibt, trimmt und bei
+  **Gmail/Googlemail zusätzlich Punkte und `+`-Suffixe entfernt** und auf `@gmail.com` normalisiert.
+  **Folge:** Schreibweise ist egal, `j.c+beta@googlemail.com` = `jc@gmail.com`. Neue Einträge trotzdem
+  kleingeschrieben ablegen — so macht es auch `approve_beta_request()`.
+  **Nach einem Eintrag verifiziert man mit `select public.is_email_allowed('…')`, nicht mit einem
+  `select *` auf die Tabelle** — nur die Funktion beantwortet die Frage, die der Login stellt.
+- ✅ **info@thefishingbutler.app** — MX + SPF via Porkbun, getestet. *(`noreply@…` = nur Resend-Absender.)*
+- ✅ **Rechtstexte (Beta)** — Impressum + Datenschutz de/en/nl, Amsterdam, DSGVO + RL 2000/31/EG.
+  Für *öffentlichen* Launch offen: Anwalt, DPAs, Drittland — siehe `LEGAL-DRAFT.md`.
+- ✅ **E-Mail-Backend** — `RESEND_API_KEY` gesetzt; Edge Functions `feedback-notify` + `beta-request-notify` ACTIVE.
