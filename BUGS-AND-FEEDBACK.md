@@ -16,6 +16,38 @@ Stand: 17. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt)
 
 ## 🐛 OFFENE BUGS
 
+### Laden / Theme
+- **💬 Der Ladescreen ist `#0D5164`, die App-Topbar `#03354B` — der Sprung bleibt (17. Juli).**
+  Beim Topbar-Fix aufgetaucht: `#app-loader{background:#0D5164}`. **Daher kam die alte `theme-color`** —
+  sie war auf den *Loader* gemünzt, nicht auf die App. Die Statusleiste passt jetzt zur Topbar, aber der
+  Übergang **Loader (mittelblau) → App (dunkelblau)** ist damit nicht weg, nur verschoben.
+  **Das ist eine Farbentscheidung, keine Reparatur** — deshalb hier und nicht gebaut:
+  - **(a)** Loader bekommt `--surface` (`#03354B`) → Statusleiste, Loader und Topbar sind eine Farbe,
+    kein Sprung mehr. Der Splash verliert seinen helleren Ton.
+  - **(b)** So lassen → der Loader bleibt als eigener Moment erkennbar, der Sprung bleibt sichtbar.
+  Zu klären: War das hellere Blau des Splashs Absicht (Marke) oder Zufall?
+
+### Code-Hygiene
+- **🐛 `function toast(msg)` ist ZWEIMAL deklariert** (live gegengeprüft: Zeilen 5282 und 7227 im
+  ausgelieferten Stand — **nicht** durch unsere Änderungen entstanden). Die zweite überschreibt die
+  erste stillschweigend; welche gilt, entscheidet allein die Reihenfolge.
+  **`node --check` meldet das NICHT** — doppelte Funktionsdeklarationen sind legales JS. Genau diese
+  Blindheit hat am 17. Juli eine Splice-Panne durchgelassen, die `renderList`/`renderStats` verdoppelt hat.
+  Zu tun: beide vergleichen, die überflüssige löschen. Klein, aber es ist eine Falle für den Nächsten.
+- **🔧 `state.editId` und seine Zweige in `saveCatch` sind tot** (seit `openEdit` weg ist, 17. Juli).
+  Es wird nirgends mehr gesetzt, also nehmen alle `if(state.editId)`-Zweige nie mehr den Ja-Weg —
+  ebenso `form-del-wrap`/`form-del-btn`, die nur im Formular-Edit sichtbar waren.
+  **Bewusst nicht nebenbei mitgenommen:** Die Zweige liegen mitten im **Speicherpfad**. Das braucht einen
+  eigenen Durchgang mit Ruhe, nicht das Ende einer langen Sitzung.
+
+### Eingabe
+- **🐛? „when typing, the display of what is entered disappears" (JC, 17. Juli). UNGEKLÄRT — braucht das Video.**
+  *(Stand ebenfalls in keinem Tracker, nur im Commit-Text von `cc92d087`.)*
+  Bisher nur ausgeschlossen: `#ta-search` setzt `color:var(--text)` — die naheliegende Farbfalle
+  (Text in Hintergrundfarbe) ist es also **nicht**. Unklar bleibt, **welches** Feld gemeint ist
+  (Suchfeld im Auswahl-Element? Inline-Edit? Fang-Formular?) und ob „verschwindet" heißt: Text weg,
+  Feld weg, oder die Vorschau/Anzeige darüber.
+
 ### Verhalten — Rollen
 - **🔬 Ownerschaft übergeben am Gerät durchspielen (offen).** Der Rollen-Umbau (owner/admin/member) ist
   gebaut, live und in der DB verifiziert — Details im `CHANGELOG.md` (Commit `6abb9d7`). Geprüft wurde die
@@ -40,31 +72,9 @@ Stand: 17. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt)
   wird an dieser Stelle aber nicht benutzt.*
   **Vor dem Fix: JC fragen, ob das Feld „Fänge aus" da ist.**
 
-### Verhalten
-- **🔧 Detail-Edit: Tap auf einen Verein soll nach dem Pflichtwert fragen (JC entschieden 17. Juli — NOCH ZU BAUEN).**
-  **Der Befund, der JCs Entwurf („Warnung beim Speichern") nicht aufgehen ließ:** Im Detail-Edit gibt es
-  **kein Speichern**. `detailToggleArea()` schreibt im Moment des Antippens direkt in die DB:
-  `await getSB().from('catches').update({context_id, context_ids})` — ohne jede Prüfung. Der Verein ist
-  drin, bevor ein Dialog aufgehen könnte. *(Im Formular greift es dagegen seit dem 17. Juli korrekt —
-  dort sammelt `toggleArea` nur in `state.formTargets`, geprüft wird in `saveCatch`.)*
-  **JCs Entscheidung:** Der Tap fragt gleich nach dem Wert — „ASV braucht die Entnahme" → Auswahl öffnet
-  sich → danach ist der Verein drin. Kein Umweg übers Formular; der Moment bleibt dort, wo er ausgelöst wurde.
-
 ---
 
 ## 🔧 OFFENE BAUTEN (abgestimmt — kein Diskussionsbedarf)
-
-- **🔧 Fotos umsortieren: ZIEHEN im Raster — entschieden (JC, 17. Juli).**
-  Im Fotoeditor gibt es heute **nur „Titelbild setzen"** (`setFormCover`) — das schiebt ein Bild auf
-  Platz 1; Bild 3 vor Bild 2 geht gar nicht. Die Daten können es längst: `catch_photos.sort` ist eine
-  eigene Spalte, und `saveSoloPhotos` schreibt sie aus der Reihenfolge von `state.editPhotos`.
-  **Es fehlt nur die Geste — und die gibt es bereits:** Vereine/Gruppen werden per **Long-Press-Ziehen**
-  sortiert (Reihenfolge in `bf_order`, Handler ~Z. 6493). JC: *„verhalten sollte ähnlich dem umsortieren
-  der gruppen und vereinslisten sein"* — **genau, dieselbe Mechanik wiederverwenden**, nicht neu erfinden.
-
-- **🔧 Versionsnummer im Ladescreen (JC, 15. Juli)** — der `BUILD`-Marker liegt schon als Code-Cleanup
-  in der Roadmap; hier bekommt er einen sichtbaren Ort. Beantwortet nebenbei die Frage „läuft das Update
-  überhaupt?", die uns schon Zeit gekostet hat.
 
 - **🔧 Rekord-Kacheln umsortierbar** — „Deine Rekorde"-Shelf (Stats, `rec-strip`) per **horizontalem**
   Drag&Drop neu ordnen (Reihenfolge lokal). *(JC, 14. Juli.)*
@@ -75,9 +85,6 @@ Stand: 17. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt)
   das Logo des Vereins/der Gruppe tragen. *(Prüfen: WhatsApp zieht Vorschaubilder aus OG-Tags einer URL —
   ein Bild lässt sich nicht in den Text legen. Braucht also eine Einladungs-Seite mit `og:image`,
   nicht nur einen Text. Hängt damit an der Deep-Link-Arbeit, Roadmap #17.)*
-
-- **🔧 Altes „Bearbeiten"-Formular abschaffen** (JC: „can go") — Inline-Edit deckt alles ab;
-  Einstiegspunkte/`openEdit`/`editCurrentCatch` entfernen, Formular-Sektion prüfen.
 
 - **🔧 Angler-Filter aus Mitgliederliste** *(JC: „to change it")* — Filter mit allen Mitgliedern
   vorbefüllen („Ich" zuerst), nicht nur mit Anglern, die schon gefangen haben.
@@ -169,12 +176,6 @@ Stand: 17. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt)
   → das Element muss kontextsensitiv werden. *(Ein Bau, drei Symptome: Suchleiste, „+ neu", das „—".)*
 - **💬 Artenfilter als Mehrfachauswahl? Andere Filter auch? (JC, 14. Juli.)**
 - **💬 Zoomen auf der Karte als Filter für die angezeigten Fänge? (JC, 14. Juli.)**
-- **🔧 „Meine Fänge" bekommt ZWEI TABS: Übersicht / Fangliste — entschieden (JC, 17. Juli).**
-  JCs eigener Vorschlag vom 14. Juli, und er löst **beide** Meldungen auf einmal: die Karte ist zu
-  prominent (nimmt die halbe Seite und zeigt bei 2 Fängen zwei Punkte auf halb Europa), **und** die
-  Knöpfe (Download/Sortieren) sitzen weird direkt über dem ersten Fang. Karte + Kacheln wandern in
-  „Übersicht", die Liste bekommt ihren eigenen Raum mit ihren eigenen Knöpfen.
-  *(Damit erledigt sich Batch-B-Punkt 15 „My-Catches-Button-Layout" mit.)*
 - **💬 Gruppen-Seiten neu denken (JC, 14. Juli)** — sollen ebenfalls die Rekord-Liste bekommen
   (horizontal scrollend) und umsortierbare Rekord-Kacheln.
 

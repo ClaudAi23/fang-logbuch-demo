@@ -12,12 +12,27 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=4" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180.png?v=4" />
 <link rel="manifest" href="/site.webmanifest?v=4" />
-<meta name="theme-color" content="#0D5164" />
+<!-- theme-color MUSS die Farbe der Topbar sein, nicht irgendein Blau der Palette.
+     Hier stand #0D5164 (= --surface-2). Die Topbar ist aber --surface (#03354B im Dunkeln, #FFFFFF im
+     Hellen) und reicht per padding-top:env(safe-area-inset-top) UNTER die Statusleiste. Ergebnis auf dem
+     Gerät: Der Streifen oben startet in #0D5164 und wird beim ersten Paint von der Topbar mit #03354B
+     überdeckt — JC, 17. Juli, mit Video: "nach erstem laden faerbt sich die obere leiste erst spaeter
+     als alle anderen elemente in ein dunkles blau".
+     Es war also KEIN Timing-Problem (data-theme wird unten längst vor dem CSS gesetzt), sondern schlicht
+     die falsche Farbe. Der Startwert ist der dunkle: Wer die App im Hellen öffnet, bekommt ihn eine
+     Zeile später vom Script korrigiert, bevor irgendetwas gemalt wird. -->
+<meta name="theme-color" content="#03354B" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
+<!-- "black" heißt bei iOS: undurchsichtige schwarze Leiste. "black-translucent" wäre falsch — dann läge
+     der Inhalt unter der Uhr. Die Schriftfarbe bleibt hell, was zu beiden Topbar-Farben passt. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <meta name="apple-mobile-web-app-title" content="ButlerFish" />
-<script>(function(){try{var p=JSON.parse(localStorage.getItem('fanglog_prefs')||'{}');var t=p.theme||'system';var r=(t==='system')?((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'):t;document.documentElement.setAttribute('data-theme',r);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+<!-- Setzt data-theme VOR dem CSS (sonst gälte bis zum Ende des Parsens :root = hell) und gleich auch
+     theme-color, damit der Streifen oben vom ersten Frame an die Farbe der Topbar hat.
+     THEME_SURFACE ist die einzige Stelle, an der --surface doppelt steht: Das Script läuft, bevor es ein
+     Stylesheet gibt, kann die Variable also nicht lesen. Ändert jemand --surface, muss er hierher. -->
+<script>(function(){var S={dark:'#03354B',light:'#FFFFFF'};var r='dark';try{var p=JSON.parse(localStorage.getItem('fanglog_prefs')||'{}');var t=p.theme||'system';r=(t==='system')?((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'):t;}catch(e){}document.documentElement.setAttribute('data-theme',r);try{var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',S[r]||S.dark);}catch(e){}})();</script>
 <style>
   /* Self-hosted Barlow — no request leaves the user's device for a font any more.
      This is a GDPR matter, not a speed tweak: with the Google stylesheet, every app start sent
@@ -98,7 +113,14 @@
     --text:#F4EFE2; --muted:#93a3a5; --border:#123643; --border-2:#1b4453;
     --danger:#E0716B; --shadow:0 12px 36px rgba(0,0,0,.5);
   }
-  [data-theme="dark"] html, [data-theme="dark"] body{ background:#021B28; }
+  /* `[data-theme="dark"] html` stand hier und konnte NIE greifen: data-theme sitzt auf `html` selbst,
+     und ein `html`-Nachfahre von `html` existiert nicht. Nur der body-Teil des Selektors wirkte —
+     `html` behielt im Dunkeln #F4EFE2 (gemessen: rgb(244,239,226) auch nach applyTheme).
+     Das ist nicht kosmetisch: Hat `html` einen Hintergrund, wird DER aufs Canvas übertragen, nicht der
+     des body. Beim Überdehnen am Rand (rubber band) und in der Safe Area kam also Cremeweiß durch.
+     `html[data-theme="dark"]` ist derselbe Knoten und trifft. Nicht von JC gemeldet — beim Nachsehen
+     zum Topbar-Bug gefunden. */
+  html[data-theme="dark"], [data-theme="dark"] body{ background:#021B28; }
   input::placeholder, textarea::placeholder{ color:var(--muted); opacity:.8; }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; padding:0; height:100%; background:#F4EFE2;}
@@ -127,6 +149,11 @@
      selector and beat the lockup's class rules, blowing the puffer dot up to 200px.) */
   #app-loader{position:fixed; inset:0; z-index:9999; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#0D5164; transition:opacity .5s ease, visibility 0s linear .5s;}
   #app-loader.hide{opacity:0; visibility:hidden; pointer-events:none;}
+  /* Unten, klein, gedämpft: eine Auskunft für den, der sie sucht — kein Element des Splashs.
+     `env(safe-area-inset-bottom)`, sonst läge sie auf iPhones im Home-Indikator. */
+  #app-build{position:absolute; left:0; right:0; bottom:calc(10px + env(safe-area-inset-bottom));
+    text-align:center; font-family:'Barlow',system-ui,sans-serif; font-size:.68rem; letter-spacing:.04em;
+    color:rgba(244,239,226,.38); pointer-events:none;}
   .screen{display:none; flex:1; flex-direction:column; min-height:0;}
   .screen.active{display:flex; animation:scrIn .24s cubic-bezier(.22,.61,.36,1);}
   .screen.active.is-back{animation:scrBack .24s cubic-bezier(.22,.61,.36,1);}
@@ -1181,7 +1208,12 @@
 <div id="app-loader"><div class="lockup anim" style="font-size:min(4.4rem, 17vw);">
   <div class="lockup-fish"><div class="lk-sh"><i></i><i></i><i></i><i></i><i></i></div><div class="lk-esca"></div><img src="/mascot.png" alt=""></div>
   <div class="lockup-word"><span class="lw-butler">butler</span><img class="lw-dot" src="/puffer.png?v=3" alt="·"><span class="lw-fish">fish</span></div>
-</div></div>
+</div>
+<!-- Die Version steht im LADESCREEN, weil genau dort die Frage aufkommt: „läuft das Update überhaupt?"
+     (JC, 15. Juli). Sie hat uns schon mehrfach Zeit gekostet — zuletzt am 17. Juli, als ich gegen einen
+     alten Stand gemessen habe, ohne es zu merken. Wer sie sehen will, sieht sie; wer nicht, übersieht
+     sie: klein, gedämpft, unten, außerhalb des Lockups. Kein Klick, kein Menüweg, keine Erklärung. -->
+<div id="app-build"></div></div>
 <div id="app">
   <span id="demo-tag" class="demo-tag" style="display:none;">DEMO</span>
 
@@ -2157,6 +2189,15 @@
 </div>
 
 <script>
+/* ---- BUILD (JC, 15. Juli: Versionsnummer im Ladescreen) -------------------------------------------
+   Die EINZIGE Zeile, die bei jedem Deploy mitgehen muss. Steht deshalb ganz oben im Script, nicht
+   vergraben: Wer deployt, stolpert darüber.
+   Warum ein Datum und kein Commit-SHA: Den SHA vergibt GitHub erst BEIM Commit — er lässt sich in die
+   Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
+   Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
+   Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
+const BUILD = '2026-07-17.5';
+try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
   "Barsch":{de:"Barsch",en:"Perch",nl:"Baars"},
@@ -2260,6 +2301,13 @@ Object.assign(I18N.de, {method:"Angelmethode", bait:"Köder", rod:"Rute", boat:"
 Object.assign(I18N.en, {demoHint:"Demo: fields are pre-filled — just tap Sign in.", photos:"Photos", cover:"Cover", setCover:"Set as cover", photoHint:"Up to 10 photos. With several, tap the star ☆ to choose the cover."});
 Object.assign(I18N.en, {method:"Method", bait:"Bait / lure", rod:"Rod", boat:"Boat", watertemp:"Water temperature (°C)", watertempPh:"e.g. 18", trolling:"Trolling speed", trollingPh:"e.g. 3.2", releasedLabel:"Kept / Released", releasedNone:"—", releasedKept:"Kept", releasedReleased:"Released", methodPh:"e.g. Spin fishing", baitPh:"e.g. 12 cm soft lure", rodPh:"e.g. 2.70 m / 40 g", reel:"Reel", reelPh:"e.g. 4000 spinning reel", boatPh:"e.g. dinghy", fieldsTitle:"Log fields", fieldsHint:"Choose which fields are required when logging. All fields are always shown.", fieldsHintAdmin:"As admin you can make fields required. Every field is always shown — hiding is not possible.", fieldsHintMember:"Which fields are required is set by the admin (read-only).", stRequired:"Required", stNotRequired:"Not required", moreFields:"More fields", errRequired:"Please fill the required fields:", shareTitle:"Sharing", shareModeFields:"Fields", shareModeTemplate:"Custom template", sharePreview:"Preview", shareLink:"App link", shareHint:"Applies to this area (Solo / group / club).", sharePhHint:"Placeholders: {petri} {art} {länge} {gewicht} {maße} {methode} {köder} {rute} {boot} {wassertemp} {schlepp} {entnahme} {ort} {datum} {angler} {wetter} {mond} {notiz} {bereich} {link}", exportCsv:"Export as CSV", exportPdf:"Export as PDF (with photos)", exportEmpty:"No catches to export.", exportPdfErr:"Couldn't load PDF export (internet required)."});
 Object.assign(I18N.nl, {demoHint:"Demo: velden zijn al ingevuld — tik gewoon op Inloggen.", photos:"Foto's", cover:"Omslag", setCover:"Als omslag", photoHint:"Tot 10 foto's. Tik bij meerdere op de ster ☆ om de omslag te kiezen."});
+/* Pflichtwert beim Verein-Tap (JC, 17. Juli). Der Verein wird GENANNT: Ein Feld wird hier allein dadurch
+   zur Pflicht, dass man einen Verein hinzufügt — „Bitte Pflichtfelder ausfüllen" ließe einen raten,
+   woher die Forderung kommt, obwohl man am Fang selbst nichts geändert hat. Dieselbe Überlegung wie bei
+   `requiringCtxName` im Formular. */
+Object.assign(I18N.de, {reqAreaTitle:"Ein Wert fehlt noch", reqAreaMsg:"„{ctx}“ verlangt: {fields}. Ohne diesen Wert kann der Fang dort nicht eingetragen werden.", reqAreaGo:"Jetzt eintragen", reqAreaAdded:"In „{ctx}“ eingetragen.", reqAreaPick:"Bitte den Wert oben am Fang eintragen."});
+Object.assign(I18N.en, {reqAreaTitle:"A value is missing", reqAreaMsg:"“{ctx}” requires: {fields}. Without it the catch can't be logged there.", reqAreaGo:"Add it now", reqAreaAdded:"Logged to “{ctx}”.", reqAreaPick:"Please add the value on the catch above."});
+Object.assign(I18N.nl, {reqAreaTitle:"Er ontbreekt een waarde", reqAreaMsg:"„{ctx}” vereist: {fields}. Zonder die waarde kan de vangst daar niet worden vastgelegd.", reqAreaGo:"Nu invullen", reqAreaAdded:"Vastgelegd in „{ctx}”.", reqAreaPick:"Vul de waarde hierboven bij de vangst in."});
 Object.assign(I18N.nl, {method:"Methode", bait:"Aas", rod:"Hengel", boat:"Boot", watertemp:"Watertemperatuur (°C)", watertempPh:"bijv. 18", trolling:"Sleepsnelheid", trollingPh:"bijv. 3,2", releasedLabel:"Meenemen / Terugzetten", releasedNone:"—", releasedKept:"Meegenomen", releasedReleased:"Teruggezet", methodPh:"bijv. Kunstaasvissen", baitPh:"bijv. shad 12 cm", rodPh:"bijv. 2,70 m / 40 g", reel:"Molen", reelPh:"bijv. 4000 werpmolen", boatPh:"bijv. rubberboot", fieldsTitle:"Vangst invoeren", fieldsHint:"Bepaal welke velden verplicht zijn bij het loggen. Alle velden worden altijd getoond.", fieldsHintAdmin:"Als beheerder kun je velden verplicht maken. Alle velden worden altijd getoond — verbergen kan niet.", fieldsHintMember:"Welke velden verplicht zijn stelt de beheerder in (alleen lezen).", stRequired:"Verplicht", stNotRequired:"Niet verplicht", moreFields:"Meer velden", errRequired:"Vul de verplichte velden in:", shareTitle:"Delen", shareModeFields:"Velden", shareModeTemplate:"Eigen sjabloon", sharePreview:"Voorbeeld", shareLink:"App-link", shareHint:"Geldt voor dit gebied (Solo / groep / vereniging).", sharePhHint:"Tijdelijke aanduidingen: {petri} {art} {länge} {gewicht} {maße} {methode} {köder} {rute} {boot} {wassertemp} {schlepp} {entnahme} {ort} {datum} {angler} {wetter} {mond} {notiz} {bereich} {link}", exportCsv:"Exporteren als CSV", exportPdf:"Exporteren als PDF (met foto's)", exportEmpty:"Geen vangsten om te exporteren.", exportPdfErr:"Kon PDF-export niet laden (internet vereist)."});
 Object.assign(I18N.de, {tabPersonal:"Persönlich", tabArea:"Verein/Gruppe", tabAreaClub:"Verein", tabAreaGroup:"Gruppe", emailLabel:"E-Mail", emailFixedHint:"E-Mail-Adresse – derzeit nicht änderbar.", categories:"Kategorien", allGroups:"Alle Gruppen", allClubs:"Alle Vereine", showCatchesFrom:"Fänge aus", showCatchesFromHint:"Mehrere möglich. Nichts ausgewählt = alle.", selectedN:"ausgewählt", areaCtxHint:"Einstellungen für: {ctx}", copyToAreas:"Auf andere Vereine/Gruppen übernehmen …", copySub:"in welche Vereine/Gruppen kopieren?", selectAll:"Alle auswählen", cancel:"Abbrechen", apply:"Übernehmen", copyDone:"Auf {n} Verein(e)/Gruppe(n) übernommen.", shareBereich:"Verein/Gruppe", shareFieldsHint:"Wähle, welche Infos geteilt werden — die Vorschau unten zeigt das Ergebnis.", shareTemplateHint:"Schreibe den Text selbst. Platzhalter werden beim Teilen durch echte Werte ersetzt.", sharePhTapHint:"Tippe einen Platzhalter an, um ihn einzufügen:", exifGps:"Ort aus Foto übernommen", exifDate:"Zeit aus Foto übernommen", exifBoth:"Ort & Zeit aus Foto übernommen", exifNone:"Kein Ort/keine Zeit im Foto gefunden", exifRedo:"Ort & Zeit aus diesem Foto übernehmen", obSkip:"Überspringen", obNext:"Weiter", obBack:"Zurück", obStart:"Los geht's", obFinish:"Fertig – los geht's!", obWelcomeTitle:"Willkommen an Bord", obWelcomeText:"Dein digitales Fang-Logbuch.", obProfileTitle:"Dein Profil", obProfileText:"Name und optional ein Bild – jederzeit in den Einstellungen änderbar.", ctxNamePh:"z. B. ASV Musterstadt", ctxLocPh:"z. B. Musterteich", obTeamHint:"Verein oder Gruppe jederzeit über ＋ auf dem Startbildschirm hinzufügen.", obV1t:"Im Handumdrehen erfasst", obV1d:"Art, Größe und Foto – Ort, Wetter und Mond ergänzen sich von selbst.", obV2t:"Solo oder gemeinsam", obV2d:"Privates Logbuch – oder geteilt mit Verein oder Freundesgruppe.", obV3t:"Deine Bestwerte", obV3d:"Rekorde, Trends und Statistiken über alle Fänge.", obInstallTitle:"Speichere den Butler auf deinem Handy", obInstallText:"Als App gespeichert öffnet sich der Butler im Vollbild und ist schneller griffbereit.", obReplay:"Einführung ansehen"});
 Object.assign(I18N.en, {tabPersonal:"Personal", tabArea:"Club/group", tabAreaClub:"Club", tabAreaGroup:"Group", emailLabel:"Email", emailFixedHint:"Email address – not changeable yet.", categories:"Categories", allGroups:"All groups", allClubs:"All clubs", showCatchesFrom:"Show catches from", showCatchesFromHint:"Pick several. None selected = all.", selectedN:"selected", areaCtxHint:"Settings for: {ctx}", copyToAreas:"Copy to other clubs/groups …", copySub:"copy into which clubs/groups?", selectAll:"Select all", cancel:"Cancel", apply:"Apply", copyDone:"Copied to {n} club(s)/group(s).", shareBereich:"Club/group", shareFieldsHint:"Choose which info gets shared — the preview below shows the result.", shareTemplateHint:"Write the text yourself. Placeholders are replaced with real values when sharing.", sharePhTapHint:"Tap a placeholder to insert it:", exifGps:"Location taken from photo", exifDate:"Time taken from photo", exifBoth:"Location & time taken from photo", exifNone:"No location/time found in photo", exifRedo:"Take location & time from this photo", obSkip:"Skip", obNext:"Next", obBack:"Back", obStart:"Let's go", obFinish:"Done — let's go!", obWelcomeTitle:"Welcome aboard", obWelcomeText:"Your digital catch log.", obProfileTitle:"Your profile", obProfileText:"A name and optional photo – changeable anytime in settings.", ctxNamePh:"e.g. Springfield Anglers", ctxLocPh:"e.g. Mill Pond", obTeamHint:"Add a club or group anytime with ＋ on the home screen.", obV1t:"Log in seconds", obV1d:"Species, size and a photo — location, weather and moon fill in for you.", obV2t:"Solo or together", obV2d:"A private log, or one you share with your club or a group of friends.", obV3t:"See your best", obV3d:"Records, trends and stats across every catch you land.", obInstallTitle:"Save the Butler to your phone", obInstallText:"Saved as an app, ButlerFish opens full-screen and is quicker to reach.", obReplay:"View intro"});
@@ -2401,6 +2449,17 @@ function applyTheme(){
     ? ((darkMq && darkMq.matches) ? 'dark' : 'light')
     : state.theme;
   document.documentElement.setAttribute('data-theme', resolved);
+  /* theme-color muss beim UMSCHALTEN mitgehen, sonst bliebe sie auf dem Startwert aus dem <head> stehen:
+     Wer im Dunkeln startet und auf Hell wechselt, behielte einen dunkelblauen Streifen über weißer App.
+     Zwei <meta media="(prefers-color-scheme:…)"> wären hier die falsche Lösung — die folgen dem SYSTEM,
+     nicht der Wahl im Menü, und genau die drei Zustände (system/dark/light) gibt es hier.
+     Jetzt aus dem Stylesheet gelesen statt nochmal notiert: Zur Laufzeit gibt es --surface, also ist es
+     dieselbe Quelle wie die Topbar und kann nicht auseinanderlaufen. */
+  try{
+    const m=document.querySelector('meta[name="theme-color"]');
+    const c=getComputedStyle(document.documentElement).getPropertyValue('--surface').trim();
+    if(m && c) m.setAttribute('content', c);
+  }catch(e){}
 }
 function setTheme(v){ state.theme=v; applyTheme(); syncThemeSeg(); savePrefs(); }
 function applyLang(){
@@ -2881,17 +2940,31 @@ function applyCtxOrder(arr, kind){
   return arr.slice().sort((a,b)=>{ const pa=pos[a.id]!=null?pos[a.id]:9999, pb=pos[b.id]!=null?pos[b.id]:9999; return pa-pb; });
 }
 function saveCtxOrder(kind, ids){ const o=_orderGet(); o[kind]=ids; _orderSet(o); }
+/* `makeSortable(container, kind)` — seit dem 17. Juli auch für RASTER (JC: Fotos umsortieren).
+   `makeSortable(container, {sel, grid, onDrop, tail})` ist die neue Form; der alte Aufruf mit einem
+   String bleibt Wort für Wort gültig. Warum so und nicht als zweite Funktion: JCs Ansage war „verhalten
+   sollte ähnlich dem umsortieren der gruppen und vereinslisten sein" — zwei Kopien derselben Geste
+   liefen garantiert auseinander, und dann fühlt sich Ziehen an zwei Stellen verschieden an.
+   Der Unterschied ist EINE Zeile Geometrie: Eine Liste hat nur eine Achse, ein Raster hat Spalten.
+   Senkrecht bleibt exakt der alte Weg („bin ich über der Mitte?"), Raster nimmt den nächstgelegenen
+   Nachbarn nach echtem Abstand — bei drei Spalten ist „über der Mitte" sinnlos, weil links und rechts
+   davon noch zwei andere Zellen liegen. */
 function makeSortable(container, kind){
   if(!container) return;
+  const O = (typeof kind==='string') ? { sel:'.club', grid:false, tail:'.catadd-row',
+              onDrop:(els)=>saveCtxOrder(kind, els.map(t=>t.dataset.ctxid).filter(Boolean)) } : (kind||{});
+  const SEL=O.sel||'.club';
   let dragEl=null, longT=null, startY=0, startX=0, active=false, moved=false;
-  const tiles=()=>Array.from(container.querySelectorAll('.club'));
+  const tiles=()=>Array.from(container.querySelectorAll(SEL));
   const endDrag=()=>{
     clearTimeout(longT);
     if(active){ active=false; if(dragEl) dragEl.classList.remove('drag-active'); container.classList.remove('sorting'); moved=true;
-      saveCtxOrder(kind, tiles().map(t=>t.dataset.ctxid).filter(Boolean)); }
+      try{ if(O.onDrop) O.onDrop(tiles()); }catch(e){} }
     dragEl=null;
   };
   tiles().forEach(tile=>{
+    if(tile._sortBound) return;   // renderFormPhotos baut das Raster bei jeder Änderung neu; ohne das
+    tile._sortBound=true;         // sammelten sich Handler auf überlebenden Knoten.
     tile.classList.add('sortable');
     tile.addEventListener('pointerdown', e=>{
       if(e.button&&e.button!==0) return;
@@ -2904,10 +2977,21 @@ function makeSortable(container, kind){
       if(!dragEl) return;
       if(!active){ if(Math.abs(e.clientY-startY)>8 || Math.abs(e.clientX-startX)>8){ clearTimeout(longT); dragEl=null; } return; }
       e.preventDefault();
-      const y=e.clientY; const sibs=tiles().filter(t=>t!==dragEl); let placed=false;
-      for(const s of sibs){ const r=s.getBoundingClientRect(); if(y < r.top + r.height/2){ container.insertBefore(dragEl, s); placed=true; break; } }
-      // Drop at the end must stay ABOVE the dashed "+ add" row, so it always remains last.
-      if(!placed){ const addRow=container.querySelector('.catadd-row'); if(addRow) container.insertBefore(dragEl, addRow); else container.appendChild(dragEl); }
+      const sibs=tiles().filter(t=>t!==dragEl);
+      if(O.grid){
+        /* Nächster Nachbar nach Abstand zur Zellenmitte; davor oder dahinter entscheidet die Seite.
+           `insertBefore(x, dragEl.nextSibling)` ist das saubere „dahinter" — appendChild wäre ans ENDE. */
+        let best=null, bd=Infinity, before=true;
+        const x=e.clientX, y=e.clientY;
+        for(const s of sibs){ const r=s.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2;
+          const d=Math.hypot(x-cx, y-cy); if(d<bd){ bd=d; best=s; before=(y<cy-2)||(Math.abs(y-cy)<=r.height/2 && x<cx); } }
+        if(best){ if(before) container.insertBefore(dragEl, best); else container.insertBefore(dragEl, best.nextSibling); }
+      } else {
+        const y=e.clientY; let placed=false;
+        for(const s of sibs){ const r=s.getBoundingClientRect(); if(y < r.top + r.height/2){ container.insertBefore(dragEl, s); placed=true; break; } }
+        // Drop at the end must stay ABOVE the dashed "+ add" row, so it always remains last.
+        if(!placed){ const addRow=O.tail?container.querySelector(O.tail):null; if(addRow) container.insertBefore(dragEl, addRow); else container.appendChild(dragEl); }
+      }
     });
     tile.addEventListener('pointerup', endDrag);
     tile.addEventListener('pointercancel', endDrag);
@@ -5121,6 +5205,44 @@ function ctxIdsOfCatch(c){
   return (c._ctxIds && c._ctxIds.length) ? c._ctxIds.filter(Boolean) : (c._ctxId!=null ? [c._ctxId] : []);
 }
 function fieldRequiredForCatch(c, key){ return ctxCfgFor(ctxIdsOfCatch(c))[key]==='required'; }
+/* Gegenstück zu `fieldHasValue` — dasselbe Urteil, andere Quelle (17. Juli).
+   `fieldHasValue` liest die FORMULARFELDER im DOM (`#f-length` …). Auf der Detailseite gibt es die
+   nicht: Dort ist der Fang ein OBJEKT. Beide Wege werden gebraucht, deshalb steht die Feldliste hier
+   ein zweites Mal — mit derselben Schlussregel („unbekannter Schlüssel → hat einen Wert"), damit ein
+   Feld, das keiner von beiden kennt, nirgends zum unpassierbaren Riegel wird.
+   ACHTUNG bei `released`: Das ist ein BOOLEAN. `!c.released` wäre falsch — „zurückgesetzt = false"
+   (entnommen) ist eine Antwort, nur `null`/`undefined` ist keine. */
+function catchHasValue(c, key){
+  if(!c) return true;
+  const txt=v=> v!=null && String(v).trim()!=='';
+  switch(key){
+    case 'length':    return c.length!=null;
+    case 'weight':    return c.weight!=null;
+    case 'watertemp': return c.watertemp!=null;
+    case 'released':  return c.released!=null;
+    case 'trolling':  return txt(c.trolling);
+    case 'location':  return txt(c.location);
+    case 'method':    return txt(c.method);
+    case 'bait':      return txt(c.bait);
+    case 'rod':       return txt(c.rod);
+    case 'reel':      return txt(c.reel);
+    case 'boat':      return txt(c.boat);
+    case 'notes':     return txt(c.notes);
+    case 'mapPin':    return c.lat!=null;
+    case 'photos':    return (photosOf(c)||[]).length>0;
+  }
+  return true;
+}
+/* Was verlangt GENAU DIESER eine Verein, das dem Fang fehlt?
+   Bewusst NICHT `ctxCfgFor` mit allen Zielen: Beim Antippen geht es um den Verein, den man gerade
+   hinzufügt. Die anderen fordern vielleicht auch etwas — das ist dann aber nicht die Schuld dieses Taps,
+   und eine Meldung über einen Verein, den man gar nicht angefasst hat, wäre nicht zu verstehen.
+   `weather` ist raus wie in `saveCatch`: Das kann man nicht ausfüllen, das holt der Schalter. */
+function missingForCtx(c, ctxId){
+  const ctx=(state.myContexts||[]).find(x=>x && x.id===ctxId);
+  const cfg=ctx && ctx.field_config; if(!cfg) return [];
+  return CFG_FIELDS.filter(f=> cfg[f.key]==='required' && f.key!=='weather' && !catchHasValue(c, f.key));
+}
 /* Die ZIELE des Formulars, nicht der gerade offene Verein: `ctxAdminCfg()` las `state.club`, also nur
    einen — wer in drei Vereine gleichzeitig loggte, konnte an der Pflicht des zweiten vorbeispeichern. */
 function formAdminCfg(){ return (state.auth==='supabase') ? ctxCfgFor(state.formTargets||[]) : {}; }
@@ -5343,6 +5465,19 @@ function openDetailAreaSheet(){
 async function detailToggleArea(key){
   const c=state.current; if(!c) return;
   let tg=(state.formTargets||[]).slice();
+  /* PFLICHTWERT VOR DEM SCHREIBEN (JC, 17. Juli entschieden).
+     Der Befund, der JCs ersten Entwurf („Warnung beim Speichern") nicht aufgehen ließ: Hier gibt es
+     KEIN Speichern. Die Zeile unten schreibt im Moment des Antippens direkt in die DB — der Verein wäre
+     drin, bevor ein Dialog aufgehen könnte. Im Formular greift die Prüfung dagegen längst, weil dort
+     `toggleArea` nur in `state.formTargets` sammelt und `saveCatch` prüft.
+     Nur beim HINZUFÜGEN: Wer einen Verein ENTFERNT, kann dessen Forderung nicht mehr verletzen — ihn
+     dabei nach einem Wert zu fragen wäre absurd, und man käme aus einem Verein nicht mehr heraus, dessen
+     Pflichtfeld man nie ausgefüllt hat. */
+  const adding = key!=='solo' && tg.indexOf(key)<0;
+  if(adding){
+    const fehlt = missingForCtx(c, key);
+    if(fehlt.length){ _askAreaRequired(c, key, fehlt); return; }   // NICHT schreiben
+  }
   if(key==='solo'){ tg=[]; } else { const i=tg.indexOf(key); if(i>=0) tg.splice(i,1); else tg.push(key); }
   state.formTargets=tg;
   const primary = tg.length ? tg[0] : null;
@@ -5352,6 +5487,62 @@ async function detailToggleArea(key){
   [state.catches, state.myAllCatches].forEach(a=>{ const it=(a||[]).find(x=>x&&x.id===c.id); if(it){ it._ctxId=primary; it._ctxIds=tg.slice(); } });
   try{ haptic(8); }catch(e){}
   renderAreaSheet();
+}
+/* „Der Tap fragt gleich nach dem Wert" (JCs Entscheidung, 17. Juli) — und der Verein ist DANACH drin.
+   Deshalb eine Vormerkung: Ohne sie müsste man nach dem Ausfüllen nochmal aufs Sheet und nochmal auf
+   denselben Verein tippen. Der Moment bleibt dort, wo er ausgelöst wurde.
+   Warum kein eigener Eingabe-Dialog: Pflicht kann JEDES Feld aus CFG_FIELDS sein — Zahl, Text, Auswahl,
+   Kartenpin, Fotos. Ein Dialog müsste für jeden Typ ein Element nachbauen, das die Detailseite als
+   Inline-Edit längst hat (`startFieldEdit` kennt alle). Also schicke ich den Nutzer dorthin, statt eine
+   zweite Eingabemaske zu erfinden, die dann auseinanderläuft. */
+let _pendingArea=null;   // {ctxId, keys:[…]}
+async function _askAreaRequired(c, ctxId, fehlt){
+  const ctx=(state.myContexts||[]).find(x=>x && x.id===ctxId);
+  const nm=(ctx && ctx.name) || '';
+  const felder=fehlt.map(f=>t(f.i18n)).join(', ');
+  const ok=await confirmDialog(t('reqAreaTitle'), t('reqAreaMsg').replace('{ctx}', nm).replace('{fields}', felder), t('reqAreaGo'));
+  if(!ok) return;                       // Nein -> Verein bleibt draußen, nichts geschrieben
+  _pendingArea={ ctxId, keys: fehlt.map(f=>f.key) };
+  closeAreaSheet();
+  /* In den Bearbeiten-Modus, sonst ist das Feld nur Text. `_detailEdit` schaltet `openDetailObj` um. */
+  if(!_detailEdit){ try{ toggleDetailEdit(); }catch(e){} }
+  setTimeout(()=>{ try{ _focusField(fehlt[0].key); }catch(e){} }, 260);
+}
+/* Zum Feld hinschauen UND es aufmachen. Nur scrollen hieße: Der Nutzer sucht selbst, was gemeint war.
+   Zwei Sorten Zeilen, zwei Wege — im Bearbeiten-Modus IST ein Zahlen-/Textfeld schon ein <input>
+   (INLINE_EF), da wäre `startFieldEdit` falsch; die Auswahl-Zeilen öffnen dagegen ein Sheet.
+   Fällt `mapPin`/`photos` an, gibt es keine Zeile: dann sagen statt schweigen. */
+function _focusField(key){
+  const row=document.querySelector('#d-rows [data-k="'+key+'"]');
+  if(!row){ try{ toast(t('reqAreaPick')); }catch(e){} return; }
+  try{ row.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){}
+  setTimeout(()=>{
+    const inp=row.querySelector('input.efm-in');
+    if(inp){ try{ inp.focus(); inp.select&&inp.select(); }catch(e){} }
+    else { try{ startFieldEdit(row, key); }catch(e){} }
+  }, 320);
+}
+/* Nach jedem gespeicherten Feld nachsehen, ob die Vormerkung jetzt einlösbar ist. Sitzt hier und nicht
+   in `saveDetailField`: Der Verein soll erst dazukommen, wenn ALLE geforderten Werte stehen — bei zwei
+   Pflichtfeldern wäre ein Einlösen nach dem ersten zu früh. */
+async function _tryPendingArea(){
+  const p=_pendingArea, c=state.current;
+  if(!p || !c) return;
+  const offen=p.keys.filter(k=>!catchHasValue(c, k));
+  if(offen.length){ try{ _focusField(offen[0]); }catch(e){} return; }   // nächstes fehlendes Feld
+  _pendingArea=null;
+  const tg=(ctxIdsOfCatch(c)||[]).slice();
+  if(tg.indexOf(p.ctxId)<0) tg.push(p.ctxId);
+  state.formTargets=tg;
+  const primary=tg.length?tg[0]:null;
+  const patch={ context_id: primary, context_ids: tg.length>1 ? tg : null };
+  try{ if(c._db){ const { error }=await getSB().from('catches').update(patch).eq('id', c.id); if(error) throw error; } }catch(e){ try{ toast(t('errSave')); }catch(_e){} return; }
+  c._ctxId=primary; c._ctxIds=tg.slice();
+  [state.catches, state.myAllCatches].forEach(a=>{ const it=(a||[]).find(x=>x&&x.id===c.id); if(it){ it._ctxId=primary; it._ctxIds=tg.slice(); } });
+  const ctx=(state.myContexts||[]).find(x=>x && x.id===p.ctxId);
+  try{ toast(t('reqAreaAdded').replace('{ctx}', (ctx&&ctx.name)||'')); }catch(e){}
+  try{ haptic(8); }catch(e){}
+  try{ openDetailObj(c, state.detailFrom, true); }catch(e){}
 }
 function closeAreaSheet(){ const wasDetail=(_areaMode==='detail'); closeModal('area-sheet'); _areaMode='form'; if(wasDetail){ try{ reloadCurrentDb(); }catch(e){} if(state.current) openDetailObj(state.current, state.detailFrom, true); } }
 function renderAreaSheet(){
@@ -5393,53 +5584,16 @@ async function toggleArea(key){
   updateAreaSummary(); renderAreaSheet();
 }
 function isoToLocalInput(iso){ const d=new Date(iso); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
-function openEdit(c){
-  if(!c) return;
-  openForm(true);
-  state.editId=c.id;
-  { const _fa=document.getElementById('ff-area'); if(_fa) _fa.style.display=''; }
-  state.formTargets = (c._ctxIds && c._ctxIds.length) ? c._ctxIds.slice() : (c._ctxId!=null ? [c._ctxId] : (currentContextId()!=null?[currentContextId()]:[]));
-  try{ updateAreaSummary(); }catch(e){}
-  { const _dw=document.getElementById('form-del-wrap'); if(_dw) _dw.style.display=''; }
-  { if(c.weather){ state.formWeather=c.weather; try{ renderWeatherInto(c.weather, c.date, 'f-weather','f-weather-wrap'); }catch(e){} } }
-  document.getElementById('f-title').textContent=t('editCatch');
-  document.getElementById('f-species').value=trSpecies(c.species); state.speciesKey=c.species;
-  document.getElementById('f-length').value = c.length!=null? c.length : '';
-  document.getElementById('f-weight').value = c.weight!=null? c.weight : '';
-  document.getElementById('f-location').value = c.location||'';
-  document.getElementById('f-notes').value = c.notes||'';
-  document.getElementById('f-date').value = isoToLocalInput(c.date);
-  const sel=document.getElementById('f-angler');
-  if(ctxIsDb()){
-    // Ensure the member list is built BEFORE selecting the angler — otherwise a catch
-    // logged for another member can't be reselected (options only contain "me") on edit.
-    const setAngler=()=>{ buildAnglerOptions(); sel.value=`u:${c.userId||state.me.id}`; if(!sel.value||sel.selectedIndex<0) sel.value=`u:${state.me.id}`; syncSelfield('f-angler'); };
-    if((state.ctxMembers||[]).length){ setAngler(); }
-    else { loadCtxMembers().then(setAngler); }
-  }
-  else { sel.value=c.angler;
-    if(sel.value!==c.angler){ sel.value='__other__'; const o=document.getElementById('f-angler-other'); o.style.display='block'; o.value=c.angler; }
-    syncSelfield('f-angler'); }
-  document.getElementById('f-method').value = c.method||'';
-  document.getElementById('f-bait').value = c.bait||'';
-  document.getElementById('f-rod').value = c.rod||'';
-  document.getElementById('f-reel').value = c.reel||'';
-  document.getElementById('f-boat').value = c.boat||'';
-  document.getElementById('f-watertemp').value = c.watertemp!=null? c.watertemp : '';
-  document.getElementById('f-trolling').value = c.trolling!=null? c.trolling : '';
-  document.getElementById('f-released').value = c.released===true?'released':(c.released===false?'kept':'');
-  syncSelfield('f-released');
-  state.editPhotos = photosOf(c).slice(); renderFormPhotos();
-  state.formLat = c.lat!=null?c.lat:null; state.formLon = c.lon!=null?c.lon:null;
-  ensureFormMap(state.formLat, state.formLon);
-  // if an "off" field already has a value on this catch, reveal the extra fields
-  // an edited catch may already have values in "off" fields — show those so they stay editable and aren't wiped
-  const force={};
-  CFG_FIELDS.forEach(f=>{ if(fieldHasValue(f.key)) force[f.key]=true; });
-  applyFieldConfig(force);
-  try{ state.formSnap=formSnapshot(); }catch(e){}
-  try{ bindFormReadiness(); updateSaveReadiness(); }catch(e){}
-}
+/* HIER STAND `openEdit(c)` (47 Zeilen) — das alte Bearbeiten-Formular. Entfernt am 17. Juli, JC: "can go".
+   Es füllte das Log-Formular mit einem bestehenden Fang und setzte `state.editId`. Sein EINZIGER Aufrufer
+   war `editCurrentCatch()`, und den rief seinerseits NIEMAND mehr: kein Code, kein onclick. Der
+   Einstieg war längst weg — der Bearbeiten-Knopf der Detailseite ruft `toggleDetailEdit()`, das
+   Inline-Edit deckt alles ab (view = edit). Übrig war eine Leiche, die bei jeder Änderung an den
+   Formularfeldern mitgepflegt werden musste.
+   NICHT MIT ENTFERNT, bewusst: `state.editId` und die `if(state.editId)`-Zweige in `saveCatch`. Ohne
+   `openEdit` wird es nie mehr gesetzt, die Zweige sind also ebenfalls tot — aber sie liegen mitten im
+   Speicherpfad. Das ist ein eigener, ausgeruhter Durchgang wert und steht auf der Liste; ihn hier
+   nebenbei mitzunehmen hieße, die Funktion zu operieren, die Fänge schreibt. */
 async function deleteCatch(id, from){
   if(!(await confirmDialog(t('confirmTitle'), t('delConfirm'), t('del'), true))) return;
   // remember species+owner so we can refresh the PB flag for that species after deletion
@@ -5472,13 +5626,8 @@ async function enterCatchContext(c){
   if(cid){ const ctx=(state.myContexts||[]).find(x=>x.id===cid); if(ctx){ try{ await chooseClub(ctx, ctx.type, true); }catch(e){} return; } }
   try{ await startSolo(true); }catch(e){}
 }
-async function editCurrentCatch(){
-  const c=state.current; if(!c) return;
-  const from=state.detailFrom;
-  if(from==='stats'){ await enterCatchContext(c); }
-  openEdit(state.current);
-  state.editReturn = from;
-}
+/* HIER STAND `editCurrentCatch()`. Rief `openEdit` und wurde selbst von niemandem gerufen — toter
+   Einstieg in ein totes Formular (17. Juli, JC: "can go"). */
 let _openSwipe=null;
 /* `sw-armed` erst nach der Rückfahrt abräumen: Die Kachel gleitet 200 ms zurück, und solange muss der
    rote Grund noch da sein — sonst verschwindet er unter einer Kachel, die noch gar nicht angekommen ist. */
@@ -6089,7 +6238,7 @@ function renderFormPhotos(){
   const starLine=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4l2.5 5 5.5.8-4 3.9.95 5.5L12 16.6 7.1 19.2 8 13.7 4 9.8l5.5-.8z"/></svg>`;
   ps.forEach((src,i)=>{
     const isCover=i===0;
-    h+=`<div class="photo-cell${isCover?' is-cover':''}">
+    h+=`<div class="photo-cell${isCover?' is-cover':''}" data-i="${i}">
       <img src="${src}" alt="">
       ${multi ? (isCover
         ? `<span class="cover-tag">${starFull} ${t('cover')}</span>`
@@ -6107,6 +6256,35 @@ function renderFormPhotos(){
     </div>`;
   }
   grids.forEach(g=>{ g.innerHTML=h; });
+  /* ZIEHEN zum Umsortieren (JC, 17. Juli: „verhalten sollte ähnlich dem umsortieren der gruppen und
+     vereinslisten sein"). Dieselbe Geste wie dort — langes Drücken, dann ziehen —, nur im Rasterbetrieb.
+     Vorher gab es NUR „Titelbild setzen": Das hebt ein Bild auf Platz 1, aber Bild 3 vor Bild 2 war
+     unmöglich. Die Daten konnten es längst (`catch_photos.sort` ist eine eigene Spalte, `saveSoloPhotos`
+     schreibt sie aus der Reihenfolge von `state.editPhotos`) — es fehlte allein die Geste.
+     WARUM ÜBER `data-i` UND NICHT ÜBER DIE DOM-REIHENFOLGE: Die Knöpfe in jeder Zelle tragen ihren Index
+     IM ONCLICK (`setFormCover(2)`, `removeFormPhoto(2)`). Wer nur das DOM umsortiert, hat Knöpfe, die auf
+     das falsche Bild zeigen — „Löschen" träfe dann ein anderes Foto. Deshalb: neue Reihenfolge aus den
+     data-i lesen, `state.editPhotos` danach umbauen und NEU RENDERN. Dann stimmen die Indizes wieder,
+     und Platz 1 ist wie gehabt das Titelbild — Ziehen auf Platz 1 setzt also das Titelbild, ohne dass
+     man dafür etwas erklären müsste.
+     Mehrere `.pgrid` können existieren (Formular + Detailseite), deshalb je Raster verdrahten. */
+  grids.forEach(g=>{
+    makeSortable(g, {
+      sel:'.photo-cell', grid:true, tail:'.photo-add',
+      onDrop:(cells)=>{
+        const neu=cells.map(el=>ps[+el.dataset.i]).filter(x=>x!=null);
+        if(neu.length!==ps.length) return;            // etwas stimmt nicht — lieber gar nichts anfassen
+        if(neu.every((v,i)=>v===ps[i])) return;       // unverändert: kein Rendern, kein Speichern
+        state.editPhotos=neu;
+        renderFormPhotos();
+        /* NICHT selbst speichern — bewusst. Exakt derselbe Weg wie beim Titelbild: `setFormCover`
+           ändert auch nur `state.editPhotos` und rendert. Geschrieben wird an den zwei Stellen, die
+           es ohnehin tun: `persistDetailPhotos()` beim Verlassen des Bearbeiten-Modus (dort werden
+           `crops` und `photoPaths` mitgezogen — ein eigener Schreibweg von hier aus würde genau das
+           übergehen und jeden Zuschnitt aufs falsche Bild zeigen lassen) und `saveCatch` im Formular. */
+      }
+    });
+  });
   const hint=document.getElementById('photo-hint'); if(hint) hint.style.display=ps.length?'block':'none';
 }
 function clearPhoto(){ state.editPhotos=[]; const fp=document.getElementById('f-photo'); if(fp) fp.value=''; renderFormPhotos(); }
@@ -6730,6 +6908,9 @@ async function saveDetailField(c, col, field, value, opts){
     else { const idx=(state.catches||[]).findIndex(x=>x&&x.id===c.id); if(idx>=0){ state.catches[idx][field]=value; saveCatches(); } }
     try{ haptic(8); }catch(e){}
   }catch(e){ try{ toast(t('errSave')); }catch(_e){} }
+  /* Wartet ein Verein auf genau diesen Wert? Nach dem Schreiben, nicht davor: Sonst hinge der Verein
+     an einem Wert, dessen Speichern gescheitert sein kann. */
+  try{ _tryPendingArea(); }catch(e){}
 }
 function startFieldEdit(rowEl, key){
   if(INLINE_EF[key]) return startInlineEdit(rowEl, key);
@@ -6954,17 +7135,22 @@ function openDetailObj(c, from, keepEdit){
         if(!present.has(a[0])) rows.push([a[0], a[1], '—', a[3], true]); }catch(e){} });
   }
   const EDITABLE_FIELDS={length:1,weight:1,trolling:1,water:1,method:1,bait:1,rod:1,reel:1,boat:1,released:1,date:1,watertemp:1};
+  /* `data-k` an JEDER Zeile (17. Juli): Bis dahin war eine Feldzeile nicht adressierbar — die
+     Inline-Felder trugen `data-key` am <input>, die Auswahl-Zeilen gar nichts (ihr Schlüssel steckte im
+     onclick-Text). Wer eine bestimmte Zeile finden wollte, hätte auf `[onclick*="'bait'"]` zielen
+     müssen, also auf Quelltext statt auf Daten. `_focusField` braucht sie (Pflichtwert-Abfrage beim
+     Verein-Tap); billiger als jede Alternative und für den nächsten Fall gleich mit da. */
   const _specOne=(r)=>{ const key=r[0]; const wide=r[3] || (''+r[2]).length>18; const empty=r[4];
     const canEdit=_editable && (key==='angler' ? (c._db&&c._ctxId) : EDITABLE_FIELDS[key]);
     if(editing && canEdit && key==='date'){
-      return `<div class="spec efm wide">${dSpecIcon('date')}<span class="kv"><span class="k">${r[1]}</span><input class="efm-in efm-date" type="datetime-local" value="${escAttr(isoToLocalInput(c.date))}" max="${nowLocal()}" onchange="commitEfmDate(this)"></span></div>`;
+      return `<div class="spec efm wide" data-k="date">${dSpecIcon('date')}<span class="kv"><span class="k">${r[1]}</span><input class="efm-in efm-date" type="datetime-local" value="${escAttr(isoToLocalInput(c.date))}" max="${nowLocal()}" onchange="commitEfmDate(this)"></span></div>`;
     }
     if(editing && canEdit && INLINE_EF[key]){
       const cfg=INLINE_EF[key]; const raw=c[cfg.field]; const val=(cfg.mode==='text')?(raw||''):(raw!=null&&raw!==''?String(raw).replace('.',','):'');
-      return `<div class="spec efm${wide?' wide':''}">${dSpecIcon(key)}<span class="kv"><span class="k">${r[1]}</span><span class="efm-field"><input class="efm-in" inputmode="${cfg.mode==='text'?'text':cfg.mode}" data-key="${key}" value="${escAttr(val)}" placeholder="—" oninput="sizeEfm(this)" onblur="commitEfmInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();efmNext(this);}">${cfg.unit?'<span class="efm-unit">'+esc(cfg.unit)+'</span>':''}</span></span></div>`;
+      return `<div class="spec efm${wide?' wide':''}" data-k="${key}">${dSpecIcon(key)}<span class="kv"><span class="k">${r[1]}</span><span class="efm-field"><input class="efm-in" inputmode="${cfg.mode==='text'?'text':cfg.mode}" data-key="${key}" value="${escAttr(val)}" placeholder="—" oninput="sizeEfm(this)" onblur="commitEfmInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();efmNext(this);}">${cfg.unit?'<span class="efm-unit">'+esc(cfg.unit)+'</span>':''}</span></span></div>`;
     }
     if(editing && canEdit){ // choice / water / angler → tap opens sheet/picker
-      return `<div class="spec efm${wide?' wide':''}" onclick="startFieldEdit(this,'${key}')">${dSpecIcon(key)}<span class="kv"><span class="k">${r[1]}</span><span class="efm-pickrow"><span class="v efm-pick${empty?' efm-empty':''}">${esc(''+r[2])}</span><svg class="efm-chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6l-6 6"/></svg></span></span></div>`;
+      return `<div class="spec efm${wide?' wide':''}" data-k="${key}" onclick="startFieldEdit(this,'${key}')">${dSpecIcon(key)}<span class="kv"><span class="k">${r[1]}</span><span class="efm-pickrow"><span class="v efm-pick${empty?' efm-empty':''}">${esc(''+r[2])}</span><svg class="efm-chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6l-6 6"/></svg></span></span></div>`;
     }
     // #9 (JC): read-only catch fields ARE weather cards — same class, same structure, same grid.
     // The wide rule already exists on both sides (long values span full width), so a rod name is
