@@ -2294,9 +2294,16 @@ function soloAvatarHTML(){ return state.soloAvatar ? `<img src="${state.soloAvat
 // ---------- screen navigation + hardware/gesture back handling ----------
 let _navStack=[], _curScreen='club';
 const _ROOT_SCREENS=['login','club'];   // arriving at a root screen clears the in-app back history
+const _scrollPos={};
 function go(name, isBack){
   try{ nlog('go', { von:_curScreen, nach:name, isBack:!!isBack, stack:(_navStack||[]).slice(), len:history.length,
         wer: (new Error()).stack ? String((new Error()).stack).split('\n')[2].trim().slice(0,90) : '?' }); }catch(e){}
+  /* Beim VERLASSEN festhalten, wo der Nutzer stand — sonst gibt es beim Zurückkommen nichts
+     wiederherzustellen. Muss vor dem Screen-Wechsel passieren: Danach ist der alte Screen
+     `display:none` und sein `scrollTop` liest sich als 0. */
+  if(name!==_curScreen){
+    try{ const _old=document.querySelector('#s-'+_curScreen+' .scroll'); if(_old) _scrollPos[_curScreen]=_old.scrollTop; }catch(e){}
+  }
   /* ---- Ein Verlaufseintrag JE SCREEN (17. Juli — die eigentliche Ursache) -------------------------
      Das Log hat die App entlastet und den Browser überführt: Unsere Navigation macht genau EINEN
      korrekten Rückschritt (`go: detail → list`, 4 ms nach dem Wisch) — und JC sieht trotzdem Home.
@@ -2323,7 +2330,16 @@ function go(name, isBack){
   // The login lockup lives on a hidden screen, so it has no box to measure until now — place it
   // once it's actually laid out, otherwise the lantern never finds the puffer.
   try{ placeLockups(); }catch(e){}
-  const sc=document.querySelector('#s-'+name+' .scroll'); if(sc) sc.scrollTop=0;
+  /* Scrollposition merken und beim Zurückgehen WIEDERHERSTELLEN (JC, 17. Juli: „a jumping … due to the
+     side scrolling back to top").
+     Vorher stand hier `sc.scrollTop=0` für JEDEN Wechsel — auch fürs Zurück. Wer eine Fangliste halb
+     heruntergescrollt hatte und zurückkam, wurde nach oben gerissen; der Fang, von dem er gerade kam,
+     war nicht mehr zu sehen.
+     Das Zucken hat noch einen zweiten Anteil: Seit die Verlaufseinträge stimmen, zeigt iOS beim Wischen
+     den Schnappschuss des vorherigen Screens — auf DESSEN Scrollposition. Sprang unser JS danach auf 0,
+     sah man genau diesen Ruck. Jetzt landen beide an derselben Stelle. */
+  const sc=document.querySelector('#s-'+name+' .scroll');
+  if(sc) sc.scrollTop = isBack ? (_scrollPos[name] || 0) : 0;
   try{ hideLoader(); }catch(e){}
 }
 let _loaderShownAt = (typeof performance!=='undefined' && performance.now) ? performance.now() : Date.now();
