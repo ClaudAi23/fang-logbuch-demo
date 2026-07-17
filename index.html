@@ -472,6 +472,10 @@
      ausgeblendet (siehe `d-rows-label`), dann stand „Wetter" ganz oben und pausierte vor nichts
      (JC, 17. Juli, Anhang 2). `_detailRules()` setzt die Klasse. */
   #s-detail .no-rule::before{display:none !important;}
+  /* Und der Abstand geht mit. Die Linie hat die 22px gerechtfertigt — ohne sie blieb oben eine leere
+     Zeile stehen (JC, 17. Juli: „Trennlinie ist weg, aber jetzt ist noch eine extra leere zeile zuviel").
+     Wer sich von nichts trennt, braucht weder Strich noch Lücke; den Abstand nach oben gibt `.pad`. */
+  #s-detail .no-rule{margin-top:0 !important;}
   /* Footer: note left, source right, one line. Only fits because the note lost its parenthetical —
      with "(lineare Tendenz, Tageswerte)" it needed 455px of 358 and would have wrapped under the source. */
   /* Only the credit lives here now (the trend note is gone), so the source keeps its right edge via
@@ -797,31 +801,18 @@
   /* "Deine Rekorde" shelf (Stats) */
   .rec-head{display:flex; align-items:center; gap:8px; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:0.78rem; color:var(--muted); margin:0 0 10px;}
   .rec-head svg{width:16px; height:16px; stroke:var(--accent); fill:none; stroke-width:2;}
-  /* ---- Wer hat den Vereinsrekord gefangen (17. Juli) ----------------------------------------------
-     Hochkant: nur das Gesicht. Der Avatar IST die Identität — ein Foto, oder Initialen aus
-     `initialsAvatar`. Ein Name daneben wäre bei 108 px nach 11 Zeichen abgeschnitten, und über einem
-     Initialen-Avatar stünde derselbe Buchstabe zweimal.
-     Quer/Desktop: Name dazu. Dort ist Platz — und quer IST der Desktop. */
-  /* Der Ring ist hier KEINE Zierde. Krone und Medaille sind einfarbige Kreise — die trennen sich vom
-     Foto durch die Farbe selbst. Der Angler ist ein FOTO AUF EINEM FOTO; ohne Ring verschwimmt Gesicht
-     in Gesicht. Deshalb trägt nur er einen (JC, 17. Juli: „aber brauch das vll einen rand?"). */
-  .bdg-who{position:absolute; left:-5px; bottom:-5px; z-index:3; width:24px; height:24px;
-    border-radius:50%; overflow:hidden; background:var(--surface-2);
-    border:2px solid var(--surface); box-shadow:0 2px 6px rgba(0,0,0,.35);
-    display:flex; align-items:center; justify-content:center;}
-  .bdg-who img{width:100%; height:100%; object-fit:cover; display:block;}
-  /* `initialsAvatar` setzt seine Schriftgröße INLINE (0.9375rem) — für einen 24-px-Kreis viel zu groß,
-     und inline schlägt Stylesheet. Deshalb `!important`, wie beim Vollbild der Karte auch. */
-  .bdg-who > span{font-size:.6rem !important; letter-spacing:0 !important;}
-  /* Hochkant: nur das Gesicht (am Bild). Der Avatar IST die Identität. Ein Name daneben wäre bei 108 px
-     nach 11 Zeichen abgeschnitten, und über einem Initialen-Avatar stünde derselbe Buchstabe zweimal.
-     Quer/Desktop: Name dazu. Dort ist Platz — und quer IST der Desktop. */
-  .rec-who-nm{display:none;}
-  @media (orientation:landscape) and (min-width:560px){
-    .rec-who-nm{display:block; margin-top:3px; font-size:.66rem; color:var(--muted);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;}
-    .rec-card{width:132px;}   /* quer ist Platz — da passt der Name hin */
-  }
+  /* ---- Kein Angler auf der Rekord-Karte (JC, 17. Juli) --------------------------------------------
+     Zwei Anläufe, beide raus. JC: „nimm den einfach komplett raus. die details wer gefangen hat stehen
+     ja noch auf der catchseite."
+     Warum es nicht ging, für den Fall, dass es jemand wieder versuchen will:
+     Ein 24-px-Kreis kann keinen Menschen zeigen, wenn das Profilbild kein Kopfbild ist. Renés Bild ist
+     256×256, quadratisch, `object-fit:cover 50%/50%` — kein Zuschnittfehler, das Bild IST ein
+     Ganzkörperfoto. Bei 56 px (Kopf von „Meine Fänge") funktioniert dasselbe Bild, bei 24 px ist es ein
+     Fleck. Und wir können niemandem vorschreiben, was er hochlädt.
+     Der Name als Ersatz war die erste Fassung und war eine Waise: Weil der Artname mal ein-, mal
+     zweizeilig ist, sass er auf jeder Karte woanders.
+     Die Karte zeigt jetzt wieder Fisch, Art, Wert — wer ihn gefangen hat, steht auf der Detailseite
+     (Byline, siehe `anglerAvatarHTML`), und dort ist der Avatar gross genug. */
   .rec-strip{display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch;}
   /* color is NOT optional here: <button> gets "color:buttontext" from the UA sheet, which beats
      inheritance — so .rec-sp fell back to iOS Safari's system blue while the desktop looked fine. */
@@ -4244,17 +4235,11 @@ function renderKpiCards(kind, items){
     (showMeasures ? (bigLen ? kpiBtn(t('longest'), fmtLen(bigLen.length), true, bigLen.id) : kpi(t('longest'), '—', true)) : '') +
     (showMeasures ? (bigWt ? kpiBtn(t('heaviest'), fmtWeight(bigWt.weight), true, bigWt.id) : kpi(t('heaviest'), '—', true)) : '');
 }
-function badgeWrap(thumbHtml, c, withWho){
+function badgeWrap(thumbHtml, c){
   const r=podiumRank(c);
   const crown = isPb(c) ? `<span class="bdg bdg-crown">${CROWN_IC}</span>` : '';
   const med   = r ? `<span class="bdg bdg-medal bdg-${r===1?'g':(r===2?'s':'b')}">${MEDAL_IC}</span>` : '';
-  /* Das Gesicht unten links AM BILD (17. Juli, JC: „A ist gut"). Mein erster Versuch stellte es als
-     eigene Zeile unter den Wert — dort war es eine Waise: Weil der Artname mal ein-, mal zweizeilig ist,
-     saß es auf jeder Karte woanders, und die Karten wurden unterschiedlich hoch. Am Bild kostet es
-     keine Höhe, alle Karten bleiben gleich, und es sagt ohne Worte „der da hat ihn gefangen".
-     Die vierte Ecke ist frei: Krone oben links, Medaille oben rechts, Gesicht unten links. */
-  const who = withWho ? `<span class="bdg-who">${anglerAvatarHTML(c)}</span>` : '';
-  return `<span class="thumbwrap">${thumbHtml}${crown}${med}${who}</span>`;
+  return `<span class="thumbwrap">${thumbHtml}${crown}${med}</span>`;
 }
 /* `medalBadge(rank)` stand hier — Medaille MIT Rangzahl, für die Liste. Am 17. Juli entfallen: Die
    Medaille sitzt jetzt am Bild und trägt keine Zahl mehr (JC: „keine rangzahl"). Die Farbe sagt den
@@ -4387,10 +4372,7 @@ const REC_SHELF={
           /* NICHT `ctxRecWord()` — das ist die EINZAHL („Vereinsrekord") und dient als Tag an einer
              einzelnen Goldkachel. Über einer Leiste mit mehreren Karten wäre sie schlicht falsch. */
           title:()=> (state.club && state.club.type==='group') ? t('groupRecordsTitle') : t('clubRecordsTitle'),
-          headIcon:()=> MEDAL_IC,
-          /* Nur im VEREIN: „Wer hat den gefangen?" ist dort die halbe Information (JC, 17. Juli).
-             In „Deine Rekorde" wäre es sinnlos — das bist immer du. */
-          who:true }
+          headIcon:()=> MEDAL_IC }
 };
 function renderRecordsShelf(kind, items){
   const CFG=REC_SHELF[kind]; if(!CFG) return;
@@ -4411,13 +4393,9 @@ function renderRecordsShelf(kind, items){
        Auf „Meine Fänge" ist `_podium` leer → nur die Krone. In der Vereins-Leiste ist alles Gold →
        Medaille, plus Krone, wenn der Gruppenrekord zugleich das eigene PB ist. Genau der Fall, den
        die alte Bauweise gar nicht zeigen konnte. */
-    /* Hochkant nur das Gesicht (aus `badgeWrap` unten links AM Bild), quer der Name dazu (JC, 17. Juli).
-       Der Name steht im HTML immer drin und wird per CSS ein-/ausgeblendet — kein zweiter Render-Pfad,
-       der beim Drehen nachziehen müsste.
-       Gerechnet, nicht geraten: 108 px Karte bei 0,66 rem ≈ 11–12 Zeichen. „Sebastian" passt,
-       „Oktay Düzgün" nicht. Deshalb hochkant gar nicht erst — quer sind es 132 px und Zeit zum Schauen. */
-    const who = CFG.who ? `<span class="rec-who-nm">${esc((c.angler||'').trim())}</span>` : '';
-    return `<button type="button" class="rec-card" onclick="openRecordCatch('${c.id}','${CFG.from}')">${badgeWrap(thumb, c, CFG.who)}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span>${who}</button>`;
+    /* KEIN Angler auf der Karte (JC, 17. Juli: „nimm den einfach komplett raus"). Die Begründung steht
+       im CSS bei `.rec-strip`. Wer ihn gefangen hat, sagt die Detailseite — ein Tipp entfernt. */
+    return `<button type="button" class="rec-card" onclick="openRecordCatch('${c.id}','${CFG.from}')">${badgeWrap(thumb, c)}<span class="rec-sp">${esc(trSpecies(c.species))}</span><span class="rec-val">${esc(val)}</span></button>`;
   }).join('');
   box.innerHTML=`<div class="rec-head">${CFG.headIcon()}<span>${esc(CFG.title())}</span></div><div class="rec-strip">${cards}</div>`;
 }
