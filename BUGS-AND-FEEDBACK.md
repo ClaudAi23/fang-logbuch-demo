@@ -17,15 +17,49 @@ Stand: 17. Juli 2026. Legende: 🐛 offener Bug · 🔧 offener Bau (abgestimmt)
 ## 🐛 OFFENE BUGS
 
 ### Laden / Theme
-- **💬 Der Ladescreen ist `#0D5164`, die App-Topbar `#03354B` — der Sprung bleibt (17. Juli).**
-  Beim Topbar-Fix aufgetaucht: `#app-loader{background:#0D5164}`. **Daher kam die alte `theme-color`** —
-  sie war auf den *Loader* gemünzt, nicht auf die App. Die Statusleiste passt jetzt zur Topbar, aber der
-  Übergang **Loader (mittelblau) → App (dunkelblau)** ist damit nicht weg, nur verschoben.
-  **Das ist eine Farbentscheidung, keine Reparatur** — deshalb hier und nicht gebaut:
-  - **(a)** Loader bekommt `--surface` (`#03354B`) → Statusleiste, Loader und Topbar sind eine Farbe,
-    kein Sprung mehr. Der Splash verliert seinen helleren Ton.
-  - **(b)** So lassen → der Loader bleibt als eigener Moment erkennbar, der Sprung bleibt sichtbar.
-  Zu klären: War das hellere Blau des Splashs Absicht (Marke) oder Zufall?
+- **💬 Obere Leiste wird später dunkel als der Rest — AN JCs VIDEO VERMESSEN (18. Juli, `v 2026-07-17.5`).**
+  JC nach dem `theme-color`-Fix: *„immer noch nicht ganz."* **Er hat recht, und der Fix war trotzdem
+  richtig — er hat nur einen anderen Fehler behoben.** Frame für Frame gemessen (60 fps):
+  ```
+  ~5,30s   hide gesetzt → Blende startet
+   5,40 → 5,88s   Inhalt wird dunkel      (480 ms = die .5s-Blende)
+   5,88s          Loader ist opacity:0, unsichtbar — ABER NOCH IM DOM
+   5,90 → 6,00s   obere Zone kippt        (100 ms, ~500 ms SPÄTER)
+  ```
+  **`remove()` läuft 700 ms nach `hide`, also bei ~6,00s — exakt dann kippt die obere Zone.**
+  Sie hängt also nicht an der Blende, sondern am `remove()`: iOS färbt den Statusleisten-Bereich neu,
+  sobald das Element aus dem DOM fliegt. Die Blende darüber sieht man dort nicht.
+  **Warum das vorher nicht auffindbar war:** `#0D5164` ist **beides** — die alte `theme-color` *und* die
+  Loader-Farbe. Am Pixel nicht unterscheidbar.
+  **Die Wurzel bleibt: Loader `#0D5164` vs. App `#03354B`.** Solange die zwei verschieden sind, gibt es
+  den Wechsel — egal wann iOS nachrechnet. Farbentscheidung, deshalb nicht eigenmächtig gebaut:
+  - **(a)** Loader bekommt `--surface` (`#03354B`) → eine Farbe von der ersten bis zur letzten
+    Millisekunde, der Wechsel ist **strukturell** weg. Der Splash verliert seinen helleren Ton.
+  - **(b)** So lassen → der Loader bleibt ein eigener Moment, der Wechsel bleibt sichtbar.
+  *(Am `remove()`-Timing zu drehen wäre Symptomkur: Der Wechsel bliebe, er käme nur früher.)*
+  **Nebenbei belegt:** Die Versionsnummer im Ladescreen hat beim ersten Einsatz getan, wofür sie da ist —
+  `v 2026-07-17.5` ist im Video lesbar, JC hatte also den richtigen Stand.
+
+### Angler-Auswahl
+- **🐛 Beim Loggen fehlt René in der Angler-Liste, obwohl gemeinsame Gruppe (JC, 18. Juli: „i cant, as
+  his name doesnt show up in the list, even we share groups together"). BEFUND BESTÄTIGT.**
+  ```js
+  loadCtxMembers()     →  .eq('context_id', state.club.id)   // EIN Verein: der gerade offene
+  buildAnglerOptions() →  nutzt state.ctxMembers
+  ```
+  Die Liste kommt aus **`state.club`** — dem einen offenen Verein. Eintragen kann man aber in
+  **`state.formTargets`**, also mehrere. Ist das Ziel eine Gruppe, die nicht `state.club` ist, fehlen
+  deren Mitglieder.
+  **Das ist derselbe Fehler, den wir am 17. Juli eine Ebene daneben schon repariert haben** — der
+  Kommentar dazu steht im Code: *„Die ZIELE des Formulars, nicht der gerade offene Verein:
+  `ctxAdminCfg()` las `state.club`, also nur einen."* Daraus wurde `formAdminCfg()` = `ctxCfgFor(state.formTargets)`.
+  Bei der Angler-Liste blieb es stehen.
+  - **Vorschlag:** `loadCtxMembers()` über **alle** `state.formTargets` laden (ein `.in('context_id', ids)`
+    statt `.eq`), Mitglieder zusammenführen, „Ich" zuerst. Dann taucht René auf, sobald seine Gruppe
+    unter den Zielen ist — und nur dann.
+  - **Hängt zusammen mit** „Angler-Filter aus Mitgliederliste" (unten): gleiche Quelle, gleicher Umbau.
+  - **JCs zweite Frage — „the modal shown is the wrong choice, no?" — ist noch offen:** Welches Modal war
+    zu sehen? Vor dem Bau klären, ob er die Angler-Auswahl meint oder „Eingetragen in".
 
 ### Code-Hygiene
 - **🐛 `function toast(msg)` ist ZWEIMAL deklariert** (live gegengeprüft: Zeilen 5282 und 7227 im
