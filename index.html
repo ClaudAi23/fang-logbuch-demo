@@ -969,7 +969,7 @@
   @media (orientation:landscape) and (max-height:520px){
     .spot-sheet{top:0; bottom:0; display:flex; flex-direction:column;
       background:linear-gradient(to right, var(--bg) 78%, rgba(2,27,40,.55));
-      transform:translateY(0) translateX(-102%); width:min(560px, 82vw);
+      transform:translateY(0) translateX(-102%); width:min(420px, 50vw); /* quer: Karte bleibt sichtbar (JC) */
       right:auto; padding:0 0 env(safe-area-inset-bottom);
       padding-left:env(safe-area-inset-left);}
     .spot-sheet.on{transform:translateX(0);}
@@ -2366,7 +2366,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-18.19';
+const BUILD = '2026-07-18.20';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -5867,12 +5867,8 @@ function applyCopyConfig(){
   closeCopyConfig();
   toast(t('copyDone').replace('{n}', keys.length));
 }
-function toast(msg){
-  let el=document.getElementById('toast');
-  if(!el){ el=document.createElement('div'); el.id='toast'; el.className='toast'; document.body.appendChild(el); }
-  el.textContent=msg; el.classList.add('show');
-  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'), 2800);
-}
+/* Doppelte toast()-Deklaration entfernt (18. Juli, Tracker „Code-Hygiene"): Diese erste Fassung wurde
+   von der zweiten (app-toast, weiter unten) stillschweigend überschrieben — gelöscht, Verhalten identisch. */
 
 // ---------- form ----------
 function nowLocal(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
@@ -6155,7 +6151,12 @@ function buildAnglerOptions(){
 async function loadCtxMembers(){
   if(!ctxIsDb()){ state.ctxMembers=[]; return []; }
   try{
-    const c=getSB(); const { data:mems } = await c.from('memberships').select('user_id').eq('context_id', state.club.id);
+    const c=getSB();
+    /* René-Bug (Tracker, 18. Juli): Die Liste kam nur aus state.club — Formular-Ziele können aber
+       MEHRERE Gruppen sein. Jetzt: alle formTargets, die echte DB-Kontexte sind; ohne solche wie bisher. */
+    const _ftIds=(state.formTargets||[]).filter(id=>(state.myContexts||[]).some(x=>String(x.id)===String(id)));
+    const _ctxIds=_ftIds.length?_ftIds:[state.club.id];
+    const { data:mems } = await c.from('memberships').select('user_id').in('context_id', _ctxIds);
     const ids=[...new Set((mems||[]).map(m=>m.user_id))];
     const map={}; if(ids.length){ const { data:profs } = await c.from('profiles').select('id, display_name').in('id', ids); (profs||[]).forEach(p=>map[p.id]=p.display_name); }
     state.ctxMembers = ids.map(id=>({id, name: map[id]||'—'}));
@@ -6388,6 +6389,12 @@ function saveCatch(){
     err.style.display='block'; return;
   }
   const w=document.getElementById('f-weight').value, l=document.getElementById('f-length').value;
+  const _chkL=l!==''?parseInt(l,10):null, _chkW=w!==''?parseFloat(w.replace(',','.')):null;
+  const _big=[]; if(_chkL!=null&&_chkL>250)_big.push(_chkL+' cm'); if(_chkW!=null&&_chkW>150)_big.push(_chkW+' kg');
+  if(_big.length){
+    const _m=curLang()==='en'?('Unusual size ('+_big.join(', ')+') — save anyway?'):('Ungewöhnliche Größe ('+_big.join(', ')+') — trotzdem speichern?');
+    if(!window.confirm(_m)) return;
+  }
   const obj={
     id: state.editId || Date.now(), species,
     weight: w!==''? dec2(parseFloat(w.replace(',','.'))) : null,
