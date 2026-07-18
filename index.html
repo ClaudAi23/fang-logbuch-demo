@@ -946,6 +946,19 @@
     .spot-strip{flex:0 0 auto; padding:0 14px 8px;}
     .spot-th{width:44px; height:44px;}
   }
+  /* Der Foto-Pin auf der Karte: freistehender Fang, nah genug herangezoomt (JC, 18. Juli).
+     44 px = Touch-Norm, und genau der Abstand, ab dem `_clusterGruppen` bündelt — die Zahl ist dieselbe,
+     weil es dieselbe Frage ist: „Ist Platz für ein Ziel, das man treffen kann?"
+     Ohne Foto der Fisch (JC: „fisch 100%") — gleicher Kreis, gleicher Rand, nur anderer Inhalt. Ein
+     Punkt daneben wäre eine dritte Antwort auf „kein Foto". */
+  .fangpin{display:flex; width:44px; height:44px; border-radius:50%; overflow:hidden;
+    border:2px solid var(--surface); box-shadow:0 3px 10px rgba(0,0,0,.5); background:var(--teal-tint);
+    align-items:center; justify-content:center; cursor:pointer;
+    transition:transform .16s cubic-bezier(.2,.8,.3,1.4);}
+  .fangpin:hover{transform:scale(1.12);}
+  .fangpin img{width:100%; height:100%; object-fit:cover; display:block;}
+  .fangpin > svg{width:22px; height:22px; fill:none; stroke:var(--muted); stroke-width:2;
+    stroke-linecap:round; stroke-linejoin:round;}
   /* Cluster: NUR die Zahl (JC entschieden — kein Foto, keine Plakette). */
   .cl-dot{width:46px; height:46px; border-radius:50%; background:var(--map-ink); color:#fff;
     border:2px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.5); display:flex; align-items:center;
@@ -2318,7 +2331,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-18.6';
+const BUILD = '2026-07-18.7';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -4954,6 +4967,10 @@ function ensureCatchMap(kind, items){
    Damit ist es wieder JCs ursprünglicher Gedanke: Der Zoom entscheidet. Mein Einwand „Zoom misst Weite,
    nicht Gedränge" war falsch — auf dem Bildschirm ist der Zoom genau das Maß fürs Gedränge. */
 const CLUSTER_PX=44;   // berühren sich zwei 44-px-Ziele, ist keins mehr sicher zu treffen
+/* Ab hier zeigt ein freistehender Fang sein FOTO statt eines Punkts. 11 ≈ Stadtebene: nah genug, dass es
+   um einen bestimmten Fang geht, weit genug von der Kontinent-Ansicht, wo Fotos Konfetti wären.
+   Geraten, nicht gemessen — JC probiert es am Gerät aus, dann ist es eine Zahl. */
+const FOTO_ZOOM=11;
 function _clusterGruppen(kind){
   const R=_mapRef[kind]; const rest=(R.pts||[]).slice(), out=[];
   while(rest.length){
@@ -4986,6 +5003,24 @@ function drawCatchMarkers(kind){
       // Cluster: NUR die Zahl (JC). Antippen -> Spot-Sheet: zentrieren, abdunkeln, Hero + Streifen.
       const m=L.marker([lat,lon],{icon:L.divIcon({html:`<div class="cl-dot">${g.length}</div>`, iconSize:[46,46], iconAnchor:[23,23]})}).addTo(R.m);
       m.on('click', ()=>openSpotSheet(kind, g, [lat,lon]));
+      R.mk.push(m);
+    } else if(R.m.getZoom() >= FOTO_ZOOM){
+      /* FREISTEHEND UND NAH GENUG → das FOTO (JC, 18. Juli: „the photo is missing when there is a single
+         circle"). Das ist Schritt 1 unserer Entscheidung vom Abend, endlich gebaut.
+         DIE SCHWELLE „ANZAHL IM SICHTFELD" BRAUCHT ES NICHT MEHR: „Freistehend" heißt per Definition
+         *kein Nachbar innerhalb von 44 px* — also ist genau dann Platz für ein 44-px-Foto. Die
+         Cluster-Regel beantwortet die Frage schon, die JC am Regler festlegen sollte. (Dieselbe Art
+         Auflösung wie beim Streifen gegen den Ring: Die Frage stellt sich nicht mehr.)
+         `FOTO_ZOOM` bleibt trotzdem, und zwar für JCs ANDEREN Satz: „rauszoomen will das Muster". Bei
+         Europa-Zoom stünden sonst einzelne Fotos wie Konfetti auf dem Kontinent — dort ist ein Punkt
+         richtig, auch wenn rechnerisch Platz wäre. Zoom misst hier NICHT das Gedränge (das tut der
+         Cluster), sondern die ABSICHT: Übersicht oder dieser Fang. */
+      const cov=(typeof coverThumbOf==='function') ? coverThumbOf(c0) : (c0.photo||null);
+      const m=L.marker([c0.lat,c0.lon],{icon:L.divIcon({
+        className:'', iconSize:[44,44], iconAnchor:[22,22],
+        html:`<span class="fangpin">${cov?`<img src="${escAttr(cov)}" alt="" loading="lazy" decoding="async">`:FISH_IC}</span>`
+      })}).addTo(R.m);
+      m.on('click', ()=>openDetailObj(c0, kind));
       R.mk.push(m);
     } else {
       /* Stats map keeps dots (JC) — many catches are a scatter, not a pincushion. Only the ink follows.
