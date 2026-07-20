@@ -9,6 +9,10 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟡 `v 2026-07-21.24` (21. Juli) — App-Icon: stark gedämpft + mittlerer Zoom.**
+  JC: stark gedämpftes Glühen (gamma 1.75) und Zoom zwischen `.23` (175 %) und `.22` (100 %) → 137,5 %.
+  Alle Icon-Assets neu, Cache-Bust `?v=15`→`?v=16`.
+
 - **🟡 `v 2026-07-21.23` (21. Juli) — App-Icon auf „gedämpft" umgestellt (Idee 2, mittlerer Zuschnitt).**
   JC nach dem Mockup: mittlerer Zuschnitt + reduziertes Glühen (gamma 1.4). Alle Icon-Assets aus dem
   mittig zugeschnittenen Render neu erzeugt (Laterne groß, Schein zurück, Tiefsee dunkler), Cache-Bust
