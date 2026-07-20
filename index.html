@@ -2399,7 +2399,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-19.12';
+const BUILD = '2026-07-19.13';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -5173,9 +5173,12 @@ function drawCatchMarkers(kind){
          richtig, auch wenn rechnerisch Platz wäre. Zoom misst hier NICHT das Gedränge (das tut der
          Cluster), sondern die ABSICHT: Übersicht oder dieser Fang. */
       const cov=(typeof coverThumbOf==='function') ? coverThumbOf(c0) : (c0.photo||null);
+      /* JC, 20. Juli: den GEWÄHLTEN Titelbild-Ausschnitt zeigen, nicht roh zentriert beschneiden.
+         `coverImg` legt crop_pos/crop_zoom des Cover-Fotos (idx 0) an — identisch zum Detail-Hero, also
+         auch für Hochformat sauber gerahmt. (Sanitisierung passiert in coverImg via coverPosOf/Zoom.) */
       const m=L.marker([c0.lat,c0.lon],{icon:L.divIcon({
         className:'', iconSize:[44,44], iconAnchor:[22,22],
-        html:`<span class="fangpin">${cov?`<img src="${escAttr(cov)}" alt="" loading="lazy" decoding="async">`:FISH_IC}</span>`
+        html:`<span class="fangpin">${cov?coverImg(c0, cov, 'loading="lazy" decoding="async"', 0):FISH_IC}</span>`
       })}).addTo(R.m);
       m.on('click', ()=>openDetailObj(c0, kind));
       R.mk.push(m);
