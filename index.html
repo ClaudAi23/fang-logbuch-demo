@@ -2399,7 +2399,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-19.13';
+const BUILD = '2026-07-19.14';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -2433,7 +2433,7 @@ const I18N = {
    die App ist aber dreisprachig, und ein englischer Brocken mitten im deutschen Screen wäre ein Bruch.
    Deshalb übersetzt statt wörtlich übernommen. Wenn JC den Begriff als feststehende Marke in ALLEN
    Sprachen will, ist es eine Zeile. */
-whereYouFish:"Orte", mapFullscreen:"Karte vergrößern", mapExitFullscreen:"Vollbild verlassen", byContext:"Nach Verein / Solo", bySpecies:"Nach Fischart", longest:"Längster", heaviest:"Schwerster", noneYet:"Noch keine Fänge.", speciesCount:"Arten", thisYear:"Dieses Jahr", ctxFilter:"Verein / Gruppe",
+whereYouFish:"Orte", mapFullscreen:"Karte vergrößern", mapExitFullscreen:"Vollbild verlassen", recenterCatch:"Auf Fang zentrieren", byContext:"Nach Verein / Solo", bySpecies:"Nach Fischart", longest:"Längster", heaviest:"Schwerster", noneYet:"Noch keine Fänge.", speciesCount:"Arten", thisYear:"Dieses Jahr", ctxFilter:"Verein / Gruppe",
     clock:" Uhr", petri:"🎣 Petri Heil!", shareWater:"Gewässer:", loggedWith:"— geloggt mit ButlerFish", shareNoMeasure:"ohne Maße"
   },
   en:{
@@ -2446,7 +2446,7 @@ whereYouFish:"Orte", mapFullscreen:"Karte vergrößern", mapExitFullscreen:"Voll
     details:"Catch details", dAngler:"Angler", dWater:"Water", dLength:"Length", dWeight:"Weight", dDate:"Date", noMeasures:"No measurements", ttShare:"Share",
     settings:"Settings", display:"Display", appearance:"Theme", themeLight:"Light", themeDark:"Dark", themeSystem:"System", themeHint:"\"System\" follows your device's light/dark setting.", measureLabel:"Default measure in list & stats", mLength:"Length", mWeight:"Weight", measureHint:"Sets which measure shows in the catch list, how the biggest catch is determined, and which catch holds your personal best (crown).", language:"Language", clubLogoAdmin:"Logo", currentLogo:"Current logo", uploadLogo:"Upload logo", logoHint:"Only admins can change the logo. It applies to all members.", myImage:"My picture", initialsDefault:"Default: your initials", uploadImage:"Upload picture",
     filter:"Filter", narrow:"Narrow down catches", ttReset:"Reset", period:"Period", year:"Year", month:"Month", from:"From", to:"To", periodHint:"Either year/month <em>or</em> from–to — they're mutually exclusive.", properties:"Properties", fltCatch:"Catch", fltSize:"Measurements", locationContains:"Location / water contains", locationPh:"e.g. Club pond", lengthFrom:"Length from (cm)", lengthTo:"Length to (cm)", weightFrom:"Weight from (kg)", weightTo:"Weight to (kg)", minPh:"min", maxPh:"max", applyFilter:"Apply", reset:"Reset", all:"All",
-    myStats:"My catches", statsSub:"All catches combined", tabOverview:"Overview", tabCatchList:"Catches", whereYouFish:"Spots", mapFullscreen:"Expand map", mapExitFullscreen:"Exit full screen", byContext:"By club / solo", bySpecies:"By species", longest:"Longest", heaviest:"Heaviest", noneYet:"No catches yet.", speciesCount:"Species", thisYear:"This year", ctxFilter:"Club / group",
+    myStats:"My catches", statsSub:"All catches combined", tabOverview:"Overview", tabCatchList:"Catches", whereYouFish:"Spots", mapFullscreen:"Expand map", mapExitFullscreen:"Exit full screen", recenterCatch:"Center on catch", byContext:"By club / solo", bySpecies:"By species", longest:"Longest", heaviest:"Heaviest", noneYet:"No catches yet.", speciesCount:"Species", thisYear:"This year", ctxFilter:"Club / group",
     clock:"", petri:"🎣 Tight lines!", shareWater:"Water:", loggedWith:"— logged with ButlerFish", shareNoMeasure:"no measurements"
   },
   nl:{
@@ -2459,7 +2459,7 @@ whereYouFish:"Orte", mapFullscreen:"Karte vergrößern", mapExitFullscreen:"Voll
     details:"Vangstdetails", dAngler:"Visser", dWater:"Water", dLength:"Lengte", dWeight:"Gewicht", dDate:"Datum", noMeasures:"Geen maten", ttShare:"Delen",
     settings:"Instellingen", display:"Weergave", appearance:"Thema", themeLight:"Licht", themeDark:"Donker", themeSystem:"Systeem", themeHint:"\"Systeem\" volgt de licht/donker-instelling van je apparaat.", measureLabel:"Standaardmaat in lijst & statistiek", mLength:"Lengte", mWeight:"Gewicht", measureHint:"Bepaalt welke maat in de vangstlijst staat, hoe de grootste vangst wordt bepaald en welke vangst je persoonlijk record (kroon) heeft.", language:"Taal", clubLogoAdmin:"Logo", currentLogo:"Huidig logo", uploadLogo:"Logo uploaden", logoHint:"Alleen beheerders kunnen het logo wijzigen. Het geldt voor alle leden.", myImage:"Mijn foto", initialsDefault:"Standaard: je initialen", uploadImage:"Foto uploaden",
     filter:"Filter", narrow:"Vangsten filteren", ttReset:"Resetten", period:"Periode", year:"Jaar", month:"Maand", from:"Van", to:"Tot", periodHint:"Of jaar/maand <em>of</em> van–tot — ze sluiten elkaar uit.", properties:"Eigenschappen", fltCatch:"Vangst", fltSize:"Maten", locationContains:"Plek / water bevat", locationPh:"bijv. Verenigingsvijver", lengthFrom:"Lengte van (cm)", lengthTo:"Lengte tot (cm)", weightFrom:"Gewicht van (kg)", weightTo:"Gewicht tot (kg)", minPh:"min", maxPh:"max", applyFilter:"Toepassen", reset:"Resetten", all:"Alle",
-    myStats:"Mijn vangsten", statsSub:"Alle vangsten samen", tabOverview:"Overzicht", tabCatchList:"Vangsten", whereYouFish:"Plekken", mapFullscreen:"Kaart vergroten", mapExitFullscreen:"Volledig scherm sluiten", byContext:"Per vereniging / solo", bySpecies:"Per vissoort", longest:"Langste", heaviest:"Zwaarste", noneYet:"Nog geen vangsten.", speciesCount:"Soorten", thisYear:"Dit jaar", ctxFilter:"Vereniging / groep",
+    myStats:"Mijn vangsten", statsSub:"Alle vangsten samen", tabOverview:"Overzicht", tabCatchList:"Vangsten", whereYouFish:"Plekken", mapFullscreen:"Kaart vergroten", mapExitFullscreen:"Volledig scherm sluiten", recenterCatch:"Centreer op vangst", byContext:"Per vereniging / solo", bySpecies:"Per vissoort", longest:"Langste", heaviest:"Zwaarste", noneYet:"Nog geen vangsten.", speciesCount:"Soorten", thisYear:"Dit jaar", ctxFilter:"Vereniging / groep",
     clock:" uur", petri:"🎣 Petri heil!", shareWater:"Water:", loggedWith:"— vastgelegd met ButlerFish", shareNoMeasure:"zonder maten"
   }
 };
@@ -4824,6 +4824,42 @@ function useMyLocation(){
     setFormPin(lat,lon);
   }, ()=>{}, {enableHighAccuracy:true, timeout:8000});
 }
+function _detailRecenter(){
+  if(!dMap || !state.current || state.current.lat==null) return;
+  try{ dMap.flyTo([state.current.lat, state.current.lon], FOTO_ZOOM, {duration:.45}); }
+  catch(e){ try{ dMap.setView([state.current.lat, state.current.lon], FOTO_ZOOM); }catch(_e){} }
+}
+function _detailMyLocation(){
+  if(!navigator.geolocation || !dMap) return;
+  const btn=document.querySelector('#d-map .map-all-btn'); if(btn) btn.classList.add('laedt');
+  navigator.geolocation.getCurrentPosition(p=>{
+    if(btn) btn.classList.remove('laedt');
+    const lat=p.coords.latitude, lon=p.coords.longitude;
+    try{ dMap.setView([lat,lon],14); }catch(e){}
+    if(state.current) setDetailPin(state.current, lat, lon);
+    try{ haptic(8); }catch(e){}
+  }, ()=>{ if(btn) btn.classList.remove('laedt'); }, {enableHighAccuracy:true, timeout:8000});
+}
+/* Recenter (#5, immer) im map-me-btn-Slot (top 50); Standort (#6, nur Edit) im map-all-btn-Slot (top 92).
+   Klassen = Position + weißer Stil + Vollbild-Verhalten; die Icons sagen, was der Knopf tut. */
+function attachDetailBtns(){
+  const w=document.getElementById('d-map'); if(!w) return;
+  if(!w.querySelector('.map-me-btn')){
+    const b=document.createElement('button'); b.type='button'; b.className='map-me-btn';
+    b.setAttribute('aria-label', t('recenterCatch')); b.title=t('recenterCatch');
+    b.innerHTML='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>';
+    b.onclick=(e)=>{ e.stopPropagation(); _detailRecenter(); };
+    w.appendChild(b);
+  }
+  if(navigator.geolocation && !w.querySelector('.map-all-btn')){
+    const b2=document.createElement('button'); b2.type='button'; b2.className='map-all-btn'; b2.style.display='none';
+    b2.setAttribute('aria-label', t('myLocation')); b2.title=t('myLocation');
+    b2.innerHTML='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg>';
+    b2.onclick=(e)=>{ e.stopPropagation(); _detailMyLocation(); };
+    w.appendChild(b2);
+  }
+}
+function _detailSetMyLocBtn(show){ const b=document.querySelector('#d-map .map-all-btn'); if(b) b.style.display= show ? '' : 'none'; }
 function ensureDetailMap(lat,lon){
   if(typeof L==='undefined'||lat==null) return;
   if(!dMap){
@@ -4834,7 +4870,7 @@ function ensureDetailMap(lat,lon){
     L.tileLayer(TILE,TILE_OPT).addTo(dMap);
     dMarker=L.marker([lat,lon],{icon:fishPinIcon(), keyboard:false}).addTo(dMap);
   } else { try{ dMap.off('click'); dMap.scrollWheelZoom.disable(); }catch(e){} dMap.setView([lat,lon],13); _detailMapDraw(lat,lon); }
-  attachFsBtn('d', dMap);
+  attachFsBtn('d', dMap); attachDetailBtns(); _detailSetMyLocBtn(false);
   setTimeout(()=>{ try{dMap.invalidateSize();}catch(e){} }, 80);
 }
 function _detailMapDraw(lat,lon){
@@ -4847,7 +4883,7 @@ function initDetailEditMap(c){
   const has=(c.lat!=null&&c.lon!=null); const center=has?[c.lat,c.lon]:DEFAULT_CENTER;
   if(!dMap){ dMap=L.map('d-map',{zoomControl:true, attributionControl:false}).setView(center, has?13:6); L.tileLayer(TILE,TILE_OPT).addTo(dMap); }   // credit lives in .msrc under the map
   else { dMap.setView(center, has?13:6); }
-  attachFsBtn('d', dMap);
+  attachFsBtn('d', dMap); attachDetailBtns(); _detailSetMyLocBtn(true);
   try{ dMap.scrollWheelZoom.enable(); }catch(e){}
   if(has) _detailMapDraw(c.lat,c.lon); else if(dMarker){ try{ dMap.removeLayer(dMarker); }catch(e){} dMarker=null; }
   dMap.off('click'); dMap.on('click', e=> setDetailPin(c, e.latlng.lat, e.latlng.lng));
@@ -5221,8 +5257,16 @@ function openSpotSheet(kind, items, mitte){
      Deshalb ein Flag um die EIGENE Bewegung; `moveend` räumt es wieder ab. */
   if(R && R.m){
     _spotSelbstBewegt=true;
-    try{ R.m.panTo(mitte || [items[0].lat, items[0].lon], {animate:true, duration:.28}); }catch(e){}
-    setTimeout(()=>{ _spotSelbstBewegt=false; }, 700);   // > die .28s Animation, mit Luft
+    /* JC, 20. Juli: nicht nur zentrieren — so weit REINZOOMEN, dass alle Pins der Gruppe sichtbar
+       werden. fitBounds tut genau das; paddingBottomRight hält die Pins über dem Sheet. Gleiche
+       Koordinate => maxZoom, dann trennt kein Zoom mehr und das Sheet wählt. */
+    try{
+      const _pts=items.filter(c=>c.lat!=null&&c.lon!=null).map(c=>[+c.lat,+c.lon]);
+      if(_pts.length>1){ const _h=R.m.getSize().y;
+        R.m.fitBounds(L.latLngBounds(_pts), {paddingTopLeft:[26,26], paddingBottomRight:[26, Math.round(_h*0.45)], maxZoom:17, animate:true, duration:.32}); }
+      else { R.m.panTo(mitte || [items[0].lat, items[0].lon], {animate:true, duration:.28}); }
+    }catch(e){}
+    setTimeout(()=>{ _spotSelbstBewegt=false; }, 950);
   }
   renderSpotSheet();
   _spotEl('spot-dim').classList.add('on');
