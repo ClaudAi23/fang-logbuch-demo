@@ -1653,13 +1653,13 @@
           <label data-i18n="reel">Rolle</label>
           <div class="combo"><input id="f-reel" type="text" readonly autocomplete="off" placeholder="z. B. 4000er Stationärrolle" data-i18n-ph="reelPh" onclick="openTypeahead('f-reel')" /><button type="button" class="combo-chev" tabindex="-1" aria-hidden="true" onclick="openTypeahead('f-reel')"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
         </div>
-        <div class="frow2" id="ff-boattroll">
-      <div class="field" id="ff-boat">
+      </div>
+      <div class="frow2" id="ff-boattroll">
+        <div class="field" id="ff-boat">
           <label data-i18n="boat">Boot</label>
           <div class="combo"><input id="f-boat" type="text" readonly autocomplete="off" placeholder="z. B. Schlauchboot" data-i18n-ph="boatPh" onclick="openTypeahead('f-boat')" /><button type="button" class="combo-chev" tabindex="-1" aria-hidden="true" onclick="openTypeahead('f-boat')"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
         </div>
-      </div>
-      <div class="field" id="ff-trolling">
+        <div class="field" id="ff-trolling">
         <label data-i18n="trolling">Schleppgeschw. (km/h)</label>
         <input id="f-trolling" type="text" inputmode="decimal" autocomplete="off" placeholder="z. B. 3,2" data-i18n-ph="trollingPh" />
       </div>
@@ -2395,7 +2395,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-19.7';
+const BUILD = '2026-07-19.8';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -6210,8 +6210,13 @@ async function loadCtxMembers(){
   try{
     const c=getSB();
     const _ctxIds=_ftIds.length?_ftIds:[state.club.id];
-    const { data:mems } = await c.from('memberships').select('user_id').in('context_id', _ctxIds);
-    const ids=[...new Set((mems||[]).map(m=>m.user_id))];
+    const { data:mems } = await c.from('memberships').select('user_id, context_id').in('context_id', _ctxIds);
+    /* SCHNITTMENGE, nicht Vereinigung (JC, 20. Juli): Bei MEHREREN Zielen darf nur wählbar sein, wer in
+       ALLEN drinsteht — sonst hängt man z. B. René an einen Ijburg-Fang, wo er kein Mitglied ist. Bei
+       einem Ziel ist die Schnittmenge = dessen Mitglieder (unverändert). */
+    const _cnt={}; (mems||[]).forEach(m=>{ (_cnt[m.user_id]=_cnt[m.user_id]||new Set()).add(String(m.context_id)); });
+    const _need=_ctxIds.length;
+    const ids=Object.keys(_cnt).filter(uid=>_cnt[uid].size===_need);
     const map={}; if(ids.length){ const { data:profs } = await c.from('profiles').select('id, display_name').in('id', ids); (profs||[]).forEach(p=>map[p.id]=p.display_name); }
     state.ctxMembers = ids.map(id=>({id, name: map[id]||'—'}));
   }catch(e){ state.ctxMembers=[]; }
