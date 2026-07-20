@@ -9,6 +9,243 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟡 `v 2026-07-21.20` (21. Juli, NOCH NICHT DEPLOYT) — Karten-Toolbar vereinheitlicht + Cluster-Fix + Felder angeglichen.**
+  **Cluster-Zoom-durch (Fix zu .16):** stoppte bei „6", weil doppelt auf Zoom **18** gedeckelt und
+  `flyToBounds` nur einpasste statt reinzuzoomen — die äußeren Spots trennen sich erst auf **19**
+  (Karten-Max). Neu: Ziel = maximaler Zoom, bei dem die ganze Gruppe noch sichtbar ist (bis 19); jeder
+  Tap zoomt garantiert weiter, Sheet erst am echten Anschlag.
+  **Felder angeglichen (JC):** `.selfield` (Angler, Entnahme, alle Sheet-Öffner) = exakt die Input-Box —
+  gleiche Höhe (48 px) und dasselbe dunklere Blau (`--surface` statt `--surface-2`). Vorher 44 px + heller.
+  **Karten-Overlay vereinheitlicht (JC-Vorschlag angenommen):** drei feste Slots, ein Icon = eine
+  Bedeutung, gleiche Reihenfolge auf ALLEN Karten — Vollbild (top 8) · **Zentrieren** (top 50) ·
+  **Mein Standort** (top 92). Zentrieren = „Alle Fänge" (vier Punkte → fit) auf Übersichtskarten bzw.
+  „Auf den Fang/Pin" (Pin → **Start-Zoom 13** statt 11) auf Punktkarten. Standort = Fadenkreuz → **immer
+  Zoom 14**, fehlt nur in der Detail-Ansicht (letzter Slot → keine Lücke). Klassen `map-me-btn`/
+  `map-all-btn` → bedeutungsneutral `map-loc-btn`/`map-ctr-btn`. Formular bekam „Auf den Pin" (erscheint,
+  sobald ein Pin sitzt). Damit heißt kein Slot mehr je nach Karte etwas anderes; das Fadenkreuz steht
+  nur noch für „Mein Standort".
+  **NOCH ZU TESTEN (JC, Gerät):** Cluster-Zoom-durch bis 2+1+1+1+1 · Feld-Höhe/-Farbe gleich · alle vier
+  Karten mit identischer Knopf-Reihenfolge · Formular-„Auf den Pin".
+
+- **✅ `v 2026-07-19.18` (20. Juli, Commit `0b85172`) — EXIF-Nachfrage + Recenter-Icon + Datum-Icon.**
+  **EXIF-Redesign (JC: „Nachfragen"):** neues Foto füllt leere Felder still; sind Ort/Datum SCHON
+  gesetzt und das Foto trägt andere Daten → `confirmDialog` „Aus dem Foto übernehmen?" (Ort / Datum &
+  Zeit). Manuelles wird nie mehr still überschrieben. Der Foto-Knopf pro Kachel (beides, force) bleibt.
+  **#2 Recenter-Icon:** Orts-Pin mit Punkt (klar getrennt vom „Du bist hier"-Kreis und den
+  Vollbild-Klammern). **Datum:** native behalten (Empfehlung), Kalender-Icon gedämpft (opacity .45);
+  eigener Datums-Picker = späterer Polish.
+  **NOCH ZU TESTEN (JC, Gerät):** #1 Hochformat-Marker (harter Reload!) · EXIF-Nachfrage beim Upload ·
+  Cluster-Zoom-Durch · Recenter-Icon · dass „Mein Standort" unter der Edit-Karte wirklich weg ist.
+
+- **✅ `v 2026-07-19.16`/`.17` (20. Juli, Commits `2c3019e`, `7f52f98`) — Karten-Feedback Teil 3. LIVE.**
+  **A** Karten-Zentrum = Mitte ALLER Punkte (`getBoundsZoom`+`setView` statt `fitBounds`+`setZoom`-Race,
+  der die Mitte auf einen Rand-Punkt schob). **F** Cluster-Tap **zoomt jetzt durch**, solange die Gruppe
+  trennbar ist (Spread > 2 m & Zoom < 18); die Foto-Auswahl (Sheet) öffnet erst, wenn nicht mehr trennbar
+  (gleiche Stelle / Zoom-Anschlag) — „6" wird beim Reinzoomen 2+1+1+1+1. **EXIF-Rückbau:** die zwei
+  hässlichen Log-Knöpfe (Datum-Mini + „Ort aus Foto" unter der Karte) wieder entfernt (JC: „schlecht
+  gemacht") — `applyExif`-Granularität bleibt im Code fürs Redesign; der Foto-Knopf pro Kachel bleibt.
+  **Edit-Karte:** „Mein Standort"-Knopf UNTER der Karte entfernt (redundant zum Overlay). **#1 (`.17`):**
+  Marker-`img` bekommt `object-fit:cover` + Größe **inline** erzwungen (falls eine Regel es auf
+  contain/auto zurücksetzte). **Am Gerät mit hartem Reload prüfen.**
+  **OFFEN / Diskussion:** #1 Bestätigung am Gerät · Datum-Native-Icon (hässlich, links ausrichten?) ·
+  EXIF-Redesign (welches Foto? Rückfrage vor Übernahme? Edit-Modus) · #2 Recenter-Icon.
+
+- **✅ `v 2026-07-19.15` (20. Juli, Commit `27ab8ff`) — Aus-Foto-Knöpfe + Marker-Crop-Fix +
+  Attribution-Abstand. LIVE (Marker `object-position` ohne Skalierung, EXIF-Wrapper, msrc-Abstand
+  im Auslieferungsstand).**
+  **EXIF granular:** `applyExif(src,force,opts)` — Foto-Knopf pro Kachel = beides (bleibt), NEU
+  Datum-Knopf neben dem Datum (nur Datum), „Ort aus Foto"-Knopf unter der Karte (nur Ort); nutzt das
+  Titelbild. **Nur Log-Form** — Edit inline (Detailseite) ist ein eigener Nachzug.
+  **Marker-Crop-Fix (Korrektur von 19.13):** 19.13 legte `coverImg` (crop_pos + `transform:scale`) an
+  — die Skalierung ist auf den BREITEN Hero geeicht und erzeugte auf dem QUADRATISCHEN Marker den Rand,
+  den JC sah. Jetzt nur `object-position` (Fokus), `object-fit:cover` füllt randlos. **Am Gerät prüfen**
+  (Hochformat-Foto).
+  **msrc-Abstand:** stats/list-Attribution bündig unter die Karte (Leerzeile weg).
+
+- **✅ `v 2026-07-19.13`/`.14` (20. Juli, Commits `9cf8a8f`, `71c02b5`) — Karten-Feedback Teil 2. LIVE
+  (Foto-Marker mit Crop verifiziert; Detail-Buttons + Spot-Fit im Auslieferungsstand).**
+  **#2** Karten-Marker zeigt den **gewählten Titelbild-Ausschnitt** (`coverImg` mit crop_pos/crop_zoom
+  des Cover-Fotos) statt roh zentriert — JCs Idee, Hochformat jetzt sauber gerahmt, identisch zum Hero.
+  **Cluster-Tap** zoomt jetzt zusätzlich auf die Gruppe (`fitBounds`, `paddingBottomRight` fürs Sheet,
+  maxZoom 17; gleiche Koordinate → maxZoom, Sheet wählt).
+  **#5** Detail-Karte: Recenter-auf-Fang-Knopf (immer). **#6** Edit-Karte: Mein-Standort-Knopf (nur im
+  Bearbeiten, setzt den Pin). Damit ist das Karten-Paket (JC, 20. Juli) komplett.
+
+- **✅ `v 2026-07-19.12` (20. Juli, Commit `d6bd7a7`) — Karten-Feedback Teil 1. LIVE, verifiziert
+  (Attribution unter der Karte rechts, Leaflet-Overlay weg; Erst-Zoom eine Stufe weiter raus).**
+  **#1** Erst-Zoom bei mehreren Fängen: `fitBounds` dann `zoomOut(1)` (wie einmal „−"); Einzelfang bleibt
+  `FOTO_ZOOM` (Bild statt Punkt); gilt auch für den „Alle Fänge"-Knopf (via `getBoundsZoom`−1).
+  **#3** „© OpenStreetMap" unter der Karte rechts (`.msrc`) für stats/list/form, `attributionControl:false`
+  — wie auf der Detailseite. **#4** Form-Standortknopf von blauem `.map-fab` auf weißen `.map-me-btn`
+  (behebt zugleich Überlappung mit dem neuen Vollbild-Knopf).
+  **Offen aus dem Paket:** #2 Hochkant-Fotos (Vorschlag), #5 Detail-Recenter, #6 Edit-Standortknopf.
+
+- **✅ `v 2026-07-19.11` (20. Juli, Commit `87147d7`) — Vollbild für ALLE Karten. LIVE, end-zu-end
+  verifiziert (Detail-Karte Vollbild-Knopf da → öffnet formatfüllend mit Pin/Zoom → schließt zurück an
+  ihren Platz).**
+  JC: „die Karte auf der Fangdetailseite sollte Vollbild haben (alle Karten)." Detail- (`dMap`) und
+  Form-Karte (`fMap`) liefen über eigene Instanzen ohne den Knopf, den Übersicht/Fangliste schon hatten.
+  Neu: `_mapRef` um `d`/`f` erweitert, `attachFsBtn()` spiegelt die Instanz (für `invalidateSize`) und
+  hängt den bestehenden `mapFsButton` **einmal** an. `mapFsToggle` ist generisch (`kind='d'/'f'`).
+
+- **✅ `v 2026-07-19.10` (20. Juli, Commit `b3df50b`) — Wassertemp-Label → „Wasser". LIVE, verifiziert.**
+  JC: „am Wasser Temperatur sollte nur Wasser sagen, genau wie Luft." Label „Wassertemperatur (°C)" →
+  **„Wasser"** (parallel zum Wetter-Tile „Luft"), °C in den Platzhalter (de/en/nl). Greift auch auf die
+  Detail-Zeile (`t('watertemp')`).
+
+- **✅ `v 2026-07-19.9` (20. Juli, Commit `022d0ab`) — Solo-Angler: als geloggt anzeigen, keine
+  Fremd-Auswahl. LIVE, verifiziert (Solo: Feld sichtbar, statisch, Label „JC", kein `__other__`).**
+  JC: In Solo ließ sich über „Andere…" ein fremder Name als Angler eintragen — unsinnig, im eigenen
+  Logbuch bist du der Angler. Jetzt zeigt das Feld **dich** (nicht versteckt), ist aber `selfield.static`
+  (nicht antippbar, kein Chevron), ohne Freitext. Gleiche Behandlung, wenn ein Kontext nur ein Mitglied
+  hat; ab dem zweiten Mitglied wieder echte Auswahl. (Deckt Review-Punkt F3 ab.)
+
+- **✅ `v 2026-07-19.8` (20. Juli, Commit `5dc6eb7`) — Angler-Schnittmenge + Boot/Schlepp-Zeile
+  korrigiert. LIVE, verifiziert (nur Butter→JC+René · nur Ijburg→JC · beide→JC; ff-boattroll eigene Zeile).**
+  **#2 Nachschärfung:** Angler-Liste = **Schnittmenge** statt Vereinigung — bei mehreren Zielen nur, wer
+  in ALLEN Mitglied ist. René war fälschlich an einen Ijburg-Fang hängbar (er ist nur in „Butter").
+  Bei einem Ziel unverändert (= dessen Mitglieder). **#5 Layout-Fix:** der `frow2`-Wrapper aus 19.6 lag
+  versehentlich INNERHALB der Rute/Rolle-`.row` → alle vier in einer Zeile; `.row` nach Rolle geschlossen,
+  Boot+Schlepp in eigener `frow2`.
+
+- **✅ `v 2026-07-19.7` (20. Juli, Commit `0a3d0bc`) — „Zuletzt ausgewählt" verfeinert. LIVE, verifiziert
+  (BUILD 19.7; Chip-Zeile aus, altes Menü an, f-location-Typeahead da, MRU bei 4 Kontexten ausgeblendet).**
+  JC-Feedback zu 19.6/#6: (1) MRU wird **erst beim erfolgreichen Speichern** gemerkt, nicht beim
+  Antippen (sprang sonst sofort nach oben). (2) „Zuletzt ausgewählt" nur bei **>6 Kontexten** (Schwelle
+  der Suchleiste) — bei wenigen Gruppen war es Dopplung. (3) Deckel: 6 gespeichert, 4 gezeigt.
+  *(Deploy-Notiz: erster Commit-Klick fiel auf GitHubs „Processing…" → „Commit failed"; requestSubmit
+  erst nach fertiger Datei-Verarbeitung feuern.)*
+
+- **✅ `v 2026-07-19.6` (20. Juli, Commit `b67477a`) — Log-Formular: 4 Fixes aus JCs Testrunde.
+  DEPLOYED (Commit bestätigt), LIVE NOCH UNGEPRÜFT — Chrome-Extension sprang direkt nach dem Commit ab,
+  der JS-Live-Check konnte nicht laufen. Beim nächsten Mal am Gerät/über die Extension nachziehen.**
+  **1)** Versteckte Felder werden beim Speichern **geleert** (JCs Regel): Trolling weg → Schleppgeschw.
+  wird `null`, ungültiger Wert blockiert nicht mehr. Nur versteckte INPUTs, Selects unberührt.
+  **4)** Gewässer/Platz jetzt Merk-Typeahead — `kind:'water'` war längst in `ITEM_KIND_OF` verdrahtet
+  und wurde schon gespeichert, nur nie ans Feld gehängt (`TA_CFG['f-location']` ergänzt).
+  **5)** Boot + Schleppgeschw. in einer Zeile (`.frow2` flex); ist Trolling versteckt, nimmt Boot volle
+  Breite (aus dem Flex gefallen).
+  **6)** „Eintragen in" Chip-Zeile **zurückgebaut aufs alte Auswahl-Menü** — die Chips verschluckten
+  Taps (500-ms-Timer-Rebuild = die eigentliche Ursache von „René nicht wählbar", #2) und skalieren nicht
+  auf viele Gruppen. Neu: **„Zuletzt ausgewählt"** oben im Auswahl-Blatt (`bf_area_mru`). Live-Hero +
+  Sprung-Leiste aus Stufe 1 bleiben.
+  **Offen:** #3 volle Gewässer-Kategorie (Wassertiefe/Grund/Bewuchs — **DB-Migration**, eigener Bau).
+
+- **✅ `v 2026-07-19.2`–`.5` (20. Juli, Commits `0b94f41`→`51809c4`) — #15 Stufe 2a: Abschnitts-Parität
+  + zwei Wächter-Fixes. LIVE, END-ZU-END am lebenden Objekt verifiziert.**
+  **Stufe 2a:** Formular-Reihenfolge = Detailseite (Basis · Fang · TECHNIK · WETTER · ORT · Notizen),
+  Überschriften auf Detail-Vokabular — alles in der geflaggten uf-Schicht, `bf_unified='off'` stellt zurück.
+  **Zwei Lehren aus den Wächter-Fixes:** (1) `state.auth==='supabase'` griff live nie; (2) tiefer:
+  `state` ist `const` im Script-Scope — **`window.state` existiert nicht**, jeder `window.state &&`-Wächter
+  ist immer falsch. Merken für jede weitere additive Schicht. (.4-Build kam bei Vercel nie an → .5 als
+  Re-Trigger, inhaltsgleich.)
+  **Live-Klick-Test:** Chip „Butter bei die Mutti!" → Ziel umgeschaltet ✓ → **Angler-Liste zeigt
+  „JC (ich)" + „René"** — der René-Fix (.21) ist damit auch über den echten UI-Pfad bestätigt.
+  **Offen aus #15 (Spec Punkt 6, eigener Durchgang im Speicherpfad):** Angler-Umhängen beim Edit ·
+  tote `editId`-Zweige · Foto-Sortier-Bug (braucht weiter JCs Beschreibung).
+
+- **✅ `v 2026-07-19.1` (19. Juli, Commit `f775abb`) — #15 UNIFIED FORM, STUFE 1 (Flag `bf_unified`).
+  LIVE, verifiziert (BUILD 19.1, Hero/Chips/Jump im Auslieferungsstand).**
+  Nach `mockup-unified-form.html` (JC: „bau das mal so"). Additive Anzeige-Schicht: **Live-Hero**
+  (Foto→Hintergrund, Art→Überschrift, Länge/Gewicht→Chips beim Tippen) · **„Eintragen in" als
+  Chip-Zeile** (Persönlich + Kontexte, mehrfach, nutzt bestehendes `toggleArea`; alter Selector
+  versteckt) · **Sprung-Leiste** über den Abschnitten. Abschaltbar: `localStorage bf_unified='off'`.
+  **Stufe 2 offen (Tracker-Spec Punkte 4+6):** Abschnitts-Parität (DOM-Reorder) · Angler-Umhängen
+  beim Edit · tote `editId`-Zweige. Keine Feld-IDs/Speicherpfad/formTargets angefasst.
+
+- **✅ `v 2026-07-18.23` (19. Juli, Commit `5e48dc9`) — EIN Hinzufügen-Knopf (Variante a). LIVE.**
+  Zwei Geist-Zeilen → eine („Verein oder Gruppe hinzufügen", de/en/nl), Vorschritt im `ctxadd-modal`,
+  FAB unverändert. Führt Roadmap-#18-B′ + Review H3 zusammen; Einstellungs-Selektor bleibt offen.
+
+- **✅ `v 2026-07-18.22` (19. Juli früh, Commit `d46c8ad`) — Leaflet-Zoom zurück auf WEISS (JC: „sieht
+  scheisse aus … wie vorher"). LIVE, verifiziert.** S4 aus dem Review revidiert: Die dunklen Zoom-Knöpfe
+  waren der neue Fremdkörper neben den bewusst weißen Karten-Knöpfen (Vollbild/Standort/Alle Fänge) —
+  weiß ist die Karten-Sprache der App. Attribution-Override ebenfalls zurück. Der dunkle
+  Detail-Karten-Schleier (D1) **bleibt**. Merksatz für Review-Fixes: Erst die bestehende
+  Design-Sprache prüfen, dann „vereinheitlichen" — S4 hatte in die falsche Richtung vereinheitlicht.
+
+- **✅ `v 2026-07-18.21` (19. Juli früh, Commit `2098934`) — René-Fix 2. Anlauf + Rückfrage raus. LIVE,
+  diesmal AM LEBENDEN OBJEKT verifiziert: `loadCtxMembers()` mit Butter-Ziel liefert `["René","JC"]`.**
+  Ursache des Fehlschlags von .20: Der `ctxIsDb()`-Wächter brach ab, BEVOR die formTargets-Logik lief —
+  genau beim Loggen von „Persönlich" aus (kein Verein offen). Wächter greift jetzt nur noch, wenn es
+  weder DB-Ziele noch offenen Kontext gibt. **Lehre:** .20 hatte nur den Datenpfad verifiziert, nicht
+  den Aufrufpfad. Plausibilitäts-Rückfrage (.20 Punkt 4) auf JCs Ansage wieder entfernt.
+
+- **✅ `v 2026-07-18.20` (18. Juli, Commit `60ac1ca`) — Fix-Batch aus Tracker + Review. LIVE, verifiziert
+  (BUILD .20, alle 4 Änderungen im Auslieferungsstand nachgewiesen, `toast` nur noch 1×).**
+  **1) René-Bug:** `loadCtxMembers()` lädt über alle `state.formTargets`, die echte DB-Kontexte sind
+  (`.in` statt `.eq`); ohne Formular-Ziele wie bisher `state.club` — andere Aufrufer unverändert.
+  **2) toast()-Doppeldeklaration** entfernt (erste Fassung; verhaltensneutral, Grabstein im Code).
+  **3) Querformat:** Spot-Sheet `min(560px,82vw)` → `min(420px,50vw)` — Karte bleibt sichtbar.
+  *Offen daraus:* Pan-Offset, damit der Spot in der rechten Hälfte zentriert (Tracker bleibt).
+  **4) Plausibilitäts-Rückfrage** beim Speichern (>250 cm / >150 kg → confirm, kein Block, de/en).
+  **Deploy-Lernen:** Der „Commit changes"-Klick verpuffte 2× trotz hover+Koordinate — was zuverlässig
+  war: `form.requestSubmit(btn)` per JS. In CLAUDE.md nachgetragen.
+  **Am Gerät zu testen (JC):** René in der Angler-Liste (Gruppe als Ziel wählen!) · Querformat-Sheet ·
+  Rückfrage bei 300 cm · nichts Neues beim Toast.
+
+- **✅ `v 2026-07-18.19` (18. Juli, Commit `f5de660`) — Review-Fixes + App-Icon „Nur die Laterne".
+  LIVE, verifiziert (BUILD .19, `?v=13`, d-map-Tint + fmtNum + Stern-Copy im Auslieferungsstand).**
+  Aus `REVIEW-APP-2026-07-18.md` gebaut: **D1** Detail-Karte dunkel (`#d-map::after`, multiply,
+  z-index 350 — Marker behalten Farbe) · **S4** Leaflet-Zoom + Attribution im Theme ·
+  **S3/D2** Fisch-Platzhalter teal auf `--surface-2` · **L3** `rec-strip`-Scrollbalken versteckt ·
+  **F1** Datumsfeld läuft nicht mehr über · **F2** photoHint de/en/nl ohne Stern ·
+  **S1** `fmtNum()` Tausendertrennung in `fmtLen`/`fmtWeight` · **E1** Avatar-Badges 30 px.
+  **ICON:** Award-Konzept ① „Nur die Laterne" (JCs `3434.png` im COMIC-Stil) ersetzt den Vollfisch —
+  der volle Butler bleibt Maskottchen (Splash/App), das Icon ist sein Licht.
+  **Bewusst offen (Design/Entscheidung):** Tagline · Butler-Empty-States · FAB-Desktop ·
+  Angler-Redundanz (L1/F3) · Plausibilitätsfenster (L2) — stehen im Review-Doc.
+  **Am Gerät zu prüfen:** Detail-Karte (Tint-Optik), Formular-Datumsfeld, neue Icons nach
+  PWA-Neuinstallation.
+
+- **✅ `v 2026-07-18.18` (18. Juli, Commit `bab5c08`) — App-Icon: Maskottchen im Flat-Monoline-Stil
+  („COMIC"). LIVE, verifiziert (BUILD .18, icon-512 = 132 kB, `?v=12`).**
+  Ergebnis von JCs KI-Runde mit den Stil-Referenzen aus `Downloads/butlerfish-referenzen/` (flat
+  geometric, dicke Navy-Monoline, drei Farben). Quelle `COMIC.png` (3950 px), Artwork-BG `#001429`
+  übernommen, kein Freistellen (Navy-Linien zu nah an BG-Farbe — Zuschnitt direkt aus dem Original).
+  Bekannter Makel, JCs Ansage „so lassen": Diamant-Laterne berührt die Kopfsilhouette. Löst .17 ab.
+
+- **✅ `v 2026-07-18.17` (18. Juli, Commit `28b25c0`) — App-Icon: Canva-Form, Strichdicke +16, dunkel +
+  Bernstein. LIVE, verifiziert (BUILD .17, icon-512 = 44 kB, `?v=11`).**
+  JCs Wahl nach `mockup-strichdicke-original.html`. Kern-Erkenntnis des Tages: Die Canva-Vektorisierung
+  hatte die beste **Geometrie**, verlor aber klein wegen zu dünner Innenlinien; die Handzeichnung gewann
+  klein nur durch **Strichdicke**. Lösung: Rillen morphologisch verbreitert (Kanäle = BG minus
+  Opening(81), +16 px dilatiert, Außenkontur geschützt) — Canva-Form mit Handzeichnungs-Gewicht.
+  Quelle: `canva_orig_thick_t2.png` (aus `letztertest.png`). Varianten +8/+26, Fliegen-Blau-Fassung
+  (`canva_bowtie_fisch.png`, Wings blau + Knoten gefüllt + Trennlinien — gebaut, nicht gewählt) und alle
+  Mockups liegen im Projektordner. Löst .16 ab.
+
+- **✅ `v 2026-07-18.16` (18. Juli, Commit `589018b`) — App-Icon: Handzeichnung, dunkel + Bernstein.
+  Abgelöst von .17.**
+  JCs neuer Entwurf (gelb-Upload, freigestellt), Farbe nach Test in `mockup-farbtest.html`:
+  Hintergrund `#021B28`, Fisch `#EB9E18` — dieselbe Farbe wie die Laterne im Rebrand, der Fisch wird
+  zu seiner eigenen Laterne. Alle 11 Icons neu. **Bewusst nicht angefasst:** `site.webmanifest`
+  background/theme (`#0D5164`, Splash) und `index.html` theme-color (`#03354B`, Topbar) — eigene
+  Entscheidung, nicht Teil dieses Wechsels. Löst v1 (.15) ab.
+
+- **✅ `v 2026-07-18.15` (18. Juli, Commit `5269dc3`) — App-Icon: v1 (finaltest). Abgelöst von .16.**
+  JCs eigener Entwurf: gefüllte weiße Silhouette mit Angler-Bogen zur Diamant-Laterne **mit Strahlen**
+  (das Leuchten ist zurück), voller Butler. Alle 11 Icons neu (Padding gerundet 8 % / Favicons 5 % /
+  maskable 18 %). Ersetzt t2-Kamm. **Wichtig fürs nächste Mal:** In `finaltest.png` sind die Rillen
+  **teal gemalte Pixel** (Alpha voll), nicht transparent — Alpha-only-Verarbeitung schluckt sie.
+  Varianten v2/v3 + Montage v4 (v2-Körper + v3-Auge + v1-Laterne) liegen in `mockup-logo-final.html`,
+  Quellen in `iconfinal/` — Entscheidung offen bei JC.
+
+- **✅ `v 2026-07-18.14` (18. Juli, Commit `5bb9b22`) — die drei Kleinen aus der Feedback-Mail. LIVE,
+  an der ausgelieferten Datei verifiziert (BUILD .14, `maxZoom:13` = 0 Treffer, `noCrown` drin).**
+  1. **Scroll-Platz unter dem FAB wieder raus** (JC: „Nimm das scrolling unter Button wieder raus",
+     Rückfrage: ganz). `body.has-fab .scroll{padding-bottom:96px…}` gelöscht — die Regel war erst einen
+     Tag alt. Grabstein-Kommentar an der Stelle (Z. ~214), damit sie nicht wiederkommt. Die
+     `has-fab`-Klasse selbst bleibt (steuert das FAB-Display mit, „eine Quelle, zwei Wirkungen").
+  2. **„Alle Fänge": eine Zoomstufe weiter raus** (JC). `maxZoom 13 → 12` an allen drei Stellen
+     (Knopf-`flyToBounds`, dessen `fitBounds`-Fallback, Erst-Aufbau) — Knopf und Reload zeigen denselben
+     Ausschnitt. Einzelfang analog `12 → 11`. `maxZoom:13` kommt im Code nicht mehr vor (geprüft).
+  3. **Krone runter von den „Deine Rekorde"-Kacheln** (JC: „Die Überschrift hast schon eine").
+     `badgeWrap(thumb, c, noCrown)` — nur die persönliche Leiste (`kind==='stats'`) setzt das Flag.
+     Fangliste und Vereins-Podium unverändert: dort trägt die Krone Information (Gruppenrekord =
+     zugleich eigenes PB).
+  Alle Script-Blöcke `node --check` sauber. Deploy auf JCs Ansage.
+
 - **🟡 `v 2026-07-18.3` (18. Juli) — Cluster nach PIXELN statt Koordinaten. Korrektur von `.2`, eine Stunde alt.**
   **Der Bau von `.2` war deployed und griff bei JCs Daten NIE.** Ursache: mein Fehler, und er ist lehrreich.
   ```

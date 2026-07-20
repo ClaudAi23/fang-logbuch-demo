@@ -502,33 +502,36 @@
     top:calc(10px + env(safe-area-inset-top));
     right:calc(12px + env(safe-area-inset-right));
   }
-  /* „Mein Standort" (JC, 18. Juli) — direkt unter dem Vollbild-Knopf, gleiche Kante, gleiche Optik.
-     Erbt dessen Aussehen; nur die Position ist eigen. Im Vollbild wandert er mit der Safe Area mit,
-     sonst läge er hochkant unter der Uhr — derselbe Fehler wie am 17. Juli. */
-  .map-me-btn{position:absolute; top:50px; right:8px; z-index:401; width:34px; height:34px; border-radius:9px;
+  /* --- Overlay-Toolbar: drei FESTE Slots (JC, 21. Juli — Vereinheitlichung) ------------------------
+     Ein Icon = eine Bedeutung, dieselbe Reihenfolge auf ALLEN Karten:
+       top 8  Vollbild       (.map-fs-btn)
+       top 50 Zentrieren     (.map-ctr-btn) — Übersicht: „Alle Fänge" (vier Punkte → fit) ·
+                              Punktkarte: „Auf den Fang/Pin" (Pin → Start-Zoom 13)
+       top 92 Mein Standort  (.map-loc-btn) — Fadenkreuz → Zoom 14; fehlt nur in der Detail-ANSICHT.
+     Standort ist der einzige je fehlende Knopf und sitzt zuunterst → keine Lücke im Stapel. Vorher hieß
+     derselbe Slot je nach Karte etwas anderes (Fadenkreuz mal Standort, mal Zentrieren) — das ist weg. */
+  .map-ctr-btn{position:absolute; top:50px; right:8px; z-index:401; width:34px; height:34px; border-radius:9px;
     border:1px solid rgba(13,81,100,.25); background:#fff; color:var(--map-ink);
     display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
     box-shadow:0 2px 8px rgba(0,0,0,.28);}
-  .map-me-btn:hover{background:#eef4f6;}
-  .map-me-btn svg{width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
-  /* Ortung dauert bis zu 8 s — ohne Rückmeldung tippt man dreimal und hält es für kaputt. */
-  .map-me-btn.laedt{opacity:.5; pointer-events:none;}
-  .map-me-btn.laedt svg{animation:meSpin 1s linear infinite;}
-  @keyframes meSpin{to{transform:rotate(360deg);}}
-  @media(prefers-reduced-motion:reduce){ .map-me-btn.laedt svg{animation:none;} }
-  .map.is-fs .map-me-btn{
+  .map-ctr-btn:hover{background:#eef4f6;}
+  .map-ctr-btn svg{width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  .map.is-fs .map-ctr-btn{
     top:calc(52px + env(safe-area-inset-top));
     right:calc(12px + env(safe-area-inset-right));
   }
-  /* „Alle Fänge" — dritter in der Reihe, gleiche Kante. Die drei stehen in der Reihenfolge, in der man
-     sie braucht: Vollbild (schauen) · Mein Standort (wo bin ich) · Alle Fänge (zurück zur Übersicht). */
-  .map-all-btn{position:absolute; top:92px; right:8px; z-index:401; width:34px; height:34px; border-radius:9px;
+  .map-loc-btn{position:absolute; top:92px; right:8px; z-index:401; width:34px; height:34px; border-radius:9px;
     border:1px solid rgba(13,81,100,.25); background:#fff; color:var(--map-ink);
     display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
     box-shadow:0 2px 8px rgba(0,0,0,.28);}
-  .map-all-btn:hover{background:#eef4f6;}
-  .map-all-btn svg{width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
-  .map.is-fs .map-all-btn{
+  .map-loc-btn:hover{background:#eef4f6;}
+  .map-loc-btn svg{width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  /* Ortung dauert bis zu 8 s — ohne Rückmeldung tippt man dreimal und hält es für kaputt. */
+  .map-loc-btn.laedt{opacity:.5; pointer-events:none;}
+  .map-loc-btn.laedt svg{animation:meSpin 1s linear infinite;}
+  @keyframes meSpin{to{transform:rotate(360deg);}}
+  @media(prefers-reduced-motion:reduce){ .map-loc-btn.laedt svg{animation:none;} }
+  .map.is-fs .map-loc-btn{
     top:calc(94px + env(safe-area-inset-top));
     right:calc(12px + env(safe-area-inset-right));
   }
@@ -1361,7 +1364,10 @@
   .area-row .ar-name{flex:1; min-width:0; font-weight:500; font-size:0.9375rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .area-row .ar-check{width:22px; height:22px; flex:0 0 auto; color:var(--teal-bright);}
   .area-row .ar-check svg{width:22px; height:22px; stroke:currentColor; stroke-width:2.6; fill:none;}
-  .selfield{width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface-2); border:1px solid var(--border-2); border-radius:10px; padding:11px 12px; color:var(--text); font-family:inherit; font-size:0.9375rem; cursor:pointer; text-align:left;}
+  /* Angeglichen an <input> (JC, 21. Juli): gleiche Höhe UND gleiches Blau. Vorher surface-2 (heller) +
+     1px/10px/11px/15px → 44px & hellere Fläche; jetzt exakt die Input-Box (surface, 1.5px, 8px, 13/14px,
+     16px) → 48px & dieselbe Farbe. selfield-sm überschreibt Größe selbst und bleibt klein. */
+  .selfield{width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface); border:1.5px solid var(--border-2); border-radius:8px; padding:13px 14px; color:var(--text); font-family:inherit; font-size:1rem; cursor:pointer; text-align:left;}
   .selfield span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .selfield .acc-chev{width:18px; height:18px; stroke:var(--muted); flex:0 0 auto;}
   .selfield-sm{width:auto; padding:6px 10px; font-size:0.8125rem; gap:6px; border-radius:8px;}
@@ -1622,7 +1628,8 @@
         <label data-i18n="mapPin">Standort auf Karte</label>
         <div class="map-wrap">
           <div id="f-map" class="map"></div>
-          <button type="button" class="map-me-btn" onclick="useMyLocation()" data-i18n-title="myLocation" title="Mein Standort" aria-label="Mein Standort"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></button>
+          <button type="button" class="map-ctr-btn" id="f-ctr-btn" onclick="formRecenter()" style="display:none" data-i18n-title="recenterCatch" title="Auf den Pin" aria-label="Auf den Pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.3"/></svg></button>
+          <button type="button" class="map-loc-btn" onclick="useMyLocation()" data-i18n-title="myLocation" title="Mein Standort" aria-label="Mein Standort"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></button>
         </div>
         <div class="msrc" id="f-msrc"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
         <span id="f-coord" class="coord" data-i18n="tapMap" style="display:block; margin-top:6px;">Tippe auf die Karte, um den Fangort zu setzen.</span>
@@ -2401,7 +2408,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-19.18';
+const BUILD = '2026-07-21.20';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -4809,14 +4816,23 @@ function ensureFormMap(lat, lon){
   attachFsBtn('f', fMap);
   setTimeout(()=>{ try{fMap.invalidateSize();}catch(e){} }, 80);
   if(has) setFormPin(lat,lon);
-  else { if(fMarker){ fMap.removeLayer(fMarker); fMarker=null; } state.formLat=null; state.formLon=null; document.getElementById('f-coord').textContent=t('tapMap'); }
+  else { if(fMarker){ fMap.removeLayer(fMarker); fMarker=null; } state.formLat=null; state.formLon=null; document.getElementById('f-coord').textContent=t('tapMap');
+    const cb=document.getElementById('f-ctr-btn'); if(cb) cb.style.display='none'; }
 }
 function setFormPin(lat, lon){
   state.formLat=lat; state.formLon=lon;
   if(!fMarker){ fMarker=L.marker([lat,lon],{icon:fishPinIcon(), keyboard:false}).addTo(fMap); }   // form: one spot -> a pin, same as the detail
   else fMarker.setLatLng([lat,lon]);
   document.getElementById('f-coord').textContent = lat.toFixed(5)+', '+lon.toFixed(5);
+  const cb=document.getElementById('f-ctr-btn'); if(cb) cb.style.display='';   // „Auf den Pin" gibt es erst, wenn es einen Pin gibt
   previewWeather();
+}
+/* „Auf den Pin zentrieren" (Formular) — dieselbe Geste wie „Auf den Fang" im Detail: zurück auf die
+   Start-Zoomstufe der Karte (13), nicht raus. */
+function formRecenter(){
+  if(!fMap || state.formLat==null) return;
+  try{ fMap.flyTo([state.formLat, state.formLon], 13, {duration:.45}); }
+  catch(e){ try{ fMap.setView([state.formLat, state.formLon], 13); }catch(_e){} }
 }
 function useMyLocation(){
   if(!navigator.geolocation) return;
@@ -4828,12 +4844,14 @@ function useMyLocation(){
 }
 function _detailRecenter(){
   if(!dMap || !state.current || state.current.lat==null) return;
-  try{ dMap.flyTo([state.current.lat, state.current.lon], FOTO_ZOOM, {duration:.45}); }
-  catch(e){ try{ dMap.setView([state.current.lat, state.current.lon], FOTO_ZOOM); }catch(_e){} }
+  /* „Auf den Fang zentrieren" → zurück auf die Start-Zoomstufe der Detailkarte (13), nicht auf 11
+     (JC, 21. Juli, Vereinheitlichung: Zentrieren heißt „wie beim Öffnen", nicht „rauszoomen"). */
+  try{ dMap.flyTo([state.current.lat, state.current.lon], 13, {duration:.45}); }
+  catch(e){ try{ dMap.setView([state.current.lat, state.current.lon], 13); }catch(_e){} }
 }
 function _detailMyLocation(){
   if(!navigator.geolocation || !dMap) return;
-  const btn=document.querySelector('#d-map .map-all-btn'); if(btn) btn.classList.add('laedt');
+  const btn=document.querySelector('#d-map .map-loc-btn'); if(btn) btn.classList.add('laedt');
   navigator.geolocation.getCurrentPosition(p=>{
     if(btn) btn.classList.remove('laedt');
     const lat=p.coords.latitude, lon=p.coords.longitude;
@@ -4842,26 +4860,26 @@ function _detailMyLocation(){
     try{ haptic(8); }catch(e){}
   }, ()=>{ if(btn) btn.classList.remove('laedt'); }, {enableHighAccuracy:true, timeout:8000});
 }
-/* Recenter (#5, immer) im map-me-btn-Slot (top 50); Standort (#6, nur Edit) im map-all-btn-Slot (top 92).
-   Klassen = Position + weißer Stil + Vollbild-Verhalten; die Icons sagen, was der Knopf tut. */
+/* Zentrieren (#5, immer) im Zentrieren-Slot (top 50, Pin); Standort (#6, nur Edit) im Standort-Slot
+   (top 92, Fadenkreuz). Slots = feste Position + weißer Stil; die Icons sagen, was der Knopf tut. */
 function attachDetailBtns(){
   const w=document.getElementById('d-map'); if(!w) return;
-  if(!w.querySelector('.map-me-btn')){
-    const b=document.createElement('button'); b.type='button'; b.className='map-me-btn';
+  if(!w.querySelector('.map-ctr-btn')){
+    const b=document.createElement('button'); b.type='button'; b.className='map-ctr-btn';
     b.setAttribute('aria-label', t('recenterCatch')); b.title=t('recenterCatch');
     b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.3"/></svg>';
     b.onclick=(e)=>{ e.stopPropagation(); _detailRecenter(); };
     w.appendChild(b);
   }
-  if(navigator.geolocation && !w.querySelector('.map-all-btn')){
-    const b2=document.createElement('button'); b2.type='button'; b2.className='map-all-btn'; b2.style.display='none';
+  if(navigator.geolocation && !w.querySelector('.map-loc-btn')){
+    const b2=document.createElement('button'); b2.type='button'; b2.className='map-loc-btn'; b2.style.display='none';
     b2.setAttribute('aria-label', t('myLocation')); b2.title=t('myLocation');
     b2.innerHTML='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg>';
     b2.onclick=(e)=>{ e.stopPropagation(); _detailMyLocation(); };
     w.appendChild(b2);
   }
 }
-function _detailSetMyLocBtn(show){ const b=document.querySelector('#d-map .map-all-btn'); if(b) b.style.display= show ? '' : 'none'; }
+function _detailSetMyLocBtn(show){ const b=document.querySelector('#d-map .map-loc-btn'); if(b) b.style.display= show ? '' : 'none'; }
 function ensureDetailMap(lat,lon){
   if(typeof L==='undefined'||lat==null) return;
   if(!dMap){
@@ -4967,10 +4985,10 @@ function mapFsIcon(open){
    Der Punkt ist bewusst FLÜCHTIG (kein Marker, der bleibt): Er sagt „hier bist du gerade", nicht „hier
    war ein Fang". Ein zweiter dauerhafter Kreis auf einer Karte voller Fang-Kreise wäre eine Lüge. */
 let _meMk={};
-function mapMeButton(kind, wrap){
+function mapLocButton(kind, wrap){
   if(!navigator.geolocation) return;   // ohne Ortung kein Knopf, statt eines, der nichts tut
   const b=document.createElement('button');
-  b.type='button'; b.className='map-me-btn';
+  b.type='button'; b.className='map-loc-btn';
   b.setAttribute('aria-label', t('myLocation'));
   b.title=t('myLocation');
   b.innerHTML='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg>';
@@ -5015,9 +5033,9 @@ function mapMeButton(kind, wrap){
    „fliege dorthin". Icons benennen Ziele, das Verb steht im Tooltip).
    Der eigentliche Gewinn: Die vier Punkte ZITIEREN DIE KARTE. Sie sind genau das, was darunter liegt —
    kein abstraktes Zeichen für „einrahmen", sondern das Ding selbst. */
-function mapAllButton(kind, wrap){
+function mapCtrButton(kind, wrap){
   const b=document.createElement('button');
-  b.type='button'; b.className='map-all-btn';
+  b.type='button'; b.className='map-ctr-btn';
   b.setAttribute('aria-label', t('mapShowAll'));
   b.title=t('mapShowAll');
   /* Gefüllte Punkte, kein Strich: Sie sollen aussehen wie die Fang-Punkte auf der Karte — die sind auch
@@ -5123,8 +5141,8 @@ function ensureCatchMap(kind, items){
        zehn Aktualisierungen ein Stapel davon übereinander. Er hängt am Karten-Element (nicht an einem
        Leaflet-Control), damit er den Vollbild-Zustand mit umschalten kann. */
     try{ mapFsButton(kind, wrap); }catch(e){}
-    try{ mapMeButton(kind, wrap); }catch(e){}
-    try{ mapAllButton(kind, wrap); }catch(e){}
+    try{ mapCtrButton(kind, wrap); }catch(e){}
+    try{ mapLocButton(kind, wrap); }catch(e){}
   }
   R.pts=pts;
   drawCatchMarkers(kind);
@@ -5204,13 +5222,21 @@ function drawCatchMarkers(kind){
         /* JC, 20. Juli: nicht sofort das Sheet — erst WEITER REINZOOMEN, solange die Gruppe sich noch
            trennen lässt. Das Sheet (Foto-Auswahl) erst, wenn alle auf derselben Stelle liegen (oder der
            Zoom am Anschlag ist). So wird aus „6" beim Reinzoomen 2+1+1+1+1, statt direkt aufzugehen. */
+        /* JC, 21. Juli: „stoppt jetzt bei 6 — hat was mit den Zoom-Level-Einstellungen zu tun." Hatte
+           recht. Der alte Weg war doppelt falsch gedeckelt: `flyToBounds` PASST die Bounds nur EIN
+           (zoomt also nicht rein, sobald die Gruppe schon sichtbar ist), und beide Deckel standen hart
+           auf 18 — die äußeren Spots trennen sich aber erst auf Stufe 19 (Karten-Maximum). Also blieb
+           „6" auf 18 kleben. Neu: Zielzoom = so weit REIN, dass die ganze Gruppe gerade noch ins Bild
+           passt (alle Pins der Zahl bleiben sichtbar), gedeckelt aufs echte Karten-Maximum. Solange das
+           ein ECHTER Rein-Zoom ist, weiter; sonst ist der Anschlag erreicht und das Sheet wählt. */
         const _pts=g.filter(c=>c.lat!=null&&c.lon!=null).map(c=>[+c.lat,+c.lon]);
         const _b=L.latLngBounds(_pts);
-        const _spreadM=_b.getNorthEast().distanceTo(_b.getSouthWest());
-        if(_spreadM>2 && R.m.getZoom()<18){
+        const _max=(R.m.getMaxZoom&&R.m.getMaxZoom())||19;
+        let _z; try{ _z=Math.min(_max, R.m.getBoundsZoom(_b,false,L.point(55,55))); }catch(e){ _z=_max; }
+        if(_z > R.m.getZoom()+0.001){
           _spotSelbstBewegt=true;
-          try{ R.m.flyToBounds(_b, {padding:[55,55], maxZoom:18, duration:.5}); }
-          catch(e){ try{ R.m.setView(_b.getCenter(), Math.min(R.m.getBoundsZoom(_b,false,L.point(55,55)),18)); }catch(_e){} }
+          try{ R.m.flyTo(_b.getCenter(), _z, {duration:.5}); }
+          catch(e){ try{ R.m.setView(_b.getCenter(), _z); }catch(_e){} }
           setTimeout(()=>{ _spotSelbstBewegt=false; }, 850);
         } else { openSpotSheet(kind, g, [lat,lon]); }
       });
