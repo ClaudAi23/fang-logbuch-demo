@@ -261,11 +261,6 @@
      reads as elevation, not the teal halo that read as glow. */
   .frow2{display:flex; gap:10px;} .frow2>.field{flex:1; min-width:0;}
   #stats-msrc, #list-msrc{margin-top:-14px; margin-bottom:8px;}
-  .datephoto{display:flex; gap:6px; align-items:center;} .datephoto input{flex:1; min-width:0;}
-  .fromphoto-mini{flex:0 0 auto; width:42px; height:42px; border-radius:10px; border:1px solid var(--border-2); background:var(--surface); color:var(--teal); display:flex; align-items:center; justify-content:center; cursor:pointer;}
-  .fromphoto-mini svg{width:18px; height:18px;} .fromphoto-mini:active{background:var(--surface-2);}
-  .fromphoto-btn{margin-top:8px; display:inline-flex; align-items:center; gap:7px; background:var(--surface); border:1px solid var(--border-2); color:var(--teal); border-radius:10px; padding:7px 12px; font-size:.82rem; cursor:pointer;}
-  .fromphoto-btn svg{width:16px; height:16px;} .fromphoto-btn:active{background:var(--surface-2);}
   .selfield.static{pointer-events:none; cursor:default;} .selfield.static .acc-chev{display:none;}
   /* ---- #15 Stufe 1: Unified-Form (Flag bf_unified; 'off' in localStorage schaltet zurück) ---- */
   #uf-hero{position:relative; height:170px; margin:-14px -16px 14px; background:var(--surface-2); background-size:cover; background-position:center; display:flex; align-items:flex-end; padding:12px 16px; overflow:hidden;}
@@ -1585,10 +1580,7 @@
       <div class="row">
         <div class="field">
           <label><span data-i18n="datetime">Datum &amp; Zeit</span> <span class="req">*</span></label>
-          <div class="datephoto">
-            <input id="f-date" type="datetime-local" onchange="previewWeather()" />
-            <button type="button" class="fromphoto-mini" onclick="exifDateFromPhoto()" data-i18n-title="exifDateBtn" title="Datum aus Foto" aria-label="Datum aus Foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3"/></svg></button>
-          </div>
+          <input id="f-date" type="datetime-local" onchange="previewWeather()" />
         </div>
         <div class="field" id="ff-angler-wrap">
           <label><span data-i18n="angler">Angler</span> <span class="req">*</span></label>
@@ -1632,7 +1624,6 @@
         </div>
         <div class="msrc" id="f-msrc"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
         <span id="f-coord" class="coord" data-i18n="tapMap" style="display:block; margin-top:6px;">Tippe auf die Karte, um den Fangort zu setzen.</span>
-        <button type="button" class="fromphoto-btn" onclick="exifLocFromPhoto()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3"/></svg><span data-i18n="exifLocBtn">Ort aus Foto</span></button>
       </div>
 
       <div class="fgroup" id="fg-cond"><svg viewBox="0 0 24 24"><path d="M6.657 18c-2.572 0 -4.657 -2.007 -4.657 -4.483c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-11.878"/></svg><span data-i18n="grpConditions">Bedingungen</span></div>
@@ -1760,9 +1751,8 @@
               <div class="msrc"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
             </div>
           </div>
-          <div id="d-map-edit-bar" style="display:none; margin-top:8px; align-items:center; gap:10px; justify-content:space-between;">
+          <div id="d-map-edit-bar" style="display:none; margin-top:8px; align-items:center; gap:10px;">
             <span class="hint" id="d-map-hint" style="margin:0;" data-i18n="tapMap">Tippe auf die Karte, um den Ort zu setzen.</span>
-            <button type="button" class="btn secondary sm" style="width:auto; white-space:nowrap;" onclick="detailUseMyLocation()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px; margin-right:5px;"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg><span data-i18n="myLocation">Mein Standort</span></button>
           </div>
         </div>
         <div id="d-notes-wrap" style="margin-top:18px; display:none;">
@@ -2409,7 +2399,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-19.15';
+const BUILD = '2026-07-19.16';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -5154,7 +5144,10 @@ function ensureCatchMap(kind, items){
     /* JC, 20. Juli: Erst-Zoom bei MEHREREN Fängen eine Stufe weiter raus (als hätte man einmal „−"
        gedrückt) — fitBounds, dann zoomOut(1). Bei EINEM Fang bleibt es beim Foto-Zoom, damit man das
        Bild sieht statt des Punkts. */
-    if(bounds.length>1){ try{ R.m.fitBounds(bounds,{padding:[24,24], maxZoom:12}); R.m.setZoom(Math.max(2, R.m.getZoom()-1)); }catch(e){} }
+    /* Zentrum = Mitte ALLER Punkte (JC, 20. Juli: „center auf einen Punkt statt mittig"). fitBounds
+       animiert und ein direkt danach folgendes setZoom(-1) verrechnete sich mit dem laufenden Move —
+       das schob die Mitte auf einen Rand-Punkt. Jetzt: Zoom vorab rechnen, in EINEM setView setzen. */
+    if(bounds.length>1){ try{ const _b=L.latLngBounds(bounds); const _z=Math.max(2, Math.min(R.m.getBoundsZoom(_b,false,L.point(24,24)),12)-1); R.m.setView(_b.getCenter(), _z); }catch(e){} }
     else R.m.setView(bounds[0], FOTO_ZOOM);
   }
   setTimeout(()=>{ try{R.m.invalidateSize();}catch(e){} }, 80);
@@ -5205,7 +5198,20 @@ function drawCatchMarkers(kind){
       const lon=g.reduce((s,c)=>s+(+c.lon),0)/g.length;
       // Cluster: NUR die Zahl (JC). Antippen -> Spot-Sheet: zentrieren, abdunkeln, Hero + Streifen.
       const m=L.marker([lat,lon],{icon:L.divIcon({html:`<div class="cl-dot">${g.length}</div>`, iconSize:[46,46], iconAnchor:[23,23]})}).addTo(R.m);
-      m.on('click', ()=>openSpotSheet(kind, g, [lat,lon]));
+      m.on('click', ()=>{
+        /* JC, 20. Juli: nicht sofort das Sheet — erst WEITER REINZOOMEN, solange die Gruppe sich noch
+           trennen lässt. Das Sheet (Foto-Auswahl) erst, wenn alle auf derselben Stelle liegen (oder der
+           Zoom am Anschlag ist). So wird aus „6" beim Reinzoomen 2+1+1+1+1, statt direkt aufzugehen. */
+        const _pts=g.filter(c=>c.lat!=null&&c.lon!=null).map(c=>[+c.lat,+c.lon]);
+        const _b=L.latLngBounds(_pts);
+        const _spreadM=_b.getNorthEast().distanceTo(_b.getSouthWest());
+        if(_spreadM>2 && R.m.getZoom()<18){
+          _spotSelbstBewegt=true;
+          try{ R.m.flyToBounds(_b, {padding:[55,55], maxZoom:18, duration:.5}); }
+          catch(e){ try{ R.m.setView(_b.getCenter(), Math.min(R.m.getBoundsZoom(_b,false,L.point(55,55)),18)); }catch(_e){} }
+          setTimeout(()=>{ _spotSelbstBewegt=false; }, 850);
+        } else { openSpotSheet(kind, g, [lat,lon]); }
+      });
       R.mk.push(m);
     } else if(R.m.getZoom() >= FOTO_ZOOM){
       /* FREISTEHEND UND NAH GENUG → das FOTO (JC, 18. Juli: „the photo is missing when there is a single
