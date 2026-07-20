@@ -9,7 +9,13 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
-- **🟡 `v 2026-07-21.20` (21. Juli, NOCH NICHT DEPLOYT) — Karten-Toolbar vereinheitlicht + Cluster-Fix + Felder angeglichen.**
+- **🐛 `v 2026-07-21.21` (21. Juli, NOCH NICHT DEPLOYT) — Spot-Sheet zoomt nicht mehr raus.**
+  JC: „auf unterster Stufe auf die 2 tippen → nach den Fotos zoomt es wieder raus auf 6." Ursache:
+  `openSpotSheet` machte `fitBounds{maxZoom:17}`; auf Stufe 19 fiel das auf 17 zurück (rauszoomen), und
+  das `zoomend` re-clusterte zurück auf „6". Fix: Zielzoom beim Öffnen **nie unter den aktuellen** —
+  bei gleicher Stelle bleibt der Zoom, es wird nur zentriert (kein Re-Clustern mehr).
+
+- **✅ `v 2026-07-21.20` (21. Juli, Commit `2481729`) — Karten-Toolbar vereinheitlicht + Cluster-Fix + Felder angeglichen. LIVE (BUILD am Auslieferungsstand bestätigt).**
   **Cluster-Zoom-durch (Fix zu .16):** stoppte bei „6", weil doppelt auf Zoom **18** gedeckelt und
   `flyToBounds` nur einpasste statt reinzuzoomen — die äußeren Spots trennen sich erst auf **19**
   (Karten-Max). Neu: Ziel = maximaler Zoom, bei dem die ganze Gruppe noch sichtbar ist (bis 19); jeder

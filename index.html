@@ -2408,7 +2408,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.20';
+const BUILD = '2026-07-21.21';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -5313,8 +5313,15 @@ function openSpotSheet(kind, items, mitte){
        Koordinate => maxZoom, dann trennt kein Zoom mehr und das Sheet wählt. */
     try{
       const _pts=items.filter(c=>c.lat!=null&&c.lon!=null).map(c=>[+c.lat,+c.lon]);
-      if(_pts.length>1){ const _h=R.m.getSize().y;
-        R.m.fitBounds(L.latLngBounds(_pts), {paddingTopLeft:[26,26], paddingBottomRight:[26, Math.round(_h*0.45)], maxZoom:17, animate:true, duration:.32}); }
+      if(_pts.length>1){ const _h=R.m.getSize().y; const _b=L.latLngBounds(_pts); const _cur=R.m.getZoom();
+        /* NIE rauszoomen beim Öffnen (JC, 21. Juli): Du bist gerade bis zur „2" auf Stufe 19 reingezoomt.
+           Das alte `fitBounds{maxZoom:17}` fiel für die (fast) gleiche Stelle auf 17 zurück — UNTER den
+           aktuellen Zoom — und dieses Rauszoomen löste per `zoomend` ein Re-Clustern zurück auf „6" aus.
+           Fix: Zielzoom nie unter den aktuellen. Bei gleicher Stelle bleibt der Zoom, es wird nur
+           zentriert (kein zoomend → kein Re-Clustern). */
+        let _fit; try{ _fit=R.m.getBoundsZoom(_b,false,L.point(26,26)); }catch(e2){ _fit=_cur; }
+        const _z=Math.max(_cur, Math.min(17,_fit));
+        R.m.flyToBounds(_b, {paddingTopLeft:[26,26], paddingBottomRight:[26, Math.round(_h*0.45)], maxZoom:_z, animate:true, duration:.32}); }
       else { R.m.panTo(mitte || [items[0].lat, items[0].lon], {animate:true, duration:.28}); }
     }catch(e){}
     setTimeout(()=>{ _spotSelbstBewegt=false; }, 950);
