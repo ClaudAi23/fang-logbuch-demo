@@ -1522,6 +1522,7 @@
         <div id="list-records" style="margin-bottom:18px;"></div>
         <p class="sectionlabel" id="list-maplabel" data-i18n="whereYouFish" style="display:none;">Wo du fängst</p>
         <div id="list-map" class="map map-stats" style="display:none;"></div>
+        <div class="msrc" id="list-msrc" style="display:none;"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
       </div>
       <div data-tabpane="list:lst" style="display:none;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin:4px 4px 12px; gap:10px; border-bottom:1px solid var(--border); padding-bottom:10px;">
@@ -1618,8 +1619,9 @@
         <label data-i18n="mapPin">Standort auf Karte</label>
         <div class="map-wrap">
           <div id="f-map" class="map"></div>
-          <button type="button" class="map-fab" onclick="useMyLocation()" data-i18n-title="myLocation" title="Mein Standort" aria-label="Mein Standort"><svg viewBox="0 0 24 24"><path d="M9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M4 12a8 8 0 1 0 16 0a8 8 0 1 0 -16 0"/><path d="M12 2l0 2"/><path d="M12 20l0 2"/><path d="M20 12l2 0"/><path d="M2 12l2 0"/></svg></button>
+          <button type="button" class="map-me-btn" onclick="useMyLocation()" data-i18n-title="myLocation" title="Mein Standort" aria-label="Mein Standort"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></button>
         </div>
+        <div class="msrc" id="f-msrc"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
         <span id="f-coord" class="coord" data-i18n="tapMap" style="display:block; margin-top:6px;">Tippe auf die Karte, um den Fangort zu setzen.</span>
       </div>
 
@@ -2371,6 +2373,7 @@
              (`ensureCatchMap`), sonst stünde die Überschrift über nichts, wenn kein Fang Geodaten hat. -->
         <p class="sectionlabel" id="stats-maplabel" data-i18n="whereYouFish" style="display:none;">Wo du fängst</p>
         <div id="stats-map" class="map map-stats" style="display:none;"></div>
+        <div class="msrc" id="stats-msrc" style="display:none;"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
       </div>
       <div data-tabpane="stats:lst" style="display:none;">
         <div class="listtoolbar">
@@ -2396,7 +2399,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-19.11';
+const BUILD = '2026-07-19.12';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -4797,7 +4800,7 @@ function ensureFormMap(lat, lon){
   const has=(lat!=null&&lon!=null);
   const center=has?[lat,lon]:DEFAULT_CENTER;
   if(!fMap){
-    fMap=L.map('f-map',{zoomControl:true}).setView(center, has?13:6);
+    fMap=L.map('f-map',{zoomControl:true, attributionControl:false}).setView(center, has?13:6);
     L.tileLayer(TILE,TILE_OPT).addTo(fMap);
     fMap.on('click', e=>setFormPin(e.latlng.lat, e.latlng.lng));
   } else { fMap.setView(center, has?13:fMap.getZoom()); }
@@ -4992,9 +4995,9 @@ function mapAllButton(kind, wrap){
     try{
       /* maxZoom 13 → 12 (JC, 18. Juli, Feedback-Mail): „Wenn alle Fische im zoom sind … nimm vom
          jetzigen Wert noch eine Zoom Stufe weiter raus." Gilt für Knopf UND Erst-Aufbau (unten). */
-      if(bounds.length>1) R.m.flyToBounds(bounds,{padding:[24,24], maxZoom:12, duration:.6});
-      else R.m.flyTo(bounds[0], 11, {duration:.6});
-    }catch(e2){ try{ if(bounds.length>1) R.m.fitBounds(bounds,{padding:[24,24], maxZoom:12}); else R.m.setView(bounds[0],11); }catch(e3){} }
+      if(bounds.length>1){ const _b=L.latLngBounds(bounds); let _z=Math.min(R.m.getBoundsZoom(_b,false,L.point(24,24)),12)-1; R.m.flyTo(_b.getCenter(), Math.max(2,_z), {duration:.6}); }
+      else R.m.flyTo(bounds[0], FOTO_ZOOM, {duration:.6});
+    }catch(e2){ try{ if(bounds.length>1){ R.m.fitBounds(bounds,{padding:[24,24], maxZoom:12}); R.m.setZoom(Math.max(2,R.m.getZoom()-1)); } else R.m.setView(bounds[0],FOTO_ZOOM); }catch(e3){} }
     setTimeout(()=>{ _spotSelbstBewegt=false; }, 1100);
     try{ haptic(8); }catch(e2){}
   };
@@ -5063,10 +5066,11 @@ function ensureCatchMap(kind, items){
   const pts=(items||[]).filter(c=>c.lat!=null&&c.lon!=null);
   /* Die Überschrift folgt der Karte: Hat kein Fang Geodaten, steht sonst „Wo du fängst" über nichts. */
   const _lbl=document.getElementById(kind+'-maplabel');
-  if(typeof L==='undefined'||!pts.length){ wrap.style.display='none'; if(_lbl) _lbl.style.display='none'; return; }
+  if(typeof L==='undefined'||!pts.length){ wrap.style.display='none'; if(_lbl) _lbl.style.display='none'; { const _cr=document.getElementById(kind+'-msrc'); if(_cr) _cr.style.display='none'; } return; }
   wrap.style.display='block'; if(_lbl) _lbl.style.display='';
+  { const _cr=document.getElementById(kind+'-msrc'); if(_cr) _cr.style.display=''; }
   if(!R.m){
-    R.m=L.map(kind+'-map',{zoomControl:true}).setView([pts[0].lat,pts[0].lon],6);
+    R.m=L.map(kind+'-map',{zoomControl:true, attributionControl:false}).setView([pts[0].lat,pts[0].lon],6);
     L.tileLayer(TILE,TILE_OPT).addTo(R.m);
     /* Bewegt der NUTZER die Karte, ist das Sheet nicht mehr gemeint — es zeigt einen Spot, der gerade
        wegwandert. Bewegt sie sich wegen des eigenen `panTo` beim Öffnen, darf es NICHT schließen.
@@ -5101,8 +5105,11 @@ function ensureCatchMap(kind, items){
     const bounds=pts.map(c=>[c.lat,c.lon]);
     /* maxZoom 13 → 12, Einzelfang 12 → 11 (JC, 18. Juli): eine Zoomstufe weiter raus — gleiche Werte
        wie der „Alle Fänge"-Knopf, sonst zeigen Reload und Knopf verschiedene Ausschnitte. */
-    if(bounds.length>1){ try{ R.m.fitBounds(bounds,{padding:[24,24], maxZoom:12}); }catch(e){} }
-    else R.m.setView(bounds[0],11);
+    /* JC, 20. Juli: Erst-Zoom bei MEHREREN Fängen eine Stufe weiter raus (als hätte man einmal „−"
+       gedrückt) — fitBounds, dann zoomOut(1). Bei EINEM Fang bleibt es beim Foto-Zoom, damit man das
+       Bild sieht statt des Punkts. */
+    if(bounds.length>1){ try{ R.m.fitBounds(bounds,{padding:[24,24], maxZoom:12}); R.m.setZoom(Math.max(2, R.m.getZoom()-1)); }catch(e){} }
+    else R.m.setView(bounds[0], FOTO_ZOOM);
   }
   setTimeout(()=>{ try{R.m.invalidateSize();}catch(e){} }, 80);
 }
