@@ -259,6 +259,7 @@
   .req{color:var(--teal); font-weight:600;}
   /* Same treatment. The FAB floats over content, so it keeps a shadow — but a NEUTRAL one that
      reads as elevation, not the teal halo that read as glow. */
+  .frow2{display:flex; gap:10px;} .frow2>.field{flex:1; min-width:0;}
   /* ---- #15 Stufe 1: Unified-Form (Flag bf_unified; 'off' in localStorage schaltet zurück) ---- */
   #uf-hero{position:relative; height:170px; margin:-14px -16px 14px; background:var(--surface-2); background-size:cover; background-position:center; display:flex; align-items:flex-end; padding:12px 16px; overflow:hidden;}
   #uf-hero::after{content:''; position:absolute; inset:auto 0 0 0; height:72%; background:linear-gradient(transparent, rgba(2,27,40,.82)); pointer-events:none;}
@@ -1610,7 +1611,7 @@
       <div class="fgroup" id="fg-water"><svg viewBox="0 0 24 24"><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0"/></svg><span data-i18n="grpWater">Gewässer & Standort</span></div>
       <div class="field" id="ff-location">
         <label data-i18n="water">Gewässer / Platz</label>
-        <input id="f-location" type="text" placeholder="z. B. Vereinsteich, Platz 4" data-i18n-ph="waterPh" />
+        <div class="combo"><input id="f-location" type="text" readonly autocomplete="off" placeholder="z. B. Vereinsteich, Platz 4" data-i18n-ph="waterPh" onclick="openTypeahead('f-location')" /><button type="button" class="combo-chev" tabindex="-1" aria-hidden="true" onclick="openTypeahead('f-location')"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
       </div>
       <div class="field" id="ff-mapPin">
         <label data-i18n="mapPin">Standort auf Karte</label>
@@ -1652,7 +1653,8 @@
           <label data-i18n="reel">Rolle</label>
           <div class="combo"><input id="f-reel" type="text" readonly autocomplete="off" placeholder="z. B. 4000er Stationärrolle" data-i18n-ph="reelPh" onclick="openTypeahead('f-reel')" /><button type="button" class="combo-chev" tabindex="-1" aria-hidden="true" onclick="openTypeahead('f-reel')"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
         </div>
-        <div class="field" id="ff-boat">
+        <div class="frow2" id="ff-boattroll">
+      <div class="field" id="ff-boat">
           <label data-i18n="boat">Boot</label>
           <div class="combo"><input id="f-boat" type="text" readonly autocomplete="off" placeholder="z. B. Schlauchboot" data-i18n-ph="boatPh" onclick="openTypeahead('f-boat')" /><button type="button" class="combo-chev" tabindex="-1" aria-hidden="true" onclick="openTypeahead('f-boat')"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
         </div>
@@ -1660,6 +1662,7 @@
       <div class="field" id="ff-trolling">
         <label data-i18n="trolling">Schleppgeschw. (km/h)</label>
         <input id="f-trolling" type="text" inputmode="decimal" autocomplete="off" placeholder="z. B. 3,2" data-i18n-ph="trollingPh" />
+      </div>
       </div>
 
       <div class="field secfield" id="ff-notes">
@@ -2392,7 +2395,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-19.5';
+const BUILD = '2026-07-19.6';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -6062,6 +6065,10 @@ function renderAreaSheet(){
   let h='';
   const myName=(state.me&&state.me.name)||t('solo');
   if(match(t('solo'))||match(myName)) h+=`<div class="area-grp">${esc(t('personal'))}</div>`+row('solo', myName, userAvatarHTML(), solo);
+  if(!q){
+    const mru=_areaMru().map(id=>ctxs.find(x=>x.id===id)).filter(Boolean).slice(0,4);
+    if(mru.length){ h+=`<div class="area-grp">${esc(t('recentLabel'))}</div>`; mru.forEach(c=>{ h+=row(c.id, c.name, clubLogoHTML(c), tg.indexOf(c.id)>=0); }); }
+  }
   const clubs=ctxs.filter(x=>x.type==='club'&&match(x.name));
   const groups=ctxs.filter(x=>x.type==='group'&&match(x.name));
   if(clubs.length){ h+=`<div class="area-grp">${esc(t('clubs'))}</div>`; clubs.forEach(c=>{ h+=row(c.id, c.name, clubLogoHTML(c), tg.indexOf(c.id)>=0); }); }
@@ -6075,8 +6082,11 @@ function populateAreaSelect(){
   state.formTargets = (state.mode!=='solo' && state.club) ? [state.club.id] : [];
   updateAreaSummary(); wrap.style.display='';
 }
+function _areaMru(){ try{ return JSON.parse(localStorage.getItem('bf_area_mru')||'[]')||[]; }catch(e){ return []; } }
+function _areaMruAdd(id){ try{ let a=_areaMru().filter(x=>x!==id); a.unshift(id); a=a.slice(0,6); localStorage.setItem('bf_area_mru', JSON.stringify(a)); }catch(e){} }
 async function toggleArea(key){
   if(_areaMode==='detail') return detailToggleArea(key);
+  if(key && key!=='solo'){ _areaMruAdd(key); }
   let tg=(state.formTargets||[]).slice();
   if(key==='solo'){ tg=[]; }
   else { const i=tg.indexOf(key); if(i>=0) tg.splice(i,1); else tg.push(key); }
@@ -6402,6 +6412,11 @@ function saveCatch(){
     return;
   }
   if(new Date(date) > new Date()){ err.textContent=t('errFuture'); err.style.display='block'; return; }
+  /* Versteckte Felder werden geleert (JC, 20. Juli): Schaltet man z. B. von Trolling weg, ist die
+     Schleppgeschwindigkeit ausgeblendet — ihr (evtl. ungültiger) Wert darf weder blockieren noch
+     mitgespeichert werden. Nur INPUTs, deren `ff-`-Container `display:none` ist; Selects unberührt. */
+  CFG_FIELDS.forEach(f=>{ const box=document.getElementById('ff-'+f.key), inp=document.getElementById('f-'+f.key);
+    if(box && inp && inp.tagName==='INPUT' && box.style.display==='none'){ inp.value=''; } });
   /* Zahlen prüfen, BEVOR `dec2()` sie anfasst — sonst rundet es die dritte Nachkommastelle weg und die
      Prüfung sähe einen Wert, den der Nutzer nie eingetippt hat (JC: „dont fail silently"). */
   for(const [_k,_id] of [['length','f-length'],['weight','f-weight'],['trolling','f-trolling'],['watertemp','f-watertemp']]){
@@ -7017,6 +7032,12 @@ const TA_CFG={
   'f-rod':_taSuggestCfg('rod','f-rod'),
   'f-reel':_taSuggestCfg('reel','f-reel'),
   'f-boat':_taSuggestCfg('boat','f-boat'),
+  'f-location':{
+    title:()=> t('water'),
+    opts:()=> _waterSuggest().map(v=>({v:v, rm:'water'})),
+    recent:()=> _waterSuggest().slice(0,6).map(v=>({v:v, rm:'water'})),
+    onPick:(v)=>{ const el=document.getElementById('f-location'); if(el){ el.value=v; try{ el.dispatchEvent(new Event('input',{bubbles:true})); }catch(_e){} } }
+  },
   'flt-ort':{
     title:()=> t('locationContains'),
     /* `rm:'water'` gibt es erst seit dem 17. Juli: Gewässer waren abgeleitet und deshalb nicht löschbar
@@ -8553,20 +8574,12 @@ initAuth();
     chipsUpdate(); jumpEnsure();
   }
   function chipsUpdate(){
+    /* #6 (JC, 20. Juli): Chip-Zeile zurückgebaut aufs alte Auswahl-Menü — die Chips verschluckten Taps
+       (Timer-Rebuild) und skalieren nicht auf viele Gruppen. Hier nur noch: Chip-Zeile aus, altes Menü an.
+       „Zuletzt ausgewählt" sitzt jetzt im Auswahl-Blatt (renderAreaSheet). */
     const row=$('uf-chiprow'), old=$('area-selector');
-    if(!row) return;
-    /* 19.3: Wächter war state.auth==='supabase' — griff live nie (anderer Wert). Robust: Chips
-       zeigen, sobald es Kontexte gibt; ohne Kontexte gäbe es ohnehin nur „Persönlich". */
-    /* 19.4: `state` ist const im Script-Scope — window.state existiert NICHT. typeof statt window. */
-    if(!(typeof state!=='undefined' && (state.myContexts||[]).length)){ return; }
-    row.style.display='flex'; if(old) old.style.display='none';
-    const tg=(state.formTargets||[]);
-    let html='<button type="button" class="uf-tchip'+(tg.length?'':' on')+'" onclick="toggleArea(\'solo\')">'+ (typeof t==='function'?t('personal'):'Persönlich') +'</button>';
-    (state.myContexts||[]).forEach(c=>{
-      const on=tg.some(id=>String(id)===String(c.id));
-      html+='<button type="button" class="uf-tchip'+(on?' on':'')+'" onclick="toggleArea(\''+c.id+'\')">'+c.name.replace(/</g,'&lt;')+'</button>';
-    });
-    row.innerHTML=html;
+    if(row) row.style.display='none';
+    if(old) old.style.display='';
   }
   let _ufReordered=false;
   function ufReorder(){
