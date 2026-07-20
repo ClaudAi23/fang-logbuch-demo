@@ -2392,7 +2392,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-19.1';
+const BUILD = '2026-07-19.2';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -8565,7 +8565,35 @@ initAuth();
     });
     row.innerHTML=html;
   }
+  let _ufReordered=false;
+  function ufReorder(){
+    /* Stufe 2 (Spec Punkt 4): Abschnitts-Parität zur Detailseite — Reihenfolge Basis · Fang ·
+       TECHNIK · WETTER · ORT · Notizen. Nur DOM-Ordnung + Überschriften; IDs unangetastet. */
+    if(_ufReordered) return;
+    const scroll=document.querySelector('#s-form .scroll'); if(!scroll) return;
+    const kids=[...scroll.children]; if(!kids.length) return;
+    function seg(startId){
+      const start=$(startId); if(!start) return null;
+      const out=[start]; let n=start.nextElementSibling;
+      while(n && !n.classList.contains('fgroup') && !['ff-notes','form-del-wrap','uf-jump'].includes(n.id)){ out.push(n); n=n.nextElementSibling; }
+      return {nodes:out, next:n};
+    }
+    const gear=seg('fg-gear'), water=seg('fg-water');
+    if(!gear || !water) return;
+    // Technik-Segment VOR das Ort-Segment ziehen (Wetter folgt Ort heute — Zielordnung: gear, cond, water)
+    const cond=seg('fg-cond');
+    water.nodes[0].before(...gear.nodes);          // Technik vor Ort
+    if(cond) water.nodes[0].before(...cond.nodes); // Wetter zwischen Technik und Ort
+    _ufReordered=true;
+  }
+  function ufLabels(){
+    const map={'fg-gear':(typeof t==='function'?t('gTilesHow'):'Technik'),
+               'fg-cond':(typeof t==='function'?t('weather'):'Wetter'),
+               'fg-water':(typeof t==='function'?t('gTilesLoc'):'Ort')};
+    Object.entries(map).forEach(([id,txt])=>{ const s=document.querySelector('#'+id+' span'); if(s && s.textContent!==txt) s.textContent=txt; });
+  }
   function jumpEnsure(){
+    ufReorder(); ufLabels();
     const scroll=document.querySelector('#s-form .scroll'); if(!scroll || $('uf-jump')) return;
     const groups=[...scroll.querySelectorAll('.fgroup')];
     if(!groups.length) return;
