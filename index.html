@@ -1417,9 +1417,10 @@
   .modal-box{background:var(--surface); border:1px solid var(--border-2); border-bottom:none; border-top-left-radius:22px; border-top-right-radius:22px;
     padding:12px 20px calc(20px + env(safe-area-inset-bottom)); width:100%; max-width:420px; max-height:88vh; overflow:auto; animation:sheetup .3s cubic-bezier(.2,.85,.25,1);}
   .modal-box::before{content:""; display:block; width:40px; height:4px; border-radius:999px; background:var(--border-2); margin:2px auto 16px;}
-  /* (#5-Frozen-Search-Versuch entfernt — er verursachte auf iOS eine Tastatur-Auf/Ab-Schleife und damit
-     das Springen. Die Sheets sind wieder der stabile Stand: modal-box scrollt als Ganzes, Liste mit
-     eigenem max-height. Suche-oben-fixieren braucht einen anderen Weg, falls wir es nochmal angehen.) */
+  /* Frozen-Header per `position:sticky` (JC, Screenshot 2): Titel + Suche bleiben oben gepinnt, während die
+     Liste darunter durchläuft — ohne das Scroll-Modell zu ändern (das war die Flacker-Ursache). Wenn iOS beim
+     Tastatur-Öffnen die Box scrollt, rutscht der Kopf NICHT mehr weg (Screenshot 1 kann nicht mehr passieren). */
+  .modal-box .pk-head{position:sticky; top:0; z-index:3; background:var(--surface); margin:0 -20px; padding:2px 20px 8px;}
   .sheet-row{display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:15px; margin-bottom:10px; cursor:pointer; font-family:inherit; color:var(--text);}
   .sheet-row:active{border-color:var(--teal);}
   .sheet-row .sr-ic{width:44px; height:44px; border-radius:12px; background:var(--teal-tint); color:var(--teal-bright); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
@@ -2279,16 +2280,18 @@
   <!-- Unified typeahead sheet (Fischart, Methode, Köder, Rute, Boot, Ort) -->
   <div id="ta-sheet" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('ta-sheet')">
     <div class="modal-box">
-      <div style="display:flex; align-items:center; gap:10px; margin:0 0 10px;">
-        <h2 id="ta-title" style="font-size:1.25rem; margin:0; flex:1; min-width:0;">—</h2>
-        <button type="button" id="ta-clear" class="ta-clearbtn" onclick="taClear()" style="display:none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          <span data-i18n="clearField">Feld leeren</span>
-        </button>
-      </div>
-      <div class="ta-searchwrap">
-        <svg class="ta-searchic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3 -4.3"/></svg>
-        <input id="ta-search" type="text" autocomplete="off" oninput="renderTA()" onkeydown="if(event.key==='Enter'){event.preventDefault(); taEnter();}" />
+      <div class="pk-head">
+        <div style="display:flex; align-items:center; gap:10px; margin:0 0 10px;">
+          <h2 id="ta-title" style="font-size:1.25rem; margin:0; flex:1; min-width:0;">—</h2>
+          <button type="button" id="ta-clear" class="ta-clearbtn" onclick="taClear()" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <span data-i18n="clearField">Feld leeren</span>
+          </button>
+        </div>
+        <div class="ta-searchwrap">
+          <svg class="ta-searchic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3 -4.3"/></svg>
+          <input id="ta-search" type="text" autocomplete="off" oninput="renderTA()" onkeydown="if(event.key==='Enter'){event.preventDefault(); taEnter();}" />
+        </div>
       </div>
       <div id="ta-list" style="max-height:52vh; overflow:auto; margin:10px -2px 0;"></div>
       <button type="button" class="btn secondary" style="margin-top:12px;" onclick="closeModal('ta-sheet')" data-i18n="cancel">Abbrechen</button>
@@ -2488,7 +2491,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.61';
+const BUILD = '2026-07-21.62';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -7458,9 +7461,9 @@ function openTypeahead(inputId){
   const s=document.getElementById('ta-search'); if(s){ s.value=''; s.placeholder=t('taSearchPh'); }
   renderTA();
   const sh=document.getElementById('ta-sheet'); if(sh) sh.style.display='flex';
-  /* KEIN Auto-Fokus mehr (JC, 21. Juli): der Picker öffnete sonst sofort mit Tastatur, die die Liste
-     abschnitt und unruhig wirkte. Jetzt öffnet er ruhig mit voller Liste; die Tastatur kommt erst, wenn
-     der Nutzer ins Suchfeld tippt. */
+  /* Auto-Fokus wieder an (JC): Tastatur soll direkt da sein. Der Kopf (Titel+Suche) ist jetzt sticky, die
+     Liste rutscht nicht mehr über ihn — genau Screenshot 2. */
+  setTimeout(function(){ try{ s.focus(); }catch(e){} }, 60);
 }
 function _taHi(label, q){ const L=''+(label||''); if(!q) return esc(L); const i=L.toLowerCase().indexOf(q); if(i<0) return esc(L); return esc(L.slice(0,i))+'<b>'+esc(L.slice(i,i+q.length))+'</b>'+esc(L.slice(i+q.length)); }
 function _taRow(o, q, cur){
@@ -7520,9 +7523,9 @@ function openTypeaheadCfg(cfg){
   const s=document.getElementById('ta-search'); if(s){ s.value=''; s.placeholder=t('taSearchPh'); }
   renderTA();
   const sh=document.getElementById('ta-sheet'); if(sh) sh.style.display='flex';
-  /* KEIN Auto-Fokus mehr (JC, 21. Juli): der Picker öffnete sonst sofort mit Tastatur, die die Liste
-     abschnitt und unruhig wirkte. Jetzt öffnet er ruhig mit voller Liste; die Tastatur kommt erst, wenn
-     der Nutzer ins Suchfeld tippt. */
+  /* Auto-Fokus wieder an (JC): Tastatur soll direkt da sein. Der Kopf (Titel+Suche) ist jetzt sticky, die
+     Liste rutscht nicht mehr über ihn — genau Screenshot 2. */
+  setTimeout(function(){ try{ s.focus(); }catch(e){} }, 60);
 }
 function taPick(v, key){ if(_taCfg) _taCfg.onPick(v, key); closeModal('ta-sheet'); }
 function taEnter(){ const q=(document.getElementById('ta-search').value||'').trim(); if(!q||!_taCfg) return; const all=_taCfg.opts()||[]; const ex=all.find(o=>(''+(o.v||'')).toLowerCase()===q.toLowerCase()); if(ex) taPick(ex.v, (ex.key!=null?ex.key:null)); else taPick(q, q); }

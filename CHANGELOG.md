@@ -9,6 +9,12 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟢 `v 2026-07-21.62` (21. Juli) — Picker: Kopf oben gepinnt (Screenshot 2), Tastatur zurück.**
+  JCs Ziel (Screenshot 2): Titel + Suche oben FEST, Liste läuft nicht endlos nach oben, Tastatur da. Statt
+  das Scroll-Modell umzubauen (das war die Flacker-Ursache), ist der Kopf jetzt **`position:sticky`** — wenn
+  iOS beim Tastatur-Öffnen die Box scrollt, bleibt der Kopf gepinnt (Screenshot 1 kann nicht mehr passieren).
+  **Auto-Fokus wieder an** — die Tastatur ist direkt da.
+
 - **🟡 `v 2026-07-21.61` (21. Juli) — Picker öffnet ohne Auto-Fokus (ruhiger).**
   Der Typeahead-Picker (Art/Methode/Köder/…) fokussierte beim Öffnen sofort die Suche → Tastatur ploppte auf,
   schnitt die Liste ab, wirkte unruhig. Jetzt **öffnet er ruhig mit voller Liste**; die Tastatur kommt erst,
