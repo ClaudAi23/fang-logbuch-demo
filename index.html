@@ -2488,7 +2488,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.59';
+const BUILD = '2026-07-21.60';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -9037,6 +9037,10 @@ initAuth();
   function heroUpdate(){
     const hero=$('uf-hero'); if(!hero) return;
     const scr=$('s-form'); if(!scr || !scr.classList.contains('active')){ return; }
+    /* Solange ein Picker-Sheet offen ist, NICHT im Hintergrund weiterrechnen (JC-Video): der 500-ms-Tick
+       fasste das Formular-DOM an, während im Sheet die Suche fokussiert war → Reflow/Fokus-Störung →
+       vereinzeltes Tastatur-Flackern. Pausieren, bis das Sheet zu ist. */
+    try{ if([...document.querySelectorAll('.modal-ov')].some(m=>m.style.display && m.style.display!=='none')) return; }catch(e){}
     const spEl=$('f-species'); const sp=spEl?spEl.value.trim():'';
     const l=($('f-length')||{}).value||'', w=($('f-weight')||{}).value||'';
     const gi=document.querySelector('#photo-grid img'); const cover=(gi&&gi.src)||'';

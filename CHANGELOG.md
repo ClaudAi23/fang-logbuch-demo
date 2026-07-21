@@ -9,6 +9,11 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🐛 `v 2026-07-21.60` (21. Juli) — Picker: Hintergrund-Timer pausiert, solange offen.**
+  Messung am JC-Video: vereinzelte 1-Frame-Tastatur-Aussetzer. Ursache: der `heroUpdate`-500-ms-Timer
+  fasste das Formular-DOM auch dann an, wenn im Picker-Sheet die Suche fokussiert war → Reflow/Fokus-Störung.
+  Jetzt **pausiert heroUpdate, solange ein Sheet offen ist**.
+
 - **🐛 `v 2026-07-21.59` (21. Juli) — Formular-Sprung beim Öffnen behoben.**
   Der eigentliche Sprung (JC-Video, „nicht nach einer Validierung"): `ufReorder`/`jumpEnsure` sortierten die
   Abschnitte + bauten die Sprung-Leiste erst am 500-ms-`heroUpdate`-Tick — sichtbar ~½ s nach dem Öffnen
