@@ -9,6 +9,14 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🐛 `v 2026-07-21.68` (21. Juli) — Karten-Regel: Nachbesserungen (JC-Test).**
+  (1) „Alle Fänge" war bei MEHREREN Fängen nach dem Laden nicht grau, bei EINEM schon — der „am Ziel"-Check
+  maß in Metern (50 m ist rausgezoomt fast nichts, ein Mini-Versatz nach `invalidateSize` galt als „bewegt").
+  Jetzt in **Pixeln** (zoom-unabhängig) + Dim wird nach `invalidateSize` neu gesetzt. (2) Formular „Mein
+  Standort" hängt jetzt am **Marker**: grau, solange der Pin an deinem geholten Standort sitzt; markierst du
+  woanders → aktiv. (3) Im **Vollbild** des Formular-Kartenausschnitts fehlten Pin/Standort-Knopf (nur Zoom +
+  Schließen) — die Knöpfe hängen jetzt IN der Karte und wandern im Vollbild mit.
+
 - **🟢 `v 2026-07-21.67` (21. Juli) — Karten-Knöpfe: ausgegraut bis nutzbar (JC).**
   Auf allen vier Karten (Fang-Detail, Log/Edit-Formular, Statistik, Gewässer): **Zentrieren / „Auf den Pin" /
   „Alle Fänge"** ist grau & tot, solange es kein Ziel gibt oder die Karte schon dort steht; sobald man die

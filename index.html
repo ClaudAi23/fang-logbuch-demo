@@ -2501,7 +2501,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.67';
+const BUILD = '2026-07-21.68';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -4936,16 +4936,30 @@ function fishPinIcon(){
    ein Ziel gibt und die Karte schon dort steht; sonst nutzbar (man will ja hinspringen können). */
 function _bfMapHome(map, c, z){ try{ if(map) map._bfHome={c:[c[0],c[1]], z:z}; }catch(e){} }
 function _bfLocHome(map, c, z){ try{ if(map) map._bfLocHome={c:[c[0],c[1]], z:z}; }catch(e){} }
-function _bfAt(map, h){ try{ if(!h) return false; const cc=map.getCenter(); return (map.distance([cc.lat,cc.lng], h.c)<50) && (Math.abs(map.getZoom()-h.z)<=1); }catch(e){ return false; } }
+/* „Am Ziel?" in PIXELN statt Metern (JC): 50 m sind rausgezoomt fast nichts, also galt jeder Mini-Versatz
+   (z. B. nach `invalidateSize`) schon als „bewegt" — deshalb war „Alle Fänge" bei vielen Fängen nie grau,
+   bei einem schon. Pixel sind zoom-unabhängig: ~36 px Toleranz. */
+function _bfAt(map, h){ try{ if(!h) return false;
+  const p1=map.latLngToContainerPoint(map.getCenter());
+  const p2=map.latLngToContainerPoint(h.c);
+  return (p1.distanceTo(p2)<36) && (Math.abs(map.getZoom()-h.z)<=1);
+}catch(e){ return false; } }
 function _bfDim(map, wrapId){
   try{
     const wrap=(typeof wrapId==='string')?document.getElementById(wrapId):wrapId; if(!map||!wrap) return;
     const ctr=wrap.querySelector('.map-ctr-btn'), loc=wrap.querySelector('.map-loc-btn');
     /* Zentrieren/Pin/Alle-Fänge: grau, wenn es kein Ziel gibt ODER die Karte schon dort steht. */
     if(ctr){ const h=map._bfHome; ctr.classList.toggle('bf-dim', !h || _bfAt(map, h)); }
-    /* Mein Standort: eigenes Ziel (dein zuletzt geholter Standort) — grau nur, wenn die Karte schon dort
-       steht; sonst nutzbar (auch bevor du je geortet hast). */
-    if(loc){ const lh=map._bfLocHome; loc.classList.toggle('bf-dim', !!lh && _bfAt(map, lh)); }
+    if(loc){
+      if(map===fMap){
+        /* Formular „Mein Standort" (JC): grau, solange der MARKER an deinem zuletzt geholten Standort sitzt;
+           markierst du eine andere Stelle, ändert sich der Pin → aktiv. Hängt am Pin, nicht am Zentrum. */
+        const lp=map._bfLocPin;
+        loc.classList.toggle('bf-dim', !!(lp && state.formLat===lp.lat && state.formLon===lp.lon));
+      } else {
+        const lh=map._bfLocHome; loc.classList.toggle('bf-dim', !!lh && _bfAt(map, lh));
+      }
+    }
   }catch(e){}
 }
 function _bfWireDim(map, wrapId){ try{ if(map && !map._bfDimWired){ map._bfDimWired=true; map.on('moveend zoomend', ()=>_bfDim(map, wrapId)); } }catch(e){} }
@@ -4958,13 +4972,17 @@ function ensureFormMap(lat, lon){
     fMap=L.map('f-map',{zoomControl:true, attributionControl:false}).setView(center, has?13:6);
     L.tileLayer(TILE,TILE_OPT).addTo(fMap);
     fMap.on('click', e=>setFormPin(e.latlng.lat, e.latlng.lng));
-    _bfWireDim(fMap, _fw);
+    _bfWireDim(fMap, 'f-map');   // über #f-map, nicht .map-wrap — im Vollbild wandern die Knöpfe mit der Karte mit
+    /* Pin- und Standort-Knopf IN die Karte hängen (JC): im Vollbild wandert nur das Karten-Element ans
+       <body>; als Geschwister blieben die Knöpfe zurück (nur Zoom + Vollbild-Schließen sichtbar). Als
+       Kinder von #f-map reisen sie mit. */
+    try{ const fm=document.getElementById('f-map'); const cb=document.getElementById('f-ctr-btn'); const lb=_fw&&_fw.querySelector('.map-loc-btn'); if(fm){ if(cb) fm.appendChild(cb); if(lb) fm.appendChild(lb); } }catch(e){}
   } else { fMap.setView(center, has?13:fMap.getZoom()); }
   attachFsBtn('f', fMap);
-  setTimeout(()=>{ try{fMap.invalidateSize();}catch(e){} }, 80);
+  setTimeout(()=>{ try{fMap.invalidateSize();}catch(e){} try{ _bfDim(fMap, 'f-map'); }catch(e){} }, 80);
   if(has) setFormPin(lat,lon);
   else { if(fMarker){ fMap.removeLayer(fMarker); fMarker=null; } state.formLat=null; state.formLon=null; document.getElementById('f-coord').textContent=t('tapMap'); fMap._bfHome=null; }
-  try{ _bfDim(fMap, _fw); }catch(e){}
+  try{ _bfDim(fMap, 'f-map'); }catch(e){}
 }
 function setFormPin(lat, lon){
   state.formLat=lat; state.formLon=lon;
@@ -4974,7 +4992,7 @@ function setFormPin(lat, lon){
   /* Ziel des „Auf den Pin"-Knopfs = der Pin auf Zoom 13. Knopf ist immer sichtbar, das Dim macht ihn grau,
      solange die Karte schon dort steht (JC: ausgegraut bis nutzbar). */
   _bfMapHome(fMap, [lat,lon], 13);
-  try{ _bfDim(fMap, document.querySelector('#ff-mapPin .map-wrap')); }catch(e){}
+  try{ _bfDim(fMap, 'f-map'); }catch(e){}
   previewWeather();
 }
 /* „Auf den Pin zentrieren" (Formular) — dieselbe Geste wie „Auf den Fang" im Detail: zurück auf die
@@ -4988,9 +5006,9 @@ function useMyLocation(){
   if(!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(p=>{
     const lat=p.coords.latitude, lon=p.coords.longitude;
-    if(fMap) fMap.setView([lat,lon],14);
+    if(fMap){ fMap.setView([lat,lon],14); fMap._bfLocPin={lat:lat, lon:lon}; }   // Marker sitzt jetzt an deinem Standort → „Mein Standort" grau, bis du woanders markierst
     setFormPin(lat,lon);
-    _bfLocHome(fMap,[lat,lon],14); try{ _bfDim(fMap, document.querySelector('#ff-mapPin .map-wrap')); }catch(e){}
+    try{ _bfDim(fMap, 'f-map'); }catch(e){}
   }, ()=>{}, {enableHighAccuracy:true, timeout:8000});
 }
 function _detailRecenter(){
@@ -5045,7 +5063,7 @@ function ensureDetailMap(lat,lon){
   } else { try{ dMap.off('click'); dMap.scrollWheelZoom.disable(); }catch(e){} dMap.setView([lat,lon],13); _detailMapDraw(lat,lon); }
   attachFsBtn('d', dMap); attachDetailBtns(); _detailSetMyLocBtn(false);
   _bfMapHome(dMap, [lat,lon], 13); _bfWireDim(dMap, 'd-map'); try{ _bfDim(dMap, 'd-map'); }catch(e){}
-  setTimeout(()=>{ try{dMap.invalidateSize();}catch(e){} }, 80);
+  setTimeout(()=>{ try{dMap.invalidateSize();}catch(e){} try{ _bfDim(dMap, 'd-map'); }catch(e){} }, 80);
 }
 function _detailMapDraw(lat,lon){
   if(!dMap) return;
@@ -5327,7 +5345,7 @@ function ensureCatchMap(kind, items){
     else { R.m.setView(bounds[0], FOTO_ZOOM); _bfMapHome(R.m, bounds[0], FOTO_ZOOM); }
   }
   try{ _bfDim(R.m, wrap); }catch(e){}
-  setTimeout(()=>{ try{R.m.invalidateSize();}catch(e){} }, 80);
+  setTimeout(()=>{ try{R.m.invalidateSize();}catch(e){} try{ _bfDim(R.m, wrap); }catch(e){} }, 80);
 }
 /* Wer liegt auf dem SCHIRM übereinander? (18. Juli — Korrektur eines Fehlers von derselben Nacht.)
    Erster Anlauf gruppierte nach KOORDINATE (`toFixed(5)` ≈ 1 m). Das griff bei JCs Daten nie: Forelle
