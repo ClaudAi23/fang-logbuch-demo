@@ -219,8 +219,18 @@
   .form-actions{flex:0 0 auto; padding:12px 16px calc(12px + env(safe-area-inset-bottom)); background:var(--surface); border-top:1px solid var(--border); box-shadow:0 -8px 22px rgba(0,0,0,.28);}
   .form-actions .btn{margin:0; transition:filter .18s, opacity .18s, background .16s;}
   .btn.not-ready{filter:saturate(.3) brightness(.92); opacity:.55;}
-  .del-link{background:none; border:0; color:var(--danger); font-size:0.875rem; font-weight:600; padding:10px 16px; cursor:pointer; opacity:.85; display:inline-flex; align-items:center; gap:7px; border-radius:8px;}
-  .del-link:hover{opacity:1;} .del-link:active{opacity:.7;} .del-link svg{width:15px; height:15px;}
+  /* On-brand (JC, 21. Juli): Ghost-Knopf mit danger-Rand statt nacktem rotem Link; KEIN Icon — die
+     primären Knöpfe (SAVE CATCH …) tragen auch keins. danger-Anteil themensicher über color-mix. */
+  .del-link{background:transparent; border:1px solid color-mix(in srgb, var(--danger) 55%, transparent); color:var(--danger); font-size:0.9rem; font-weight:600; padding:11px 24px; cursor:pointer; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:7px;}
+  .del-link:hover{background:color-mix(in srgb, var(--danger) 8%, transparent);} .del-link:active{background:color-mix(in srgb, var(--danger) 16%, transparent);}
+  /* A1 (JC, 21. Juli): dezente „nicht bestätigt"-Statuszeile statt großer Box */
+  .d-status{display:flex; align-items:flex-start; gap:10px; margin-top:12px;}
+  .d-status-ic{width:28px; height:28px; border-radius:8px; background:var(--teal-tint); color:var(--teal-bright); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .d-status-ic svg{width:16px; height:16px;}
+  .d-status-tx{display:flex; flex-direction:column; line-height:1.32; min-width:0;}
+  .d-status-tx b{font-weight:600; font-size:0.95rem;}
+  .d-status-sub{color:var(--muted); font-size:0.82rem;}
+  .d-status-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
 
   .topbar{
     display:flex; align-items:center; gap:10px; padding:14px 16px; padding-top:calc(14px + env(safe-area-inset-top));
@@ -1748,7 +1758,6 @@
       <p class="hint" style="margin:2px 0 14px;"><span class="req">*</span> <span data-i18n="starReq">immer erforderlich</span><span id="star-legend-admin">&nbsp;·&nbsp; <span style="color:var(--danger); font-weight:600;">*</span> <span data-i18n="starAdmin">vom Verein/Gruppe als Pflicht gesetzt</span></span></p>
       <div id="form-del-wrap" style="display:none; margin-top:26px; text-align:center;">
         <button type="button" id="form-del-btn" class="del-link" onclick="deleteCatch(state.editId, state.editReturn)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 12h10l1-12"/></svg>
           <span data-i18n="del">Löschen</span>
         </button>
       </div>
@@ -2468,7 +2477,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.51';
+const BUILD = '2026-07-21.52';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -8009,7 +8018,7 @@ function openDetailObj(c, from, keepEdit){
     if(c.bait) rows.push(['bait',t('bait'), c.bait,true]);
     if(c.watertemp!=null) rows.push(['watertemp',t('sWaterTemp'), fmtTemp(c.watertemp),false]);
     if((c.location||'').trim()) rows.push(['water',t('dWater'),c.location,true]);
-    if(c._db && c.loggedByName) rows.push(['loggedBy',t('loggedByRow'), c.loggedByName,true]);
+    if(c._db && c.loggedByName && c.confirmed!==false) rows.push(['loggedBy',t('loggedByRow'), c.loggedByName,true]);   // unbestätigt → trägt die Statuszeile
   } else {
     // READ-ONLY: hero holds species+size, byline holds angler → order Datum · Entnahme|Methode · Köder · Rute[|Rolle] · Boot|Tempo · Gewässer.
     // Pair rule: a pair is both-half or both-full; a lone member spans full.
@@ -8033,19 +8042,21 @@ function openDetailObj(c, from, keepEdit){
     // "Wassertemp." in the form and the share sheet, where there is no heading to lean on.
     if(c.watertemp!=null) rows.push(['watertemp',t('sWaterTemp'), fmtTemp(c.watertemp), false]);   // → #d-water
     if((c.location||'').trim()) rows.push(['water',t('dWater'), c.location, true]);
-    if(c._db && c.loggedByName) rows.push(['loggedBy',t('loggedByRow'), c.loggedByName, true]);
+    if(c._db && c.loggedByName && c.confirmed!==false) rows.push(['loggedBy',t('loggedByRow'), c.loggedByName, true]);   // unbestätigt → trägt die Statuszeile
   }
   let banner='';
   if(c._db && c.confirmed===false){
     const iAmOwner = state.me && c.userId===state.me.id;
-    const hint = iAmOwner
+    /* A1 (JC, 21. Juli): dezente Statuszeile statt großer Box, und die separate „Erfasst von"-Zeile
+       entfällt bei unbestätigten Fängen (oben ausgeblendet) — kein doppeltes „Erfasst von". Der Inhaber,
+       der bestätigen kann, bekommt darunter weiterhin die Aktionen. */
+    const sub = iAmOwner
       ? (c.loggedByName ? t('loggedByHint').replace('{name}', esc(c.loggedByName)) : t('unconfirmedHint'))
-      : (c.loggedByName ? t('unconfirmedByHint').replace('{name}', esc(c.loggedByName)) : t('unconfirmedOtherHint'));
-    banner = `<div class="card-box" style="margin-top:10px; border:1px solid var(--teal);">
-      <div style="font-weight:600; margin-bottom:4px;">⏳ ${esc(t('unconfirmed'))}</div>
-      <p class="hint" style="margin:0 0 8px;">${hint}</p>
-      ${iAmOwner ? `<div style="display:flex; gap:8px; flex-wrap:wrap;"><button type="button" class="btn sm" onclick="confirmCatch('${c.id}')">${esc(t('confirmCatch'))}</button><button type="button" class="btn secondary sm" onclick="rejectCatch('${c.id}')">${esc(t('rejectCatch'))}</button></div>` : ''}
-    </div>`;
+      : (c.loggedByName ? esc(t('loggedByRow')+' '+c.loggedByName) : t('unconfirmedOtherHint'));
+    banner = `<div class="d-status">
+      <span class="d-status-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+      <span class="d-status-tx"><b>${esc(t('unconfirmed'))}</b><span class="d-status-sub">${sub}</span></span>
+    </div>${iAmOwner ? `<div class="d-status-actions"><button type="button" class="btn sm" onclick="confirmCatch('${c.id}')">${esc(t('confirmCatch'))}</button><button type="button" class="btn secondary sm" onclick="rejectCatch('${c.id}')">${esc(t('rejectCatch'))}</button></div>` : ''}`;
   }
   if(c._welcome){
     banner = `<div class="card-box" style="margin-top:10px; border:1px dashed var(--accent);">

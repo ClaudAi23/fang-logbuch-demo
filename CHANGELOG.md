@@ -9,6 +9,13 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟢 `v 2026-07-21.52` (21. Juli) — „Nicht bestätigt"-Statuszeile (A1) + Delete-Button on-brand.**
+  **A1 (JC):** die große „Not confirmed yet"-Box ist eine dezente Statuszeile geworden (Icon + „Noch nicht
+  bestätigt" + eine Zeile Kontext); die separate „Erfasst von"-Zeile entfällt bei unbestätigten Fängen —
+  kein doppeltes „Erfasst von JC" mehr. Der Inhaber, der bestätigen kann, bekommt darunter weiter
+  Bestätigen/Ablehnen. **Delete-Button (JC):** vom nackten roten Link zum Ghost-Knopf mit danger-Rand im
+  App-Stil, **ohne Icon** (wie die übrigen Knöpfe); danger-Ton themensicher über `color-mix`.
+
 - **🟢 `v 2026-07-21.51` (21. Juli) — Hero nur mit Foto + Picker-Sheets festgefroren.**
   **Hero nur mit Foto (JC):** ohne Titelbild wird der immersive Hero im Formular ganz ausgeblendet — der neue
   Fang startet direkt bei „Eintragen in"/Basis statt bei einem leeren Hero; sobald ein Foto da ist (oder beim
