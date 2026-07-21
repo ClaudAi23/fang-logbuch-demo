@@ -9,6 +9,14 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟢 `v 2026-07-21.51` (21. Juli) — Hero nur mit Foto + Picker-Sheets festgefroren.**
+  **Hero nur mit Foto (JC):** ohne Titelbild wird der immersive Hero im Formular ganz ausgeblendet — der neue
+  Fang startet direkt bei „Eintragen in"/Basis statt bei einem leeren Hero; sobald ein Foto da ist (oder beim
+  Bearbeiten eines Fangs mit Bild), erscheint er. **Picker-Sheets (#5, JC):** Art/Methode/…-Auswahl, Auswahl-
+  und Kontext-Filter-Sheet sind jetzt Flex-Spalten — Titel + **Suchzeile bleiben fest oben**, nur die Liste
+  scrollt darunter; die Sheet-Höhe folgt dem sichtbaren Viewport (Tastatur berücksichtigt, `visualViewport`)
+  mit Abstand nach oben, ragt also nicht mehr über den Rand.
+
 - **🟢 `v 2026-07-21.50` (21. Juli) — Weg B (Bearbeiten = Log-Formular) für ALLE.**
   Nach JCs Test auf seiner E-Mail („funktioniert") jetzt global: Bearbeiten öffnet überall das vorbefüllte
   Log-Formular (create = edit = ein Screen), inkl. justierbarem Hero und EXIF-Nachfrage im Edit. Aus-Schalter
