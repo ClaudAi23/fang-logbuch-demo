@@ -1425,6 +1425,18 @@
      Liste darunter durchläuft — ohne das Scroll-Modell zu ändern (das war die Flacker-Ursache). Wenn iOS beim
      Tastatur-Öffnen die Box scrollt, rutscht der Kopf NICHT mehr weg (Screenshot 1 kann nicht mehr passieren). */
   .modal-box .pk-head{position:sticky; top:0; z-index:3; background:var(--surface); margin:0 -20px; padding:2px 20px 8px;}
+  /* Teilen-Sheet (Spur A) */
+  #share-hero-prev .share-hero{position:relative; border-radius:14px; overflow:hidden; width:100%; background:var(--surface-2);}
+  #share-hero-prev .share-hero img{width:100%; display:block;}
+  #share-hero-prev .share-load{height:180px; display:flex; align-items:center; justify-content:center; color:var(--muted); background:var(--surface-2); border-radius:14px;}
+  .share-msg{margin-top:12px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 14px; font-size:0.86rem; white-space:pre-line; color:var(--text);}
+  .share-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
+  .share-th{position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:var(--surface-2); cursor:pointer; border:0; padding:0;}
+  .share-th img{width:100%; height:100%; object-fit:cover; display:block;}
+  .share-th .ck{position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%; background:var(--teal-bright); color:#04222a; display:flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:800;}
+  .share-th .ck.off{background:rgba(0,0,0,.4); border:1.5px solid rgba(255,255,255,.7); color:transparent;}
+  .share-th.cover{outline:2px solid var(--accent); outline-offset:-2px;}
+  .share-th .covertag{position:absolute; bottom:3px; left:3px; font-size:0.55rem; background:var(--accent); color:var(--on-accent); border-radius:4px; padding:1px 5px; font-weight:700;}
   .sheet-row{display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:15px; margin-bottom:10px; cursor:pointer; font-family:inherit; color:var(--text);}
   .sheet-row:active{border-color:var(--teal);}
   .sheet-row .sr-ic{width:44px; height:44px; border-radius:12px; background:var(--teal-tint); color:var(--teal-bright); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
@@ -2307,6 +2319,18 @@
       <button type="button" class="btn secondary" style="margin-top:12px;" onclick="closeModal('ta-sheet')" data-i18n="cancel">Abbrechen</button>
     </div>
   </div>
+  <!-- Teilen-Sheet (Spur A): komponiertes Herofoto + Text + Fotoauswahl, dann EIN nativer Share -->
+  <div id="share-sheet" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('share-sheet')">
+    <div class="modal-box">
+      <h2 style="font-size:1.25rem; margin:0 0 12px;" data-i18n="shareSheetTitle">Fang teilen</h2>
+      <div id="share-hero-prev"></div>
+      <div id="share-msg-prev" class="share-msg"></div>
+      <p class="hint" id="share-photos-lbl" style="margin:15px 0 7px; display:none;" data-i18n="sharePhotosLabel">Fotos mitschicken</p>
+      <div id="share-photo-grid" class="share-grid" style="display:none;"></div>
+      <button type="button" class="btn" style="margin-top:14px;" onclick="doShareCatch()"><span data-i18n="shareGo">Teilen</span></button>
+      <button type="button" class="btn secondary" style="margin-top:8px;" onclick="closeModal('share-sheet')" data-i18n="cancel">Abbrechen</button>
+    </div>
+  </div>
   <div id="success-ov" onclick="hideSuccess()" style="display:none;">
     <div class="success-card">
       <span class="su-badge" data-i18n="msBadge">Meilenstein</span>
@@ -2501,7 +2525,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.70';
+const BUILD = '2026-07-22.71';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -2606,6 +2630,9 @@ Object.assign(I18N.de, {method:"Angelmethode", bait:"Köder", rod:"Rute", boat:"
 Object.assign(I18N.en, {demoHint:"Demo: fields are pre-filled — just tap Sign in.", photos:"Photos", cover:"Cover", setCover:"Set as cover", photoHint:"Up to 10 photos. Star = cover · drag to reorder · the pin icon pulls date & location from the photo."});
 Object.assign(I18N.en, {method:"Method", bait:"Bait / lure", rod:"Rod", boat:"Boat", watertemp:"Water", watertempPh:"e.g. 18 °C", trolling:"Trolling speed", trollingPh:"e.g. 3.2", releasedLabel:"Kept / Released", releasedNone:"—", releasedKept:"Kept", releasedReleased:"Released", methodPh:"e.g. Spin fishing", baitPh:"e.g. 12 cm soft lure", rodPh:"e.g. 2.70 m / 40 g", reel:"Reel", reelPh:"e.g. 4000 spinning reel", boatPh:"e.g. dinghy", fieldsTitle:"Log fields", fieldsHint:"Choose which fields are required when logging. All fields are always shown.", fieldsHintAdmin:"As admin you can make fields required. Every field is always shown — hiding is not possible.", fieldsHintMember:"Which fields are required is set by the admin (read-only).", stRequired:"Required", stNotRequired:"Not required", moreFields:"More fields", errRequired:"Please fill the required fields:", shareTitle:"Sharing", shareModeFields:"Fields", shareModeTemplate:"Custom template", sharePreview:"Preview", shareLink:"App link", shareHint:"Applies to this area (Solo / group / club).", sharePhHint:"Placeholders: {petri} {art} {länge} {gewicht} {maße} {methode} {köder} {rute} {boot} {wassertemp} {schlepp} {entnahme} {ort} {datum} {angler} {wetter} {mond} {notiz} {bereich} {link}", exportCsv:"Export as CSV", exportPdf:"Export as PDF (with photos)", exportEmpty:"No catches to export.", exportPdfErr:"Couldn't load PDF export (internet required)."});
 Object.assign(I18N.nl, {demoHint:"Demo: velden zijn al ingevuld — tik gewoon op Inloggen.", photos:"Foto's", cover:"Omslag", setCover:"Als omslag", photoHint:"Tot 10 foto's. Ster = omslag · sleep om te ordenen · het pin-icoon haalt datum & locatie uit de foto."});
+Object.assign(I18N.de, {shareSheetTitle:"Fang teilen", sharePhotosLabel:"Fotos mitschicken", shareGo:"Teilen"});
+Object.assign(I18N.en, {shareSheetTitle:"Share catch", sharePhotosLabel:"Include photos", shareGo:"Share"});
+Object.assign(I18N.nl, {shareSheetTitle:"Vangst delen", sharePhotosLabel:"Foto's meesturen", shareGo:"Delen"});
 /* Pflichtwert beim Verein-Tap (JC, 17. Juli). Der Verein wird GENANNT: Ein Feld wird hier allein dadurch
    zur Pflicht, dass man einen Verein hinzufügt — „Bitte Pflichtfelder ausfüllen" ließe einen raten,
    woher die Forderung kommt, obwohl man am Fang selbst nichts geändert hat. Dieselbe Überlegung wie bei
@@ -8637,31 +8664,98 @@ function catchText(c){
   return fillTemplate((cfg.template && cfg.template.trim()) ? cfg.template : defaultTemplate(), tok);
 }
 // Mobile only: native share sheet (with photo). On desktop the button is hidden.
-async function shareCatch(){
+/* ---- Teilen (Spur A, JC 22. Juli) -----------------------------------------------------------------
+   Beim „Teilen" öffnet ein Sheet: das Herofoto bekommt ein Daten-Band (Art · cm · kg) ins Bild gerendert,
+   der Nutzer wählt zusätzliche Fotos, dann geht EIN nativer Share (Herofoto zuerst + Text + Auswahl).
+   `mine`-Riegel bleibt wörtlich wie zuvor — die Sichtbarkeitsregel gehört an jeden Einstieg. */
+let _shareSel=new Set([0]);
+function shareCatch(){ openShareSheet(); }
+function openShareSheet(){
   const c=state.current; if(!c || !navigator.share) return;
-  /* Zweiter Riegel, und er ist der eigentliche (JC: „ganz sperren"). Den Knopf zu VERSTECKEN ist keine
-     Sperre — es ist eine Bitte. Diese Funktion hängt an einem globalen `onclick` und ist damit von
-     überall aufrufbar; und sollte je ein zweiter Einstieg dazukommen (Kontextmenü, Wischgeste, Teilen
-     aus der Liste), erbte er die Prüfung hier automatisch, die Sichtbarkeitsregel dagegen nicht.
-     Dieselbe Bedingung wie beim Knopf — bewusst wörtlich, nicht als Hilfsfunktion: `_isMine` wird in
-     `openDetailObj` aus `state.me` und dem Fang gebildet, und ein drittes Zuhause für dieselbe Frage
-     wäre eine Kopie, die irgendwann auseinanderläuft. */
   const mine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
   if(!mine) return;
+  _shareSel=new Set([0]);   // Cover ist immer dabei (= das Hero), weitere Fotos wählt man dazu
+  renderShareSheet();
+  const sh=document.getElementById('share-sheet'); if(sh) sh.style.display='flex';
+}
+function toggleSharePhoto(i){
+  if(i===0) return;                         // Cover/Hero immer dabei
+  if(_shareSel.has(i)) _shareSel.delete(i); else _shareSel.add(i);
+  const btns=document.querySelectorAll('#share-photo-grid .share-th'); const b=btns[i]; const ck=b&&b.querySelector('.ck');
+  if(ck) ck.classList.toggle('off', !_shareSel.has(i));
+}
+async function renderShareSheet(){
+  const c=state.current; if(!c) return;
+  { const m=document.getElementById('share-msg-prev'); if(m) m.textContent=catchText(c); }
+  const hp=document.getElementById('share-hero-prev');
+  if(hp){ hp.innerHTML='<div class="share-load">…</div>';
+    try{ const h=await _composeShareHero(c); const src=(h&&h.url)?h.url:(coverOf(c)||'');
+      hp.innerHTML='<div class="share-hero"><img src="'+escAttr(src)+'" alt=""></div>';
+    }catch(e){ hp.innerHTML='<div class="share-hero"><img src="'+escAttr(coverOf(c)||'')+'" alt=""></div>'; } }
+  const ps=photosOf(c), thumbs=thumbsOf(c);
+  const grid=document.getElementById('share-photo-grid'), lbl=document.getElementById('share-photos-lbl');
+  const multi=ps.length>1;
+  if(lbl) lbl.style.display=multi?'':'none';
+  if(grid){ grid.style.display=multi?'':'none';
+    grid.innerHTML=ps.map(function(src,i){ const th=thumbs[i]||src; const on=_shareSel.has(i); const cover=(i===0);
+      return '<button type="button" class="share-th'+(cover?' cover':'')+'" onclick="toggleSharePhoto('+i+')">'
+        +'<img src="'+escAttr(th)+'" alt="">'
+        +'<span class="ck'+(on?'':' off')+'">✓</span>'
+        +(cover?'<span class="covertag">'+esc(t('cover'))+'</span>':'')+'</button>'; }).join('');
+  }
+}
+function _shareLoadImg(url){ return new Promise(function(res,rej){ const im=new Image(); im.onload=function(){res(im);}; im.onerror=rej; im.src=url; }); }
+/* Herofoto + Band aufs Canvas. Foto per fetch→Blob→ObjectURL laden (same-origin → Canvas wird NICHT
+   „tainted", `toBlob` funktioniert auch bei Supabase-Fotos). Band = Art (Barlow Condensed) + cm/kg-Chips. */
+async function _composeShareHero(c){
+  const src=coverOf(c)||photosOf(c)[0]; if(!src) return null;
+  let objUrl=null, im;
+  try{ const blob=await (await fetch(src)).blob(); objUrl=URL.createObjectURL(blob); im=await _shareLoadImg(objUrl); }
+  catch(e){ if(objUrl) URL.revokeObjectURL(objUrl); return null; }
+  try{
+    const W=1080; let ratio=im.naturalHeight/im.naturalWidth; if(!(ratio>0)) ratio=0.75; ratio=Math.max(0.72,Math.min(1.2,ratio));
+    const H=Math.round(W*ratio);
+    const cv=document.createElement('canvas'); cv.width=W; cv.height=H; const g=cv.getContext('2d');
+    const s=Math.max(W/im.naturalWidth, H/im.naturalHeight); const dw=im.naturalWidth*s, dh=im.naturalHeight*s;
+    g.drawImage(im, (W-dw)/2, (H-dh)/2, dw, dh);
+    const grad=g.createLinearGradient(0,H*0.42,0,H); grad.addColorStop(0,'rgba(2,27,40,0)'); grad.addColorStop(1,'rgba(2,27,40,0.92)');
+    g.fillStyle=grad; g.fillRect(0,Math.round(H*0.4),W,Math.round(H*0.6));
+    try{ await document.fonts.load("800 88px 'Barlow Condensed'"); await document.fonts.load("600 40px 'Barlow'"); }catch(e){}
+    const pad=44;
+    // Chips (cm/kg) unten
+    const chips=[]; if(c.length!=null) chips.push(fmtLen(c.length)); if(c.weight!=null) chips.push(fmtWeight(c.weight));
+    let cx=pad; const chipH=58, chipY=H-pad-chipH;
+    g.font="600 40px 'Barlow',system-ui,sans-serif"; g.textBaseline='middle';
+    chips.forEach(function(txt){ const tw=g.measureText(txt).width; const w=tw+40;
+      g.fillStyle='rgba(255,255,255,0.20)'; _rr(g,cx,chipY,w,chipH,14); g.fill();
+      g.fillStyle='#fff'; g.fillText(txt, cx+20, chipY+chipH/2+2); cx+=w+12; });
+    // Art groß darüber
+    g.textBaseline='alphabetic'; g.font="800 90px 'Barlow Condensed',sans-serif"; g.fillStyle='#fff';
+    g.fillText(trSpecies(c.species), pad, chipY-26);
+    // Wasserzeichen
+    g.font="700 30px 'Barlow',system-ui,sans-serif"; g.fillStyle='rgba(220,238,240,0.85)'; g.textAlign='right';
+    g.fillText('butlerfish', W-pad, pad+26); g.textAlign='left';
+    const url=cv.toDataURL('image/jpeg',0.9);
+    const blob=await new Promise(function(res){ cv.toBlob(res,'image/jpeg',0.9); });
+    return { url:url, blob:blob };
+  } finally { if(objUrl) URL.revokeObjectURL(objUrl); }
+}
+function _rr(g,x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+async function doShareCatch(){
+  const c=state.current; if(!c || !navigator.share) return;
+  const files=[];
+  try{ const h=await _composeShareHero(c); if(h&&h.blob) files.push(new File([h.blob],'fang.jpg',{type:'image/jpeg'})); }catch(e){}
+  if(!files.length){ // Komposit fehlgeschlagen → rohes Cover als erstes Bild
+    try{ const src=coverOf(c); if(src){ const blob=await (await fetch(src)).blob(); files.push(new File([blob],'fang.jpg',{type:blob.type||'image/jpeg'})); } }catch(e){}
+  }
+  const ps=photosOf(c);
+  const extra=[..._shareSel].filter(function(i){return i>0;}).sort(function(a,b){return a-b;});
+  for(const i of extra){ try{ const blob=await (await fetch(ps[i])).blob(); files.push(new File([blob],'foto'+(i+1)+'.jpg',{type:blob.type||'image/jpeg'})); }catch(e){} }
   const text=catchText(c);
+  try{ closeModal('share-sheet'); }catch(e){}
   try{
     let data={text};
-    const ps=photosOf(c);
-    if(ps.length && navigator.canShare){
-      try{
-        const files=[];
-        for(let i=0;i<ps.length;i++){
-          const blob=await (await fetch(ps[i])).blob();
-          files.push(new File([blob], `fang${i+1}.jpg`, {type:blob.type||'image/jpeg'}));
-        }
-        if(files.length && navigator.canShare({files})) data={text, files};
-      }catch(err){}
-    }
+    if(files.length && navigator.canShare && navigator.canShare({files})) data={text, files:files};
     await navigator.share(data);
   }catch(err){}
 }

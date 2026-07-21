@@ -9,6 +9,14 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟢 `v 2026-07-22.71` (22. Juli) — Teilen-Overhaul Spur A: Herofoto mit Daten-Band + Fotoauswahl.**
+  „Teilen" öffnet jetzt ein Sheet: das **Herofoto bekommt ein Band ins Bild gerendert** (Art in Barlow
+  Condensed + cm/kg-Chips + „butlerfish"-Wasserzeichen, wie die Detail-Seite) — so trägt schon die
+  WhatsApp-Vorschau die Kern-Info. Darunter der Nachrichtentext (Template) und eine **Fotoauswahl** (Cover
+  immer dabei, weitere antippen). Dann EIN nativer Share: Herofoto zuerst + Text + gewählte Fotos. Komposit
+  per Canvas, Foto CORS-sicher über Blob-URL geladen; scheitert es, geht das rohe Cover. *(Spur B —
+  gegateter Link + Standort-Datenschutz — folgt später, siehe ROADMAP.)*
+
 - **🐛 `v 2026-07-21.70` (21. Juli) — Zurück aus Fang öffnet wieder das Spot-Sheet (bestand schon).**
   Aus dem Spot-Sheet (Foto-Übersicht mehrerer Fänge an einem Ort) einen Fang öffnen → zurück landete auf der
   Karten-Seite, das Sheet war weg; im Vollbild sogar aus dem Vollbild. Ursache: `openSpotCatch` schloss das
