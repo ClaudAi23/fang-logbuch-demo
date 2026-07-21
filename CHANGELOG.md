@@ -9,6 +9,10 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟡 `v 2026-07-21.42` (21. Juli) — #5: kein Art-Platzhalter auf dem Log-Hero.**
+  Der blasse „Choose or type a species"-Titel auf dem Hero ist weg — der Titel erscheint erst live,
+  sobald eine Art gewählt ist (JC ok). Ohne Art/Maße bleibt der Hero nur das Foto.
+
 - **🐛 `v 2026-07-21.41` (21. Juli) — Log-Flow: Titelbild-Stern, EXIF-Knopf, Copy, Hero-Höhe (JC-Feedback).**
   **Bug 1** Titelbild-Stern tat nichts: der Knopf hatte kein `event.stopPropagation()` → die Umsortier-
   Geste (`makeSortable`) schluckte den Tap. Fix wie bei Löschen/EXIF. **Bug 2** „Ort/Datum aus Foto"

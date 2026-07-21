@@ -2451,7 +2451,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.41';
+const BUILD = '2026-07-21.42';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -8887,8 +8887,9 @@ initAuth();
     if(cover){ if(heroImg.getAttribute('src')!==cover){ heroImg.src=cover; } heroImg.style.display=''; hero.classList.add('hasimg'); bindUfHero(); applyUfCrop(); }
     else { heroImg.style.display='none'; heroImg.removeAttribute('src'); hero.classList.remove('hasimg'); }
     // Leerzustand aufgeräumt: ohne Foto UND ohne Art/Maße keine großen blassen Platzhalter
-    const tt=hero.querySelector('.uf-tt'); if(tt) tt.style.display = (!cover && !sp && !l && !w) ? 'none' : '';
-    const t1=$('uf-sp'); t1.textContent=sp||(cover?(typeof t==='function'?t('speciesPh'):'…'):''); t1.className=sp?'':'empty';
+    // #5 (JC): kein blasser Art-Platzhalter auf dem Hero — Titel erscheint erst, wenn eine Art gewählt ist.
+    const tt=hero.querySelector('.uf-tt'); if(tt) tt.style.display = (!sp && !l && !w) ? 'none' : '';
+    const t1=$('uf-sp'); t1.textContent=sp||''; t1.className=sp?'':'empty';
     const cl=$('uf-len'); cl.textContent=l?l+' cm':'— cm'; cl.className='ufchip'+(l?'':' ghost');
     const cw=$('uf-wt'); cw.textContent=w?w+' kg':'— kg'; cw.className='ufchip'+(w?'':' ghost');
     chipsUpdate(); jumpEnsure(); ufHeroAdorn(cover);
