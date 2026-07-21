@@ -9,6 +9,9 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟡 `v 2026-07-21.29` (21. Juli) — App-Icon final (JCs endgültige Fassung).**
+  Neueste Version von JC (`lastlast.png`) 1:1 übernommen, nur skaliert. Cache-Bust `?v=20`→`?v=21`.
+
 - **🟡 `v 2026-07-21.28` (21. Juli) — App-Icon final (JCs Fassung ohne Stiel).**
   JCs endgültiges Bild: leuchtende Laterne mit Spitze, ohne Illicium-Stiel, mittig auf Navy-Radial.
   1:1 übernommen, nur skaliert. Cache-Bust `?v=19`→`?v=20`. (Icon-Thema damit abgeschlossen.)
