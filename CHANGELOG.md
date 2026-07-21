@@ -9,6 +9,13 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟢 `v 2026-07-21.53` (21. Juli) — Statuszeile an ihren Platz (JC 2b).**
+  Die „Noch nicht bestätigt"-Zeile sitzt jetzt direkt unter der Byline (Name/Datum) statt am Ende der
+  Fang-Zeilen: dünne Linie darüber, der Status, dann die volle Trennlinie (die vorher unter dem Datum saß)
+  darunter. Icon-Rahmen bleibt die weiche Teal-Kachel (am ehesten wie die Listen-Kacheln der App), Uhr in
+  Teal (Wartezustand, kein Fehler). Ist ein Fang bestätigt, bleibt alles wie zuvor (leere Zeile = die
+  gewohnte Trennlinie unter der Byline).
+
 - **🟢 `v 2026-07-21.52` (21. Juli) — „Nicht bestätigt"-Statuszeile (A1) + Delete-Button on-brand.**
   **A1 (JC):** die große „Not confirmed yet"-Box ist eine dezente Statuszeile geworden (Icon + „Noch nicht
   bestätigt" + eine Zeile Kontext); die separate „Erfasst von"-Zeile entfällt bei unbestätigten Fängen —

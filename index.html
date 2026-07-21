@@ -807,7 +807,13 @@
      the date is the side note and the name is not. minmax(0,1fr) is what lets the name ellipsis
      instead of pushing the badge off the edge. */
   .d-byline{display:grid; grid-template-columns:26px minmax(0,1fr) auto; gap:2px 9px; align-items:center;
-    padding:12px 18px; border-bottom:1px solid var(--border);}
+    padding:12px 18px;}
+  /* Status-Slot (JC 2b, 21. Juli): sitzt zwischen Byline und der vollen Trennlinie. Ist er LEER
+     (bestätigt), trägt er selbst die volle Linie unter der Byline — sonst: dünne Linie oben, Status,
+     volle Linie unten. So wandert die Zeile, die vorher unter dem Datum saß, unter den Status. */
+  #d-status-slot{border-bottom:1px solid var(--border);}
+  #d-status-slot:not(:empty){padding:12px 18px; border-top:1px solid color-mix(in srgb, var(--border) 55%, transparent);}
+  #d-status-slot .d-status{margin-top:0;}
   .d-byline .dt{grid-column:2; grid-row:2; font-size:0.8rem; color:var(--muted);}
   /* The badge belongs to the whole entry, not to the name -> it spans both rows and sits centred,
      on one axis with the avatar. dt must stay in column 2 only, or it would slide under the badge. */
@@ -1782,6 +1788,7 @@
       <div id="d-hero" class="hero" style="display:none;"></div>
       <div id="d-strip" class="detail-strip" style="display:none;"></div>
       <div id="d-byline" class="d-byline" style="display:none;"></div>
+      <div id="d-status-slot"></div>
       <div class="detail-band">
         <h2 id="d-species" class="dt">—</h2>
         <p id="d-sub" class="ds">—</p>
@@ -2477,7 +2484,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.52';
+const BUILD = '2026-07-21.53';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -8044,20 +8051,21 @@ function openDetailObj(c, from, keepEdit){
     if((c.location||'').trim()) rows.push(['water',t('dWater'), c.location, true]);
     if(c._db && c.loggedByName && c.confirmed!==false) rows.push(['loggedBy',t('loggedByRow'), c.loggedByName, true]);   // unbestätigt → trägt die Statuszeile
   }
-  let banner='';
+  /* A1 + 2b (JC, 21. Juli): die „nicht bestätigt"-Zeile lebt jetzt im eigenen Slot direkt unter der
+     Byline (statt am Ende der Fang-Zeilen). Der Welcome-Banner bleibt unten in #d-rows. */
+  let statusLine='';
   if(c._db && c.confirmed===false){
     const iAmOwner = state.me && c.userId===state.me.id;
-    /* A1 (JC, 21. Juli): dezente Statuszeile statt großer Box, und die separate „Erfasst von"-Zeile
-       entfällt bei unbestätigten Fängen (oben ausgeblendet) — kein doppeltes „Erfasst von". Der Inhaber,
-       der bestätigen kann, bekommt darunter weiterhin die Aktionen. */
     const sub = iAmOwner
       ? (c.loggedByName ? t('loggedByHint').replace('{name}', esc(c.loggedByName)) : t('unconfirmedHint'))
       : (c.loggedByName ? esc(t('loggedByRow')+' '+c.loggedByName) : t('unconfirmedOtherHint'));
-    banner = `<div class="d-status">
+    statusLine = `<div class="d-status">
       <span class="d-status-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
       <span class="d-status-tx"><b>${esc(t('unconfirmed'))}</b><span class="d-status-sub">${sub}</span></span>
     </div>${iAmOwner ? `<div class="d-status-actions"><button type="button" class="btn sm" onclick="confirmCatch('${c.id}')">${esc(t('confirmCatch'))}</button><button type="button" class="btn secondary sm" onclick="rejectCatch('${c.id}')">${esc(t('rejectCatch'))}</button></div>` : ''}`;
   }
+  { const _ss=document.getElementById('d-status-slot'); if(_ss) _ss.innerHTML = editing ? '' : statusLine; }
+  let banner='';
   if(c._welcome){
     banner = `<div class="card-box" style="margin-top:10px; border:1px dashed var(--accent);">
       <div style="font-weight:600; margin-bottom:4px;">${esc(t('welcomeDemoTitle'))}</div>
