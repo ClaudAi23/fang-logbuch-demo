@@ -9,6 +9,13 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟡 `v 2026-07-21.33` (21. Juli) — Catch-Detail: 3 Feinschliffe (JC, Gold-Standard-Runde).**
+  (1) „Am Wasser" — Wassertemperatur-Label „Temperatur" → **„Wasser"** (de) / „Water" (en/nl).
+  (2) Wetter-Trend-Chips: **„/24 h" und „/3 h" entfernt** (Luft zeigt jetzt „↑ +0,4 °C", Druck
+  „↓ −1,2 hPa") — das Fenster steht im Info-Button. (3) **Hero-Bild verschieben/zoomen nur im
+  Edit-Modus**: in der Ansicht ist der Hero statisch, Tippen öffnet nur die Großansicht
+  (`bindHeroRepos` per `!_detailEdit` gegated). Nur `index.html`.
+
 - **🟡 `v 2026-07-21.32` (21. Juli) — Karten-Toolbar: Mein Standort in die Mitte (JC).**
   Neue Reihenfolge auf allen vier Karten: Vollbild → **Mein Standort** (Mitte, Slot 50) → Zentrieren
   (unten, Slot 92). In der Detail-ANSICHT (kein Standort) rückt Zentrieren per `.ctr-up` in den mittleren
