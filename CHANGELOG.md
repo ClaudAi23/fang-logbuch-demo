@@ -9,6 +9,11 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🐛 `v 2026-07-21.55` (21. Juli) — Picker-Sheet: feste Höhe gegen das Springen.**
+  Rest-Zittern (JC-Video .54): das von unten verankerte Sheet wuchs mit der Trefferliste und sprang bei
+  jeder Filter-/Höhenänderung nach oben. Jetzt **feste Höhe (82vh)** — nur die Liste scrollt, das Sheet
+  steht still.
+
 - **🐛 `v 2026-07-21.54` (21. Juli) — Sheet-Zittern raus + kurze Linie + Angler im Edit.**
   **Picker-Zittern behoben:** der `visualViewport`-Resize-Handler (.51) rechnete bei jeder Tastatur-
   Animation neu → das Sheet sprang (unbenutzbar, JC-Video). Entfernt; feste CSS-Deckelung (`max-height:82vh`
