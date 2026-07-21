@@ -270,7 +270,9 @@
   #uf-hero-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; transform-origin:50% 45%; z-index:0; cursor:grab; -webkit-user-drag:none; user-select:none; touch-action:none;}
   #uf-hero::after{content:''; position:absolute; inset:auto 0 0 0; height:72%; background:linear-gradient(transparent, rgba(2,27,40,.82)); pointer-events:none; z-index:1;}
   #uf-hero-ph{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--muted); font-size:.72rem; z-index:2;}
-  #uf-hero .uf-tt{position:relative; z-index:2;}
+  /* Overlays lassen Touch durch, damit ALLE Gesten das Bild treffen (wie .d-hero-facts im Detail-Hero) —
+     sonst fängt die Art/Maße-Ebene unten die Finger ab und die Seite scrollt statt zu ziehen/zoomen. */
+  #uf-hero .uf-tt{position:relative; z-index:2; pointer-events:none;}
   #uf-hero-ph svg{width:30px; height:30px; stroke:currentColor; fill:none; stroke-width:1.6;}
   #uf-hero.hasimg #uf-hero-ph{display:none;}
   .uf-tt{position:relative; z-index:2;}
@@ -2449,7 +2451,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.39';
+const BUILD = '2026-07-21.40';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {

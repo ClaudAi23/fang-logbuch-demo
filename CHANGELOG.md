@@ -9,6 +9,12 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🐛 `v 2026-07-21.40` (21. Juli) — Log-Hero: Gesten-Fix (Scroll-Hijack weg).**
+  JC: Log-Hero ziehen/zoomen „kacke", Seite scrollt, Verschieben/Zoom greift nicht — Edit-Hero dagegen
+  „wunderbar". Ursache: im Detail/Edit-Hero sind die Text-Overlays `pointer-events:none`, im Log-Hero war
+  `.uf-tt` (Art/Maße) das NICHT → fing unten die Finger ab, Touch erreichte das Bild nicht, Seite scrollte.
+  Fix: `.uf-tt` auf `pointer-events:none` (wie `.d-hero-facts`). Jetzt treffen alle Gesten das Bild.
+
 - **🟡 `v 2026-07-21.39` (21. Juli) — #15 Stufe 2 (Teil 2): Log-Hero justierbar + Leerzustand.**
   Der uf-Hero ist jetzt ein echtes `<img>` (statt background-image) und **justierbar** (ziehen=Fokus,
   Pinch/Rad=Zoom) — mit derselben Hinweis-Pille + einmaliger Einblendung wie im Edit. Zuschnitt liegt in
