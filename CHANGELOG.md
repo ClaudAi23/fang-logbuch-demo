@@ -9,6 +9,15 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟢 `v 2026-07-21.49` (21. Juli) — Filter & Sortierung pro Kontext + „Zuletzt hinzugefügt" (JC #3).**
+  **Filter und Sortierung sind jetzt pro Kontext** (Verein/Gruppe/Solo/„Meine Fänge") — jeder Bereich merkt
+  sich seinen eigenen Stand innerhalb der Session und stellt ihn beim Zurückkommen wieder her; bei
+  Session-Ende zurück auf Default (kein Cross-Session-Persist). Ein Ein-/Ausstiegspunkt (`_enterScope`)
+  sichert den alten Bereich und lädt den neuen — kein Durchsickern mehr zwischen Vereinen/Gruppen/Statistik.
+  **Neue Sortierung „Zuletzt hinzugefügt"** nach dem Anlege-Zeitpunkt (`created_at`, wann in die App
+  eingetragen — nicht das Fangdatum) und **als Default** gesetzt; gilt überall inkl. Statistik. `created_at`
+  wird dafür jetzt auf die Fang-Objekte geladen (war schon im `select('*')`, nur nicht gemappt).
+
 - **🐛 `v 2026-07-21.48` (21. Juli) — Log-Nachzügler (JC-Test).**
   **Bug 2:** Live-Hinweis verschwand erst beim nächsten Feld — Art-Auswahl (`pickSpecies`) setzt den Wert
   programmatisch und löst kein `input`-Ereignis aus; jetzt triggert sie `updateSaveReadiness` selbst.
