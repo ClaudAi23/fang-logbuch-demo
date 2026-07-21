@@ -9,6 +9,13 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟡 `v 2026-07-21.34` (21. Juli) — #15 Unified, Stufe 1: „leise Felder" im Log-Formular.**
+  Eingabe-Stil des Log-Formulars von lauten Boxen auf **„leise Felder"** (JC-Wahl): ruhige Fläche
+  (`rgba(13,81,100,.22)`) statt Rahmen, zarter Teal-Unterstrich bei Fokus, Radius oben rund/unten flach.
+  Gescoped auf `#s-form` und hinterm Flag: `<html>` bekommt `.bf-unified` (nur wenn `bf_unified≠off`).
+  Labels unverändert (schon klein/oben). Feld-IDs/Speicherpfad unberührt. Referenz `mockup-input-styles.html`
+  Sp. 3. Nächste Stufen: Hero justierbar (Edit → Log), dann Edit-Inline auf denselben Stil.
+
 - **🟡 `v 2026-07-21.33` (21. Juli) — Catch-Detail: 3 Feinschliffe (JC, Gold-Standard-Runde).**
   (1) „Am Wasser" — Wassertemperatur-Label „Temperatur" → **„Wasser"** (de) / „Water" (en/nl).
   (2) Wetter-Trend-Chips: **„/24 h" und „/3 h" entfernt** (Luft zeigt jetzt „↑ +0,4 °C", Druck

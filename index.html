@@ -282,6 +282,25 @@
   #uf-jump{position:sticky; bottom:0; z-index:6; display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; background:color-mix(in srgb, var(--sand) 88%, transparent); backdrop-filter:blur(6px); padding:8px 4px; margin:0 -4px;}
   #uf-jump::-webkit-scrollbar{display:none;}
   #uf-jump button{flex:0 0 auto; font-size:.7rem; color:var(--teal); background:none; border:1px solid var(--border-2); border-radius:999px; padding:5px 11px; cursor:pointer;}
+  /* ---- #15 Stufe 1: „leise Felder" (JC, 21. Juli) — ruhige Fläche statt lauter Box, Teal-Unterstrich
+     bei Fokus. NUR im Log-Formular (#s-form) und nur bei aktivem Unified-Flag (.bf-unified). Labels sind
+     schon klein/oben; hier wird nur das Eingabe-Element ruhiger. Referenz: mockup-input-styles.html Sp.3. */
+  html.bf-unified #s-form .field input,
+  html.bf-unified #s-form .field textarea,
+  html.bf-unified #s-form .field select,
+  html.bf-unified #s-form .selfield{
+    background:rgba(13,81,100,.22); border:0; border-bottom:1.5px solid transparent;
+    border-radius:8px 8px 4px 4px; transition:background .15s, border-color .15s;
+  }
+  html.bf-unified #s-form .field input:focus,
+  html.bf-unified #s-form .field textarea:focus,
+  html.bf-unified #s-form .field select:focus,
+  html.bf-unified #s-form .selfield:focus,
+  html.bf-unified #s-form .selfield:focus-within{
+    background:rgba(13,81,100,.42); border-bottom-color:var(--teal-bright); box-shadow:none; outline:none;
+  }
+  /* Der Combo-Chevron sitzt im selben ruhigen Feld — Trennlinie weg, er schwebt einfach rechts. */
+  html.bf-unified #s-form .combo .combo-chev{background:none;}
   .fab{position:fixed; right:max(18px, calc(50% - 192px)); bottom:calc(18px + env(safe-area-inset-bottom)); z-index:50;
     width:60px; height:60px; border-radius:50%; border:none; background:var(--btn-fill); color:var(--on-btn);
     box-shadow:0 6px 16px rgba(2,27,40,.30); cursor:pointer; transition:background .16s ease;
@@ -2410,7 +2429,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.33';
+const BUILD = '2026-07-21.34';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -8744,6 +8763,7 @@ initAuth();
    Bewusst NUR Anzeige-Schicht: keine Feld-IDs, kein Speicherpfad, keine formTargets-Logik angefasst. ==== */
 (function(){
   if(localStorage.getItem('bf_unified')==='off') return;
+  document.documentElement.classList.add('bf-unified');   // schaltet u. a. den „leise Felder"-Stil (Stufe 1) frei
   function $(id){ return document.getElementById(id); }
   function heroUpdate(){
     const hero=$('uf-hero'); if(!hero) return;
