@@ -9,6 +9,13 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟡 `v 2026-07-21.25` (21. Juli) — App-Icon: Laterne + Stiel, Raute exakt mittig (JCs Werte).**
+  Aus getrennten Ebenen komponiert (Laterne+Stiel `logo-lantern-stalk.png` · Schein `logo-glow-layer.png`)
+  nach JCs interaktiven Werten: Grund Navy `#021B28`, Logo 120 % bei X −42,84 / Y −13,32 (Faltkreuz der
+  Raute exakt auf 50/50), Schein 70 % / 94 % bei (53 %, 53 %). Sauber gebacken: Laterne per Alpha über den
+  Grund (kein Rausch-Lift), Schein geglättet, Ebene leicht entsättigt + Kante gefedert gegen den bunten
+  Kompressions-Saum. Master `logo-icon-master.png` (1536²) → alle Formate. Cache-Bust `?v=16`→`?v=17`.
+
 - **🟡 `v 2026-07-21.24` (21. Juli) — App-Icon: stark gedämpft + mittlerer Zoom.**
   JC: stark gedämpftes Glühen (gamma 1.75) und Zoom zwischen `.23` (175 %) und `.22` (100 %) → 137,5 %.
   Alle Icon-Assets neu, Cache-Bust `?v=15`→`?v=16`.
