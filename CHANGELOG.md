@@ -9,6 +9,16 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🟡 `v 2026-07-21.39` (21. Juli) — #15 Stufe 2 (Teil 2): Log-Hero justierbar + Leerzustand.**
+  Der uf-Hero ist jetzt ein echtes `<img>` (statt background-image) und **justierbar** (ziehen=Fokus,
+  Pinch/Rad=Zoom) — mit derselben Hinweis-Pille + einmaliger Einblendung wie im Edit. Zuschnitt liegt in
+  `state.formCrop` und wird beim Speichern übernommen: **DB** via `saveSoloPhotos` (Cover-Foto, additiv,
+  nur wenn noch kein Zuschnitt) und **lokal/Solo** via `crops:[…]` im Fang-Objekt (nur neuer Fang).
+  Cover-Wechsel setzt den Zuschnitt zurück (kein alter Zuschnitt aufs neue Bild). **Leerzustand
+  aufgeräumt:** ohne Foto/Art keine großen blassen Platzhalter-Titel mehr (JCs „roh"-Befund).
+  ⚠️ Speicherpfad additiv angefasst — **am Gerät testen:** Foto hinzufügen → Hero ziehen/zoomen →
+  speichern → in der Detailseite muss der Zuschnitt sitzen (DB-Fang UND Solo-Fang).
+
 - **🟡 `v 2026-07-21.38` (21. Juli) — #15 Stufe 2: Hero-Justierung sichtbar machen (JC „A+").**
   Edit-Hero bekommt eine dezente **Hinweis-Pille** oben links („Ziehen · Zoom", i18n) und beim ERSTEN
   Bearbeiten eine **einmalige Einblendung** („Ziehen zum Ausrichten · Pinch zum Zoomen", `bf_heroHintSeen`

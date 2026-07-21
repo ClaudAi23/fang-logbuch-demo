@@ -266,8 +266,11 @@
   .selfield.static{pointer-events:none; cursor:default;} .selfield.static .acc-chev{display:none;}
   /* ---- #15 Stufe 1: Unified-Form (Flag bf_unified; 'off' in localStorage schaltet zurück) ---- */
   #uf-hero{position:relative; height:170px; margin:-14px -16px 14px; background:var(--surface-2); background-size:cover; background-position:center; display:flex; align-items:flex-end; padding:12px 16px; overflow:hidden;}
-  #uf-hero::after{content:''; position:absolute; inset:auto 0 0 0; height:72%; background:linear-gradient(transparent, rgba(2,27,40,.82)); pointer-events:none;}
-  #uf-hero-ph{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--muted); font-size:.72rem;}
+  /* #15 Stufe 2: echtes, justierbares Titelbild statt background-image (ziehen=Fokus, Zoom). */
+  #uf-hero-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; transform-origin:50% 45%; z-index:0; cursor:grab; -webkit-user-drag:none; user-select:none; touch-action:none;}
+  #uf-hero::after{content:''; position:absolute; inset:auto 0 0 0; height:72%; background:linear-gradient(transparent, rgba(2,27,40,.82)); pointer-events:none; z-index:1;}
+  #uf-hero-ph{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--muted); font-size:.72rem; z-index:2;}
+  #uf-hero .uf-tt{position:relative; z-index:2;}
   #uf-hero-ph svg{width:30px; height:30px; stroke:currentColor; fill:none; stroke-width:1.6;}
   #uf-hero.hasimg #uf-hero-ph{display:none;}
   .uf-tt{position:relative; z-index:2;}
@@ -1594,6 +1597,7 @@
     <div class="scroll pad">
       <!-- #15 Stufe 1 (19. Juli, Flag bf_unified): Live-Hero — das Formular ist die leere Detailseite. -->
       <div id="uf-hero" style="display:none;">
+        <img id="uf-hero-img" alt="" style="display:none;">
         <div id="uf-hero-ph"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg><span data-i18n="ufHeroHint">Foto wählen — wird dein Hero</span></div>
         <div class="uf-tt"><div id="uf-sp" class="empty">…</div>
           <div class="uf-chips"><span id="uf-len" class="ufchip ghost">— cm</span><span id="uf-wt" class="ufchip ghost">— kg</span></div>
@@ -2445,7 +2449,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-21.38';
+const BUILD = '2026-07-21.39';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -4078,7 +4082,11 @@ async function saveSoloPhotos(catchId, photos){
       if(ep && exSet.has(ep)){ path=ep; kept.add(ep); thumbPath=exThumb[ep]||null; }
     }
     if(path){ const _cr=exCrop[path]||{};
-      finalRows.push({catch_id:catchId, path, thumb_path:thumbPath, is_cover:i===0, sort:i, crop_pos:_cr.p||null, crop_zoom:_cr.z||null}); }
+      let _cp=_cr.p||null, _cz=_cr.z||null;
+      /* #15 Stufe 2: das NEUE Titelbild (i===0, noch kein DB-Zuschnitt) bekommt den im Log am Hero
+         eingestellten Zuschnitt (state.formCrop). Additiv — bestehende Zuschnitte bleiben unberührt. */
+      if(i===0 && !_cp && !_cz && state.formCrop){ _cp=state.formCrop.p||null; _cz=state.formCrop.z||null; }
+      finalRows.push({catch_id:catchId, path, thumb_path:thumbPath, is_cover:i===0, sort:i, crop_pos:_cp, crop_zoom:_cz}); }
   }
   // remove storage objects (main + thumb) for photos the user dropped from the editor
   const toRemove=[];
@@ -6643,6 +6651,7 @@ function saveCatch(){
     angler: anglerDisplay, forUser: forUser, date:new Date(date).toISOString(),
     notes:document.getElementById('f-notes').value.trim(),
     photos: state.editPhotos.slice(), photo: state.editPhotos[0] || null, userId: state.userId || null,
+    crops: (state.formCrop && !state.editId) ? [{p:state.formCrop.p||null, z:state.formCrop.z||null}] : [],   // #15 Stufe 2: Log-Titelbild-Zuschnitt (nur neuer Fang)
     lat: state.formLat!=null?state.formLat:null, lon: state.formLon!=null?state.formLon:null,
     moon: moonPhaseKey(new Date(date)), weather: state.formWeather || null
   };
@@ -8804,19 +8813,70 @@ initAuth();
   if(localStorage.getItem('bf_unified')==='off') return;
   document.documentElement.classList.add('bf-unified');   // schaltet u. a. den „leise Felder"-Stil (Stufe 1) frei
   function $(id){ return document.getElementById(id); }
+  /* #15 Stufe 2: Titelbild-Zuschnitt fürs Log in state.formCrop ({p,z}); beim Speichern übernimmt
+     saveSoloPhotos ihn fürs neue Cover-Foto. applyUfCrop wendet ihn aufs echte <img> an. */
+  function applyUfCrop(){
+    const img=$('uf-hero-img'); if(!img) return;
+    const c=(state.formCrop||{}); const p=(c.p||'50% 45%'); const z=(c.z||1);
+    img.style.objectPosition=p; img.style.transformOrigin=p; img.style.transform='scale('+z+')';
+  }
+  let _ufHeroBound=false, _ufLastCover='';
+  function bindUfHero(){
+    const img=$('uf-hero-img'); if(!img || _ufHeroBound) return; _ufHeroBound=true;
+    let sx=0,sy=0,startX=50,startY=45,drag=false,moved=false,pinch=false,d0=0,z0=1;
+    const cur=()=>({ p:(state.formCrop&&state.formCrop.p)||'50% 45%', z:(state.formCrop&&state.formCrop.z)||1 });
+    const parse=()=>{ const m=cur().p.split(/\s+/); return [parseFloat(m[0])||50, parseFloat(m[1])||45]; };
+    const clampZ=z=>Math.max(1,Math.min(4,z));
+    const save=(x,y,z)=>{ state.formCrop={ p:x+'% '+y+'%', z:z }; applyUfCrop(); };
+    const dist=tt=>Math.hypot(tt[0].clientX-tt[1].clientX, tt[0].clientY-tt[1].clientY);
+    const down=e=>{ const q=parse(); startX=q[0]; startY=q[1]; const pt=e.touches?e.touches[0]:e; sx=pt.clientX; sy=pt.clientY; drag=true; moved=false; };
+    const move=e=>{ if(!drag) return; const pt=e.touches?e.touches[0]:e; const dx=pt.clientX-sx, dy=pt.clientY-sy;
+      if(Math.abs(dx)>4||Math.abs(dy)>4) moved=true; if(!moved) return; const z=cur().z;
+      const nx=Math.max(0,Math.min(100, startX-(dx/((img.clientWidth||1)*z))*100));
+      const ny=Math.max(0,Math.min(100, startY-(dy/((img.clientHeight||1)*z))*100));
+      save(nx,ny,z); if(e.cancelable)e.preventDefault(); };
+    const up=()=>{ drag=false; };
+    img.addEventListener('touchstart',e=>{ if(e.touches.length===2){ pinch=true; drag=false; d0=dist(e.touches)||1; z0=cur().z; if(e.cancelable)e.preventDefault(); return;} down(e); },{passive:false});
+    img.addEventListener('touchmove',e=>{ if(pinch&&e.touches.length===2){ const q=parse(); save(q[0],q[1],clampZ(z0*(dist(e.touches)/d0))); if(e.cancelable)e.preventDefault(); return;} move(e); },{passive:false});
+    img.addEventListener('touchend',e=>{ if(pinch){ if(e.touches.length===0) pinch=false; return;} up(); });
+    img.addEventListener('mousedown',down); img.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
+    img.addEventListener('wheel',e=>{ e.preventDefault(); const q=parse(); save(q[0],q[1],clampZ(cur().z*(e.deltaY<0?1.08:1/1.08))); },{passive:false});
+  }
+  function ufHeroAdorn(cover){
+    const hero=$('uf-hero'); if(!hero) return;
+    let pill=hero.querySelector('.d-hero-adjust');
+    if(cover){
+      if(!pill){ const _lang=(typeof curLang==='function'?curLang():'de'); const txt=_lang==='en'?'Drag · zoom':_lang==='nl'?'Sleep · zoom':'Ziehen · Zoom';
+        pill=document.createElement('div'); pill.className='d-hero-adjust';
+        pill.innerHTML='<svg viewBox="0 0 24 24"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>'+txt;
+        hero.appendChild(pill); }
+      pill.style.display='';
+      if(!localStorage.getItem('bf_heroHintSeen') && !hero.querySelector('.d-hero-hint1')){
+        const _lang=(typeof curLang==='function'?curLang():'de');
+        const h1=_lang==='en'?'Drag to reposition · pinch to zoom':_lang==='nl'?'Sleep om uit te lijnen · knijp om te zoomen':'Ziehen zum Ausrichten · Pinch zum Zoomen';
+        const el=document.createElement('div'); el.className='d-hero-hint1'; el.innerHTML='<span>'+h1+'</span>'; hero.appendChild(el);
+        try{ localStorage.setItem('bf_heroHintSeen','1'); }catch(e){}
+      }
+    } else if(pill){ pill.style.display='none'; }
+  }
   function heroUpdate(){
     const hero=$('uf-hero'); if(!hero) return;
     const scr=$('s-form'); if(!scr || !scr.classList.contains('active')){ return; }
     hero.style.display='';
     const spEl=$('f-species'); const sp=spEl?spEl.value.trim():'';
-    const t1=$('uf-sp'); t1.textContent=sp||(typeof t==='function'?t('speciesPh'):'…'); t1.className=sp?'':'empty';
     const l=($('f-length')||{}).value||'', w=($('f-weight')||{}).value||'';
+    const gi=document.querySelector('#photo-grid img'); const cover=(gi&&gi.src)||'';
+    // Cover gewechselt (neues Foto/Umsortieren) → Zuschnitt zurücksetzen, damit kein alter Zuschnitt aufs neue Bild springt
+    if(cover!==_ufLastCover){ _ufLastCover=cover; state.formCrop=null; }
+    const heroImg=$('uf-hero-img');
+    if(cover){ if(heroImg.getAttribute('src')!==cover){ heroImg.src=cover; } heroImg.style.display=''; hero.classList.add('hasimg'); bindUfHero(); applyUfCrop(); }
+    else { heroImg.style.display='none'; heroImg.removeAttribute('src'); hero.classList.remove('hasimg'); }
+    // Leerzustand aufgeräumt: ohne Foto UND ohne Art/Maße keine großen blassen Platzhalter
+    const tt=hero.querySelector('.uf-tt'); if(tt) tt.style.display = (!cover && !sp && !l && !w) ? 'none' : '';
+    const t1=$('uf-sp'); t1.textContent=sp||(cover?(typeof t==='function'?t('speciesPh'):'…'):''); t1.className=sp?'':'empty';
     const cl=$('uf-len'); cl.textContent=l?l+' cm':'— cm'; cl.className='ufchip'+(l?'':' ghost');
     const cw=$('uf-wt'); cw.textContent=w?w+' kg':'— kg'; cw.className='ufchip'+(w?'':' ghost');
-    const img=document.querySelector('#photo-grid img');
-    if(img && img.src){ hero.style.backgroundImage='url("'+img.src+'")'; hero.classList.add('hasimg'); }
-    else { hero.style.backgroundImage=''; hero.classList.remove('hasimg'); }
-    chipsUpdate(); jumpEnsure();
+    chipsUpdate(); jumpEnsure(); ufHeroAdorn(cover);
   }
   function chipsUpdate(){
     /* #6 (JC, 20. Juli): Chip-Zeile zurückgebaut aufs alte Auswahl-Menü — die Chips verschluckten Taps
