@@ -9,6 +9,15 @@ Stand: 12. Juli 2026. Legende: ✅ live · 🟡 gebaut, noch nicht deployed · �
 ## 📋 CHANGELOG (ab Commit 56 — JC testet erst am Ende)
 Alles, was wir ab hier fixen, kommt hier rein (mit Commit-Nr. beim Deploy).
 
+- **🐛 `v 2026-07-21.41` (21. Juli) — Log-Flow: Titelbild-Stern, EXIF-Knopf, Copy, Hero-Höhe (JC-Feedback).**
+  **Bug 1** Titelbild-Stern tat nichts: der Knopf hatte kein `event.stopPropagation()` → die Umsortier-
+  Geste (`makeSortable`) schluckte den Tap. Fix wie bei Löschen/EXIF. **Bug 2** „Ort/Datum aus Foto"
+  fand nichts: `downscaleToDataUrl` strippt EXIF beim Upload → jetzt wird EXIF beim Upload aus der
+  ORIGINAL-Datei in `state.formExif` gecacht (Key = data-URL), `applyExif` liest den Cache zuerst.
+  **Copy 3** Foto-Hinweis korrigiert (Stern = Titelbild · ziehen zum Sortieren · Pin holt Datum & Ort).
+  **Copy 4** Leerer-Hero-Text „Lade unten ein Foto hoch — wird dein Titelbild". **Höhe** uf-Hero
+  170→240px (= Edit-Hero, JCs Wunsch). Offen/Diskussion: Art-Overlay-Font (#5), Edit-Inline-Angleichung.
+
 - **🐛 `v 2026-07-21.40` (21. Juli) — Log-Hero: Gesten-Fix (Scroll-Hijack weg).**
   JC: Log-Hero ziehen/zoomen „kacke", Seite scrollt, Verschieben/Zoom greift nicht — Edit-Hero dagegen
   „wunderbar". Ursache: im Detail/Edit-Hero sind die Text-Overlays `pointer-events:none`, im Log-Hero war
