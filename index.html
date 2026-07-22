@@ -837,6 +837,8 @@
   .d-byline .av img{width:100%; height:100%; object-fit:cover;}
   .d-byline .nm{grid-column:2; grid-row:1; font-weight:600; font-size:0.9rem; color:var(--text);
     min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .d-byline .nm-lock{display:inline-flex; vertical-align:middle; margin-left:5px; color:var(--muted);}
+  .d-byline .nm-lock svg{width:13px; height:13px;}
   /* M3: the method is a STATEMENT, not a card — no box, no field label ("METHODE" over "ANGELMETHODE"
      said the word twice). It is the headline of the gear tiles below it, so it is set like a heading.
      baseline alignment keeps the qualifiers sitting on the method's baseline, not floating mid-cap. */
@@ -1142,6 +1144,8 @@
   /* Air between the water card and the map — they sit under one heading, but they are two things. */
   /* The name leads the section again (JC/B), so the air belongs below it, before the map. */
   #d-loc:not(:empty){margin-bottom:9px;}
+  .loc-approx{display:flex; align-items:center; gap:7px; margin-top:6px; font-size:.82rem; font-weight:600; color:var(--teal-bright,#63c0b8);}
+  .loc-approx svg{width:15px; height:15px; flex:0 0 auto;}
   /* Same setting as .m-line .bait — the water name is a statement, not a labelled cell. */
   .loc-name{font-weight:600; font-size:0.9375rem; line-height:1.3; color:var(--text); margin:0 4px;}
   .sectionlabel.dmh-out:first-child{margin-top:2px;}
@@ -2589,7 +2593,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-22.435';
+const BUILD = '2026-07-22.436';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -2728,9 +2732,9 @@ Object.assign(I18N.nl, {visTitle:"Privacy & delen", visIntro:"Bepaal wat anderen
 Object.assign(I18N.de, {visDefAudience:"Standard-Publikum", visShareFollowersDefault:"Standardmäßig mit Followern teilen", visShareFollowersHint:"Aus — neue Fänge sehen zuerst nur deine Vereine/Gruppen.", visDefWhat:"Was ich standardmäßig teile", visWhatMandatory:"Nur Pflicht", visWhatSome:"Manches", visWhatAll:"Alles", visDefLoc:"Standard-Ort", visClubWins:"Vereinsregeln gewinnen immer. Den Ort kannst du pro Fang anpassen.", visSharingHeading:"Sharing", visShareWithFollowers:"Mit Followern teilen", visLocThisCatch:"Ort (dieser Fang)", visLocThisCatchHint:"Vorbelegt mit deinem Standard. Hier schützt du den Spot bei einem einzelnen Fang.", visSpotHidden:"Spot verborgen"});
 Object.assign(I18N.en, {visDefAudience:"Default audience", visShareFollowersDefault:"Share with followers by default", visShareFollowersHint:"Off — new catches are first seen only by your clubs/groups.", visDefWhat:"What I share by default", visWhatMandatory:"Only required", visWhatSome:"Some", visWhatAll:"All", visDefLoc:"Default location", visClubWins:"Club rules always win. You can adjust the location per catch.", visSharingHeading:"Sharing", visShareWithFollowers:"Share with followers", visLocThisCatch:"Location (this catch)", visLocThisCatchHint:"Prefilled from your default. Protect the spot on a single catch here.", visSpotHidden:"Spot hidden"});
 Object.assign(I18N.nl, {visDefAudience:"Standaardpubliek", visShareFollowersDefault:"Standaard met volgers delen", visShareFollowersHint:"Uit — nieuwe vangsten zien eerst alleen je verenigingen/groepen.", visDefWhat:"Wat ik standaard deel", visWhatMandatory:"Alleen verplicht", visWhatSome:"Sommige", visWhatAll:"Alles", visDefLoc:"Standaardlocatie", visClubWins:"Verenigingsregels winnen altijd. De locatie kun je per vangst aanpassen.", visSharingHeading:"Sharing", visShareWithFollowers:"Met volgers delen", visLocThisCatch:"Locatie (deze vangst)", visLocThisCatchHint:"Vooraf ingevuld met je standaard. Bescherm hier de stek bij één vangst.", visSpotHidden:"Stek verborgen"});
-Object.assign(I18N.de, {visLockOnlyMe:"Nur ich", visSumOnlyMe:"Nur ich", visSumFollowers:"Follower", visSumClubsFollowers:"Vereine + Follower", visSumClubsOnly:"Nur Vereine/Gruppen", visNoFollowersYet:"Du hast noch keine Follower — das legt fest, was sie sehen, sobald du welche hast."});
-Object.assign(I18N.en, {visLockOnlyMe:"Only me", visSumOnlyMe:"Only me", visSumFollowers:"Followers", visSumClubsFollowers:"Clubs + followers", visSumClubsOnly:"Clubs/groups only", visNoFollowersYet:"You don't have followers yet — this sets what they'll see once you do."});
-Object.assign(I18N.nl, {visLockOnlyMe:"Alleen ik", visSumOnlyMe:"Alleen ik", visSumFollowers:"Volgers", visSumClubsFollowers:"Verenigingen + volgers", visSumClubsOnly:"Alleen verenigingen/groepen", visNoFollowersYet:"Je hebt nog geen volgers — dit bepaalt wat ze straks zien."});
+Object.assign(I18N.de, {visApproxArea:"Ungefähre Gegend", visLockOnlyMe:"Nur ich", visSumOnlyMe:"Nur ich", visSumFollowers:"Follower", visSumClubsFollowers:"Vereine + Follower", visSumClubsOnly:"Nur Vereine/Gruppen", visNoFollowersYet:"Du hast noch keine Follower — das legt fest, was sie sehen, sobald du welche hast."});
+Object.assign(I18N.en, {visApproxArea:"Approximate area", visLockOnlyMe:"Only me", visSumOnlyMe:"Only me", visSumFollowers:"Followers", visSumClubsFollowers:"Clubs + followers", visSumClubsOnly:"Clubs/groups only", visNoFollowersYet:"You don't have followers yet — this sets what they'll see once you do."});
+Object.assign(I18N.nl, {visApproxArea:"Ongeveer gebied", visLockOnlyMe:"Alleen ik", visSumOnlyMe:"Alleen ik", visSumFollowers:"Volgers", visSumClubsFollowers:"Verenigingen + volgers", visSumClubsOnly:"Alleen verenigingen/groepen", visNoFollowersYet:"Je hebt nog geen volgers — dit bepaalt wat ze straks zien."});
 Object.assign(I18N.de, {visWhatMandatoryHint:"Nur, was deine Vereine verlangen.", visWhatSomeHint:"Dein Zuschnitt — wähle unten.", visWhatAllHint:"Alle Kategorien werden geteilt.", visDefLocHint:"So genau sehen andere deinen Fangort."});
 Object.assign(I18N.en, {visWhatMandatoryHint:"Only what your clubs require.", visWhatSomeHint:"Your selection — choose below.", visWhatAllHint:"All categories are shared.", visDefLocHint:"How precisely others see your spot."});
 Object.assign(I18N.nl, {visWhatMandatoryHint:"Alleen wat je verenigingen vereisen.", visWhatSomeHint:"Jouw selectie — kies hieronder.", visWhatAllHint:"Alle categorieën worden gedeeld.", visDefLocHint:"Hoe precies anderen je stek zien."});
@@ -4177,7 +4181,7 @@ async function loadCtxActivity(){
   ids.forEach(id=>{ if(!sn[id]){ sn[id]=new Date().toISOString(); changed=true; } });
   if(changed){ try{ localStorage.setItem('tb_seen', JSON.stringify(sn)); }catch(e){} }
   state.seen=sn;
-  const { data } = await c.from('catches').select('context_id, created_at, owner_id').in('context_id', ids).order('created_at',{ascending:false}).limit(1000);
+  const { data } = await c.rpc('get_ctx_activity', { p_ids: ids });   // SECURITY DEFINER: Metadaten für Mitglieds-Kontexte (nach RLS-Verriegelung)
   if(!data) return;
   const cnt={};
   data.forEach(r=>{ if(!r.context_id || r.owner_id===state.me.id) return; const seenAt=sn[r.context_id]; if(seenAt && r.created_at>seenAt) cnt[r.context_id]=(cnt[r.context_id]||0)+1; });
@@ -4214,7 +4218,7 @@ function rpcRowToCatch(o, signedMap, nameById){
     location: isExact?(o.location||''):'', lat:lat, lon:lon, locTier:o.loc_tier||null, locApprox:isArea, areaRadius:(isArea&&o.area)?o.area.radius_m:null,
     date:o.caught_at, createdAt:null, notes:o.notes||'', moon:o.moon||null, weather:o.weather||null,
     angler:(own?own.name:''), anglerAvatar:(own?own.avatar:null), anglerStyle:(own?own.style:null), userId:o.owner_id, loggedBy:null, loggedByName:null, confirmed:true,
-    _db:true, _ctxId:null, _ctxIds:null, _filtered:(o.owner_id!==(state.me&&state.me.id)),
+    _db:true, _ctxId:(o.context_id||null), _ctxIds:(o.context_ids||null), _filtered:(o.owner_id!==(state.me&&state.me.id)),
     crops:crops, photoPaths:paths, pbLen:o.pb_length===true, pbWt:o.pb_weight===true, pbOptout:false,
     photos:urls, photo:urls[0]||null, thumbs:thumbs.length?thumbs:urls, shareFollowers:null, locOverride:null
   };
@@ -4231,7 +4235,7 @@ async function loadContextCatchesRpc(ctxId){
 }
 async function loadContextCatches(ctxId){
   await ensurePending();
-  if(_visEnforceOn()){ try{ const rpced=await loadContextCatchesRpc(ctxId); return prependPending(rpced, 'ctx', ctxId); }catch(e){} }
+  if(_visEnforceOn()){ try{ const rpced=await loadContextCatchesRpc(ctxId); return prependPending(rpced, 'ctx', ctxId); }catch(e){ return prependPending([], 'ctx', ctxId); } }
   const c=getSB(); let out=[];
   try{
     const { data: rows } = await c.from('catches').select('*').or('context_id.eq.'+ctxId+',context_ids.cs.{'+ctxId+'}').order('caught_at', {ascending:false});
@@ -4755,23 +4759,11 @@ function pbMetric(){ return state.measure==='weight' ? 'weight' : 'length'; }
 function isPb(c){ return !!c && (c._welcome ? false : (pbMetric()==='weight' ? c.pbWt===true : c.pbLen===true)); }
 // Recompute the owner's pb flags for one species (idempotent — safe after log/edit/delete/confirm).
 async function recomputePb(ownerId, species){
+  // PB-Logik lebt jetzt serverseitig (recompute_pb, SECURITY DEFINER) — nötig, seit direkte
+  // catches-Reads/Writes fremder Owner per RLS gesperrt sind (Loggen-für-andere / Owner-Wechsel).
   try{
     if(!ownerId || !species || state.auth!=='supabase') return;
-    const c=getSB();
-    const { data } = await c.from('catches').select('id,length_cm,weight_kg,confirmed,pb_optout,pb_manual').eq('owner_id', ownerId).eq('species', species);
-    if(!data) return;
-    let bl=null, bw=null, man=null;
-    data.forEach(r=>{ if(r.confirmed===false) return;
-      if(r.pb_optout) return;                        // "Nicht mein Rekord" — never auto-crown this one again
-      if(r.pb_manual && !man) man=r;                 // manual crown only holds the gap (see below)
-      if(r.length_cm!=null && (!bl || r.length_cm>bl.length_cm)) bl=r;
-      if(r.weight_kg!=null && (!bw || Number(r.weight_kg)>Number(bw.weight_kg))) bw=r; });
-    await c.from('catches').update({pb_length:false, pb_weight:false}).eq('owner_id', ownerId).eq('species', species);
-    // Edge case A (JC): a measured record always supersedes a manual crown; the manual flag stays,
-    // so it takes the crown back if the measured one is later deleted or opted out.
-    const winL = bl || man, winW = bw || man;
-    if(winL) await c.from('catches').update({pb_length:true}).eq('id', winL.id);
-    if(winW) await c.from('catches').update({pb_weight:true}).eq('id', winW.id);
+    await getSB().rpc('recompute_pb', { p_owner: ownerId, p_species: species });
   }catch(e){}
 }
 
@@ -5074,7 +5066,7 @@ function renderStats(){
 // ---------- maps & weather ----------
 /* `sMap`/`sMarkers` standen hier und sind am 17. Juli entfallen: Karte und Marker liegen jetzt in
    `_mapRef` je Screen, seit „Meine Fänge" und der Verein dieselbe Karte benutzen. */
-let fMap=null, fMarker=null, dMap=null, dMarker=null;
+let fMap=null, fMarker=null, dMap=null, dMarker=null, dAreaCircle=null;
 const DEFAULT_CENTER=[52.37, 4.90];
 const TILE='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const TILE_OPT={maxZoom:19, attribution:'© OpenStreetMap'};
@@ -5216,22 +5208,38 @@ function attachDetailBtns(){
 }
 function _detailSetMyLocBtn(show){ const b=document.querySelector('#d-map .map-loc-btn'); if(b) b.style.display= show ? '' : 'none';
   const w=document.getElementById('d-map'); if(w) w.classList.toggle('ctr-up', !show); }   // ohne Standort: Zentrieren in den mittleren Slot
+function _detailIsApprox(){ const c=state.current; return !!(c && c.locApprox); }
+// read mode: a pin for an exact spot, a dashed circle for an approximate (area) location —
+// so a shared ~2,5-km area never looks like a precise point (A1).
+function _detailDrawLoc(lat,lon){
+  if(!dMap) return;
+  if(dMarker){ try{ dMap.removeLayer(dMarker); }catch(e){} dMarker=null; }
+  if(dAreaCircle){ try{ dMap.removeLayer(dAreaCircle); }catch(e){} dAreaCircle=null; }
+  if(_detailIsApprox()){
+    const r=(state.current&&state.current.areaRadius)||2500;
+    dAreaCircle=L.circle([lat,lon],{radius:r, color:'#63c0b8', weight:2, dashArray:'6 6', fillColor:'#63c0b8', fillOpacity:.15, interactive:false}).addTo(dMap);
+  } else {
+    dMarker=L.marker([lat,lon],{icon:fishPinIcon(), keyboard:false}).addTo(dMap);
+  }
+}
 function ensureDetailMap(lat,lon){
   if(typeof L==='undefined'||lat==null) return;
+  const zoom=_detailIsApprox()?12:13;   // pull back a touch so the whole area circle fits
   if(!dMap){
     // Leaflet's own overlay is off because we render the credit ourselves in .msrc right under the map
     // (OSMF: "adjacent to the map" is allowed). Switching this off WITHOUT that line would drop the
     // attribution entirely — which is what it used to do.
-    dMap=L.map('d-map',{zoomControl:true, attributionControl:false, scrollWheelZoom:false}).setView([lat,lon],13);
+    dMap=L.map('d-map',{zoomControl:true, attributionControl:false, scrollWheelZoom:false}).setView([lat,lon],zoom);
     L.tileLayer(TILE,TILE_OPT).addTo(dMap);
-    dMarker=L.marker([lat,lon],{icon:fishPinIcon(), keyboard:false}).addTo(dMap);
-  } else { try{ dMap.off('click'); dMap.scrollWheelZoom.disable(); }catch(e){} dMap.setView([lat,lon],13); _detailMapDraw(lat,lon); }
+  } else { try{ dMap.off('click'); dMap.scrollWheelZoom.disable(); }catch(e){} dMap.setView([lat,lon],zoom); }
+  _detailDrawLoc(lat,lon);
   attachFsBtn('d', dMap); attachDetailBtns(); _detailSetMyLocBtn(false);
-  _bfMapHome(dMap, [lat,lon], 13); _bfWireDim(dMap, 'd-map'); try{ _bfDim(dMap, 'd-map'); }catch(e){}
+  _bfMapHome(dMap, [lat,lon], zoom); _bfWireDim(dMap, 'd-map'); try{ _bfDim(dMap, 'd-map'); }catch(e){}
   setTimeout(()=>{ try{dMap.invalidateSize();}catch(e){} try{ _bfDim(dMap, 'd-map'); }catch(e){} }, 80);
 }
 function _detailMapDraw(lat,lon){
   if(!dMap) return;
+  if(dAreaCircle){ try{ dMap.removeLayer(dAreaCircle); }catch(e){} dAreaCircle=null; }   // edit = exact pin, clear any leftover area circle
   if(!dMarker){ dMarker=L.marker([lat,lon],{icon:fishPinIcon(), keyboard:false}).addTo(dMap); }
   else dMarker.setLatLng([lat,lon]);
 }
@@ -7879,7 +7887,11 @@ function _anglerByline(c){
   const av = anglerAvatarHTML(c);
   const rel = c.released==null ? '' :
     `<span class="d-rel ${c.released?'rel':'kept'}">${c.released?REL_IC:KEPT_IC}${esc(c.released?t('releasedReleased'):t('releasedKept'))}</span>`;
-  return `<span class="av">${av}</span><span class="nm">${esc(nm)}</span>${rel}<span class="dt">${esc(fmtDateLong(c.date))}</span>`;
+  // "Only me" now lives as a small lock right after the name (B1) — no separate chip below.
+  const _mine = !c._db || (state.me && (c.userId===state.me.id || (c.loggedBy===state.me.id && c.confirmed===false)));
+  const _lock = (_mine && !c._welcome && catchRestricted(c))
+    ? `<span class="nm-lock" title="${escAttr(t('visLockOnlyMe'))}" aria-label="${escAttr(t('visLockOnlyMe'))}">${IC_PRIVATE}</span>` : '';
+  return `<span class="av">${av}</span><span class="nm">${esc(nm)}${_lock}</span>${rel}<span class="dt">${esc(fmtDateLong(c.date))}</span>`;
 }
 /* Beide ohne Icon (JC, 17. Juli: „zurueckgezetzt badge sollte keinen feil drin haben").
    Hier stand ein Rückwärtspfeil mit U-Turn-Bogen, und der Kommentar daneben verteidigte die Asymmetrie:
@@ -8287,8 +8299,8 @@ function openDetailObj(c, from, keepEdit){
   const _editable = (state.detailFrom==='list' || state.detailFrom==='stats') && _isMine && !c._welcome;
   const editing = _detailEdit && _editable;
   /* Sichtbarkeits-Abzeichen: nur am eigenen Fang, im Read-Modus (JC 22. Juli, Frontend-Vorschau). */
-  { const vs=document.getElementById('d-vis-slot');
-    if(vs){ if(_isMine && !editing && !c._welcome){ vs.style.display=''; vs.innerHTML=_visLockHTML(c); } else { vs.style.display='none'; vs.innerHTML=''; } } }
+  { const vs=document.getElementById('d-vis-slot');   // B1: der „Nur ich"-Hinweis sitzt jetzt als Schloss in der Byline, kein Chip mehr
+    if(vs){ vs.style.display='none'; vs.innerHTML=''; } }
   let rows=[];
   if(editing){
     // EDIT MODE: full field set (all editable inline)
@@ -8402,10 +8414,11 @@ function openDetailObj(c, from, keepEdit){
     if(locEl){ const locRows=rows.filter(r=>r[0]==='water');
       /* Read mode: a bare statement, no label and no card — the heading already says "Ort".
          Edit mode keeps the open .spec row, or the name could not be changed. */
-      locEl.innerHTML = locRows.length
+      locEl.innerHTML = (locRows.length
         ? (editing ? `<div class="dspecs">${locRows.map(_specOne).join('')}</div>`
                    : `<div class="loc-name">${esc(''+locRows[0][2])}</div>`)
-        : '';
+        : '')
+        + ((!editing && c.locApprox) ? `<div class="loc-approx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></svg><span>${esc(t('visApproxArea'))} &middot; &plusmn;2,5 km</span></div>` : '');
       rows = rows.filter(r=>r[0]!=='water');
     } }
   /* "Am Wasser" (JC): same construction as the water name above — the row leaves #d-rows and renders
@@ -8532,7 +8545,7 @@ function openDetailObj(c, from, keepEdit){
   else { const hasLoc = c.lat!=null || !!(c.location||'').trim();
     mw.style.display = hasLoc ? 'block' : 'none';                 // water name without a pin still shows
     { const mapBox=mw.querySelector('.map-wrap'); if(mapBox) mapBox.style.display = c.lat!=null ? '' : 'none'; }
-    if(mEditBar) mEditBar.style.display='none'; if(mFab) mFab.style.display=''; if(mLabel) mLabel.style.display=hasLoc?'':'none'; }
+    if(mEditBar) mEditBar.style.display='none'; if(mFab) mFab.style.display=(c.locApprox?'none':''); if(mLabel) mLabel.style.display=hasLoc?'':'none'; }
   renderWeather(c); // handles API weather, text-only, and water-temp-only (shows/hides the section itself)
   /* No weather yet -> fetch it. Weather from before the chips changed -> fetch it AGAIN, or every
      existing catch would silently lose its arrows for good: enrichWeather() bails out the moment a
@@ -8961,8 +8974,12 @@ let _visPrefsSaveT;
 function saveVisPrefs(){
   try{ localStorage.setItem('bf_visPrefs', JSON.stringify(state.visPrefs)); }catch(e){}
   if(state.auth==='supabase' && getSB() && state.me){
+    // Snapshot am Toggle-Zeitpunkt: der Upsert schreibt genau den Stand des Klicks, nicht einen
+    // später mutierten. Kürzeres Fenster (300 ms), um das Verlust-Fenster zwischen Toggle und
+    // Reload klein zu halten (Symptom: UI zeigt aus, DB blieb an).
+    const snap=JSON.parse(JSON.stringify(state.visPrefs));
     clearTimeout(_visPrefsSaveT);
-    _visPrefsSaveT=setTimeout(async()=>{ try{ await getSB().from('profiles').upsert({id:state.me.id, vis_pref:state.visPrefs}); }catch(e){} }, 600);
+    _visPrefsSaveT=setTimeout(()=>{ try{ getSB().from('profiles').upsert({id:state.me.id, vis_pref:snap}); }catch(e){} }, 300);
   }
 }
 function _vp(){ if(!state.visPrefs) state.visPrefs=loadVisPrefs(); return state.visPrefs; }
