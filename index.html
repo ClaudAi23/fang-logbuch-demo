@@ -890,6 +890,17 @@
   .fl-b.no{background:transparent;border-color:var(--border-2);color:var(--muted);}
   .fl-b.block{background:transparent;border-color:#e5736b;color:#e5736b;}
   .fl-row svg{width:18px;height:18px;color:var(--muted);flex:0 0 auto;}
+  /* Bottom navigation */
+  #botnav{position:fixed;left:0;right:0;bottom:0;z-index:900;height:calc(56px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:flex;background:#06121a;border-top:1px solid var(--border);}
+  #botnav .bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);font-family:inherit;font-size:.6rem;font-weight:600;position:relative;cursor:pointer;padding:6px 0;}
+  #botnav .bn.on{color:var(--teal-bright);}
+  #botnav .bn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  #botnav .bn .bn-av{width:24px;height:24px;border-radius:50%;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--teal-bright);font-weight:700;font-size:.7rem;font-family:'Barlow Condensed',sans-serif;}
+  #botnav .bn .bn-av img{width:100%;height:100%;object-fit:cover;}
+  #botnav .bn.on .bn-av{outline:2px solid var(--teal-bright);outline-offset:1px;}
+  #botnav .bn-badge{position:absolute;top:4px;right:calc(50% - 21px);background:var(--amber);color:#04222a;border-radius:8px;font-size:.55rem;font-weight:800;padding:0 5px;min-width:15px;text-align:center;}
+  body.nav-on .screen.active .scroll{padding-bottom:64px;}
+  body.nav-on .screen.active .pad{padding-bottom:64px;}
   /* M3: the method is a STATEMENT, not a card — no box, no field label ("METHODE" over "ANGELMETHODE"
      said the word twice). It is the headline of the gear tiles below it, so it is set like a heading.
      baseline alignment keeps the qualifiers sitting on the method's baseline, not floating mid-cap. */
@@ -2689,6 +2700,14 @@
       </div>
     </div>
   </section>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <nav id="botnav" style="display:none;">
+    <button type="button" class="bn" data-bn="home" onclick="navTab('home')"><svg class="i" viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span data-i18n="navHome">Home</span></button>
+    <button type="button" class="bn" data-bn="profile" onclick="navTab('profile')"><span class="bn-av" id="bn-av"></span><span data-i18n="navProfile">Profil</span></button>
+    <button type="button" class="bn" data-bn="tasks" onclick="navTab('tasks')"><span class="bn-badge" id="bn-badge" style="display:none;">0</span><svg class="i" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span data-i18n="navTasks">Aufgaben</span></button>
+    <button type="button" class="bn" data-bn="more" onclick="navTab('more')"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg><span data-i18n="navMore">Mehr</span></button>
+  </nav>
 </div>
 
 <script>
@@ -2699,7 +2718,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-22.440';
+const BUILD = '2026-07-22.441';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -2839,13 +2858,13 @@ Object.assign(I18N.de, {visDefAudience:"Standard-Publikum", visShareFollowersDef
 Object.assign(I18N.en, {visDefAudience:"Default audience", visShareFollowersDefault:"Share with followers by default", visShareFollowersHint:"Off — new catches are first seen only by your clubs/groups.", visDefWhat:"What I share by default", visWhatMandatory:"Only required", visWhatSome:"Some", visWhatAll:"All", visDefLoc:"Default location", visClubWins:"Club rules always win. You can adjust the location per catch.", visSharingHeading:"Sharing", visShareWithFollowers:"Share with followers", visLocThisCatch:"Location (this catch)", visLocThisCatchHint:"Prefilled from your default. Protect the spot on a single catch here.", visSpotHidden:"Spot hidden"});
 Object.assign(I18N.nl, {visDefAudience:"Standaardpubliek", visShareFollowersDefault:"Standaard met volgers delen", visShareFollowersHint:"Uit — nieuwe vangsten zien eerst alleen je verenigingen/groepen.", visDefWhat:"Wat ik standaard deel", visWhatMandatory:"Alleen verplicht", visWhatSome:"Sommige", visWhatAll:"Alles", visDefLoc:"Standaardlocatie", visClubWins:"Verenigingsregels winnen altijd. De locatie kun je per vangst aanpassen.", visSharingHeading:"Sharing", visShareWithFollowers:"Met volgers delen", visLocThisCatch:"Locatie (deze vangst)", visLocThisCatchHint:"Vooraf ingevuld met je standaard. Bescherm hier de stek bij één vangst.", visSpotHidden:"Stek verborgen"});
 Object.assign(I18N.de, {profSharedCatches:"geteilte Fänge", profFollow:"Folgen", profFollowing:"Folge ich", profRequested:"Angefragt", profBlocked:"Blockiert", profUnavailable:"Nicht verfügbar", profNoCatches:"Noch keine geteilten Fänge.", profRecords:"Rekorde", profCatches:"Fänge", profUnfollow:"Nicht mehr folgen", profBlockAction:"Blockieren", profUnblockAction:"Blockierung aufheben", profRequestSent:"Anfrage gesendet", allSpecies:"Alle Arten", loadingWord:"Lädt …", cancelWord:"Abbrechen", filterSpecies:"Art", latestCatches:"Neueste Fänge", profGateTitle:"Folge {name}, um die Fänge zu sehen", profGateSub:"Nur Follower sehen die geteilten Fänge dieses Anglers — auch außerhalb eurer gemeinsamen Gruppen & Vereine."});
-Object.assign(I18N.de, {followTitle:"Follower", followReqTab:"Anfragen", followFollowersTab:"Follower", followFollowingTab:"Ich folge", followTasksRow:"Follower", followNoReq:"Keine offenen Anfragen.", followNoFollowers:"Noch keine Follower.", followNoFollowing:"Du folgst noch niemandem.", followWantsToFollow:"möchte dir folgen", followFollowsYou:"folgt dir", accept:"Annehmen", decline:"Ablehnen", remove:"Entfernen"});
+Object.assign(I18N.de, {followTitle:"Follower", followReqTab:"Anfragen", followFollowersTab:"Follower", followFollowingTab:"Ich folge", followTasksRow:"Follower", followNoReq:"Keine offenen Anfragen.", followNoFollowers:"Noch keine Follower.", followNoFollowing:"Du folgst noch niemandem.", followWantsToFollow:"möchte dir folgen", followFollowsYou:"folgt dir", accept:"Annehmen", decline:"Ablehnen", remove:"Entfernen", navHome:"Home", navProfile:"Profil", navTasks:"Aufgaben", navMore:"Mehr"});
 Object.assign(I18N.de, {visApproxArea:"Ungefähre Gegend", visLockOnlyMe:"Nur ich", visSumOnlyMe:"Nur ich", visSumFollowers:"Follower", visSumClubsFollowers:"Vereine + Follower", visSumClubsOnly:"Nur Vereine/Gruppen", visNoFollowersYet:"Du hast noch keine Follower — das legt fest, was sie sehen, sobald du welche hast."});
 Object.assign(I18N.en, {profSharedCatches:"shared catches", profFollow:"Follow", profFollowing:"Following", profRequested:"Requested", profBlocked:"Blocked", profUnavailable:"Unavailable", profNoCatches:"No shared catches yet.", profRecords:"Records", profCatches:"Catches", profUnfollow:"Unfollow", profBlockAction:"Block", profUnblockAction:"Unblock", profRequestSent:"Request sent", allSpecies:"All species", loadingWord:"Loading …", cancelWord:"Cancel", filterSpecies:"Species", latestCatches:"Latest catches", profGateTitle:"Follow {name} to see their catches", profGateSub:"Only followers see this angler's shared catches — including outside your shared clubs & groups."});
-Object.assign(I18N.en, {followTitle:"Followers", followReqTab:"Requests", followFollowersTab:"Followers", followFollowingTab:"Following", followTasksRow:"Followers", followNoReq:"No pending requests.", followNoFollowers:"No followers yet.", followNoFollowing:"You're not following anyone yet.", followWantsToFollow:"wants to follow you", followFollowsYou:"follows you", accept:"Accept", decline:"Decline", remove:"Remove"});
+Object.assign(I18N.en, {followTitle:"Followers", followReqTab:"Requests", followFollowersTab:"Followers", followFollowingTab:"Following", followTasksRow:"Followers", followNoReq:"No pending requests.", followNoFollowers:"No followers yet.", followNoFollowing:"You're not following anyone yet.", followWantsToFollow:"wants to follow you", followFollowsYou:"follows you", accept:"Accept", decline:"Decline", remove:"Remove", navHome:"Home", navProfile:"Profile", navTasks:"Tasks", navMore:"More"});
 Object.assign(I18N.en, {visApproxArea:"Approximate area", visLockOnlyMe:"Only me", visSumOnlyMe:"Only me", visSumFollowers:"Followers", visSumClubsFollowers:"Clubs + followers", visSumClubsOnly:"Clubs/groups only", visNoFollowersYet:"You don't have followers yet — this sets what they'll see once you do."});
 Object.assign(I18N.nl, {profSharedCatches:"gedeelde vangsten", profFollow:"Volgen", profFollowing:"Volg ik", profRequested:"Aangevraagd", profBlocked:"Geblokkeerd", profUnavailable:"Niet beschikbaar", profNoCatches:"Nog geen gedeelde vangsten.", profRecords:"Records", profCatches:"Vangsten", profUnfollow:"Ontvolgen", profBlockAction:"Blokkeren", profUnblockAction:"Deblokkeren", profRequestSent:"Verzoek verstuurd", allSpecies:"Alle soorten", loadingWord:"Laden …", cancelWord:"Annuleren", filterSpecies:"Soort", latestCatches:"Nieuwste vangsten", profGateTitle:"Volg {name} om de vangsten te zien", profGateSub:"Alleen volgers zien de gedeelde vangsten van deze visser — ook buiten jullie gedeelde verenigingen & groepen."});
-Object.assign(I18N.nl, {followTitle:"Volgers", followReqTab:"Verzoeken", followFollowersTab:"Volgers", followFollowingTab:"Ik volg", followTasksRow:"Volgers", followNoReq:"Geen openstaande verzoeken.", followNoFollowers:"Nog geen volgers.", followNoFollowing:"Je volgt nog niemand.", followWantsToFollow:"wil je volgen", followFollowsYou:"volgt jou", accept:"Accepteren", decline:"Afwijzen", remove:"Verwijderen"});
+Object.assign(I18N.nl, {followTitle:"Volgers", followReqTab:"Verzoeken", followFollowersTab:"Volgers", followFollowingTab:"Ik volg", followTasksRow:"Volgers", followNoReq:"Geen openstaande verzoeken.", followNoFollowers:"Nog geen volgers.", followNoFollowing:"Je volgt nog niemand.", followWantsToFollow:"wil je volgen", followFollowsYou:"volgt jou", accept:"Accepteren", decline:"Afwijzen", remove:"Verwijderen", navHome:"Home", navProfile:"Profiel", navTasks:"Taken", navMore:"Meer"});
 Object.assign(I18N.nl, {visApproxArea:"Ongeveer gebied", visLockOnlyMe:"Alleen ik", visSumOnlyMe:"Alleen ik", visSumFollowers:"Volgers", visSumClubsFollowers:"Verenigingen + volgers", visSumClubsOnly:"Alleen verenigingen/groepen", visNoFollowersYet:"Je hebt nog geen volgers — dit bepaalt wat ze straks zien."});
 Object.assign(I18N.de, {visWhatMandatoryHint:"Nur, was deine Vereine verlangen.", visWhatSomeHint:"Dein Zuschnitt — wähle unten.", visWhatAllHint:"Alle Kategorien werden geteilt.", visDefLocHint:"So genau sehen andere deinen Fangort."});
 Object.assign(I18N.en, {visWhatMandatoryHint:"Only what your clubs require.", visWhatSomeHint:"Your selection — choose below.", visWhatAllHint:"All categories are shared.", visDefLocHint:"How precisely others see your spot."});
@@ -3193,6 +3212,7 @@ function go(name, isBack, viaGesture, noArm){
     /* Nicht mehr nur beim Zurück: Den Vorwärtswisch animiert iOS ebenso — auch dort wäre unsere
        Einblendung der zweite Übergang auf demselben Bild. Maßgeblich ist die GESTE, nicht die Richtung. */
     _sc.classList.toggle('no-anim', !!viaGesture); }
+  try{ updateBotNav(name); }catch(e){}
   if(name==='login'){ try{ changeLoginEmail(); const _lc=document.getElementById('login-code'); if(_lc) _lc.value=''; }catch(e){} }
   // The login lockup lives on a hidden screen, so it has no box to measure until now — place it
   // once it's actually laid out, otherwise the lantern never finds the puffer.
@@ -3660,6 +3680,29 @@ function updateDemoBadge(){ const el=document.getElementById('demo-tag'); if(el)
 async function countPendingReqs(){
   const c=getSB(); const { count } = await c.from('context_requests').select('id',{count:'exact',head:true}).eq('status','pending');
   return count||0;
+}
+// ---------- Bottom navigation ----------
+const _NAV_ACTIVE = {club:'home', list:'home', stats:'profile', profile:'profile', follows:'tasks', settings:'more'};
+function navTab(tab){
+  if(tab==='home'){ if(state.club){ try{ leaveArea(); }catch(e){} } else if(_curScreen!=='club'){ try{ renderClubs(); }catch(e){} go('club'); } return; }
+  if(state.auth!=='supabase' || !state.me) return;
+  if(tab==='profile'){ openProfile(state.me.id); }
+  else if(tab==='tasks'){ openFollows(); }
+  else if(tab==='more'){ openSettings(); }
+}
+function updateBotNav(name){
+  name = name || _curScreen;
+  const nav=document.getElementById('botnav'); if(!nav) return;
+  const active=_NAV_ACTIVE[name];
+  const show=(state.auth==='supabase') && !!active;
+  nav.style.display = show ? 'flex' : 'none';
+  document.body.classList.toggle('nav-on', show);
+  if(!show) return;
+  nav.querySelectorAll('.bn').forEach(b=>b.classList.toggle('on', b.dataset.bn===active));
+  const av=document.getElementById('bn-av'); if(av){ try{ av.innerHTML=userAvatarHTML(); }catch(e){ av.textContent=((state.me&&state.me.name)||'?').slice(0,2).toUpperCase(); } }
+  const badge=document.getElementById('bn-badge');
+  if(badge){ const admin = (state.me&&state.me.isAppAdmin) ? ((state.pendingReqs||0)+(state.pendingBetaReqs||0)+(state.pendingFeedback||0)) : 0;
+    const n=(state.pendingFollowReqs||0)+admin; if(n>0){ badge.style.display=''; badge.textContent=n; } else badge.style.display='none'; }
 }
 async function goChooser(){
   // Loader shows on cold start only (initial HTML load, hidden by first go()). No re-show on
@@ -4508,7 +4551,7 @@ async function openFollows(){
     const [req,fol,ing]=await Promise.all([ c.rpc('get_follow_requests'), c.rpc('get_followers'), c.rpc('get_following') ]);
     state.follows.req=(req&&req.data)||[]; state.follows.fol=(fol&&fol.data)||[]; state.follows.ing=(ing&&ing.data)||[];
     state.follows.loading=false; state.pendingFollowReqs=state.follows.req.length; renderFollows();
-    try{ renderClubs(); }catch(e){}
+    try{ renderClubs(); }catch(e){} try{ updateBotNav(); }catch(e){}
   }catch(e){ if(state.follows){ state.follows.loading=false; renderFollows(); } }
 }
 function _followsTab(){ const b=document.querySelector('#follows-tabs .on'); return b?b.dataset.ft:'req'; }
