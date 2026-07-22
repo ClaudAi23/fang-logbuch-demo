@@ -2593,7 +2593,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-22.436';
+const BUILD = '2026-07-22.437';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -8979,7 +8979,8 @@ function saveVisPrefs(){
     // Reload klein zu halten (Symptom: UI zeigt aus, DB blieb an).
     const snap=JSON.parse(JSON.stringify(state.visPrefs));
     clearTimeout(_visPrefsSaveT);
-    _visPrefsSaveT=setTimeout(()=>{ try{ getSB().from('profiles').upsert({id:state.me.id, vis_pref:snap}); }catch(e){} }, 300);
+    // WICHTIG: supabase-js-Builder sind lazy — ohne await/then wird der Upsert nie abgeschickt.
+    _visPrefsSaveT=setTimeout(async()=>{ try{ await getSB().from('profiles').upsert({id:state.me.id, vis_pref:snap}); }catch(e){} }, 300);
   }
 }
 function _vp(){ if(!state.visPrefs) state.visPrefs=loadVisPrefs(); return state.visPrefs; }
