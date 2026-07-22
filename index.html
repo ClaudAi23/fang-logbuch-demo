@@ -1193,14 +1193,23 @@
   /* Sichtbarkeit / „Datenschutz & Teilen" */
   .vis-bucket{border:1px solid var(--border); border-radius:12px; padding:11px 13px; margin:10px 0;}
   .vis-bucket-h{display:flex; align-items:center; gap:9px; margin-bottom:8px;}
-  .vis-bucket-h .ic{width:28px; height:28px; border-radius:8px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; font-size:.95rem; flex:0 0 auto;}
+  .vis-bucket-h .ic{width:28px; height:28px; border-radius:8px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--teal-bright); flex:0 0 auto;}
+  .vis-bucket-h .ic svg{width:18px; height:18px;}
   .vis-bucket-h .nm{font-weight:600; font-size:.95rem;}
   .vis-bucket-h .s{font-size:.72rem; color:var(--muted);}
   .vis-row{display:flex; align-items:center; gap:10px; margin:7px 0;}
-  .vis-row .lab{flex:1; font-size:.9rem; min-width:0;}
+  .vis-row .lab{flex:1; font-size:.9rem; min-width:0; display:flex; align-items:center; gap:10px;}
   .vis-row .seg{flex:0 0 auto; min-width:128px; padding:3px;}
   .vis-row .seg.loc3{min-width:178px;}
   .vis-row .seg button{font-size:.8rem; padding:5px 6px;}
+  .vis-cic{display:inline-flex; align-items:center; color:var(--muted); flex:0 0 auto;}
+  .vis-cic svg{width:18px; height:18px;}
+  .vis-sw{width:46px; height:27px; border-radius:14px; background:var(--surface-2); position:relative; flex:0 0 auto; cursor:pointer; transition:.15s;}
+  .vis-sw::after{content:""; position:absolute; top:3px; left:3px; width:21px; height:21px; border-radius:50%; background:#c9d6d8; transition:.15s;}
+  .vis-sw.on{background:var(--teal);} .vis-sw.on::after{left:22px; background:#04222a;}
+  .vis-sub{font-size:.66rem; letter-spacing:.11em; text-transform:uppercase; color:var(--teal-bright); font-weight:700; margin:18px 0 8px;}
+  .d-vis-badge .dvb-ic{display:inline-flex; align-items:center;}
+  .d-vis-badge .dvb-ic svg{width:16px; height:16px;}
   .d-vis-badge{display:inline-flex; align-items:center; gap:6px; margin:10px 16px 2px; padding:7px 12px; background:var(--surface); border:1px solid var(--border-2); border-radius:20px; font-size:.82rem; font-weight:600; color:var(--teal); cursor:pointer;}
   .d-vis-badge:active{background:var(--surface-2);}
   /* Kontextuelle Sichtbarkeits-Sheets (Vorschau) */
@@ -1965,10 +1974,14 @@
            Felder angezeigt, und nur noch der Verein kann eine Eingabe erzwingen. Damit hatte die
            persönliche Ebene nichts mehr zu entscheiden. -->
 
-      <div class="accgroup" id="acc-share">
-        <button type="button" class="acchead" onclick="toggleAcc('share')"><span data-i18n="shareTitle">Teilen-Vorlage</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="accgroup" id="acc-visibility">
+        <button type="button" class="acchead" onclick="toggleAcc('visibility')"><span data-i18n="visTitle">Privacy and Sharing</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="accbody">
-          <p class="hint" style="margin-top:6px;" data-i18n="shareTemplateIntro">Passe den Text an, den du beim Teilen eines Fangs verschickst. Platzhalter werden automatisch gefüllt; leere Felder fallen weg.</p>
+          <p class="hint" style="margin-top:6px;" data-i18n="visIntro">Choose what others see of your catches, and the message you send when sharing. Spots only as precise as you allow.</p>
+          <p class="hint" style="margin:2px 0 0; color:var(--amber);" data-i18n="visPreviewNote">Preview — visibility doesn't take effect yet; real sharing arrives with the next update.</p>
+          <div class="vis-sub" data-i18n="visSubWho">Who can see your catches</div>
+          <div id="vis-settings-body"></div>
+          <div class="vis-sub" data-i18n="visSubMsg">Share message</div>
           <div style="position:relative;">
             <textarea id="share-template" rows="6" oninput="onShareTemplateInput()" style="padding-right:42px;"></textarea>
             <button type="button" id="share-reset-btn" class="tmpl-reset" title="Auf Standard zurücksetzen" aria-label="Auf Standard zurücksetzen" onclick="resetShareTemplate()"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/></svg></button>
@@ -1978,16 +1991,6 @@
           <div class="sectionlabel" style="margin-top:16px;" data-i18n="sharePreview">Vorschau</div>
           <pre id="share-preview" class="share-prev"></pre>
           <p class="hint" data-i18n="shareHintGlobal" style="margin-top:10px;">Gilt für alle deine Fänge.</p>
-        </div>
-      </div>
-
-      <div class="accgroup" id="acc-visibility">
-        <button type="button" class="acchead" onclick="toggleAcc('visibility')"><span data-i18n="visTitle">Datenschutz &amp; Teilen</span><svg class="acc-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="accbody">
-          <p class="hint" style="margin-top:6px;" data-i18n="visIntro">Lege fest, was andere von deinen Fängen sehen. Fangorte immer nur so genau, wie du erlaubst.</p>
-          <p class="hint" style="margin:0 0 4px; opacity:.8;" data-i18n="visPreviewNote">Vorschau — die Freigabe wirkt erst mit dem kommenden Follower-/Teilen-Update.</p>
-          <div id="vis-settings-body"></div>
-          <p class="hint" style="margin-top:12px;"><span data-i18n="visPreviewLead">Hinweise ansehen:</span> <a href="javascript:void(0)" onclick="openCtxFollowPreview()" style="color:var(--teal-bright); font-weight:600;" data-i18n="visPreviewFollow">Follow-Anfrage</a> · <a href="javascript:void(0)" onclick="openCtxJoinPreview('verein')" style="color:var(--teal-bright); font-weight:600;" data-i18n="visPreviewJoin">Vereinsbeitritt</a></p>
         </div>
       </div>
 
@@ -2575,7 +2578,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-22.429';
+const BUILD = '2026-07-22.430';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -2708,6 +2711,9 @@ Object.assign(I18N.nl, {visPreviewLead:"Bekijk de meldingen:", visPreviewFollow:
 Object.assign(I18N.de, {visSheetPreview:"Vorschau — diese Freigabe wirkt noch nicht. Echtes Teilen kommt mit dem nächsten Update."});
 Object.assign(I18N.en, {visSheetPreview:"Preview — this doesn't take effect yet. Real sharing arrives with the next update."});
 Object.assign(I18N.nl, {visSheetPreview:"Voorbeeld — dit werkt nog niet. Echt delen komt met de volgende update."});
+Object.assign(I18N.de, {visTitle:"Datenschutz & Teilen", visIntro:"Lege fest, was andere von deinen Fängen sehen und welche Nachricht du beim Teilen verschickst. Fangorte nur so genau, wie du erlaubst.", visPreviewNote:"Vorschau — die Sichtbarkeit wirkt noch nicht; echtes Teilen kommt mit dem nächsten Update.", visSubWho:"Wer sieht deine Fänge", visSubMsg:"Teilen-Nachricht"});
+Object.assign(I18N.en, {visTitle:"Privacy and Sharing", visIntro:"Choose what others see of your catches, and the message you send when sharing. Spots only as precise as you allow.", visPreviewNote:"Preview — visibility doesn't take effect yet; real sharing arrives with the next update.", visSubWho:"Who can see your catches", visSubMsg:"Share message"});
+Object.assign(I18N.nl, {visTitle:"Privacy & delen", visIntro:"Bepaal wat anderen van je vangsten zien en welk bericht je bij het delen stuurt. Stekken alleen zo precies als je toestaat.", visPreviewNote:"Voorbeeld — zichtbaarheid werkt nog niet; echt delen komt met de volgende update.", visSubWho:"Wie ziet je vangsten", visSubMsg:"Deelbericht"});
 Object.assign(I18N.nl, {method:"Methode", bait:"Aas", rod:"Hengel", boat:"Boot", watertemp:"Water", watertempPh:"bijv. 18 °C", trolling:"Sleepsnelheid", trollingPh:"bijv. 3,2", releasedLabel:"Meenemen / Terugzetten", releasedNone:"—", releasedKept:"Meegenomen", releasedReleased:"Teruggezet", methodPh:"bijv. Kunstaasvissen", baitPh:"bijv. shad 12 cm", rodPh:"bijv. 2,70 m / 40 g", reel:"Molen", reelPh:"bijv. 4000 werpmolen", boatPh:"bijv. rubberboot", fieldsTitle:"Vangst invoeren", fieldsHint:"Bepaal welke velden verplicht zijn bij het loggen. Alle velden worden altijd getoond.", fieldsHintAdmin:"Als beheerder kun je velden verplicht maken. Alle velden worden altijd getoond — verbergen kan niet.", fieldsHintMember:"Welke velden verplicht zijn stelt de beheerder in (alleen lezen).", stRequired:"Verplicht", stNotRequired:"Niet verplicht", moreFields:"Meer velden", errRequired:"Vul de verplichte velden in:", shareTitle:"Delen", shareModeFields:"Velden", shareModeTemplate:"Eigen sjabloon", sharePreview:"Voorbeeld", shareLink:"App-link", shareHint:"Geldt voor dit gebied (Solo / groep / vereniging).", sharePhHint:"Tijdelijke aanduidingen: {petri} {art} {länge} {gewicht} {maße} {methode} {köder} {rute} {boot} {wassertemp} {schlepp} {entnahme} {ort} {datum} {angler} {wetter} {mond} {notiz} {bereich} {link}", exportCsv:"Exporteren als CSV", exportPdf:"Exporteren als PDF (met foto's)", exportEmpty:"Geen vangsten om te exporteren.", exportPdfErr:"Kon PDF-export niet laden (internet vereist)."});
 Object.assign(I18N.de, {tabPersonal:"Persönlich", tabArea:"Verein/Gruppe", tabAreaClub:"Verein", tabAreaGroup:"Gruppe", emailLabel:"E-Mail", emailFixedHint:"E-Mail-Adresse – derzeit nicht änderbar.", categories:"Kategorien", allGroups:"Alle Gruppen", allClubs:"Alle Vereine", showCatchesFrom:"Fänge aus", showCatchesFromHint:"Mehrere möglich. Nichts ausgewählt = alle.", selectedN:"ausgewählt", areaCtxHint:"Einstellungen für: {ctx}", copyToAreas:"Auf andere Vereine/Gruppen übernehmen …", copySub:"in welche Vereine/Gruppen kopieren?", selectAll:"Alle auswählen", cancel:"Abbrechen", apply:"Übernehmen", copyDone:"Auf {n} Verein(e)/Gruppe(n) übernommen.", shareBereich:"Verein/Gruppe", shareFieldsHint:"Wähle, welche Infos geteilt werden — die Vorschau unten zeigt das Ergebnis.", shareTemplateHint:"Schreibe den Text selbst. Platzhalter werden beim Teilen durch echte Werte ersetzt.", sharePhTapHint:"Tippe einen Platzhalter an, um ihn einzufügen:", exifGps:"Ort aus Foto übernommen", exifDate:"Zeit aus Foto übernommen", exifBoth:"Ort & Zeit aus Foto übernommen", exifNone:"Kein Ort/keine Zeit im Foto gefunden", exifRedo:"Ort & Zeit aus diesem Foto übernehmen", exifNoPhoto:"Kein Foto gewählt", exifDateBtn:"Datum aus Foto", exifLocBtn:"Ort aus Foto", obSkip:"Überspringen", obNext:"Weiter", obBack:"Zurück", obStart:"Los geht's", obFinish:"Fertig – los geht's!", obWelcomeTitle:"Willkommen an Bord", obWelcomeText:"Dein digitales Fang-Logbuch.", obProfileTitle:"Dein Profil", obProfileText:"Name und optional ein Bild – jederzeit in den Einstellungen änderbar.", ctxNamePh:"z. B. ASV Musterstadt", ctxLocPh:"z. B. Musterteich", obTeamHint:"Verein oder Gruppe jederzeit über ＋ auf dem Startbildschirm hinzufügen.", obV1t:"Im Handumdrehen erfasst", obV1d:"Art, Größe und Foto – Ort, Wetter und Mond ergänzen sich von selbst.", obV2t:"Solo oder gemeinsam", obV2d:"Privates Logbuch – oder geteilt mit Verein oder Freundesgruppe.", obV3t:"Deine Bestwerte", obV3d:"Rekorde, Trends und Statistiken über alle Fänge.", obInstallTitle:"Speichere den Butler auf deinem Handy", obInstallText:"Als App gespeichert öffnet sich der Butler im Vollbild und ist schneller griffbereit.", obReplay:"Einführung ansehen"});
 Object.assign(I18N.en, {tabPersonal:"Personal", tabArea:"Club/group", tabAreaClub:"Club", tabAreaGroup:"Group", emailLabel:"Email", emailFixedHint:"Email address – not changeable yet.", categories:"Categories", allGroups:"All groups", allClubs:"All clubs", showCatchesFrom:"Show catches from", showCatchesFromHint:"Pick several. None selected = all.", selectedN:"selected", areaCtxHint:"Settings for: {ctx}", copyToAreas:"Copy to other clubs/groups …", copySub:"copy into which clubs/groups?", selectAll:"Select all", cancel:"Cancel", apply:"Apply", copyDone:"Copied to {n} club(s)/group(s).", shareBereich:"Club/group", shareFieldsHint:"Choose which info gets shared — the preview below shows the result.", shareTemplateHint:"Write the text yourself. Placeholders are replaced with real values when sharing.", sharePhTapHint:"Tap a placeholder to insert it:", exifGps:"Location taken from photo", exifDate:"Time taken from photo", exifBoth:"Location & time taken from photo", exifNone:"No location/time found in photo", exifRedo:"Take location & time from this photo", exifNoPhoto:"No photo selected", exifDateBtn:"Date from photo", exifLocBtn:"Location from photo", obSkip:"Skip", obNext:"Next", obBack:"Back", obStart:"Let's go", obFinish:"Done — let's go!", obWelcomeTitle:"Welcome aboard", obWelcomeText:"Your digital catch log.", obProfileTitle:"Your profile", obProfileText:"A name and optional photo – changeable anytime in settings.", ctxNamePh:"e.g. Springfield Anglers", ctxLocPh:"e.g. Mill Pond", obTeamHint:"Add a club or group anytime with ＋ on the home screen.", obV1t:"Log in seconds", obV1d:"Species, size and a photo — location, weather and moon fill in for you.", obV2t:"Solo or together", obV2d:"A private log, or one you share with your club or a group of friends.", obV3t:"See your best", obV3d:"Records, trends and stats across every catch you land.", obInstallTitle:"Save the Butler to your phone", obInstallText:"Saved as an app, ButlerFish opens full-screen and is quicker to reach.", obReplay:"View intro"});
@@ -8841,16 +8847,26 @@ async function doShareCatch(){
 /* ---------- Sichtbarkeit / „Datenschutz & Teilen" (Frontend-Vorschau, JC 22. Juli) ----------
    Lokales Datenmodell für die Sichtbarkeits-Defaults je Bucket. Wirkt noch NICHT serverseitig
    (Follower/Gating kommen mit dem Supabase-Teil); hier wird eingestellt und lokal persistiert. */
+const _visSvg=(p)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">${p}</svg>`;
+const IC_FOLLOWER=_visSvg('<path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>');
+const IC_CLUB=_visSvg('<path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-5h6v5"/>');
+const IC_GROUP=_visSvg('<path d="M10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M4 20v-1a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1"/><path d="M16 3.5a4 4 0 0 1 0 7"/><path d="M21 20v-1a4 4 0 0 0-3-3.8"/>');
+const IC_PHOTOS=_visSvg('<path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/>');
+const IC_TACKLE=_visSvg('<path d="M3 21l6-6"/><path d="M14 4l6 6-9 2-3 3-3-3 3-3 2-9 3 1z"/>');
+const IC_WEATHER=_visSvg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/>');
+const IC_NOTE=_visSvg('<path d="M4 4h16v12l-4 4H4z"/><path d="M14 20v-4h4"/>');
+const IC_LOC=_visSvg('<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/>');
+const IC_PRIVATE=_visSvg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>');
 const VIS_BUCKETS=[
-  {key:'follower', ic:'👤', nmK:'visBucketFollower', sK:'visBucketFollowerSub'},
-  {key:'verein',   ic:'🏛️', nmK:'visBucketVerein',   sK:'visBucketVereinSub'},
-  {key:'gruppe',   ic:'👥', nmK:'visBucketGruppe',   sK:'visBucketGruppeSub'}
+  {key:'follower', ic:IC_FOLLOWER, nmK:'visBucketFollower', sK:'visBucketFollowerSub'},
+  {key:'verein',   ic:IC_CLUB,     nmK:'visBucketVerein',   sK:'visBucketVereinSub'},
+  {key:'gruppe',   ic:IC_GROUP,    nmK:'visBucketGruppe',   sK:'visBucketGruppeSub'}
 ];
 const VIS_CATS=[
-  {key:'photos',    lK:'visCatPhotos'},
-  {key:'technique', lK:'visCatTechnique'},
-  {key:'weather',   lK:'visCatWeather'},
-  {key:'note',      lK:'visCatNote'}
+  {key:'photos',    lK:'visCatPhotos',    ic:IC_PHOTOS},
+  {key:'technique', lK:'visCatTechnique', ic:IC_TACKLE},
+  {key:'weather',   lK:'visCatWeather',   ic:IC_WEATHER},
+  {key:'note',      lK:'visCatNote',      ic:IC_NOTE}
 ];
 const VIS_DEFAULTS_SEED={
   follower:{photos:true, technique:true,  weather:true, note:false, loc:'area'},
@@ -8873,10 +8889,9 @@ function renderVisSettings(){
   host.innerHTML=VIS_BUCKETS.map(b=>{
     const d=state.visDefaults[b.key];
     const cats=VIS_CATS.map(c=>
-      `<div class="vis-row"><span class="lab">${esc(t(c.lK))}</span>`+
-      `<div class="seg"><button type="button" class="${d[c.key]?'on':''}" onclick="setVisCat('${b.key}','${c.key}',true)">${esc(t('visOn'))}</button>`+
-      `<button type="button" class="${!d[c.key]?'on':''}" onclick="setVisCat('${b.key}','${c.key}',false)">${esc(t('visOff'))}</button></div></div>`).join('');
-    const locRow=`<div class="vis-row"><span class="lab">${esc(t('visCatLocation'))}</span>`+
+      `<div class="vis-row"><span class="lab"><span class="vis-cic">${c.ic}</span>${esc(t(c.lK))}</span>`+
+      `<span class="vis-sw${d[c.key]?' on':''}" role="switch" aria-checked="${d[c.key]?'true':'false'}" onclick="setVisCat('${b.key}','${c.key}',${d[c.key]?'false':'true'})"></span></div>`).join('');
+    const locRow=`<div class="vis-row"><span class="lab"><span class="vis-cic">${IC_LOC}</span>${esc(t('visCatLocation'))}</span>`+
       `<div class="seg loc3">`+loc.map(o=>`<button type="button" class="${d.loc===o.v?'on':''}" onclick="setVisLoc('${b.key}','${o.v}')">${esc(t(o.lK))}</button>`).join('')+`</div></div>`;
     return `<div class="vis-bucket"><div class="vis-bucket-h"><span class="ic">${b.ic}</span><span><div class="nm">${esc(t(b.nmK))}</div><div class="s">${esc(t(b.sK))}</div></span></div>${cats}${locRow}</div>`;
   }).join('');
@@ -8901,16 +8916,18 @@ function catchVis(c){
   };
 }
 function _visLocWord(l){ return l==='exact'?t('visLocExact'):(l==='off'?t('visLocOff'):t('visLocArea')); }
-function visBadgeLabel(c){
+function _visBadgeParts(c){
   const v=catchVis(c);
-  if(v.private) return '🔒 '+t('visPrivate');
-  if(!v.follower && !v.group) return '🔒 '+t('visNoOne');
-  const aud = v.follower ? ('👤 '+t('visBucketFollower')) : ('👥 '+t('visBucketVereinGruppe'));
-  return aud+' · '+_visLocWord(v.loc);
+  if(v.private) return {ic:IC_PRIVATE, txt:t('visPrivate')};
+  if(!v.follower && !v.group) return {ic:IC_PRIVATE, txt:t('visNoOne')};
+  const ic = v.follower ? IC_FOLLOWER : IC_GROUP;
+  const aud = v.follower ? t('visBucketFollower') : t('visBucketVereinGruppe');
+  return {ic, txt: aud+' · '+_visLocWord(v.loc)};
 }
 function _visBadgeHTML(c){
+  const p=_visBadgeParts(c);
   const chev='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;opacity:.6;"><path d="M9 6l6 6-6 6"/></svg>';
-  return `<button type="button" class="d-vis-badge" onclick="openVisSheet('${c.id}')"><span>${esc(visBadgeLabel(c))}</span>${chev}</button>`;
+  return `<button type="button" class="d-vis-badge" onclick="openVisSheet('${c.id}')"><span class="dvb-ic">${p.ic}</span><span>${esc(p.txt)}</span>${chev}</button>`;
 }
 function _refreshVisBadge(){ const c=state.current; if(!c) return; const vs=document.getElementById('d-vis-slot'); if(vs && vs.style.display!=='none'){ vs.innerHTML=_visBadgeHTML(c); } }
 function openVisSheet(id){ state._visSheetId=id; renderVisSheet(); const sh=document.getElementById('vis-sheet'); if(sh) sh.style.display='flex'; }
@@ -8920,19 +8937,19 @@ function renderVisSheet(){
   const host=document.getElementById('vis-sheet-body'); if(!host) return;
   const v=catchVis(c);
   if(v.private){
-    host.innerHTML=`<div class="vis-bucket"><div class="vis-bucket-h"><span class="ic">🔒</span><span><div class="nm">${esc(t('visPrivateOn'))}</div><div class="s">${esc(t('visPrivateHint'))}</div></span></div></div>`+
+    host.innerHTML=`<div class="vis-bucket"><div class="vis-bucket-h"><span class="ic">${IC_PRIVATE}</span><span><div class="nm">${esc(t('visPrivateOn'))}</div><div class="s">${esc(t('visPrivateHint'))}</div></span></div></div>`+
       `<button type="button" class="btn secondary" style="margin-top:2px;" onclick="setCatchPrivate(false)">${esc(t('visUnprivate'))}</button>`;
     return;
   }
   const loc=[{v:'exact',lK:'visLocExact'},{v:'area',lK:'visLocArea'},{v:'off',lK:'visLocOff'}];
-  const audRow=(key,lab,val)=>`<div class="vis-row"><span class="lab">${esc(lab)}</span><div class="seg"><button type="button" class="${val?'on':''}" onclick="setCatchVisAud('${key}',true)">${esc(t('visOn'))}</button><button type="button" class="${!val?'on':''}" onclick="setCatchVisAud('${key}',false)">${esc(t('visOff'))}</button></div></div>`;
+  const audRow=(key,ic,lab,val)=>`<div class="vis-row"><span class="lab"><span class="vis-cic">${ic}</span>${esc(lab)}</span><span class="vis-sw${val?' on':''}" role="switch" aria-checked="${val?'true':'false'}" onclick="setCatchVisAud('${key}',${val?'false':'true'})"></span></div>`;
   host.innerHTML=
     `<div class="vis-bucket">`+
-      audRow('follower','👤 '+t('visBucketFollower'), v.follower)+
-      audRow('group','👥 '+t('visBucketVereinGruppe'), v.group)+
-      `<div class="vis-row"><span class="lab">📍 ${esc(t('visCatLocation'))}</span><div class="seg loc3">`+loc.map(o=>`<button type="button" class="${v.loc===o.v?'on':''}" onclick="setCatchVisLoc('${o.v}')">${esc(t(o.lK))}</button>`).join('')+`</div></div>`+
+      audRow('follower',IC_FOLLOWER,t('visBucketFollower'), v.follower)+
+      audRow('group',IC_GROUP,t('visBucketVereinGruppe'), v.group)+
+      `<div class="vis-row"><span class="lab"><span class="vis-cic">${IC_LOC}</span>${esc(t('visCatLocation'))}</span><div class="seg loc3">`+loc.map(o=>`<button type="button" class="${v.loc===o.v?'on':''}" onclick="setCatchVisLoc('${o.v}')">${esc(t(o.lK))}</button>`).join('')+`</div></div>`+
     `</div>`+
-    `<button type="button" class="btn secondary" style="margin-top:4px; color:var(--danger); border-color:var(--danger);" onclick="setCatchPrivate(true)">🔒 ${esc(t('visMakePrivate'))}</button>`;
+    `<button type="button" onclick="setCatchPrivate(true)" class="btn secondary" style="margin-top:4px; color:var(--danger); border-color:var(--danger); display:flex; align-items:center; justify-content:center; gap:7px;">${IC_PRIVATE}${esc(t('visMakePrivate'))}</button>`;
 }
 function _visUpd(mut){ const id=state._visSheetId; if(!id) return; const ov=_visOv(); ov[id]=Object.assign({}, ov[id]||{}); mut(ov[id]); saveVisOverride(); renderVisSheet(); _refreshVisBadge(); }
 function setCatchVisAud(which,val){ _visUpd(o=>{ o[which]=!!val; }); }
@@ -8966,7 +8983,7 @@ function openCtxJoinPreview(kind){
   const body=document.getElementById('ctxvis-body'); if(!body) return;
   body.innerHTML=
     `<div class="ctxv-chip">${esc(t('ctxPreviewChip'))}</div>`+
-    `<div class="ctxv-head"><span class="av">${isV?'🏛️':'👥'}</span><div><div class="nm">${esc(t('ctxJoinTitle').replace('{name}',name))}</div><div class="s">${esc(t('ctxJoinSub'))}</div></div></div>`+
+    `<div class="ctxv-head"><span class="av">${isV?IC_CLUB:IC_GROUP}</span><div><div class="nm">${esc(t('ctxJoinTitle').replace('{name}',name))}</div><div class="s">${esc(t('ctxJoinSub'))}</div></div></div>`+
     `<div class="ctxv-box"><div class="h">${esc(t(isV?'ctxJoinWhatVerein':'ctxJoinWhatGruppe'))}</div>${_visSummaryHTML(isV?'verein':'gruppe')}</div>`+
     `<button type="button" class="btn" onclick="_ctxvisAct()">${esc(t('ctxJoinOk'))}</button>`+
     `<button type="button" class="btn secondary" style="margin-top:8px;" onclick="_ctxvisAdjust()">${esc(t('ctxAdjust'))}</button>`;
