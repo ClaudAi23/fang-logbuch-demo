@@ -1356,6 +1356,40 @@
   .feed-tx{flex:1; min-width:0;}
   .feed-line{display:block; font-size:.86rem; line-height:1.35;}
   .feed-dt{display:block; font-size:.72rem; color:var(--muted); margin-top:2px;}
+  /* Home feed (Nord-Stern) */
+  .home-hdr{flex:0 0 auto; padding:10px 16px 11px; border-bottom:1px solid var(--border); background:var(--sand);}
+  .home-hdr-main{display:flex; align-items:center; gap:9px;}
+  .home-puf{width:30px;height:30px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--amber);flex:0 0 auto;} .home-puf svg{width:19px;height:19px;}
+  .home-wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;line-height:1;color:var(--text);} .home-wm .hf{color:var(--amber);}
+  .home-beta{background:rgba(235,158,24,.16);color:var(--amber);border:1px solid rgba(235,158,24,.4);border-radius:999px;padding:1px 9px;font-size:.62rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}
+  .home-tag{margin:3px 0 0 39px;font-size:.72rem;color:var(--muted);letter-spacing:.02em;}
+  .home-hdr.slim{padding:9px 16px;} .home-hdr.slim .home-puf{display:none;} .home-hdr.slim .home-wm{font-size:1.15rem;} .home-hdr.slim .home-tag{display:none;}
+  .home-vtrow{display:flex;align-items:center;justify-content:space-between;margin:12px 0 2px;}
+  .home-vt-h{font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;}
+  .hf-lbl{font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:14px 2px 9px;}
+  .hf-needbar{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:rgba(81,166,160,.14);border:1px solid var(--border-2);border-radius:12px;padding:11px 12px;cursor:pointer;color:var(--text);font-family:inherit;}
+  .hf-needbar .bell{width:30px;height:30px;border-radius:9px;background:var(--teal);color:#04222a;display:flex;align-items:center;justify-content:center;flex:0 0 auto;} .hf-needbar .bell svg{width:17px;height:17px;}
+  .hf-needbar .nx{flex:1;min-width:0;font-size:.82rem;} .hf-needbar .nx b{color:var(--text);} .hf-needbar .nx small{display:block;color:var(--muted);font-size:.72rem;}
+  .hf-needbar .chev{color:var(--teal-bright);flex:0 0 auto;}
+  .hf-sec-h{display:flex;align-items:center;gap:8px;margin:16px 2px 9px;cursor:pointer;}
+  .hf-sec-t{font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;}
+  .hf-spacer{flex:1;}
+  .hf-ct{background:var(--teal);color:#04222a;border-radius:999px;padding:0 7px;font-size:.62rem;font-weight:800;}
+  .hf-sa{color:var(--teal-bright);font-size:.72rem;font-weight:700;}
+  .hf-cv{color:var(--muted);display:flex;align-items:center;}
+  .hf-hero{display:block;width:100%;position:relative;border-radius:14px;overflow:hidden;height:120px;background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);border:none;padding:0;text-align:left;cursor:pointer;margin-bottom:9px;}
+  .hf-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .hf-fish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(99,192,184,.28);} .hf-fish svg{width:40px;height:40px;}
+  .hf-scrim{position:absolute;left:0;right:0;bottom:0;height:66%;background:linear-gradient(transparent,rgba(2,20,30,.92));}
+  .hf-band{position:absolute;left:13px;right:13px;bottom:9px;}
+  .hf-sp{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;line-height:1;color:var(--text);}
+  .hf-sz{display:inline-block;margin-left:8px;font-size:.74rem;background:rgba(255,255,255,.16);border-radius:7px;padding:2px 8px;vertical-align:2px;color:var(--text);}
+  .hf-meta{display:block;margin-top:4px;font-size:.73rem;color:#cfe;}
+  .hf-seeall-row{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;color:var(--teal-bright);font-size:.8rem;font-weight:700;padding:9px;border:1px dashed var(--border-2);border-radius:12px;background:none;cursor:pointer;font-family:inherit;margin-top:2px;}
+  .hf-empty{padding:44px 18px;text-align:center;}
+  .hf-empty .puff{width:74px;height:74px;margin:0 auto 14px;border-radius:18px;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--amber);} .hf-empty .puff svg{width:40px;height:40px;}
+  .hf-empty h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;margin:0 0 6px;}
+  .hf-empty p{color:var(--muted);font-size:.86rem;margin:0 auto;max-width:240px;}
   .chkrow{display:flex; align-items:center; gap:12px; padding:8px 0; font-size:0.875rem; cursor:pointer;}
   .chiprow{display:flex; flex-wrap:wrap; gap:7px; margin:2px 0 6px;}
   .fchip{display:inline-flex; align-items:center; gap:5px; font-size:0.8125rem; padding:6px 12px; border-radius:999px; border:1px solid var(--border-2); background:var(--surface-2); color:var(--muted); cursor:pointer; font-family:inherit;}
@@ -1666,16 +1700,29 @@
   <span id="demo-tag" class="demo-tag" style="display:none;">DEMO</span>
 
   <!-- ============ CLUB ============ -->
-  <!-- ============ HOME (Dashboard) ============ -->
+  <!-- ============ HOME (Feed) ============ -->
   <section id="s-home" class="screen">
-    <div class="topbar">
-      <div style="flex:1; min-width:0;"><h1 id="home-greeting" style="font-family:'Barlow Condensed',sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">ButlerFish</h1></div>
+    <div id="home-hdr" class="home-hdr">
+      <div class="home-hdr-main">
+        <span class="home-puf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12c3-5 9-5 12 0-3 5-9 5-12 0z"/><circle cx="9" cy="12" r="1"/><path d="M18 12c2 0 3 2 3 2s-1 2-3 2"/></svg></span>
+        <span class="home-wm"><span>butler</span><span class="hf">fish</span></span>
+        <span class="home-beta" data-i18n="betaPill">Beta</span>
+      </div>
+      <div class="home-tag">Catch. Log. Organize.</div>
     </div>
-    <div class="scroll pad">
-      <div id="home-kpis" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:6px 0 20px;"></div>
-      <div id="home-feed" style="margin-bottom:18px; display:none;"></div>
-      <p class="sectionlabel" style="margin:0 0 10px;" data-i18n="latestCatches">Neueste Fänge</p>
-      <div id="home-recent"></div>
+    <div class="scroll pad" onscroll="_homeScroll(this)">
+      <div id="home-needs"></div>
+      <div id="home-vtrow" class="home-vtrow" style="display:none;">
+        <span class="home-vt-h" data-i18n="feedWord">Feed</span>
+        <div class="viewtog" id="home-viewtog">
+          <button type="button" data-vm="mixed" onclick="setListView('home','mixed')" data-i18n-title="viewMixed" title="Kacheln" aria-label="Kacheln"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg></button>
+          <button type="button" data-vm="list" onclick="setListView('home','list')" data-i18n-title="viewList" title="Liste" aria-label="Liste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1.3"/><circle cx="3.5" cy="12" r="1.3"/><circle cx="3.5" cy="18" r="1.3"/></svg></button>
+        </div>
+      </div>
+      <div id="home-club"></div>
+      <div id="home-follow"></div>
+      <div id="home-mine"></div>
+      <div id="home-empty" style="display:none;"></div>
       <div style="height:80px"></div>
     </div>
   </section>
@@ -2782,7 +2829,6 @@
     <button type="button" class="bn" data-bn="home" onclick="navTab('home')"><svg class="i" viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span data-i18n="navHome">Home</span></button>
     <button type="button" class="bn" data-bn="community" onclick="navTab('community')"><svg class="i" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span data-i18n="navCommunity">Community</span></button>
     <button type="button" class="bn-add" data-i18n-title="addCatch" title="Fang eintragen" aria-label="Fang eintragen" onclick="openForm()"><span class="plus"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span></button>
-    <button type="button" class="bn" data-bn="tasks" onclick="navTab('tasks')"><span class="bn-badge" id="bn-badge" style="display:none;">0</span><svg class="i" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span data-i18n="navTasks">Aufgaben</span></button>
     <button type="button" class="bn" data-bn="profile" onclick="navTab('profile')"><span class="bn-av" id="bn-av"></span><span data-i18n="navProfile">Profil</span></button>
   </nav>
 </div>
@@ -2795,7 +2841,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-23.451';
+const BUILD = '2026-07-23.452';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -2935,13 +2981,13 @@ Object.assign(I18N.de, {visDefAudience:"Standard-Publikum", visShareFollowersDef
 Object.assign(I18N.en, {visDefAudience:"Default audience", visShareFollowersDefault:"Share with followers by default", visShareFollowersHint:"Off — new catches are first seen only by your clubs/groups.", visDefWhat:"What I share by default", visWhatMandatory:"Only required", visWhatSome:"Some", visWhatAll:"All", visDefLoc:"Default location", visClubWins:"Club rules always win. You can adjust the location per catch.", visSharingHeading:"Sharing", visShareWithFollowers:"Share with followers", visLocThisCatch:"Location (this catch)", visLocThisCatchHint:"Prefilled from your default. Protect the spot on a single catch here.", visSpotHidden:"Spot hidden"});
 Object.assign(I18N.nl, {visDefAudience:"Standaardpubliek", visShareFollowersDefault:"Standaard met volgers delen", visShareFollowersHint:"Uit — nieuwe vangsten zien eerst alleen je verenigingen/groepen.", visDefWhat:"Wat ik standaard deel", visWhatMandatory:"Alleen verplicht", visWhatSome:"Sommige", visWhatAll:"Alles", visDefLoc:"Standaardlocatie", visClubWins:"Verenigingsregels winnen altijd. De locatie kun je per vangst aanpassen.", visSharingHeading:"Sharing", visShareWithFollowers:"Met volgers delen", visLocThisCatch:"Locatie (deze vangst)", visLocThisCatchHint:"Vooraf ingevuld met je standaard. Bescherm hier de stek bij één vangst.", visSpotHidden:"Stek verborgen"});
 Object.assign(I18N.de, {profSharedCatches:"geteilte Fänge", profFollow:"Folgen", profFollowing:"Folge ich", profRequested:"Angefragt", profBlocked:"Blockiert", profUnavailable:"Nicht verfügbar", profNoCatches:"Noch keine geteilten Fänge.", profRecords:"Rekorde", profCatches:"Fänge", profUnfollow:"Nicht mehr folgen", profBlockAction:"Blockieren", profUnblockAction:"Blockierung aufheben", profRequestSent:"Anfrage gesendet", allSpecies:"Alle Arten", loadingWord:"Lädt …", cancelWord:"Abbrechen", filterSpecies:"Art", latestCatches:"Neueste Fänge", profGateTitle:"Folge {name}, um die Fänge zu sehen", profGateSub:"Nur Follower sehen die geteilten Fänge dieses Anglers — auch außerhalb eurer gemeinsamen Gruppen & Vereine."});
-Object.assign(I18N.de, {followTitle:"Follower", followReqTab:"Anfragen", followFollowersTab:"Follower", followFollowingTab:"Ich folge", followTasksRow:"Follower", followNoReq:"Keine offenen Anfragen.", followNoFollowers:"Noch keine Follower.", followNoFollowing:"Du folgst noch niemandem.", followWantsToFollow:"möchte dir folgen", followFollowsYou:"folgt dir", accept:"Annehmen", decline:"Ablehnen", remove:"Entfernen", navHome:"Home", navProfile:"Du", navTasks:"Aktivität", navMore:"Mehr", profMapTab:"Karte", profNetTab:"Netzwerk", profTackleTab:"Tacklebox", profTackleSoon:"Deine Ruten, Rollen, Köder & Ausrüstung — mit Fang-Statistik. Kommt bald.", profNoLoc:"Noch keine Fänge mit Ort.", tasksAdmin:"Verein-Verwaltung", tasksEmpty:"Keine offenen Aufgaben.", profWithdraw:"Anfrage zurückziehen", viewMixed:"Kacheln", viewList:"Liste", navCommunity:"Community", homeGreeting:"Moin, {name}", homeFeedTitle:"Von wem du folgst", feedCaught:"fing"});
+Object.assign(I18N.de, {followTitle:"Follower", followReqTab:"Anfragen", followFollowersTab:"Follower", followFollowingTab:"Ich folge", followTasksRow:"Follower", followNoReq:"Keine offenen Anfragen.", followNoFollowers:"Noch keine Follower.", followNoFollowing:"Du folgst noch niemandem.", followWantsToFollow:"möchte dir folgen", followFollowsYou:"folgt dir", accept:"Annehmen", decline:"Ablehnen", remove:"Entfernen", navHome:"Home", navProfile:"Du", navTasks:"Aktivität", navMore:"Mehr", profMapTab:"Karte", profNetTab:"Netzwerk", profTackleTab:"Tacklebox", profTackleSoon:"Deine Ruten, Rollen, Köder & Ausrüstung — mit Fang-Statistik. Kommt bald.", profNoLoc:"Noch keine Fänge mit Ort.", tasksAdmin:"Verein-Verwaltung", tasksEmpty:"Keine offenen Aufgaben.", profWithdraw:"Anfrage zurückziehen", viewMixed:"Kacheln", viewList:"Liste", navCommunity:"Community", homeGreeting:"Moin, {name}", homeFeedTitle:"Von wem du folgst", feedCaught:"fing", betaPill:"Beta", feedWord:"Feed", needsYou:"Braucht dich", needCount:"brauchen dich", needSub:"Anfragen & Bestätigungen", secCommunity:"Community", secFollowing:"Wem du folgst", secMine:"Deine neuesten Fänge", newWord:"neu", seeAllShort:"Alle", seeAllMine:"Alle deine Fänge", homeEmptySub:"Noch ruhig hier. Logge einen Fang oder folge Anglern, dann füllt sich dein Feed."});
 Object.assign(I18N.de, {visApproxArea:"Ungefähre Gegend", visLockOnlyMe:"Nur ich", visSumOnlyMe:"Nur ich", visSumFollowers:"Follower", visSumClubsFollowers:"Vereine + Follower", visSumClubsOnly:"Nur Vereine/Gruppen", visNoFollowersYet:"Du hast noch keine Follower — das legt fest, was sie sehen, sobald du welche hast."});
 Object.assign(I18N.en, {profSharedCatches:"shared catches", profFollow:"Follow", profFollowing:"Following", profRequested:"Requested", profBlocked:"Blocked", profUnavailable:"Unavailable", profNoCatches:"No shared catches yet.", profRecords:"Records", profCatches:"Catches", profUnfollow:"Unfollow", profBlockAction:"Block", profUnblockAction:"Unblock", profRequestSent:"Request sent", allSpecies:"All species", loadingWord:"Loading …", cancelWord:"Cancel", filterSpecies:"Species", latestCatches:"Latest catches", profGateTitle:"Follow {name} to see their catches", profGateSub:"Only followers see this angler's shared catches — including outside your shared clubs & groups."});
-Object.assign(I18N.en, {followTitle:"Followers", followReqTab:"Requests", followFollowersTab:"Followers", followFollowingTab:"Following", followTasksRow:"Followers", followNoReq:"No pending requests.", followNoFollowers:"No followers yet.", followNoFollowing:"You're not following anyone yet.", followWantsToFollow:"wants to follow you", followFollowsYou:"follows you", accept:"Accept", decline:"Decline", remove:"Remove", navHome:"Home", navProfile:"You", navTasks:"Activity", navMore:"More", profMapTab:"Map", profNetTab:"Network", profTackleTab:"Tacklebox", profTackleSoon:"Your rods, reels, lures & equipment — with catch stats. Coming soon.", profNoLoc:"No catches with a location yet.", tasksAdmin:"Club admin", tasksEmpty:"No open tasks.", profWithdraw:"Withdraw request", viewMixed:"Tiles", viewList:"List", navCommunity:"Community", homeGreeting:"Hi, {name}", homeFeedTitle:"From people you follow", feedCaught:"caught"});
+Object.assign(I18N.en, {followTitle:"Followers", followReqTab:"Requests", followFollowersTab:"Followers", followFollowingTab:"Following", followTasksRow:"Followers", followNoReq:"No pending requests.", followNoFollowers:"No followers yet.", followNoFollowing:"You're not following anyone yet.", followWantsToFollow:"wants to follow you", followFollowsYou:"follows you", accept:"Accept", decline:"Decline", remove:"Remove", navHome:"Home", navProfile:"You", navTasks:"Activity", navMore:"More", profMapTab:"Map", profNetTab:"Network", profTackleTab:"Tacklebox", profTackleSoon:"Your rods, reels, lures & equipment — with catch stats. Coming soon.", profNoLoc:"No catches with a location yet.", tasksAdmin:"Club admin", tasksEmpty:"No open tasks.", profWithdraw:"Withdraw request", viewMixed:"Tiles", viewList:"List", navCommunity:"Community", homeGreeting:"Hi, {name}", homeFeedTitle:"From people you follow", feedCaught:"caught", betaPill:"Beta", feedWord:"Feed", needsYou:"Needs you", needCount:"need you", needSub:"Requests & confirmations", secCommunity:"Community", secFollowing:"People you follow", secMine:"Your latest", newWord:"new", seeAllShort:"See all", seeAllMine:"See all your catches", homeEmptySub:"Quiet here. Log a catch or follow anglers to fill your feed."});
 Object.assign(I18N.en, {visApproxArea:"Approximate area", visLockOnlyMe:"Only me", visSumOnlyMe:"Only me", visSumFollowers:"Followers", visSumClubsFollowers:"Clubs + followers", visSumClubsOnly:"Clubs/groups only", visNoFollowersYet:"You don't have followers yet — this sets what they'll see once you do."});
 Object.assign(I18N.nl, {profSharedCatches:"gedeelde vangsten", profFollow:"Volgen", profFollowing:"Volg ik", profRequested:"Aangevraagd", profBlocked:"Geblokkeerd", profUnavailable:"Niet beschikbaar", profNoCatches:"Nog geen gedeelde vangsten.", profRecords:"Records", profCatches:"Vangsten", profUnfollow:"Ontvolgen", profBlockAction:"Blokkeren", profUnblockAction:"Deblokkeren", profRequestSent:"Verzoek verstuurd", allSpecies:"Alle soorten", loadingWord:"Laden …", cancelWord:"Annuleren", filterSpecies:"Soort", latestCatches:"Nieuwste vangsten", profGateTitle:"Volg {name} om de vangsten te zien", profGateSub:"Alleen volgers zien de gedeelde vangsten van deze visser — ook buiten jullie gedeelde verenigingen & groepen."});
-Object.assign(I18N.nl, {followTitle:"Volgers", followReqTab:"Verzoeken", followFollowersTab:"Volgers", followFollowingTab:"Ik volg", followTasksRow:"Volgers", followNoReq:"Geen openstaande verzoeken.", followNoFollowers:"Nog geen volgers.", followNoFollowing:"Je volgt nog niemand.", followWantsToFollow:"wil je volgen", followFollowsYou:"volgt jou", accept:"Accepteren", decline:"Afwijzen", remove:"Verwijderen", navHome:"Home", navProfile:"Jij", navTasks:"Activiteit", navMore:"Meer", profMapTab:"Kaart", profNetTab:"Netwerk", profTackleTab:"Tacklebox", profTackleSoon:"Je hengels, molens, kunstaas & uitrusting — met vangststatistiek. Binnenkort.", profNoLoc:"Nog geen vangsten met locatie.", tasksAdmin:"Verenigingsbeheer", tasksEmpty:"Geen openstaande taken.", profWithdraw:"Verzoek intrekken", viewMixed:"Tegels", viewList:"Lijst", navCommunity:"Community", homeGreeting:"Hoi, {name}", homeFeedTitle:"Van wie je volgt", feedCaught:"ving"});
+Object.assign(I18N.nl, {followTitle:"Volgers", followReqTab:"Verzoeken", followFollowersTab:"Volgers", followFollowingTab:"Ik volg", followTasksRow:"Volgers", followNoReq:"Geen openstaande verzoeken.", followNoFollowers:"Nog geen volgers.", followNoFollowing:"Je volgt nog niemand.", followWantsToFollow:"wil je volgen", followFollowsYou:"volgt jou", accept:"Accepteren", decline:"Afwijzen", remove:"Verwijderen", navHome:"Home", navProfile:"Jij", navTasks:"Activiteit", navMore:"Meer", profMapTab:"Kaart", profNetTab:"Netwerk", profTackleTab:"Tacklebox", profTackleSoon:"Je hengels, molens, kunstaas & uitrusting — met vangststatistiek. Binnenkort.", profNoLoc:"Nog geen vangsten met locatie.", tasksAdmin:"Verenigingsbeheer", tasksEmpty:"Geen openstaande taken.", profWithdraw:"Verzoek intrekken", viewMixed:"Tegels", viewList:"Lijst", navCommunity:"Community", homeGreeting:"Hoi, {name}", homeFeedTitle:"Van wie je volgt", feedCaught:"ving", betaPill:"Beta", feedWord:"Feed", needsYou:"Vereist actie", needCount:"wachten op je", needSub:"Verzoeken & bevestigingen", secCommunity:"Community", secFollowing:"Wie je volgt", secMine:"Jouw laatste", newWord:"nieuw", seeAllShort:"Alles", seeAllMine:"Al je vangsten", homeEmptySub:"Nog rustig. Log een vangst of volg vissers om je feed te vullen."});
 Object.assign(I18N.nl, {visApproxArea:"Ongeveer gebied", visLockOnlyMe:"Alleen ik", visSumOnlyMe:"Alleen ik", visSumFollowers:"Volgers", visSumClubsFollowers:"Verenigingen + volgers", visSumClubsOnly:"Alleen verenigingen/groepen", visNoFollowersYet:"Je hebt nog geen volgers — dit bepaalt wat ze straks zien."});
 Object.assign(I18N.de, {visWhatMandatoryHint:"Nur, was deine Vereine verlangen.", visWhatSomeHint:"Dein Zuschnitt — wähle unten.", visWhatAllHint:"Alle Kategorien werden geteilt.", visDefLocHint:"So genau sehen andere deinen Fangort."});
 Object.assign(I18N.en, {visWhatMandatoryHint:"Only what your clubs require.", visWhatSomeHint:"Your selection — choose below.", visWhatAllHint:"All categories are shared.", visDefLocHint:"How precisely others see your spot."});
@@ -3740,7 +3786,7 @@ async function countPendingReqs(){
   return count||0;
 }
 // ---------- Bottom navigation ----------
-const _NAV_ACTIVE = {home:'home', club:'community', list:'community', stats:'profile', profile:'profile', follows:'tasks', settings:'profile'};
+const _NAV_ACTIVE = {home:'home', club:'community', list:'community', stats:'profile', profile:'profile', follows:'home', settings:'profile'};
 function navTab(tab){
   if(tab==='home'){ openHome(); return; }
   if(tab==='community'){ if(state.club){ try{ leaveArea(); }catch(e){} } else if(_curScreen!=='club'){ try{ renderClubs(); }catch(e){} go('club'); } return; }
@@ -3787,67 +3833,102 @@ async function goChooser(showChooser){
      zeigen die Community-Liste (showChooser=true). */
   if(showChooser){ go('club'); } else { openHome(); }
 }
-/* ---------- Home dashboard (Phase 1) ---------- */
-function openHome(){ try{ renderHome(); }catch(e){} go('home'); _loadHomeData(); }
+/* ---------- Home feed (Nord-Stern) ---------- */
+const IC_BELL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
+const IC_PUFFER='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12c3-5 9-5 12 0-3 5-9 5-12 0z"/><circle cx="9" cy="12" r="1"/><path d="M18 12c2 0 3 2 3 2s-1 2-3 2"/></svg>';
+function openHome(){ try{ renderHome(); }catch(e){} go('home'); try{ const sc=document.querySelector('#s-home .scroll'); if(sc){ sc.scrollTop=0; _homeScroll(sc); } }catch(e){} _loadHomeData(); }
+function _homeScroll(el){ const h=document.getElementById('home-hdr'); if(h) h.classList.toggle('slim', (el&&el.scrollTop||0)>20); }
+async function _loadFeedRpc(rpcName){
+  const c=getSB(); if(!c) return [];
+  let data; try{ const r=await c.rpc(rpcName,{}); if(r.error||!r.data) return []; data=r.data; }catch(e){ return []; }
+  const need=[], signedMap={}, now=Date.now();
+  data.forEach(o=>{ (o.photos||[]).forEach(p=>{ [p.path,p.thumb_path].forEach(pp=>{ if(!pp) return; const hit=_sigCache[pp]; if(hit&&hit.exp>now){ signedMap[pp]=hit.url; } else if(need.indexOf(pp)<0) need.push(pp); }); }); });
+  if(need.length){ try{ const {data:signed}=await c.storage.from('catch-photos').createSignedUrls(need,60*60*24*7); (signed||[]).forEach(s=>{ if(s&&s.path&&s.signedUrl){ signedMap[s.path]=s.signedUrl; _sigCache[s.path]={url:s.signedUrl,exp:now+6*24*60*60*1000}; } }); }catch(e){} }
+  return data.map(o=>{ const nameById={}; nameById[o.owner_id]={name:o.owner_name||'', avatar:o.owner_avatar||null, style:o.owner_style||null}; const cc=rpcRowToCatch(o, signedMap, nameById); cc._ctxName=o.ctx_name||''; return cc; });
+}
 async function _loadHomeData(){
   if(state.auth!=='supabase' || !state.me) return;
   await Promise.all([
-    (async()=>{ try{ state.myAllCatches = await loadMyAllCatches(); }catch(e){} })(),
-    (async()=>{ try{ const {data}=await getSB().rpc('get_feed',{p_limit:12}); state._feed = Array.isArray(data)?data:[]; }catch(e){ state._feed=[]; } })()
+    _loadFeedRpc('get_club_feed').then(a=>{ state._homeClub=a; }).catch(()=>{ state._homeClub=[]; }),
+    _loadFeedRpc('get_feed').then(a=>{ state._homeFollow=a; }).catch(()=>{ state._homeFollow=[]; }),
+    (async()=>{ try{ state.myAllCatches = await loadMyAllCatches(); }catch(e){} })()
   ]);
   if(_curScreen==='home'){ try{ renderHome(); }catch(e){} }
 }
-function _renderHomeFeed(){
-  const box=document.getElementById('home-feed'); if(!box) return;
-  const feed=state._feed;
-  if(!Array.isArray(feed) || !feed.length){ box.innerHTML=''; box.style.display='none'; return; }
+function _homeNewCount(){ try{ return Object.values(state.ctxNew||{}).reduce((a,b)=>a+(Number(b)||0),0); }catch(e){ return 0; } }
+function _homeFolded(k){ try{ if(!state._homeFold){ state._homeFold=JSON.parse(localStorage.getItem('bf_homefold')||'{}')||{}; } }catch(e){ state._homeFold={}; } return !!(state._homeFold&&state._homeFold[k]); }
+function _toggleHomeFold(k){ try{ if(!state._homeFold) state._homeFold={}; state._homeFold[k]=!state._homeFold[k]; localStorage.setItem('bf_homefold', JSON.stringify(state._homeFold)); }catch(e){} try{ haptic(4); }catch(e){} _renderHomeFeeds(); }
+function _foldChev(folded){ return folded ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M9 6l6 6-6 6"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M6 9l6 6 6-6"/></svg>'; }
+function _arrowIcon(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:-2px;"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'; }
+function renderHome(){ try{ _renderHomeNeeds(); }catch(e){} try{ _renderHomeFeeds(); }catch(e){} }
+function _renderHomeNeeds(){
+  const box=document.getElementById('home-needs'); if(!box) return;
+  const admin=(state.me&&state.me.isAppAdmin)?((state.pendingReqs||0)+(state.pendingBetaReqs||0)+(state.pendingFeedback||0)):0;
+  const n=(state.pendingFollowReqs||0)+admin;
+  if(n<=0){ box.innerHTML=''; box.style.display='none'; return; }
   box.style.display='';
-  const rows=feed.slice(0,8).map(it=>{
-    const nm=esc(it.owner_name||'—');
-    const sp=esc(trSpecies(it.species));
-    const size=[it.length_cm!=null?fmtLen(it.length_cm):null, it.weight_kg!=null?fmtWeight(it.weight_kg):null].filter(Boolean).join(' · ');
-    const av = it.owner_avatar ? `<img src="${escAttr(it.owner_avatar)}" alt="">` : esc((it.owner_name||'?').slice(0,2).toUpperCase());
-    return `<button type="button" class="feed-row" onclick="openProfile('${escAttr(it.owner_id)}')"><span class="feed-av">${av}</span><span class="feed-tx"><span class="feed-line"><b>${nm}</b> ${esc(t('feedCaught'))} <b>${sp}</b>${size?` · ${esc(size)}`:''}</span><span class="feed-dt">${esc(fmtDate(it.caught_at))}</span></span>${CHEV_IC}</button>`;
-  }).join('');
-  box.innerHTML=`<p class="sectionlabel" style="margin:0 0 10px;">${esc(t('homeFeedTitle'))}</p>${rows}`;
+  box.innerHTML=`<p class="hf-lbl">${esc(t('needsYou'))}</p><button type="button" class="hf-needbar" onclick="openFollows()"><span class="bell">${IC_BELL}</span><span class="nx"><b>${n} ${esc(t('needCount'))}</b><small>${esc(t('needSub'))}</small></span><span class="chev">${CHEV_IC}</span></button>`;
 }
-function renderHome(){
-  const g=document.getElementById('home-greeting');
-  if(g){ const nm=((state.me&&state.me.name)||'').trim(); g.textContent = nm ? t('homeGreeting').replace('{name}', nm) : t('appName'); }
-  try{ _renderHomeFeed(); }catch(e){}
-  const items = state.myAllCatches;
-  const loaded = Array.isArray(items);
-  const _kl='font-size:0.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);';
-  const _kv="font-family:'Barlow Condensed',sans-serif;font-size:1.625rem;font-weight:700;line-height:1.1;";
-  const _kc='background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;min-height:60px;box-sizing:border-box;';
-  const kb=document.getElementById('home-kpis');
-  if(kb){
-    if(!loaded){ kb.innerHTML = Array(4).fill('<div style="'+_kc+' opacity:.45;"></div>').join(''); }
-    else {
-      const yr=new Date().getFullYear();
-      const yc=items.filter(c=>{ try{ return new Date(c.date).getFullYear()===yr; }catch(e){ return false; } }).length;
-      const species=new Set(items.map(c=>c.species).filter(Boolean)).size;
-      let bl=null,bw=null; items.forEach(c=>{ if(c.length!=null&&(!bl||c.length>bl.length))bl=c; if(c.weight!=null&&(!bw||Number(c.weight)>Number(bw.weight)))bw=c; });
-      const totalCard=`<div style="${_kc} display:flex;justify-content:space-between;align-items:flex-start;gap:10px;"><div><div style="${_kl}">${esc(t('total'))}</div><div style="${_kv}">${items.length}</div></div><div style="text-align:right;"><div style="${_kl}">${yr}</div><div style="${_kv} font-size:1.125rem;color:var(--muted);">${yc}</div></div></div>`;
-      const kpi=(l,v,rec)=>`<div style="${_kc}"><div style="${_kl}">${l}</div><div style="${_kv}${rec?' color:var(--teal);':''}">${v}</div></div>`;
-      kb.innerHTML=totalCard+kpi(t('speciesCount'),species)+kpi(t('longest'),bl?fmtLen(bl.length):'—',true)+kpi(t('heaviest'),bw?fmtWeight(bw.weight):'—',true);
-    }
+function _homeCard(c, mode){
+  const photo=c.photo||(c.thumbs&&c.thumbs[0])||null;
+  const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
+  const meta=[c.angler, c._ctxName, fmtDate(c.date)].filter(Boolean).join(' · ');
+  if(mode==='mixed'){
+    const inner=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-sp">${esc(trSpecies(c.species))}</span>${size?`<span class="hf-sz">${esc(size)}</span>`:''}<span class="hf-meta">${esc(meta)}</span></span>`;
+    if(photo){ return `<button type="button" class="hf-hero" onclick="openHomeFeedCatch('${escAttr(String(c.id))}')"><img src="${escAttr(photo)}" alt="" loading="lazy">${inner}</button>`; }
+    return `<button type="button" class="hf-hero" onclick="openHomeFeedCatch('${escAttr(String(c.id))}')"><span class="hf-fish">${FISH_IC}</span>${inner}</button>`;
   }
-  const rb=document.getElementById('home-recent');
-  if(rb){
-    if(!loaded){ try{ rb.innerHTML=skelRows(4); }catch(e){ rb.innerHTML=''; } }
-    else if(!items.length){ rb.innerHTML=`<div class="empty"><p>${esc(t('emptyNone'))}</p></div>`; }
-    else {
-      const recent=items.slice().sort((a,b)=>{ try{ return new Date(b.date)-new Date(a.date); }catch(e){ return 0; } }).slice(0,6);
-      rb.innerHTML=recent.map(c=>{
-        const _cov=coverThumbOf(c);
-        const thumb = _cov ? `<span class="thumb">${coverImg(c, _cov, 'loading="lazy" decoding="async"')}</span>` : `<span class="thumb">${FISH_IC}</span>`;
-        const meta=[c._ctx||c.location, fmtDate(c.date)].filter(Boolean).join(' · ');
-        return `<button type="button" class="catch" onclick="openHomeCatch('${escAttr(String(c.id))}')">${badgeWrap(thumb, c)}<span style="flex:1; min-width:0;"><span class="top"><span class="sp">${esc(trSpecies(c.species))}</span><span class="val">${esc(primaryStr(c))}</span></span><span class="meta">${esc(meta)}</span></span>${CHEV_IC}</button>`;
-      }).join('');
-    }
-  }
+  const thumb = photo ? `<span class="thumb"><img src="${escAttr(photo)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></span>` : `<span class="thumb">${FISH_IC}</span>`;
+  return `<button type="button" class="catch" onclick="openHomeFeedCatch('${escAttr(String(c.id))}')">${thumb}<span style="flex:1; min-width:0;"><span class="top"><span class="sp">${esc(trSpecies(c.species))}</span><span class="val">${esc(size)}</span></span><span class="meta">${esc(meta)}</span></span>${CHEV_IC}</button>`;
 }
+function _homeSecHtml(key, label, arr, mode, opts){
+  opts=opts||{};
+  if(!Array.isArray(arr) || !arr.length) return '';
+  const folded=_homeFolded(key);
+  const cnt=opts.newCount||0;
+  const pill = cnt>0 ? `<span class="hf-ct">${cnt} ${esc(t('newWord'))}</span>` : '';
+  const seeall = opts.seeAll ? `<span class="hf-sa" onclick="event.stopPropagation(); ${opts.seeAll}">${esc(t('seeAllShort'))}</span>` : '';
+  const cards = folded ? '' : arr.slice(0, opts.limit||5).map(c=>_homeCard(c,mode)).join('');
+  return `<div class="hf-sec-h" onclick="_toggleHomeFold('${key}')"><span class="hf-sec-t">${esc(label)}</span>${pill}<span class="hf-spacer"></span>${seeall}<span class="hf-cv">${_foldChev(folded)}</span></div>${cards}`;
+}
+function _homeMineCard(c, mode){
+  const _cov=coverThumbOf(c);
+  const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
+  const meta=[c._ctx||c.location, fmtDate(c.date)].filter(Boolean).join(' · ');
+  if(mode==='mixed'){
+    const inner=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-sp">${esc(trSpecies(c.species))}</span>${size?`<span class="hf-sz">${esc(size)}</span>`:''}<span class="hf-meta">${esc(meta)}</span></span>`;
+    if(_cov){ return `<button type="button" class="hf-hero" onclick="openHomeCatch('${escAttr(String(c.id))}')">${coverImg(c,_cov,'loading="lazy"')}${inner}</button>`; }
+    return `<button type="button" class="hf-hero" onclick="openHomeCatch('${escAttr(String(c.id))}')"><span class="hf-fish">${FISH_IC}</span>${inner}</button>`;
+  }
+  const thumb = _cov ? `<span class="thumb">${coverImg(c,_cov,'loading="lazy" decoding="async"')}</span>` : `<span class="thumb">${FISH_IC}</span>`;
+  return `<button type="button" class="catch" onclick="openHomeCatch('${escAttr(String(c.id))}')">${badgeWrap(thumb, c)}<span style="flex:1; min-width:0;"><span class="top"><span class="sp">${esc(trSpecies(c.species))}</span><span class="val">${esc(primaryStr(c))}</span></span><span class="meta">${esc(meta)}</span></span>${CHEV_IC}</button>`;
+}
+function _renderHomeFeeds(){
+  const club=state._homeClub, follow=state._homeFollow, mine=state.myAllCatches;
+  const mode=_listView('home');
+  const anyFeed = (Array.isArray(club)&&club.length) || (Array.isArray(follow)&&follow.length);
+  const vt=document.getElementById('home-vtrow'); if(vt){ vt.style.display = anyFeed?'flex':'none'; try{ _syncViewTog('home'); }catch(e){} }
+  const cb=document.getElementById('home-club'); if(cb) cb.innerHTML=_homeSecHtml('club', t('secCommunity'), club, mode, { seeAll:"navTab('community')", newCount:_homeNewCount() });
+  const fb=document.getElementById('home-follow'); if(fb) fb.innerHTML=_homeSecHtml('follow', t('secFollowing'), follow, mode, {});
+  const mb=document.getElementById('home-mine');
+  if(mb){
+    if(Array.isArray(mine) && mine.length){
+      const recent=mine.slice().sort((a,b)=>{ try{ return new Date(b.date)-new Date(a.date); }catch(e){ return 0; } }).slice(0,3);
+      const folded=_homeFolded('mine');
+      const cards = folded ? '' : (recent.map(c=>_homeMineCard(c,mode)).join('') + `<button type="button" class="hf-seeall-row" onclick="openProfile(state.me.id)">${esc(t('seeAllMine'))} ${_arrowIcon()}</button>`);
+      mb.innerHTML=`<div class="hf-sec-h" onclick="_toggleHomeFold('mine')"><span class="hf-sec-t">${esc(t('secMine'))}</span><span class="hf-spacer"></span><span class="hf-cv">${_foldChev(folded)}</span></div>${cards}`;
+    } else mb.innerHTML='';
+  }
+  const loadedClub=Array.isArray(club), loadedFollow=Array.isArray(follow), loadedMine=Array.isArray(mine);
+  const empty = loadedClub&&loadedFollow&&loadedMine && !club.length && !follow.length && !mine.length;
+  const eb=document.getElementById('home-empty');
+  if(eb){ if(empty){ eb.style.display=''; eb.innerHTML=_homeEmptyHtml(); } else { eb.style.display='none'; eb.innerHTML=''; } }
+}
+function _homeEmptyHtml(){
+  const nm=((state.me&&state.me.name)||'').trim();
+  return `<div class="hf-empty"><span class="puff">${IC_PUFFER}</span><h3>${esc((t('homeGreeting').replace('{name}', nm||'')).replace(/,\s*$/,''))}</h3><p>${esc(t('homeEmptySub'))}</p></div>`;
+}
+function openHomeFeedCatch(id){ const all=[].concat(state._homeClub||[], state._homeFollow||[], state.myAllCatches||[]); const c=all.find(x=>String(x.id)===String(id)); if(c) openDetailObj(c,'home'); }
 function openHomeCatch(id){ const c=(state.myAllCatches||[]).find(x=>String(x.id)===String(id)); if(c) openDetailObj(c,'home'); }
 
 // ---------- Phase 2e: join / create / request ----------
@@ -4635,10 +4716,10 @@ function _profFollowBtn(m){
   return `<button type="button" class="prof-fbtn" onclick="profFollow()">${IC_FOLLOW_ADD}${esc(t('profFollow'))}</button>`;
 }
 /* ---- Listen-Ansicht (Mixed-Kacheln ↔ kompakte Liste), pro Scope, gemerkt (localStorage) ---- */
-const _LV_DEFAULT={profile:'mixed', list:'list', stats:'list'};
+const _LV_DEFAULT={profile:'mixed', list:'list', stats:'list', home:'mixed'};
 function _listView(scope){ try{ if(!state._listView){ state._listView=JSON.parse(localStorage.getItem('bf_listview')||'{}')||{}; } }catch(e){ state._listView={}; } return (state._listView&&state._listView[scope]) || _LV_DEFAULT[scope] || 'list'; }
 function _syncViewTog(scope){ const box=document.getElementById(scope==='profile'?'prof-viewtog':scope+'-viewtog'); if(!box) return; const cur=_listView(scope); box.querySelectorAll('button[data-vm]').forEach(b=>b.classList.toggle('on', b.dataset.vm===cur)); }
-function setListView(scope, mode){ try{ if(!state._listView) state._listView={}; state._listView[scope]=mode; localStorage.setItem('bf_listview', JSON.stringify(state._listView)); }catch(e){} _syncViewTog(scope); try{ haptic(4); }catch(e){} if(scope==='profile'){ try{ renderProfileTiles(); }catch(e){} } else if(scope==='list'){ try{ renderList(); }catch(e){} } }
+function setListView(scope, mode){ try{ if(!state._listView) state._listView={}; state._listView[scope]=mode; localStorage.setItem('bf_listview', JSON.stringify(state._listView)); }catch(e){} _syncViewTog(scope); try{ haptic(4); }catch(e){} if(scope==='profile'){ try{ renderProfileTiles(); }catch(e){} } else if(scope==='list'){ try{ renderList(); }catch(e){} } else if(scope==='home'){ try{ _renderHomeFeeds(); }catch(e){} } }
 function renderProfileTiles(){
   const p=state.profile, host=document.getElementById('prof-gallery'); if(!host) return;
   try{ _syncViewTog('profile'); }catch(e){}
