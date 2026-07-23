@@ -2840,7 +2840,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-23.457';
+const BUILD = '2026-07-23.458';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -3868,16 +3868,17 @@ function _renderHomeNeeds(){
   box.style.display='';
   box.innerHTML=`<p class="hf-lbl">${esc(t('needsYou'))}</p><button type="button" class="hf-needbar" onclick="openFollows()"><span class="bell">${IC_BELL}</span><span class="nx"><b>${n} ${esc(t('needCount'))}</b><small>${esc(t('needSub'))}</small></span><span class="chev">${CHEV_IC}</span></button>`;
 }
+function _feedImg(c, url){ var cr=(cropOf(c,0)||{}); var p=coverPosOf(cr.p); return `<img src="${escAttr(url)}" alt="" loading="lazy" style="object-position:${p};">`; }
 function _homeCard(c, mode){
   const photo=c.photo||(c.thumbs&&c.thumbs[0])||null;
   const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
   const meta=[c.angler, c._ctxName, fmtDate(c.date)].filter(Boolean).join(' · ');
   if(mode==='mixed'){
     const inner=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-sp">${esc(trSpecies(c.species))}</span>${size?`<span class="hf-sz">${esc(size)}</span>`:''}<span class="hf-meta">${esc(meta)}</span></span>`;
-    if(photo){ return `<button type="button" class="hf-hero" onclick="openHomeFeedCatch('${escAttr(String(c.id))}')">${coverImg(c, photo, 'loading="lazy"')}${inner}</button>`; }
+    if(photo){ return `<button type="button" class="hf-hero" onclick="openHomeFeedCatch('${escAttr(String(c.id))}')">${_feedImg(c, photo)}${inner}</button>`; }
     return `<button type="button" class="hf-hero" onclick="openHomeFeedCatch('${escAttr(String(c.id))}')"><span class="hf-fish"><img src="/puffer.png" alt="" loading="lazy"></span>${inner}</button>`;
   }
-  const thumb = photo ? `<span class="thumb">${coverImg(c, photo, 'loading="lazy"')}</span>` : `<span class="thumb">${FISH_IC}</span>`;
+  const thumb = photo ? `<span class="thumb">${_feedImg(c, photo)}</span>` : `<span class="thumb">${FISH_IC}</span>`;
   return `<button type="button" class="catch" onclick="openHomeFeedCatch('${escAttr(String(c.id))}')">${thumb}<span style="flex:1; min-width:0;"><span class="top"><span class="sp">${esc(trSpecies(c.species))}</span><span class="val">${esc(size)}</span></span><span class="meta">${esc(meta)}</span></span>${CHEV_IC}</button>`;
 }
 function _homeSecHtml(key, label, arr, mode, opts){
@@ -3896,10 +3897,10 @@ function _homeMineCard(c, mode){
   const meta=[c._ctx||c.location, fmtDate(c.date)].filter(Boolean).join(' · ');
   if(mode==='mixed'){
     const inner=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-sp">${esc(trSpecies(c.species))}</span>${size?`<span class="hf-sz">${esc(size)}</span>`:''}<span class="hf-meta">${esc(meta)}</span></span>`;
-    if(_cov){ return `<button type="button" class="hf-hero" onclick="openHomeCatch('${escAttr(String(c.id))}')">${coverImg(c,_cov,'loading="lazy"')}${inner}</button>`; }
+    if(_cov){ return `<button type="button" class="hf-hero" onclick="openHomeCatch('${escAttr(String(c.id))}')">${_feedImg(c,_cov)}${inner}</button>`; }
     return `<button type="button" class="hf-hero" onclick="openHomeCatch('${escAttr(String(c.id))}')"><span class="hf-fish"><img src="/puffer.png" alt="" loading="lazy"></span>${inner}</button>`;
   }
-  const thumb = _cov ? `<span class="thumb">${coverImg(c,_cov,'loading="lazy" decoding="async"')}</span>` : `<span class="thumb">${FISH_IC}</span>`;
+  const thumb = _cov ? `<span class="thumb">${_feedImg(c,_cov)}</span>` : `<span class="thumb">${FISH_IC}</span>`;
   return `<button type="button" class="catch" onclick="openHomeCatch('${escAttr(String(c.id))}')">${badgeWrap(thumb, c)}<span style="flex:1; min-width:0;"><span class="top"><span class="sp">${esc(trSpecies(c.species))}</span><span class="val">${esc(primaryStr(c))}</span></span><span class="meta">${esc(meta)}</span></span>${CHEV_IC}</button>`;
 }
 function _renderHomeFeeds(){
