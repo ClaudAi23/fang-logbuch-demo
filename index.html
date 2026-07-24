@@ -513,6 +513,9 @@
   }
   .thumb > img{width:100%; height:100%; object-fit:cover; display:block;}
   .thumb .fishic{width:30px; height:30px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+  /* Kein-Foto-Platzhalter im Listen-Feed: gleicher Look wie die Hero-Leerkarte (Teal-Verlauf + Anglerfisch-Logo). */
+  .thumb.fishph{background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);}
+  .thumb.fishph > img{width:auto; height:78%; object-fit:contain; opacity:.55;}
   .catch .top{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
   .catch .sp{font-weight:600; font-size:1.0625rem; line-height:1.2;}
   .catch .val{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.0625rem; color:var(--text); white-space:nowrap;}
@@ -2877,7 +2880,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-24.463';
+const BUILD = '2026-07-24.464';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -3916,7 +3919,7 @@ function _homeCard(c, mode, secKey, idx){
     if(photo){ return `<button type="button" class="hf-hero" onclick="${tap}">${_feedImg(c, photo)}${inner}</button>`; }
     return `<button type="button" class="hf-hero" onclick="${tap}"><span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>${inner}</button>`;
   }
-  const thumb = photo ? `<span class="thumb">${_feedImg(c, photo)}</span>` : `<span class="thumb">${FISH_IC}</span>`;
+  const thumb = photo ? `<span class="thumb">${_feedImg(c, photo)}</span>` : `<span class="thumb fishph"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
   return `<button type="button" class="catch" onclick="openCatchFs('${secKey}',${idx})">${thumb}<span style="flex:1; min-width:0;"><span class="top"><span class="sp">${esc(trSpecies(c.species))}</span><span class="val">${esc(size)}</span></span><span class="meta">${esc(meta)}</span></span>${CHEV_IC}</button>`;
 }
 function _homeSecHtml(key, label, arr, mode, opts){
@@ -3945,7 +3948,7 @@ function _homeMineCard(c, mode, idx){
     if(_cov){ return `<button type="button" class="hf-hero" onclick="openCatchFs('mine',${idx})">${_feedImg(c,_cov)}${inner}</button>`; }
     return `<button type="button" class="hf-hero" onclick="openCatchFs('mine',${idx})"><span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>${inner}</button>`;
   }
-  const thumb = _cov ? `<span class="thumb">${_feedImg(c,_cov)}</span>` : `<span class="thumb">${FISH_IC}</span>`;
+  const thumb = _cov ? `<span class="thumb">${_feedImg(c,_cov)}</span>` : `<span class="thumb fishph"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
   return `<button type="button" class="catch" onclick="openCatchFs('mine',${idx})">${badgeWrap(thumb, c)}<span style="flex:1; min-width:0;"><span class="top"><span class="sp">${esc(trSpecies(c.species))}</span><span class="val">${esc(primaryStr(c))}</span></span><span class="meta">${esc(meta)}</span></span>${CHEV_IC}</button>`;
 }
 function _renderHomeFeeds(){
