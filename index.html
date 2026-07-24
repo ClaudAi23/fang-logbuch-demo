@@ -21,7 +21,10 @@
      Es war also KEIN Timing-Problem (data-theme wird unten längst vor dem CSS gesetzt), sondern schlicht
      die falsche Farbe. Der Startwert ist der dunkle: Wer die App im Hellen öffnet, bekommt ihn eine
      Zeile später vom Script korrigiert, bevor irgendetwas gemalt wird. -->
-<meta name="theme-color" content="#03354B" />
+<!-- Startwert = Home-Kopf (--sand), weil die App auf Home öffnet. syncThemeColor() schaltet danach je
+     Screen: Home = --sand, andere = --surface (Topbar). iOS friert die Statusleiste beim Start auf den
+     ersten Wert ein — deshalb muss der erste Wert schon der dunkle Home-Ton sein. -->
+<meta name="theme-color" content="#021B28" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <!-- "black" heißt bei iOS: undurchsichtige schwarze Leiste. "black-translucent" wäre falsch — dann läge
@@ -32,7 +35,7 @@
      theme-color, damit der Streifen oben vom ersten Frame an die Farbe der Topbar hat.
      THEME_SURFACE ist die einzige Stelle, an der --surface doppelt steht: Das Script läuft, bevor es ein
      Stylesheet gibt, kann die Variable also nicht lesen. Ändert jemand --surface, muss er hierher. -->
-<script>(function(){var S={dark:'#03354B',light:'#FFFFFF'};var r='dark';try{var p=JSON.parse(localStorage.getItem('fanglog_prefs')||'{}');var t=p.theme||'system';r=(t==='system')?((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'):t;}catch(e){}document.documentElement.setAttribute('data-theme',r);try{var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',S[r]||S.dark);}catch(e){}})();</script>
+<script>(function(){var S={dark:'#021B28',light:'#F4EFE2'};var r='dark';try{var p=JSON.parse(localStorage.getItem('fanglog_prefs')||'{}');var t=p.theme||'system';r=(t==='system')?((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'):t;}catch(e){}document.documentElement.setAttribute('data-theme',r);try{var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',S[r]||S.dark);}catch(e){}})();</script>
 <style>
   /* Self-hosted Barlow — no request leaves the user's device for a font any more.
      This is a GDPR matter, not a speed tweak: with the Google stylesheet, every app start sent
@@ -1380,6 +1383,9 @@
   .hf-ct{background:var(--teal);color:#04222a;border-radius:999px;padding:0 7px;font-size:.62rem;font-weight:800;}
   .hf-sa{color:var(--teal-bright);font-size:.72rem;font-weight:700;}
   .hf-cv{color:var(--muted);display:flex;align-items:center;}
+  /* „Alle →" in der Sektions-Kopfzeile, neben dem Falt-Pfeil. stopPropagation, damit der Tap nicht faltet. */
+  .hf-sec-all{display:inline-flex;align-items:center;gap:4px;color:var(--teal-bright);font-size:.72rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;background:none;border:none;padding:2px 4px;cursor:pointer;font-family:inherit;}
+  .hf-sec-all svg{width:13px;height:13px;}
   .hf-hero{display:block;width:100%;position:relative;border-radius:14px;overflow:hidden;aspect-ratio:3 / 2;background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);border:none;padding:0;text-align:left;cursor:pointer;margin-bottom:9px;}
   .hf-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
   .hf-fish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(99,192,184,.28);z-index:1;} .hf-fish svg{width:40px;height:40px;} .hf-fish img{position:static;inset:auto;width:auto;height:96px;object-fit:contain;opacity:.5;}
@@ -2880,7 +2886,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-24.465';
+const BUILD = '2026-07-24.466';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -3940,15 +3946,10 @@ function _homeSecHtml(key, label, arr, mode, opts){
   let body='';
   if(!folded){
     const cards=arr.slice(0,lim).map((c,i)=>_homeCard(c,mode,key,i)).join('');
-    if(mode==='mixed'){
-      const allEnd = opts.seeAll ? `<a class="hf-carou-all" onclick="${opts.seeAll}"><span class="hf-ca-ic">${_arrowIcon()}</span><span>${esc(t('seeAllShort'))}</span></a>` : '';
-      body=`<div class="hf-carou">${cards}${allEnd}</div>`;
-    } else {
-      const seeRow = opts.seeAll ? `<button type="button" class="hf-seeall-row" onclick="${opts.seeAll}">${esc(t('seeAllShort'))} ${_arrowIcon()}</button>` : '';
-      body=cards+seeRow;
-    }
+    body = (mode==='mixed') ? `<div class="hf-carou">${cards}</div>` : cards;
   }
-  return `<div class="hf-sec-h" onclick="_toggleHomeFold('${key}')"><span class="hf-sec-t">${esc(label)}</span>${pill}<span class="hf-spacer"></span><span class="hf-cv">${_foldChev(folded)}</span></div>${body}`;
+  const seeAllHdr = opts.seeAll ? `<button type="button" class="hf-sec-all" onclick="event.stopPropagation();${opts.seeAll}">${esc(t('seeAllShort'))} ${_arrowIcon()}</button>` : '';
+  return `<div class="hf-sec-h" onclick="_toggleHomeFold('${key}')"><span class="hf-sec-t">${esc(label)}</span>${pill}<span class="hf-spacer"></span>${seeAllHdr}<span class="hf-cv">${_foldChev(folded)}</span></div>${body}`;
 }
 function _homeMineCard(c, mode, idx){
   const _cov=coverThumbOf(c);
@@ -3978,12 +3979,10 @@ function _renderHomeFeeds(){
       let body='';
       if(!folded){
         const cards=recent.map((c,i)=>_homeMineCard(c,mode,i)).join('');
-        if(mode==='mixed'){
-          const allEnd=`<a class="hf-carou-all" onclick="openProfile(state.me.id)"><span class="hf-ca-ic">${_arrowIcon()}</span><span>${esc(t('seeAllShort'))}</span></a>`;
-          body=`<div class="hf-carou">${cards}${allEnd}</div>`;
-        } else body=cards+`<button type="button" class="hf-seeall-row" onclick="openProfile(state.me.id)">${esc(t('seeAllMine'))} ${_arrowIcon()}</button>`;
+        body = (mode==='mixed') ? `<div class="hf-carou">${cards}</div>` : cards;
       }
-      mb.innerHTML=`<div class="hf-sec-h" onclick="_toggleHomeFold('mine')"><span class="hf-sec-t">${esc(t('secMine'))}</span><span class="hf-spacer"></span><span class="hf-cv">${_foldChev(folded)}</span></div>${body}`;
+      const seeAllHdr=`<button type="button" class="hf-sec-all" onclick="event.stopPropagation();openProfile(state.me.id)">${esc(t('seeAllShort'))} ${_arrowIcon()}</button>`;
+      mb.innerHTML=`<div class="hf-sec-h" onclick="_toggleHomeFold('mine')"><span class="hf-sec-t">${esc(t('secMine'))}</span><span class="hf-spacer"></span>${seeAllHdr}<span class="hf-cv">${_foldChev(folded)}</span></div>${body}`;
     } else { mb.innerHTML=''; state._homeMine=[]; }
   }
   const loadedClub=Array.isArray(club), loadedFollow=Array.isArray(follow), loadedMine=Array.isArray(mine);
