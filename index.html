@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=23" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=23" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180.png?v=23" />
-<link rel="manifest" href="/site.webmanifest?v=23" />
+<link rel="manifest" href="/site.webmanifest?v=24" />
 <!-- theme-color MUSS die Farbe der Topbar sein, nicht irgendein Blau der Palette.
      Hier stand #0D5164 (= --surface-2). Die Topbar ist aber --surface (#03354B im Dunkeln, #FFFFFF im
      Hellen) und reicht per padding-top:env(safe-area-inset-top) UNTER die Statusleiste. Ergebnis auf dem
@@ -163,7 +163,7 @@
      cremeweiße Schrift auf hellem Maskottchen. Weiß auf Weiß. Der Splash war immer themenunabhängig
      dunkel, das bleibt so. (Im hellen Theme heißt das: Der Wechsel Loader→App bleibt dort bestehen.
      Kein Rückschritt — er war vorher auch da, nur von #0D5164 aus.) */
-  #app-loader{position:fixed; inset:0; z-index:9999; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#03354B; transition:opacity .5s ease, visibility 0s linear .5s;}
+  #app-loader{position:fixed; inset:0; z-index:9999; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#021B28; transition:opacity .5s ease, visibility 0s linear .5s;}
   #app-loader.hide{opacity:0; visibility:hidden; pointer-events:none;}
   /* Unten, klein, gedämpft: eine Auskunft für den, der sie sucht — kein Element des Splashs.
      `env(safe-area-inset-bottom)`, sonst läge sie auf iPhones im Home-Indikator. */
@@ -2886,7 +2886,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-24.466';
+const BUILD = '2026-07-24.467';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
