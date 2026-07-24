@@ -2936,7 +2936,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-24.476';
+const BUILD = '2026-07-24.477';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -3947,7 +3947,7 @@ async function _loadFeedRpc(rpcName){
   const need=[], signedMap={}, now=Date.now();
   data.forEach(o=>{ (o.photos||[]).forEach(p=>{ [p.path,p.thumb_path].forEach(pp=>{ if(!pp) return; const hit=_sigCache[pp]; if(hit&&hit.exp>now){ signedMap[pp]=hit.url; } else if(need.indexOf(pp)<0) need.push(pp); }); }); });
   if(need.length){ try{ const {data:signed}=await c.storage.from('catch-photos').createSignedUrls(need,60*60*24*7); (signed||[]).forEach(s=>{ if(s&&s.path&&s.signedUrl){ signedMap[s.path]=s.signedUrl; _sigCache[s.path]={url:s.signedUrl,exp:now+6*24*60*60*1000}; } }); }catch(e){} }
-  return data.map(o=>{ const nameById={}; nameById[o.owner_id]={name:o.owner_name||'', avatar:o.owner_avatar||null, style:o.owner_style||null}; const cc=rpcRowToCatch(o, signedMap, nameById); cc._ctxName=o.ctx_name||''; return cc; });
+  return data.map(o=>{ const nameById={}; nameById[o.owner_id]={name:o.owner_name||'', avatar:o.owner_avatar||null, style:o.owner_style||null}; const cc=rpcRowToCatch(o, signedMap, nameById); cc._ctxName=o.ctx_name||''; cc._clubRecord=(o.is_record===true); return cc; });
 }
 async function _loadHomeData(){
   if(state.auth!=='supabase' || !state.me) return;
