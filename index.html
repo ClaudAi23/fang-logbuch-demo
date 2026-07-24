@@ -2880,7 +2880,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-24.464';
+const BUILD = '2026-07-24.465';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -3206,10 +3206,17 @@ function applyTheme(){
      nicht der Wahl im Menü, und genau die drei Zustände (system/dark/light) gibt es hier.
      Jetzt aus dem Stylesheet gelesen statt nochmal notiert: Zur Laufzeit gibt es --surface, also ist es
      dieselbe Quelle wie die Topbar und kann nicht auseinanderlaufen. */
+  syncThemeColor();
+}
+/* Statusleisten-Farbe (theme-color) folgt dem Screen: Home zeigt oben den dunklen Kopf (--sand),
+   alle anderen die Topbar (--surface). Beide sind theme-abhängig, also stimmt auch Hell/Dunkel mit. */
+function syncThemeColor(scr){
   try{
-    const m=document.querySelector('meta[name="theme-color"]');
-    const c=getComputedStyle(document.documentElement).getPropertyValue('--surface').trim();
-    if(m && c) m.setAttribute('content', c);
+    const m=document.querySelector('meta[name="theme-color"]'); if(!m) return;
+    scr = scr || _curScreen;
+    const v=(scr==='home') ? '--sand' : '--surface';
+    const c=getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    if(c) m.setAttribute('content', c);
   }catch(e){}
 }
 function setTheme(v){ state.theme=v; applyTheme(); syncThemeSeg(); savePrefs(); }
@@ -3835,6 +3842,7 @@ function navTab(tab){
 }
 function updateBotNav(name){
   name = name || _curScreen;
+  try{ syncThemeColor(name); }catch(e){}
   const nav=document.getElementById('botnav'); if(!nav) return;
   const active=_NAV_ACTIVE[name];
   const show=(state.auth==='supabase') && !!active;
@@ -3935,7 +3943,10 @@ function _homeSecHtml(key, label, arr, mode, opts){
     if(mode==='mixed'){
       const allEnd = opts.seeAll ? `<a class="hf-carou-all" onclick="${opts.seeAll}"><span class="hf-ca-ic">${_arrowIcon()}</span><span>${esc(t('seeAllShort'))}</span></a>` : '';
       body=`<div class="hf-carou">${cards}${allEnd}</div>`;
-    } else body=cards;
+    } else {
+      const seeRow = opts.seeAll ? `<button type="button" class="hf-seeall-row" onclick="${opts.seeAll}">${esc(t('seeAllShort'))} ${_arrowIcon()}</button>` : '';
+      body=cards+seeRow;
+    }
   }
   return `<div class="hf-sec-h" onclick="_toggleHomeFold('${key}')"><span class="hf-sec-t">${esc(label)}</span>${pill}<span class="hf-spacer"></span><span class="hf-cv">${_foldChev(folded)}</span></div>${body}`;
 }
