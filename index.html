@@ -2683,7 +2683,7 @@
     <button type="button" id="lb-prev" onclick="lbNav(-1)" aria-label="Zurück" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:none; background:rgba(0,0,0,.4); color:#fff; font-size:1.625rem; line-height:1; cursor:pointer; display:none; align-items:center; justify-content:center;">‹</button>
     <button type="button" id="lb-next" onclick="lbNav(1)" aria-label="Weiter" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:none; background:rgba(0,0,0,.4); color:#fff; font-size:1.625rem; line-height:1; cursor:pointer; display:none; align-items:center; justify-content:center;">›</button>
     <button type="button" onclick="closeLightbox()" aria-label="Schließen" style="position:absolute; top:calc(10px + env(safe-area-inset-top)); right:12px; width:42px; height:42px; border-radius:50%; border:none; background:rgba(0,0,0,.45); color:#fff; font-size:1.1875rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
-    <div id="lb-count" style="position:absolute; bottom:calc(16px + env(safe-area-inset-bottom)); left:0; right:0; text-align:center; color:rgba(255,255,255,.85); font-size:0.875rem; font-weight:500; pointer-events:none;"></div>
+    <div id="lb-count" style="position:absolute; top:calc(16px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%); color:rgba(255,255,255,.9); font-size:0.82rem; font-weight:500; pointer-events:none; background:rgba(0,0,0,.45); border-radius:999px; padding:2px 11px;"></div>
   </div>
   <!-- ===== Fullscreen catch viewer (feed) ===== -->
   <div id="catchfs" class="catchfs" style="display:none;">
@@ -2886,7 +2886,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-24.467';
+const BUILD = '2026-07-24.468';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -3996,14 +3996,29 @@ function _homeEmptyHtml(){
 }
 /* ---------- Fullscreen catch viewer (feed) ---------- */
 function _homeSecArr(key){ if(key==='club')return state._homeClub||[]; if(key==='follow')return state._homeFollow||[]; if(key==='mine')return state._homeMine||[]; return []; }
-function openCatchFs(secKey, idx){ state._fsSec=secKey; state._fsIdx=idx||0; _renderCatchFs(); const ov=document.getElementById('catchfs'); if(ov){ ov.style.display='flex'; } try{ document.body.style.overflow='hidden'; }catch(e){} }
+function openCatchFs(secKey, idx){ state._fsSec=secKey; state._fsIdx=idx||0; _renderCatchFs(); _fsBind(); const ov=document.getElementById('catchfs'); if(ov){ ov.style.display='flex'; } try{ document.body.style.overflow='hidden'; }catch(e){} }
+/* Links/rechts wischen zwischen den Fängen der Sektion (wie im Lightbox). Vertikal bleibt frei.
+   Bei erfolgreichem Wechsel Transform ohne Animation zurücksetzen (das neue Foto steht dann mittig),
+   sonst mit kurzer Animation zurückfedern. Pfeil-Tasten für Desktop gleich mit. */
+function _fsBind(){
+  const ov=document.getElementById('catchfs'); if(!ov||ov._bound) return; ov._bound=true;
+  let sx=0,sy=0,dx=0,dy=0,dir='',active=false;
+  const img=()=>document.getElementById('fs-img');
+  ov.addEventListener('touchstart',e=>{ if(e.touches.length!==1){active=false;return;} active=true; sx=e.touches[0].clientX; sy=e.touches[0].clientY; dx=0; dy=0; dir=''; const i=img(); if(i) i.style.transition='none'; },{passive:true});
+  ov.addEventListener('touchmove',e=>{ if(!active||e.touches.length!==1) return; dx=e.touches[0].clientX-sx; dy=e.touches[0].clientY-sy; if(!dir && (Math.abs(dx)>10||Math.abs(dy)>10)) dir=Math.abs(dx)>Math.abs(dy)?'h':'v'; if(dir==='h'){ const i=img(); if(i) i.style.transform='translateX('+dx+'px)'; if(e.cancelable) e.preventDefault(); } },{passive:false});
+  const end=()=>{ if(!active) return; active=false; const i=img(); const th=Math.min(110,window.innerWidth*0.22); const arr=_homeSecArr(state._fsSec);
+    if(dir==='h' && arr.length>1 && Math.abs(dx)>th){ if(i){ i.style.transition='none'; i.style.transform=''; } if(dx>0) fsNav(-1); else fsNav(1); }
+    else { if(i){ i.style.transition='transform .18s'; i.style.transform=''; } } };
+  ov.addEventListener('touchend',end); ov.addEventListener('touchcancel',end);
+  document.addEventListener('keydown',ev=>{ const o=document.getElementById('catchfs'); if(!o||!o.style.display||o.style.display==='none') return; if(ev.key==='Escape') closeCatchFs(); else if(ev.key==='ArrowLeft') fsNav(-1); else if(ev.key==='ArrowRight') fsNav(1); });
+}
 function closeCatchFs(){ const ov=document.getElementById('catchfs'); if(ov) ov.style.display='none'; try{ document.body.style.overflow=''; }catch(e){} }
 function fsNav(d){ const arr=_homeSecArr(state._fsSec); if(!arr.length) return; state._fsIdx=(state._fsIdx+d+arr.length)%arr.length; _renderCatchFs(); }
 function _renderCatchFs(){
   const arr=_homeSecArr(state._fsSec); const c=arr[state._fsIdx]; if(!c) return;
   const photo=c.photo||(c.photos&&c.photos[0])||null;
   const im=document.getElementById('fs-img'); const pf=document.getElementById('fs-puffer');
-  if(im){ if(photo){ im.src=photo; im.style.display=''; } else { im.removeAttribute('src'); im.style.display='none'; } }
+  if(im){ im.style.transform=''; if(photo){ im.src=photo; im.style.display=''; } else { im.removeAttribute('src'); im.style.display='none'; } }
   if(pf) pf.style.display = photo?'none':'flex';
   const sp=document.getElementById('fs-sp'); if(sp) sp.textContent=trSpecies(c.species);
   const chips=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null, (c.released===true?t('releasedReleased'):(c.released===false?t('releasedKept'):null))].filter(Boolean);
