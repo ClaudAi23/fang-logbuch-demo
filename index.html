@@ -1395,7 +1395,7 @@
   .home-beta{background:rgba(81,166,160,.16);color:var(--teal-bright);border:1px solid rgba(81,166,160,.45);border-radius:999px;padding:1px 9px;font-size:.62rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}
   .home-tag{margin:3px 0 0 2px;font-size:.72rem;color:var(--muted);letter-spacing:.02em;}
   .home-hdr.slim{padding:9px 16px;} .home-hdr.slim .home-puf{display:none;} .home-hdr.slim .home-wm{font-size:1.15rem;} .home-hdr.slim .home-tag{display:none;}
-  .home-vtrow{display:flex;align-items:flex-end;justify-content:space-between;margin:14px 0 1px;}
+  .home-vtrow{display:flex;align-items:center;justify-content:space-between;margin:14px 0 10px;}
   .home-vt-h{font-family:'Barlow Condensed','Barlow',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:.01em;color:var(--text);text-transform:none;line-height:1;}
   .hf-lbl{font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:14px 2px 9px;}
   .hf-needbar{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:rgba(81,166,160,.14);border:1px solid var(--border-2);border-radius:12px;padding:11px 12px;cursor:pointer;color:var(--text);font-family:inherit;}
@@ -1775,11 +1775,10 @@
           <button type="button" id="home-photofilter" class="pfilter" onclick="togglePhotoOnly()" data-i18n-title="photoOnly" title="Nur mit Foto" aria-label="Nur mit Foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.7"/><path d="M3 17l5-4 4 3 3-2 6 4"/><path class="slash" d="M3.5 3.5l17 17"/></svg></button>
           <div class="viewtog" id="home-viewtog">
             <button type="button" data-vm="mixed" onclick="setListView('home','mixed')" data-i18n-title="viewMixed" title="Hero" aria-label="Hero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="8" height="12" rx="1.8"/><rect x="13" y="6" width="8" height="12" rx="1.8"/></svg></button>
-            <button type="button" data-vm="list" onclick="setListView('home','list')" data-i18n-title="viewList" title="Rekord" aria-label="Rekord"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.4"/><rect x="13" y="4" width="7" height="7" rx="1.4"/><rect x="4" y="13" width="7" height="7" rx="1.4"/><rect x="13" y="13" width="7" height="7" rx="1.4"/></svg></button>
+            <button type="button" data-vm="list" onclick="setListView('home','list')" data-i18n-title="viewList" title="Rekord" aria-label="Rekord"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="7" width="4" height="10" rx="1.2"/><rect x="7.8" y="7" width="4" height="10" rx="1.2"/><rect x="13.1" y="7" width="4" height="10" rx="1.2"/><rect x="18.4" y="7" width="4" height="10" rx="1.2"/></svg></button>
           </div>
         </div>
       </div>
-      <p id="home-feeddesc" class="feed-desc" data-i18n="feedDesc" style="display:none;">Neueste Fänge — aus deiner Community, wem du folgst und von dir.</p>
       <div id="home-club"></div>
       <div id="home-follow"></div>
       <div id="home-mine"></div>
@@ -2923,7 +2922,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-24.473';
+const BUILD = '2026-07-24.474';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -4022,7 +4021,6 @@ function _renderHomeFeeds(){
   // Toggle-Zeile bleibt sichtbar, sobald es ÜBERHAUPT Feed-Daten gibt (sonst käme man aus „nur mit Foto" nicht wieder raus).
   const anyFeed = (Array.isArray(rawClub)&&rawClub.length) || (Array.isArray(rawFollow)&&rawFollow.length);
   const vt=document.getElementById('home-vtrow'); if(vt){ vt.style.display = anyFeed?'flex':'none'; try{ _syncViewTog('home'); }catch(e){} try{ _syncPhotoFilter(); }catch(e){} }
-  const fd=document.getElementById('home-feeddesc'); if(fd) fd.style.display = anyFeed?'':'none';
   const cb=document.getElementById('home-club'); if(cb) cb.innerHTML=_homeSecHtml('club', t('secCommunity'), club, mode, { seeAll:"homeSeeAllClub()", newCount:_homeNewCount() });
   const fb=document.getElementById('home-follow'); if(fb) fb.innerHTML=_homeSecHtml('follow', t('secFollowing'), follow, mode, { seeAll:"homeSeeAllFollow()" });
   const mb=document.getElementById('home-mine');
