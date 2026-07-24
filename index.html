@@ -1379,7 +1379,7 @@
   .hf-cv{color:var(--muted);display:flex;align-items:center;}
   .hf-hero{display:block;width:100%;position:relative;border-radius:14px;overflow:hidden;aspect-ratio:3 / 2;background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);border:none;padding:0;text-align:left;cursor:pointer;margin-bottom:9px;}
   .hf-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  .hf-fish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(99,192,184,.28);z-index:1;} .hf-fish svg{width:40px;height:40px;} .hf-fish img{position:static;inset:auto;width:auto;height:46px;object-fit:contain;filter:brightness(0);opacity:.5;}
+  .hf-fish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(99,192,184,.28);z-index:1;} .hf-fish svg{width:40px;height:40px;} .hf-fish img{position:static;inset:auto;width:auto;height:96px;object-fit:contain;opacity:.5;}
   .hf-scrim{position:absolute;left:0;right:0;bottom:0;height:66%;background:linear-gradient(transparent,rgba(2,20,30,.92));}
   .hf-band{position:absolute;left:13px;right:13px;bottom:9px;}
   .hf-sp{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;line-height:1;color:var(--text);}
@@ -1400,7 +1400,7 @@
   .catchfs{position:fixed;inset:0;z-index:960;background:#050d13;flex-direction:column;touch-action:none;}
   .catchfs .fs-photo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
   .catchfs .fs-photo img{max-width:100%;max-height:100%;object-fit:contain;}
-  .catchfs .fs-puffer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);} .catchfs .fs-puffer img{width:auto;height:90px;filter:brightness(0);opacity:.5;}
+  .catchfs .fs-puffer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);} .catchfs .fs-puffer img{width:auto;height:170px;opacity:.5;}
   .catchfs .fs-top{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 14px 12px;}
   .catchfs .fs-btn{width:36px;height:36px;border-radius:50%;background:rgba(2,20,30,.55);border:none;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;} .catchfs .fs-btn svg{width:20px;height:20px;}
   .catchfs .fs-count{position:absolute;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%);z-index:2;font-size:.74rem;color:#cfe;background:rgba(2,20,30,.55);border-radius:999px;padding:2px 11px;}
@@ -2646,7 +2646,7 @@
     </div>
   </div>
   <!-- Teilen-Sheet (Spur A): komponiertes Herofoto + Text + Fotoauswahl, dann EIN nativer Share -->
-  <div id="share-sheet" class="modal-ov" style="display:none;" onclick="if(event.target===this)closeModal('share-sheet')">
+  <div id="share-sheet" class="modal-ov" style="display:none; z-index:970;" onclick="if(event.target===this)closeModal('share-sheet')">
     <div class="modal-box">
       <h2 style="font-size:1.25rem; margin:0 0 12px;" data-i18n="shareSheetTitle">Fang teilen</h2>
       <div id="share-hero-prev"></div>
@@ -2678,7 +2678,7 @@
   </div>
   <!-- ===== Fullscreen catch viewer (feed) ===== -->
   <div id="catchfs" class="catchfs" style="display:none;">
-    <div class="fs-photo"><img id="fs-img" alt=""><span id="fs-puffer" class="fs-puffer" style="display:none;"><img src="/mascot.png" alt=""></span></div>
+    <div class="fs-photo"><img id="fs-img" alt=""><span id="fs-puffer" class="fs-puffer" style="display:none;"><img src="/mascot-hero.png" alt=""></span></div>
     <div class="fs-top">
       <button type="button" class="fs-btn" onclick="closeCatchFs()" aria-label="Schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <button type="button" id="fs-share" class="fs-btn" onclick="fsShare()" aria-label="Teilen" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
@@ -2877,7 +2877,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-23.462';
+const BUILD = '2026-07-24.463';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -3914,7 +3914,7 @@ function _homeCard(c, mode, secKey, idx){
     const inner=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-sp">${esc(trSpecies(c.species))}</span>${size?`<span class="hf-sz">${esc(size)}</span>`:''}<span class="hf-meta">${esc(meta)}</span></span>`;
     const tap=`openCatchFs('${secKey}',${idx})`;
     if(photo){ return `<button type="button" class="hf-hero" onclick="${tap}">${_feedImg(c, photo)}${inner}</button>`; }
-    return `<button type="button" class="hf-hero" onclick="${tap}"><span class="hf-fish"><img src="/mascot.png" alt="" loading="lazy"></span>${inner}</button>`;
+    return `<button type="button" class="hf-hero" onclick="${tap}"><span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>${inner}</button>`;
   }
   const thumb = photo ? `<span class="thumb">${_feedImg(c, photo)}</span>` : `<span class="thumb">${FISH_IC}</span>`;
   return `<button type="button" class="catch" onclick="openCatchFs('${secKey}',${idx})">${thumb}<span style="flex:1; min-width:0;"><span class="top"><span class="sp">${esc(trSpecies(c.species))}</span><span class="val">${esc(size)}</span></span><span class="meta">${esc(meta)}</span></span>${CHEV_IC}</button>`;
@@ -3926,7 +3926,6 @@ function _homeSecHtml(key, label, arr, mode, opts){
   const cnt=opts.newCount||0;
   const lim=opts.limit||5;
   const pill = cnt>0 ? `<span class="hf-ct">${cnt} ${esc(t('newWord'))}</span>` : '';
-  const seeall = opts.seeAll ? `<span class="hf-sa" onclick="event.stopPropagation(); ${opts.seeAll}">${esc(t('seeAllShort'))}</span>` : '';
   let body='';
   if(!folded){
     const cards=arr.slice(0,lim).map((c,i)=>_homeCard(c,mode,key,i)).join('');
@@ -3935,7 +3934,7 @@ function _homeSecHtml(key, label, arr, mode, opts){
       body=`<div class="hf-carou">${cards}${allEnd}</div>`;
     } else body=cards;
   }
-  return `<div class="hf-sec-h" onclick="_toggleHomeFold('${key}')"><span class="hf-sec-t">${esc(label)}</span>${pill}<span class="hf-spacer"></span>${seeall}<span class="hf-cv">${_foldChev(folded)}</span></div>${body}`;
+  return `<div class="hf-sec-h" onclick="_toggleHomeFold('${key}')"><span class="hf-sec-t">${esc(label)}</span>${pill}<span class="hf-spacer"></span><span class="hf-cv">${_foldChev(folded)}</span></div>${body}`;
 }
 function _homeMineCard(c, mode, idx){
   const _cov=coverThumbOf(c);
@@ -3944,7 +3943,7 @@ function _homeMineCard(c, mode, idx){
   if(mode==='mixed'){
     const inner=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-sp">${esc(trSpecies(c.species))}</span>${size?`<span class="hf-sz">${esc(size)}</span>`:''}<span class="hf-meta">${esc(meta)}</span></span>`;
     if(_cov){ return `<button type="button" class="hf-hero" onclick="openCatchFs('mine',${idx})">${_feedImg(c,_cov)}${inner}</button>`; }
-    return `<button type="button" class="hf-hero" onclick="openCatchFs('mine',${idx})"><span class="hf-fish"><img src="/mascot.png" alt="" loading="lazy"></span>${inner}</button>`;
+    return `<button type="button" class="hf-hero" onclick="openCatchFs('mine',${idx})"><span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>${inner}</button>`;
   }
   const thumb = _cov ? `<span class="thumb">${_feedImg(c,_cov)}</span>` : `<span class="thumb">${FISH_IC}</span>`;
   return `<button type="button" class="catch" onclick="openCatchFs('mine',${idx})">${badgeWrap(thumb, c)}<span style="flex:1; min-width:0;"><span class="top"><span class="sp">${esc(trSpecies(c.species))}</span><span class="val">${esc(primaryStr(c))}</span></span><span class="meta">${esc(meta)}</span></span>${CHEV_IC}</button>`;
