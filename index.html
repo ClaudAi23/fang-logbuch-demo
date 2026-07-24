@@ -1361,23 +1361,22 @@
   /* Rekord-Ansicht der Feeds (#1): kompakter Kartenstreifen, kleiner & dichter als die Hero-Karten. */
   .hf-recstrip{display:flex; gap:10px; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; padding:1px 16px 6px 0; margin-right:-16px; -webkit-overflow-scrolling:touch;}
   .hf-recstrip::-webkit-scrollbar{display:none;}
-  .hf-rec{flex:0 0 146px; width:146px; position:relative; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:9px; display:flex; flex-direction:column; align-items:flex-start; gap:0; text-align:left; color:var(--text); cursor:pointer; font-family:inherit;}
-  .hf-rec .rtw{position:relative; width:100%; height:80px; border-radius:9px; overflow:hidden; margin-bottom:7px;}
-  .hf-rec .rthumb{width:100%; height:100%; background:var(--teal-tint); overflow:hidden; display:flex; align-items:center; justify-content:center;}
-  .hf-rec .rthumb > img{width:100%; height:100%; object-fit:cover; display:block;}
-  .hf-rec .rthumb.ph{background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);}
-  .hf-rec .rthumb.ph > img{width:auto; height:58%; object-fit:contain; opacity:.5;}
-  .hf-rec .rsp{font-family:'Barlow Condensed','Barlow',sans-serif; font-weight:800; font-size:1.12rem; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
-  .hf-rec .rval{font-size:.8rem; font-weight:700; color:var(--teal-bright); line-height:1.2; margin-top:1px;}
-  .hf-rec .rmeta{font-size:.68rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; margin-top:2px;}
-  /* Gerahmter Avatar (wer) oben links, Marker oben rechts — auf Rekord- & Hero-Karte. */
-  .hf-av{position:absolute; top:6px; left:6px; z-index:3; width:24px; height:24px; border-radius:50%; overflow:hidden; border:2px solid rgba(255,255,255,.9); box-shadow:0 1px 4px rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; background:var(--surface-2); font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:.58rem; color:var(--teal-bright);}
-  .hf-av img{width:100%; height:100%; object-fit:cover;}
-  .hf-cbdg{position:absolute; top:6px; right:6px; z-index:3; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.5);}
+  /* Rekord-Karte v4: Thumb (Art+Maß drauf, Marker), darunter Avatar + Datum·Verein. */
+  .hf-rec{flex:0 0 150px; width:150px; display:flex; flex-direction:column; background:none; border:none; padding:0; text-align:left; color:var(--text); cursor:pointer; font-family:inherit;}
+  .hf-rec .hf-ph{height:100px;}
+  .hf-rec .hf-sp{font-size:1.02rem;} .hf-rec .hf-sz{font-size:.66rem; padding:1px 6px;}
+  .hf-rec .hf-fish img{height:52px;}
+  .hf-rec .hf-cbdg{width:22px; height:22px; top:6px; right:6px;} .hf-rec .hf-cbdg svg{width:13px; height:13px;}
+  /* Gemeinsame Foto-Box (Art+Maß liegen drauf), Marker oben rechts; Avatar + Meta darunter. */
+  .hf-ph{position:relative; width:100%; border-radius:13px; overflow:hidden; background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);}
+  .hf-ph > img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+  .hf-cbdg{position:absolute; top:8px; right:8px; z-index:3; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 6px rgba(0,0,0,.5);}
   .hf-cbdg.gold{background:#D4AF37; color:#2a2000;} .hf-cbdg.pb{background:var(--accent); color:#3a2600;}
-  .hf-cbdg svg{width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2;}
-  .hf-hero > .hf-av{top:8px; left:8px; width:28px; height:28px; font-size:.66rem;}
-  .hf-hero > .hf-cbdg{top:8px; right:8px; width:26px; height:26px;} .hf-hero > .hf-cbdg svg{width:15px; height:15px;}
+  .hf-cbdg svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2;}
+  .hf-below{display:flex; align-items:center; gap:7px; margin-top:7px; padding:0 2px; min-width:0;}
+  .hf-av{flex:0 0 auto; width:22px; height:22px; border-radius:50%; overflow:hidden; border:1.5px solid rgba(255,255,255,.4); display:flex; align-items:center; justify-content:center; background:var(--surface-2); font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:.56rem; color:var(--teal-bright);}
+  .hf-av img{width:100%; height:100%; object-fit:cover;}
+  .hf-bmeta{font-size:.74rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;}
   .hf-rec-all{flex:0 0 66px; align-self:stretch; border:1px dashed var(--border-2); border-radius:14px; background:none; color:var(--teal-bright); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; cursor:pointer; font-size:.72rem; font-weight:700; font-family:inherit;}
   .hf-rec-all svg{width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:2;}
   /* Rundes Marker-Badge (oben rechts): PB-Krone (ocker), Vereinsrekord (gold, später via Backend-Flag). */
@@ -1420,15 +1419,13 @@
   /* „Alle →" in der Sektions-Kopfzeile, neben dem Falt-Pfeil. stopPropagation, damit der Tap nicht faltet. */
   .hf-sec-all{display:inline-flex;align-items:center;gap:4px;color:var(--teal-bright);font-size:.72rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;background:none;border:none;padding:2px 4px;cursor:pointer;font-family:inherit;}
   .hf-sec-all svg{width:13px;height:13px;}
-  .hf-hero{display:block;width:100%;position:relative;border-radius:14px;overflow:hidden;aspect-ratio:3 / 2;background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);border:none;padding:0;text-align:left;cursor:pointer;margin-bottom:9px;}
-  .hf-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  .hf-fish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(99,192,184,.28);z-index:1;} .hf-fish svg{width:40px;height:40px;} .hf-fish img{position:static;inset:auto;width:auto;height:96px;object-fit:contain;opacity:.5;}
-  .hf-scrim{position:absolute;left:0;right:0;bottom:0;height:66%;background:linear-gradient(transparent,rgba(2,20,30,.92));}
-  .hf-band{position:absolute;left:13px;right:13px;bottom:9px;}
-  .hf-band .hf-l1{display:flex;align-items:baseline;gap:8px;}
-  .hf-sp{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;line-height:1;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .hf-sz{flex:0 0 auto;font-size:.74rem;background:rgba(255,255,255,.16);border-radius:7px;padding:2px 8px;color:var(--text);}
-  .hf-meta{display:block;margin-top:4px;font-size:.73rem;color:#cfe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hf-hero{display:flex;flex-direction:column;width:100%;background:none;border:none;padding:0;text-align:left;color:var(--text);cursor:pointer;margin-bottom:9px;font-family:inherit;}
+  .hf-hero .hf-ph{aspect-ratio:3 / 2;}
+  .hf-fish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;} .hf-fish img{width:auto;height:88px;object-fit:contain;opacity:.5;}
+  .hf-scrim{position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(transparent,rgba(2,20,30,.92));z-index:1;}
+  .hf-onphoto{position:absolute;left:12px;right:12px;bottom:9px;z-index:2;display:flex;align-items:baseline;gap:8px;}
+  .hf-sp{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;line-height:1;color:#fff;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hf-sz{flex:0 0 auto;font-size:.74rem;background:rgba(255,255,255,.18);border-radius:6px;padding:2px 8px;color:#fff;}
   .hf-seeall-row{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;color:var(--teal-bright);font-size:.8rem;font-weight:700;padding:9px;border:1px dashed var(--border-2);border-radius:12px;background:none;cursor:pointer;font-family:inherit;margin-top:2px;}
   .hf-empty{padding:44px 18px;text-align:center;}
   .hf-empty .puff{width:74px;height:74px;margin:0 auto 14px;border-radius:18px;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--accent);} .hf-empty .puff svg{width:40px;height:40px;}
@@ -1437,7 +1434,8 @@
   /* Home feed carousel */
   .hf-carou{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:1px 16px 6px 0;margin-right:-16px;-webkit-overflow-scrolling:touch;}
   .hf-carou::-webkit-scrollbar{display:none;}
-  .hf-carou .hf-hero{flex:0 0 224px;width:224px;height:250px;aspect-ratio:auto;margin-bottom:0;}
+  .hf-carou .hf-hero{flex:0 0 224px;width:224px;margin-bottom:0;}
+  .hf-carou .hf-hero .hf-ph{aspect-ratio:auto;height:206px;}
   .hf-carou-all{flex:0 0 62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--teal-bright);text-decoration:none;font-size:.74rem;font-weight:700;cursor:pointer;}
   .hf-carou-all .hf-ca-ic{width:40px;height:40px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;}
   /* Fullscreen catch viewer */
@@ -2936,7 +2934,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-24.477';
+const BUILD = '2026-07-24.478';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -3973,24 +3971,34 @@ function _renderHomeNeeds(){
   box.innerHTML=`<p class="hf-lbl">${esc(t('needsYou'))}</p><button type="button" class="hf-needbar" onclick="openFollows()"><span class="bell">${IC_BELL}</span><span class="nx"><b>${n} ${esc(t('needCount'))}</b><small>${esc(t('needSub'))}</small></span><span class="chev">${CHEV_IC}</span></button>`;
 }
 function _feedImg(c, url){ var cr=(cropOf(c,0)||{}); var p=coverPosOf(cr.p); return `<img src="${escAttr(url)}" alt="" loading="lazy" style="object-position:${p};">`; }
-function _homeCard(c, mode, secKey, idx){
-  const photo=c.photo||(c.thumbs&&c.thumbs[0])||null;
-  const sp=esc(trSpecies(c.species)); const val=_cardMeasure(c); const dt=_cardDateCtx(c, false);
-  const av=_cardAv(c), bdg=_cardBadge(c, secKey); const tap=`openCatchFs('${secKey}',${idx})`;
-  if(mode==='mixed'){
-    const thumb = photo ? _feedImg(c, photo) : `<span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
-    const band=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-l1"><span class="hf-sp">${sp}</span>${val?`<span class="hf-sz">${esc(val)}</span>`:''}</span><span class="hf-meta">${esc(dt)}</span></span>`;
-    return `<button type="button" class="hf-hero" onclick="${tap}">${thumb}${av}${bdg}${band}</button>`;
-  }
-  const rthumb = photo ? `<span class="rthumb">${_feedImg(c, photo)}</span>` : `<span class="rthumb ph"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
-  return `<button type="button" class="hf-rec" onclick="${tap}"><span class="rtw">${rthumb}${av}${bdg}</span><span class="rsp">${sp}</span>${val?`<span class="rval">${esc(val)}</span>`:''}<span class="rmeta">${esc(dt)}</span></button>`;
+function _homeCard(c, mode, secKey, idx){ return _feedCard(c, secKey, idx, mode, false); }
+/* Karten v4: Foto trägt Art + Maß (+ Marker), darunter kleiner Avatar + Datum·Verein (kein Name). */
+function _feedCard(c, secKey, idx, mode, mine){
+  const photo = mine ? coverThumbOf(c) : (c.photo||(c.thumbs&&c.thumbs[0])||null);
+  const sp=esc(trSpecies(c.species));
+  const meas = (mode==='mixed') ? _cardMeasure(c) : _cardMeasureShort(c);
+  const dtx = _cardDateCtx(c, mine);
+  const bdg=_cardBadge(c, secKey);
+  const cls = (mode==='mixed') ? 'hf-hero' : 'hf-rec';
+  const inner = photo ? _feedImg(c, photo) : `<span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
+  const onphoto = `<span class="hf-scrim"></span><span class="hf-onphoto"><span class="hf-sp">${sp}</span>${meas?`<span class="hf-sz">${esc(meas)}</span>`:''}</span>`;
+  return `<button type="button" class="${cls}" onclick="openCatchFs('${secKey}',${idx})"><span class="hf-ph">${inner}${bdg}${onphoto}</span><span class="hf-below">${_cardAv(c)}<span class="hf-bmeta">${esc(dtx)}</span></span></button>`;
 }
-/* Karten-Bausteine (v2): Maß+Gewicht · Datum-zuerst-Kontext („Solo" nie) · gerahmter Avatar · Marker. */
 function _cardMeasure(c){ return [c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · '); }
+function _cardMeasureShort(c){ if(c.length!=null) return fmtLen(c.length); if(c.weight!=null) return fmtWeight(c.weight); return ''; }
 function _cardCtx(c, mine){ let x = mine ? ((c._ctxType==='solo')?'':(c._ctx||'')) : (c._ctxName||''); if(x && x===t('solo')) x=''; return x; }
 function _cardDateCtx(c, mine){ const d=fmtDate(c.date); const x=_cardCtx(c, mine); return x ? (d+' · '+x) : d; }
-function _cardAv(c){ return `<span class="hf-av">${anglerAvatarHTML(c)}</span>`; }
-function _cardBadge(c, secKey){ if(secKey==='club' && c._clubRecord) return `<span class="hf-cbdg gold" title="${escAttr(t('recordBadge'))}">${CROWN_IC}</span>`; if(secKey==='mine' && isPb(c)) return `<span class="hf-cbdg pb" title="${escAttr(t('pbBadge'))}">${CROWN_IC}</span>`; return ''; }
+function _cardAvInner(c){
+  const isMe = !c._db || (state.me && c.userId===state.me.id);
+  const av = isMe ? (state.me&&state.me.avatar) : c.anglerAvatar;
+  if(av) return `<img src="${escAttr(av)}" alt="">`;
+  const nm=((isMe?(state.me&&state.me.name):c.angler)||'?').trim();
+  const p=nm.split(/\s+/).filter(Boolean);
+  const txt = (p.length>1) ? (p[0][0]+p[1][0]) : nm.slice(0,2);
+  return esc((txt||'?').toUpperCase());
+}
+function _cardAv(c){ return `<span class="hf-av">${_cardAvInner(c)}</span>`; }
+function _cardBadge(c, secKey){ if(secKey==='club' && c._clubRecord) return `<span class="hf-cbdg gold" title="${escAttr(t('recordBadge'))}">${MEDAL_IC}</span>`; if((secKey==='mine'||secKey==='follow') && isPb(c)) return `<span class="hf-cbdg pb" title="${escAttr(t('pbBadge'))}">${CROWN_IC}</span>`; return ''; }
 function _homeSecHtml(key, label, arr, mode, opts){
   opts=opts||{};
   if(!Array.isArray(arr) || !arr.length) return '';
@@ -4011,18 +4019,7 @@ function _homeSecHtml(key, label, arr, mode, opts){
   }
   return `<div class="hf-sec-h" onclick="_toggleHomeFold('${key}')"><span class="hf-sec-t">${esc(label)}</span>${pill}<span class="hf-spacer"></span><span class="hf-cv">${_foldChev(folded)}</span></div>${body}`;
 }
-function _homeMineCard(c, mode, idx){
-  const _cov=coverThumbOf(c);
-  const sp=esc(trSpecies(c.species)); const val=_cardMeasure(c); const dt=_cardDateCtx(c, true);
-  const av=_cardAv(c), bdg=_cardBadge(c, 'mine');
-  if(mode==='mixed'){
-    const thumb = _cov ? _feedImg(c,_cov) : `<span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
-    const band=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-l1"><span class="hf-sp">${sp}</span>${val?`<span class="hf-sz">${esc(val)}</span>`:''}</span><span class="hf-meta">${esc(dt)}</span></span>`;
-    return `<button type="button" class="hf-hero" onclick="openCatchFs('mine',${idx})">${thumb}${av}${bdg}${band}</button>`;
-  }
-  const rthumb = _cov ? `<span class="rthumb">${_feedImg(c,_cov)}</span>` : `<span class="rthumb ph"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
-  return `<button type="button" class="hf-rec" onclick="openCatchFs('mine',${idx})"><span class="rtw">${rthumb}${av}${bdg}</span><span class="rsp">${sp}</span>${val?`<span class="rval">${esc(val)}</span>`:''}<span class="rmeta">${esc(dt)}</span></button>`;
-}
+function _homeMineCard(c, mode, idx){ return _feedCard(c, 'mine', idx, mode, true); }
 function _renderHomeFeeds(){
   const po=_photoOnly();
   const _f=(a)=> (po&&Array.isArray(a)) ? a.filter(_catchHasPhoto) : a;
@@ -4123,8 +4120,8 @@ function _renderCatchFs(){
   // Marker: Gold-Vereinsrekord (Community, via Backend-Flag _clubRecord) bzw. PB-Krone (deine Fänge).
   const bd=document.getElementById('fs-badge');
   if(bd){ bd.className='fs-badge';
-    if((state._fsSec==='club') && c._clubRecord){ bd.classList.add('gold'); bd.innerHTML=CROWN_IC; bd.style.display='flex'; }
-    else if(state._fsSec==='mine' && isPb(c)){ bd.classList.add('pb'); bd.innerHTML=CROWN_IC; bd.style.display='flex'; }
+    if((state._fsSec==='club') && c._clubRecord){ bd.classList.add('gold'); bd.innerHTML=MEDAL_IC; bd.style.display='flex'; }
+    else if((state._fsSec==='mine'||state._fsSec==='follow') && isPb(c)){ bd.classList.add('pb'); bd.innerHTML=CROWN_IC; bd.style.display='flex'; }
     else bd.style.display='none';
   }
   const chips=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean);
