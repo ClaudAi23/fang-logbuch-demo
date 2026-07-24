@@ -1361,14 +1361,23 @@
   /* Rekord-Ansicht der Feeds (#1): kompakter Kartenstreifen, kleiner & dichter als die Hero-Karten. */
   .hf-recstrip{display:flex; gap:10px; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; padding:1px 16px 6px 0; margin-right:-16px; -webkit-overflow-scrolling:touch;}
   .hf-recstrip::-webkit-scrollbar{display:none;}
-  .hf-rec{flex:0 0 132px; width:132px; position:relative; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:9px; display:flex; flex-direction:column; align-items:flex-start; gap:1px; text-align:left; color:var(--text); cursor:pointer; font-family:inherit;}
-  .hf-rec .rthumb{width:100%; height:78px; border-radius:9px; background:var(--teal-tint); margin-bottom:6px; overflow:hidden; display:flex; align-items:center; justify-content:center;}
+  .hf-rec{flex:0 0 146px; width:146px; position:relative; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:9px; display:flex; flex-direction:column; align-items:flex-start; gap:0; text-align:left; color:var(--text); cursor:pointer; font-family:inherit;}
+  .hf-rec .rtw{position:relative; width:100%; height:80px; border-radius:9px; overflow:hidden; margin-bottom:7px;}
+  .hf-rec .rthumb{width:100%; height:100%; background:var(--teal-tint); overflow:hidden; display:flex; align-items:center; justify-content:center;}
   .hf-rec .rthumb > img{width:100%; height:100%; object-fit:cover; display:block;}
   .hf-rec .rthumb.ph{background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);}
   .hf-rec .rthumb.ph > img{width:auto; height:58%; object-fit:contain; opacity:.5;}
-  .hf-rec .rsp{font-weight:600; font-size:.9rem; line-height:1.15;}
-  .hf-rec .rval{font-family:'Barlow Condensed','Barlow',sans-serif; font-weight:700; color:var(--teal-bright); font-size:1.02rem; line-height:1.15;}
-  .hf-rec .rmeta{font-size:.68rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; margin-top:1px;}
+  .hf-rec .rsp{font-family:'Barlow Condensed','Barlow',sans-serif; font-weight:800; font-size:1.12rem; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
+  .hf-rec .rval{font-size:.8rem; font-weight:700; color:var(--teal-bright); line-height:1.2; margin-top:1px;}
+  .hf-rec .rmeta{font-size:.68rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; margin-top:2px;}
+  /* Gerahmter Avatar (wer) oben links, Marker oben rechts — auf Rekord- & Hero-Karte. */
+  .hf-av{position:absolute; top:6px; left:6px; z-index:3; width:24px; height:24px; border-radius:50%; overflow:hidden; border:2px solid rgba(255,255,255,.9); box-shadow:0 1px 4px rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; background:var(--surface-2); font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:.58rem; color:var(--teal-bright);}
+  .hf-av img{width:100%; height:100%; object-fit:cover;}
+  .hf-cbdg{position:absolute; top:6px; right:6px; z-index:3; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.5);}
+  .hf-cbdg.gold{background:#D4AF37; color:#2a2000;} .hf-cbdg.pb{background:var(--accent); color:#3a2600;}
+  .hf-cbdg svg{width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2;}
+  .hf-hero > .hf-av{top:8px; left:8px; width:28px; height:28px; font-size:.66rem;}
+  .hf-hero > .hf-cbdg{top:8px; right:8px; width:26px; height:26px;} .hf-hero > .hf-cbdg svg{width:15px; height:15px;}
   .hf-rec-all{flex:0 0 66px; align-self:stretch; border:1px dashed var(--border-2); border-radius:14px; background:none; color:var(--teal-bright); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; cursor:pointer; font-size:.72rem; font-weight:700; font-family:inherit;}
   .hf-rec-all svg{width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:2;}
   /* Rundes Marker-Badge (oben rechts): PB-Krone (ocker), Vereinsrekord (gold, später via Backend-Flag). */
@@ -1416,9 +1425,10 @@
   .hf-fish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(99,192,184,.28);z-index:1;} .hf-fish svg{width:40px;height:40px;} .hf-fish img{position:static;inset:auto;width:auto;height:96px;object-fit:contain;opacity:.5;}
   .hf-scrim{position:absolute;left:0;right:0;bottom:0;height:66%;background:linear-gradient(transparent,rgba(2,20,30,.92));}
   .hf-band{position:absolute;left:13px;right:13px;bottom:9px;}
-  .hf-sp{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;line-height:1;color:var(--text);}
-  .hf-sz{display:inline-block;margin-left:8px;font-size:.74rem;background:rgba(255,255,255,.16);border-radius:7px;padding:2px 8px;vertical-align:2px;color:var(--text);}
-  .hf-meta{display:block;margin-top:4px;font-size:.73rem;color:#cfe;}
+  .hf-band .hf-l1{display:flex;align-items:baseline;gap:8px;}
+  .hf-sp{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;line-height:1;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hf-sz{flex:0 0 auto;font-size:.74rem;background:rgba(255,255,255,.16);border-radius:7px;padding:2px 8px;color:var(--text);}
+  .hf-meta{display:block;margin-top:4px;font-size:.73rem;color:#cfe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .hf-seeall-row{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;color:var(--teal-bright);font-size:.8rem;font-weight:700;padding:9px;border:1px dashed var(--border-2);border-radius:12px;background:none;cursor:pointer;font-family:inherit;margin-top:2px;}
   .hf-empty{padding:44px 18px;text-align:center;}
   .hf-empty .puff{width:74px;height:74px;margin:0 auto 14px;border-radius:18px;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--accent);} .hf-empty .puff svg{width:40px;height:40px;}
@@ -1431,13 +1441,16 @@
   .hf-carou-all{flex:0 0 62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--teal-bright);text-decoration:none;font-size:.74rem;font-weight:700;cursor:pointer;}
   .hf-carou-all .hf-ca-ic{width:40px;height:40px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;}
   /* Fullscreen catch viewer */
-  .catchfs{position:fixed;inset:0;z-index:960;background:#050d13;flex-direction:column;touch-action:none;}
-  .catchfs .fs-photo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
+  .catchfs{position:fixed;inset:0;z-index:960;background:#021B28;flex-direction:column;touch-action:none;}
+  .catchfs .fs-photo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#021B28;}
   .catchfs .fs-photo img{max-width:100%;max-height:100%;object-fit:contain;}
   .catchfs .fs-puffer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0d3346,#0a4a3f 55%,#123b3a);} .catchfs .fs-puffer img{width:auto;height:170px;opacity:.5;}
   .catchfs .fs-top{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 14px 12px;}
   .catchfs .fs-btn{width:36px;height:36px;border-radius:50%;background:rgba(2,20,30,.55);border:none;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;} .catchfs .fs-btn svg{width:20px;height:20px;}
   .catchfs .fs-count{position:absolute;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%);z-index:2;font-size:.74rem;color:#cfe;background:rgba(2,20,30,.55);border-radius:999px;padding:2px 11px;}
+  .catchfs .fs-badge{position:absolute;left:14px;top:calc(60px + env(safe-area-inset-top));z-index:2;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+  .catchfs .fs-badge.pb{background:var(--accent);color:#3a2600;} .catchfs .fs-badge.gold{background:#D4AF37;color:#2a2000;}
+  .catchfs .fs-badge svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;}
   .catchfs .fs-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:40px;height:40px;border-radius:50%;background:rgba(2,20,30,.5);border:none;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;} .catchfs .fs-arrow.l{left:8px;} .catchfs .fs-arrow.r{right:8px;} .catchfs .fs-arrow svg{width:24px;height:24px;}
   .catchfs .fs-bot{position:relative;z-index:2;margin-top:auto;padding:22px 16px calc(20px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(5,13,19,.94) 45%);}
   /* End-Slide nach dem letzten Fang (#4): Maskottchen + „Alle ansehen →". */
@@ -2725,6 +2738,7 @@
       <button type="button" id="fs-share" class="fs-btn" onclick="fsShare()" aria-label="Teilen" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
     </div>
     <span id="fs-count" class="fs-count"></span>
+    <span id="fs-badge" class="fs-badge" style="display:none;"></span>
     <button type="button" id="fs-prev" class="fs-arrow l" onclick="fsNav(-1)" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
     <button type="button" id="fs-next" class="fs-arrow r" onclick="fsNav(1)" aria-label="Weiter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     <div class="fs-bot">
@@ -2922,7 +2936,7 @@
    Datei, die committet wird, gar nicht hineinschreiben. Datum + laufende Nummer sagt genau das, was die
    Frage „läuft das Update?" braucht, und ist ohne Werkzeug lesbar.
    Format: JJJJ-MM-TT.n — n zählt innerhalb des Tages hoch. */
-const BUILD = '2026-07-24.474';
+const BUILD = '2026-07-24.476';
 try{ const _b=document.getElementById('app-build'); if(_b) _b.textContent='v '+BUILD; }catch(e){}
 const SPECIES = ["Barsch","Zander","Hecht","Rotauge","Rotfeder","Karpfen","Schleie","Aal","Forelle"];
 const SPECIES_TR = {
@@ -3062,13 +3076,13 @@ Object.assign(I18N.de, {visDefAudience:"Standard-Publikum", visShareFollowersDef
 Object.assign(I18N.en, {visDefAudience:"Default audience", visShareFollowersDefault:"Share with followers by default", visShareFollowersHint:"Off — new catches are first seen only by your clubs/groups.", visDefWhat:"What I share by default", visWhatMandatory:"Only required", visWhatSome:"Some", visWhatAll:"All", visDefLoc:"Default location", visClubWins:"Club rules always win. You can adjust the location per catch.", visSharingHeading:"Sharing", visShareWithFollowers:"Share with followers", visLocThisCatch:"Location (this catch)", visLocThisCatchHint:"Prefilled from your default. Protect the spot on a single catch here.", visSpotHidden:"Spot hidden"});
 Object.assign(I18N.nl, {visDefAudience:"Standaardpubliek", visShareFollowersDefault:"Standaard met volgers delen", visShareFollowersHint:"Uit — nieuwe vangsten zien eerst alleen je verenigingen/groepen.", visDefWhat:"Wat ik standaard deel", visWhatMandatory:"Alleen verplicht", visWhatSome:"Sommige", visWhatAll:"Alles", visDefLoc:"Standaardlocatie", visClubWins:"Verenigingsregels winnen altijd. De locatie kun je per vangst aanpassen.", visSharingHeading:"Sharing", visShareWithFollowers:"Met volgers delen", visLocThisCatch:"Locatie (deze vangst)", visLocThisCatchHint:"Vooraf ingevuld met je standaard. Bescherm hier de stek bij één vangst.", visSpotHidden:"Stek verborgen"});
 Object.assign(I18N.de, {profSharedCatches:"geteilte Fänge", profFollow:"Folgen", profFollowing:"Folge ich", profRequested:"Angefragt", profBlocked:"Blockiert", profUnavailable:"Nicht verfügbar", profNoCatches:"Noch keine geteilten Fänge.", profRecords:"Rekorde", profCatches:"Fänge", profUnfollow:"Nicht mehr folgen", profBlockAction:"Blockieren", profUnblockAction:"Blockierung aufheben", profRequestSent:"Anfrage gesendet", allSpecies:"Alle Arten", loadingWord:"Lädt …", cancelWord:"Abbrechen", filterSpecies:"Art", latestCatches:"Neueste Fänge", profGateTitle:"Folge {name}, um die Fänge zu sehen", profGateSub:"Nur Follower sehen die geteilten Fänge dieses Anglers — auch außerhalb eurer gemeinsamen Gruppen & Vereine."});
-Object.assign(I18N.de, {followTitle:"Follower", followReqTab:"Anfragen", followFollowersTab:"Follower", followFollowingTab:"Ich folge", followTasksRow:"Follower", followNoReq:"Keine offenen Anfragen.", followNoFollowers:"Noch keine Follower.", followNoFollowing:"Du folgst noch niemandem.", followWantsToFollow:"möchte dir folgen", followFollowsYou:"folgt dir", accept:"Annehmen", decline:"Ablehnen", remove:"Entfernen", navHome:"Home", navProfile:"Du", navTasks:"Aktivität", navMore:"Mehr", profMapTab:"Karte", profNetTab:"Netzwerk", profTackleTab:"Tacklebox", profTackleSoon:"Deine Ruten, Rollen, Köder & Ausrüstung — mit Fang-Statistik. Kommt bald.", profNoLoc:"Noch keine Fänge mit Ort.", tasksAdmin:"Verein-Verwaltung", tasksEmpty:"Keine offenen Aufgaben.", profWithdraw:"Anfrage zurückziehen", viewMixed:"Hero", viewList:"Rekord", photoOnly:"Nur Fänge mit Foto", photoOnlyShort:"Foto", feedDesc:"Neueste Fänge — aus deiner Community, wem du folgst und von dir.", seeAllLong:"Alle ansehen", pbBadge:"Persönlicher Rekord", navCommunity:"Community", homeGreeting:"Moin, {name}", homeFeedTitle:"Von wem du folgst", feedCaught:"fing", betaPill:"Beta", feedWord:"Feed", needsYou:"Braucht dich", needCount:"brauchen dich", needSub:"Anfragen & Bestätigungen", secCommunity:"Community", secFollowing:"Wem du folgst", secMine:"Deine neuesten Fänge", newWord:"neu", seeAllShort:"Alle", seeAllMine:"Alle deine Fänge", homeEmptySub:"Noch ruhig hier. Logge einen Fang oder folge Anglern, dann füllt sich dein Feed.", fullCatch:"Ganzer Fang"});
+Object.assign(I18N.de, {followTitle:"Follower", followReqTab:"Anfragen", followFollowersTab:"Follower", followFollowingTab:"Ich folge", followTasksRow:"Follower", followNoReq:"Keine offenen Anfragen.", followNoFollowers:"Noch keine Follower.", followNoFollowing:"Du folgst noch niemandem.", followWantsToFollow:"möchte dir folgen", followFollowsYou:"folgt dir", accept:"Annehmen", decline:"Ablehnen", remove:"Entfernen", navHome:"Home", navProfile:"Du", navTasks:"Aktivität", navMore:"Mehr", profMapTab:"Karte", profNetTab:"Netzwerk", profTackleTab:"Tacklebox", profTackleSoon:"Deine Ruten, Rollen, Köder & Ausrüstung — mit Fang-Statistik. Kommt bald.", profNoLoc:"Noch keine Fänge mit Ort.", tasksAdmin:"Verein-Verwaltung", tasksEmpty:"Keine offenen Aufgaben.", profWithdraw:"Anfrage zurückziehen", viewMixed:"Hero", viewList:"Rekord", photoOnly:"Nur Fänge mit Foto", photoOnlyShort:"Foto", feedDesc:"Neueste Fänge — aus deiner Community, wem du folgst und von dir.", seeAllLong:"Alle ansehen", pbBadge:"Persönlicher Rekord", recordBadge:"Vereinsrekord", navCommunity:"Community", homeGreeting:"Moin, {name}", homeFeedTitle:"Von wem du folgst", feedCaught:"fing", betaPill:"Beta", feedWord:"Feed", needsYou:"Braucht dich", needCount:"brauchen dich", needSub:"Anfragen & Bestätigungen", secCommunity:"Community", secFollowing:"Wem du folgst", secMine:"Deine neuesten Fänge", newWord:"neu", seeAllShort:"Alle", seeAllMine:"Alle deine Fänge", homeEmptySub:"Noch ruhig hier. Logge einen Fang oder folge Anglern, dann füllt sich dein Feed.", fullCatch:"Ganzer Fang"});
 Object.assign(I18N.de, {visApproxArea:"Ungefähre Gegend", visLockOnlyMe:"Nur ich", visSumOnlyMe:"Nur ich", visSumFollowers:"Follower", visSumClubsFollowers:"Vereine + Follower", visSumClubsOnly:"Nur Vereine/Gruppen", visNoFollowersYet:"Du hast noch keine Follower — das legt fest, was sie sehen, sobald du welche hast."});
 Object.assign(I18N.en, {profSharedCatches:"shared catches", profFollow:"Follow", profFollowing:"Following", profRequested:"Requested", profBlocked:"Blocked", profUnavailable:"Unavailable", profNoCatches:"No shared catches yet.", profRecords:"Records", profCatches:"Catches", profUnfollow:"Unfollow", profBlockAction:"Block", profUnblockAction:"Unblock", profRequestSent:"Request sent", allSpecies:"All species", loadingWord:"Loading …", cancelWord:"Cancel", filterSpecies:"Species", latestCatches:"Latest catches", profGateTitle:"Follow {name} to see their catches", profGateSub:"Only followers see this angler's shared catches — including outside your shared clubs & groups."});
-Object.assign(I18N.en, {followTitle:"Followers", followReqTab:"Requests", followFollowersTab:"Followers", followFollowingTab:"Following", followTasksRow:"Followers", followNoReq:"No pending requests.", followNoFollowers:"No followers yet.", followNoFollowing:"You're not following anyone yet.", followWantsToFollow:"wants to follow you", followFollowsYou:"follows you", accept:"Accept", decline:"Decline", remove:"Remove", navHome:"Home", navProfile:"You", navTasks:"Activity", navMore:"More", profMapTab:"Map", profNetTab:"Network", profTackleTab:"Tacklebox", profTackleSoon:"Your rods, reels, lures & equipment — with catch stats. Coming soon.", profNoLoc:"No catches with a location yet.", tasksAdmin:"Club admin", tasksEmpty:"No open tasks.", profWithdraw:"Withdraw request", viewMixed:"Hero", viewList:"Record", photoOnly:"Photo catches only", photoOnlyShort:"Photo", feedDesc:"Latest catches — from your community, people you follow and you.", seeAllLong:"See all", pbBadge:"Personal best", navCommunity:"Community", homeGreeting:"Hi, {name}", homeFeedTitle:"From people you follow", feedCaught:"caught", betaPill:"Beta", feedWord:"Feed", needsYou:"Needs you", needCount:"need you", needSub:"Requests & confirmations", secCommunity:"Community", secFollowing:"People you follow", secMine:"Your latest", newWord:"new", seeAllShort:"See all", seeAllMine:"See all your catches", homeEmptySub:"Quiet here. Log a catch or follow anglers to fill your feed.", fullCatch:"Full catch"});
+Object.assign(I18N.en, {followTitle:"Followers", followReqTab:"Requests", followFollowersTab:"Followers", followFollowingTab:"Following", followTasksRow:"Followers", followNoReq:"No pending requests.", followNoFollowers:"No followers yet.", followNoFollowing:"You're not following anyone yet.", followWantsToFollow:"wants to follow you", followFollowsYou:"follows you", accept:"Accept", decline:"Decline", remove:"Remove", navHome:"Home", navProfile:"You", navTasks:"Activity", navMore:"More", profMapTab:"Map", profNetTab:"Network", profTackleTab:"Tacklebox", profTackleSoon:"Your rods, reels, lures & equipment — with catch stats. Coming soon.", profNoLoc:"No catches with a location yet.", tasksAdmin:"Club admin", tasksEmpty:"No open tasks.", profWithdraw:"Withdraw request", viewMixed:"Hero", viewList:"Record", photoOnly:"Photo catches only", photoOnlyShort:"Photo", feedDesc:"Latest catches — from your community, people you follow and you.", seeAllLong:"See all", pbBadge:"Personal best", recordBadge:"Club record", navCommunity:"Community", homeGreeting:"Hi, {name}", homeFeedTitle:"From people you follow", feedCaught:"caught", betaPill:"Beta", feedWord:"Feed", needsYou:"Needs you", needCount:"need you", needSub:"Requests & confirmations", secCommunity:"Community", secFollowing:"People you follow", secMine:"Your latest", newWord:"new", seeAllShort:"See all", seeAllMine:"See all your catches", homeEmptySub:"Quiet here. Log a catch or follow anglers to fill your feed.", fullCatch:"Full catch"});
 Object.assign(I18N.en, {visApproxArea:"Approximate area", visLockOnlyMe:"Only me", visSumOnlyMe:"Only me", visSumFollowers:"Followers", visSumClubsFollowers:"Clubs + followers", visSumClubsOnly:"Clubs/groups only", visNoFollowersYet:"You don't have followers yet — this sets what they'll see once you do."});
 Object.assign(I18N.nl, {profSharedCatches:"gedeelde vangsten", profFollow:"Volgen", profFollowing:"Volg ik", profRequested:"Aangevraagd", profBlocked:"Geblokkeerd", profUnavailable:"Niet beschikbaar", profNoCatches:"Nog geen gedeelde vangsten.", profRecords:"Records", profCatches:"Vangsten", profUnfollow:"Ontvolgen", profBlockAction:"Blokkeren", profUnblockAction:"Deblokkeren", profRequestSent:"Verzoek verstuurd", allSpecies:"Alle soorten", loadingWord:"Laden …", cancelWord:"Annuleren", filterSpecies:"Soort", latestCatches:"Nieuwste vangsten", profGateTitle:"Volg {name} om de vangsten te zien", profGateSub:"Alleen volgers zien de gedeelde vangsten van deze visser — ook buiten jullie gedeelde verenigingen & groepen."});
-Object.assign(I18N.nl, {followTitle:"Volgers", followReqTab:"Verzoeken", followFollowersTab:"Volgers", followFollowingTab:"Ik volg", followTasksRow:"Volgers", followNoReq:"Geen openstaande verzoeken.", followNoFollowers:"Nog geen volgers.", followNoFollowing:"Je volgt nog niemand.", followWantsToFollow:"wil je volgen", followFollowsYou:"volgt jou", accept:"Accepteren", decline:"Afwijzen", remove:"Verwijderen", navHome:"Home", navProfile:"Jij", navTasks:"Activiteit", navMore:"Meer", profMapTab:"Kaart", profNetTab:"Netwerk", profTackleTab:"Tacklebox", profTackleSoon:"Je hengels, molens, kunstaas & uitrusting — met vangststatistiek. Binnenkort.", profNoLoc:"Nog geen vangsten met locatie.", tasksAdmin:"Verenigingsbeheer", tasksEmpty:"Geen openstaande taken.", profWithdraw:"Verzoek intrekken", viewMixed:"Hero", viewList:"Record", photoOnly:"Alleen vangsten met foto", photoOnlyShort:"Foto", feedDesc:"Nieuwste vangsten — uit je community, wie je volgt en jij.", seeAllLong:"Alles bekijken", pbBadge:"Persoonlijk record", navCommunity:"Community", homeGreeting:"Hoi, {name}", homeFeedTitle:"Van wie je volgt", feedCaught:"ving", betaPill:"Beta", feedWord:"Feed", needsYou:"Vereist actie", needCount:"wachten op je", needSub:"Verzoeken & bevestigingen", secCommunity:"Community", secFollowing:"Wie je volgt", secMine:"Jouw laatste", newWord:"nieuw", seeAllShort:"Alles", seeAllMine:"Al je vangsten", homeEmptySub:"Nog rustig. Log een vangst of volg vissers om je feed te vullen.", fullCatch:"Hele vangst"});
+Object.assign(I18N.nl, {followTitle:"Volgers", followReqTab:"Verzoeken", followFollowersTab:"Volgers", followFollowingTab:"Ik volg", followTasksRow:"Volgers", followNoReq:"Geen openstaande verzoeken.", followNoFollowers:"Nog geen volgers.", followNoFollowing:"Je volgt nog niemand.", followWantsToFollow:"wil je volgen", followFollowsYou:"volgt jou", accept:"Accepteren", decline:"Afwijzen", remove:"Verwijderen", navHome:"Home", navProfile:"Jij", navTasks:"Activiteit", navMore:"Meer", profMapTab:"Kaart", profNetTab:"Netwerk", profTackleTab:"Tacklebox", profTackleSoon:"Je hengels, molens, kunstaas & uitrusting — met vangststatistiek. Binnenkort.", profNoLoc:"Nog geen vangsten met locatie.", tasksAdmin:"Verenigingsbeheer", tasksEmpty:"Geen openstaande taken.", profWithdraw:"Verzoek intrekken", viewMixed:"Hero", viewList:"Record", photoOnly:"Alleen vangsten met foto", photoOnlyShort:"Foto", feedDesc:"Nieuwste vangsten — uit je community, wie je volgt en jij.", seeAllLong:"Alles bekijken", pbBadge:"Persoonlijk record", recordBadge:"Clubrecord", navCommunity:"Community", homeGreeting:"Hoi, {name}", homeFeedTitle:"Van wie je volgt", feedCaught:"ving", betaPill:"Beta", feedWord:"Feed", needsYou:"Vereist actie", needCount:"wachten op je", needSub:"Verzoeken & bevestigingen", secCommunity:"Community", secFollowing:"Wie je volgt", secMine:"Jouw laatste", newWord:"nieuw", seeAllShort:"Alles", seeAllMine:"Al je vangsten", homeEmptySub:"Nog rustig. Log een vangst of volg vissers om je feed te vullen.", fullCatch:"Hele vangst"});
 Object.assign(I18N.nl, {visApproxArea:"Ongeveer gebied", visLockOnlyMe:"Alleen ik", visSumOnlyMe:"Alleen ik", visSumFollowers:"Volgers", visSumClubsFollowers:"Verenigingen + volgers", visSumClubsOnly:"Alleen verenigingen/groepen", visNoFollowersYet:"Je hebt nog geen volgers — dit bepaalt wat ze straks zien."});
 Object.assign(I18N.de, {visWhatMandatoryHint:"Nur, was deine Vereine verlangen.", visWhatSomeHint:"Dein Zuschnitt — wähle unten.", visWhatAllHint:"Alle Kategorien werden geteilt.", visDefLocHint:"So genau sehen andere deinen Fangort."});
 Object.assign(I18N.en, {visWhatMandatoryHint:"Only what your clubs require.", visWhatSomeHint:"Your selection — choose below.", visWhatAllHint:"All categories are shared.", visDefLocHint:"How precisely others see your spot."});
@@ -3961,21 +3975,22 @@ function _renderHomeNeeds(){
 function _feedImg(c, url){ var cr=(cropOf(c,0)||{}); var p=coverPosOf(cr.p); return `<img src="${escAttr(url)}" alt="" loading="lazy" style="object-position:${p};">`; }
 function _homeCard(c, mode, secKey, idx){
   const photo=c.photo||(c.thumbs&&c.thumbs[0])||null;
-  const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
-  const meta=[c.angler, c._ctxName, fmtDate(c.date)].filter(Boolean).join(' · ');
+  const sp=esc(trSpecies(c.species)); const val=_cardMeasure(c); const dt=_cardDateCtx(c, false);
+  const av=_cardAv(c), bdg=_cardBadge(c, secKey); const tap=`openCatchFs('${secKey}',${idx})`;
   if(mode==='mixed'){
-    const inner=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-sp">${esc(trSpecies(c.species))}</span>${size?`<span class="hf-sz">${esc(size)}</span>`:''}<span class="hf-meta">${esc(meta)}</span></span>`;
-    const tap=`openCatchFs('${secKey}',${idx})`;
-    if(photo){ return `<button type="button" class="hf-hero" onclick="${tap}">${_feedImg(c, photo)}${inner}</button>`; }
-    return `<button type="button" class="hf-hero" onclick="${tap}"><span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>${inner}</button>`;
+    const thumb = photo ? _feedImg(c, photo) : `<span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
+    const band=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-l1"><span class="hf-sp">${sp}</span>${val?`<span class="hf-sz">${esc(val)}</span>`:''}</span><span class="hf-meta">${esc(dt)}</span></span>`;
+    return `<button type="button" class="hf-hero" onclick="${tap}">${thumb}${av}${bdg}${band}</button>`;
   }
-  // Rekord-Ansicht: kompakte Karte (Thumb + Art + Wert + wer·Club/Datum)
-  const val=_recVal(c);
-  const rmeta=[c.angler, (c._ctxName || fmtDate(c.date))].filter(Boolean).join(' · ');
   const rthumb = photo ? `<span class="rthumb">${_feedImg(c, photo)}</span>` : `<span class="rthumb ph"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
-  return `<button type="button" class="hf-rec" onclick="openCatchFs('${secKey}',${idx})">${rthumb}<span class="rsp">${esc(trSpecies(c.species))}</span>${val?`<span class="rval">${esc(val)}</span>`:''}<span class="rmeta">${esc(rmeta)}</span></button>`;
+  return `<button type="button" class="hf-rec" onclick="${tap}"><span class="rtw">${rthumb}${av}${bdg}</span><span class="rsp">${sp}</span>${val?`<span class="rval">${esc(val)}</span>`:''}<span class="rmeta">${esc(dt)}</span></button>`;
 }
-function _recVal(c){ if(c.length!=null) return fmtLen(c.length); if(c.weight!=null) return fmtWeight(c.weight); return ''; }
+/* Karten-Bausteine (v2): Maß+Gewicht · Datum-zuerst-Kontext („Solo" nie) · gerahmter Avatar · Marker. */
+function _cardMeasure(c){ return [c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · '); }
+function _cardCtx(c, mine){ let x = mine ? ((c._ctxType==='solo')?'':(c._ctx||'')) : (c._ctxName||''); if(x && x===t('solo')) x=''; return x; }
+function _cardDateCtx(c, mine){ const d=fmtDate(c.date); const x=_cardCtx(c, mine); return x ? (d+' · '+x) : d; }
+function _cardAv(c){ return `<span class="hf-av">${anglerAvatarHTML(c)}</span>`; }
+function _cardBadge(c, secKey){ if(secKey==='club' && c._clubRecord) return `<span class="hf-cbdg gold" title="${escAttr(t('recordBadge'))}">${CROWN_IC}</span>`; if(secKey==='mine' && isPb(c)) return `<span class="hf-cbdg pb" title="${escAttr(t('pbBadge'))}">${CROWN_IC}</span>`; return ''; }
 function _homeSecHtml(key, label, arr, mode, opts){
   opts=opts||{};
   if(!Array.isArray(arr) || !arr.length) return '';
@@ -3996,20 +4011,17 @@ function _homeSecHtml(key, label, arr, mode, opts){
   }
   return `<div class="hf-sec-h" onclick="_toggleHomeFold('${key}')"><span class="hf-sec-t">${esc(label)}</span>${pill}<span class="hf-spacer"></span><span class="hf-cv">${_foldChev(folded)}</span></div>${body}`;
 }
-function _pbBadge(){ return `<span class="hf-bdg pb" aria-label="${escAttr(t('pbBadge'))}" title="${escAttr(t('pbBadge'))}">${CROWN_IC}</span>`; }
 function _homeMineCard(c, mode, idx){
   const _cov=coverThumbOf(c);
-  const bdg = isPb(c) ? _pbBadge() : '';
-  const size=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean).join(' · ');
-  const meta=[c._ctx||c.location, fmtDate(c.date)].filter(Boolean).join(' · ');
+  const sp=esc(trSpecies(c.species)); const val=_cardMeasure(c); const dt=_cardDateCtx(c, true);
+  const av=_cardAv(c), bdg=_cardBadge(c, 'mine');
   if(mode==='mixed'){
-    const inner=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-sp">${esc(trSpecies(c.species))}</span>${size?`<span class="hf-sz">${esc(size)}</span>`:''}<span class="hf-meta">${esc(meta)}</span></span>`;
-    if(_cov){ return `<button type="button" class="hf-hero" onclick="openCatchFs('mine',${idx})">${_feedImg(c,_cov)}${inner}${bdg}</button>`; }
-    return `<button type="button" class="hf-hero" onclick="openCatchFs('mine',${idx})"><span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>${inner}${bdg}</button>`;
+    const thumb = _cov ? _feedImg(c,_cov) : `<span class="hf-fish"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
+    const band=`<span class="hf-scrim"></span><span class="hf-band"><span class="hf-l1"><span class="hf-sp">${sp}</span>${val?`<span class="hf-sz">${esc(val)}</span>`:''}</span><span class="hf-meta">${esc(dt)}</span></span>`;
+    return `<button type="button" class="hf-hero" onclick="openCatchFs('mine',${idx})">${thumb}${av}${bdg}${band}</button>`;
   }
-  const val=_recVal(c);
   const rthumb = _cov ? `<span class="rthumb">${_feedImg(c,_cov)}</span>` : `<span class="rthumb ph"><img src="/mascot-hero.png" alt="" loading="lazy"></span>`;
-  return `<button type="button" class="hf-rec" onclick="openCatchFs('mine',${idx})">${rthumb}<span class="rsp">${esc(trSpecies(c.species))}</span>${val?`<span class="rval">${esc(val)}</span>`:''}<span class="rmeta">${esc(fmtDate(c.date))}</span>${bdg}</button>`;
+  return `<button type="button" class="hf-rec" onclick="openCatchFs('mine',${idx})"><span class="rtw">${rthumb}${av}${bdg}</span><span class="rsp">${sp}</span>${val?`<span class="rval">${esc(val)}</span>`:''}<span class="rmeta">${esc(dt)}</span></button>`;
 }
 function _renderHomeFeeds(){
   const po=_photoOnly();
@@ -4101,14 +4113,21 @@ function _renderCatchFs(){
   const pv=document.getElementById('fs-prev'), nx=document.getElementById('fs-next');
   if(pv) pv.style.display=(state._fsIdx>0)?'flex':'none';
   if(nx) nx.style.display=(state._fsIdx<total-1)?'flex':'none';
-  if(onEnd){ if(cnt) cnt.style.display='none'; if(sh) sh.style.display='none'; if(im) im.style.display='none'; if(pf) pf.style.display='none'; return; }
+  if(onEnd){ if(cnt) cnt.style.display='none'; if(sh) sh.style.display='none'; if(im) im.style.display='none'; if(pf) pf.style.display='none'; const bd0=document.getElementById('fs-badge'); if(bd0) bd0.style.display='none'; return; }
   if(cnt) cnt.style.display='';
   const c=arr[state._fsIdx]; if(!c) return;
   const photo=c.photo||(c.photos&&c.photos[0])||null;
   if(im){ im.style.transform=''; if(photo){ im.src=photo; im.style.display=''; } else { im.removeAttribute('src'); im.style.display='none'; } }
   if(pf) pf.style.display = photo?'none':'flex';
   const sp=document.getElementById('fs-sp'); if(sp) sp.textContent=trSpecies(c.species);
-  const chips=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null, (c.released===true?t('releasedReleased'):(c.released===false?t('releasedKept'):null))].filter(Boolean);
+  // Marker: Gold-Vereinsrekord (Community, via Backend-Flag _clubRecord) bzw. PB-Krone (deine Fänge).
+  const bd=document.getElementById('fs-badge');
+  if(bd){ bd.className='fs-badge';
+    if((state._fsSec==='club') && c._clubRecord){ bd.classList.add('gold'); bd.innerHTML=CROWN_IC; bd.style.display='flex'; }
+    else if(state._fsSec==='mine' && isPb(c)){ bd.classList.add('pb'); bd.innerHTML=CROWN_IC; bd.style.display='flex'; }
+    else bd.style.display='none';
+  }
+  const chips=[c.length!=null?fmtLen(c.length):null, c.weight!=null?fmtWeight(c.weight):null].filter(Boolean);
   const ch=document.getElementById('fs-chips'); if(ch) ch.innerHTML=chips.map(x=>`<span class="fs-chip">${esc(x)}</span>`).join('');
   const who=document.getElementById('fs-who'); if(who){ const nm=c.angler||''; const sub=[c._ctxName||c._ctx||c.location, fmtDate(c.date)].filter(Boolean).join(' · '); who.innerHTML=`<span class="fs-av">${esc((nm||'?').slice(0,2).toUpperCase())}</span><span style="min-width:0;"><span class="fs-nm">${esc(nm)}</span><span class="fs-dt">${esc(sub)}</span></span>`; }
   if(cnt) cnt.textContent=(state._fsIdx+1)+' / '+arr.length;
